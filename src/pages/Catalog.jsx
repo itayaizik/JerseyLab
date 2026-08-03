@@ -1,3 +1,4 @@
+import { getAllShirts } from "@/api/shirts";
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { Search, SlidersHorizontal, X, ChevronDown } from 'lucide-react';
@@ -67,7 +68,7 @@ export default function Catalog() {
     setLoadError(false);
     let all;
     try {
-      all = await base44.entities.Shirt.list('-created_date', 200);
+      all = await getAllShirts();
     } catch (err) {
       setLoadError(true);
       setLoading(false);
