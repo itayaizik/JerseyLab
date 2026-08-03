@@ -1,0 +1,14 @@
+{
+  "name": "JerseyLab — ארכיון חולצות כדורגל",
+  "short_name": "JerseyLab",
+  "description": "חולצות כדורגל איכותיות, נדירות ובמחירים טובים.",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F2ECD9",
+  "theme_color": "#1B2A4A",
+  "icons": [
+    { "src": "https://media.base44.com/images/public/6a42e762005950f7dc39df84/c1508bbce_logo.png", "sizes": "any", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

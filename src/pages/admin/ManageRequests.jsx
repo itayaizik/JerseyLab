@@ -1,0 +1,194 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { MessageCircle, Phone, ExternalLink, Plus, X, Package } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+
+export default function ManageRequests() {
+  const [requests, setRequests] = useState([]);
+  const [shirts, setShirts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [expandedId, setExpandedId] = useState(null);
+  const [addItemState, setAddItemState] = useState({}); // { [requestId]: { shirtId, note, saving } }
+
+  useEffect(() => {
+    async function load() {
+      const [data, allShirts] = await Promise.all([
+        base44.entities.InterestRequest.list('-created_date', 200),
+        base44.entities.Shirt.list('-created_date', 500),
+      ]);
+      setRequests(data);
+      setShirts(allShirts.filter(s => s.status !== 'hidden'));
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  const handleStatusChange = async (id, status) => {
+    await base44.entities.InterestRequest.update(id, { status });
+    setRequests(p => p.map(r => r.id === id ? { ...r, status } : r));
+
+
+  };
+
+  const handleMarkShirtSold = async (shirtId) => {
+    await base44.entities.Shirt.update(shirtId, { status: 'sold' });
+    setShirts(p => p.map(s => s.id === shirtId ? { ...s, status: 'sold' } : s));
+  };
+
+  const handleAddExtraItem = async (requestId) => {
+    const state = addItemState[requestId];
+    if (!state?.shirtId) return;
+    const shirt = shirts.find(s => s.id === state.shirtId);
+    if (!shirt) return;
+
+    setAddItemState(p => ({ ...p, [requestId]: { ...p[requestId], saving: true } }));
+
+    // Append extra item info to request message
+    const req = requests.find(r => r.id === requestId);
+    const extraLine = `\n[פריט נוסף שנמכר: ${shirt.name}${state.note ? ' — ' + state.note : ''}]`;
+    const updatedMessage = (req.message || '') + extraLine;
+    await base44.entities.InterestRequest.update(requestId, { message: updatedMessage });
+
+    // Optionally mark that shirt as sold
+    const confirmSold = window.confirm(`לסמן את "${shirt.name}" כנמכרה גם כן?`);
+    if (confirmSold) {
+      await base44.entities.Shirt.update(shirt.id, { status: 'sold' });
+      setShirts(p => p.map(s => s.id === shirt.id ? { ...s, status: 'sold' } : s));
+    }
+
+    setRequests(p => p.map(r => r.id === requestId ? { ...r, message: updatedMessage } : r));
+    setAddItemState(p => ({ ...p, [requestId]: {} }));
+    setExpandedId(null);
+  };
+
+  const filtered = requests.filter(r => !statusFilter || r.status === statusFilter);
+  const statusColors = { new: 'bg-turf text-pitch', contacted: 'bg-blue-500/20 text-blue-400', closed: 'bg-white/5 text-varnish' };
+  const statusLabels = { new: 'חדש', contacted: 'נוצר קשר', closed: 'סגור' };
+
+  if (loading) return <div className="flex items-center justify-center min-h-[50vh]"><div className="w-8 h-8 border-4 border-varnish border-t-turf rounded-full animate-spin" /></div>;
+
+  return (
+    <div>
+      <h1 className="font-heading font-black text-2xl mb-6 text-turf flex items-center gap-2">
+        <MessageCircle className="w-6 h-6" />
+        בקשות לקוחות
+      </h1>
+
+      <div className="flex gap-3 mb-6">
+        {['', 'new', 'contacted', 'closed'].map(s => (
+          <button key={s} onClick={() => setStatusFilter(s)}
+            className={`px-3 py-1.5 text-xs font-bold transition-colors ${statusFilter === s ? 'bg-turf text-pitch' : 'text-varnish hover:text-chalk'}`}>
+            {s === '' ? 'הכל' : statusLabels[s]} {s && `(${requests.filter(r => r.status === s).length})`}
+          </button>
+        ))}
+      </div>
+
+      <div className="space-y-3">
+        {filtered.map(r => {
+          const reqShirt = shirts.find(s => s.id === r.shirt_id);
+          const isExpanded = expandedId === r.id;
+          const itemState = addItemState[r.id] || {};
+
+          return (
+            <div key={r.id} className="border border-white/10 bg-white/5 p-4">
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className={`text-xs px-2 py-1 font-bold ${statusColors[r.status]}`}>
+                      {statusLabels[r.status]}
+                    </span>
+                    <span className="text-xs text-varnish font-mono">{new Date(r.created_date).toLocaleDateString('he-IL')}</span>
+                  </div>
+                  <h3 className="font-heading font-bold text-sm mb-1">{r.full_name}</h3>
+                  <p className="text-sm text-varnish mb-1">
+                    חולצה: <Link to={`/shirt/${r.shirt_id}`} className="text-turf hover:underline">{r.shirt_name || 'צפה'}</Link>
+                    {r.wanted_size && <> • מידה: {r.wanted_size}</>}
+                  </p>
+
+                  {/* Mark shirt as sold button */}
+                  {reqShirt && reqShirt.status === 'available' && (
+                    <button
+                      onClick={() => handleMarkShirtSold(reqShirt.id)}
+                      className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1 mb-2"
+                    >
+                      <Package className="w-3 h-3" />
+                      סמן "{reqShirt.name}" כנמכרה
+                    </button>
+                  )}
+                  {reqShirt && reqShirt.status === 'sold' && (
+                    <span className="text-xs text-varnish flex items-center gap-1 mb-2">
+                      <Package className="w-3 h-3" />
+                      <span className="line-through">{reqShirt.name}</span> — נמכרה ✓
+                    </span>
+                  )}
+
+                  {r.message && <p className="text-xs text-varnish bg-white/5 p-2 mb-2 whitespace-pre-line">{r.message}</p>}
+                  <div className="flex flex-wrap gap-3 text-xs text-varnish">
+                    {r.phone && <a href={`tel:${r.phone}`} className="flex items-center gap-1 hover:text-chalk"><Phone className="w-3 h-3" />{r.phone}</a>}
+                    {r.whatsapp && <a href={`https://wa.me/${r.whatsapp}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-green-400"><MessageCircle className="w-3 h-3" />WhatsApp</a>}
+                    {r.instagram && <a href={`https://instagram.com/${r.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-pink-400"><ExternalLink className="w-3 h-3" />{r.instagram}</a>}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2 items-end">
+                  <select value={r.status} onChange={e => handleStatusChange(r.id, e.target.value)}
+                    className="bg-white/5 border border-white/10 px-3 py-2 text-xs text-chalk focus:outline-none">
+                    <option value="new">חדש</option>
+                    <option value="contacted">נוצר קשר</option>
+                    <option value="closed">סגור</option>
+                  </select>
+
+                  <button
+                    onClick={() => setExpandedId(isExpanded ? null : r.id)}
+                    className="flex items-center gap-1 text-xs text-turf hover:text-chalk border border-turf/40 hover:border-turf px-2 py-1.5 transition-colors"
+                  >
+                    {isExpanded ? <X className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+                    {isExpanded ? 'ביטול' : 'הוסף פריט'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Add Extra Item Panel */}
+              {isExpanded && (
+                <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
+                  <p className="text-xs text-varnish font-heading uppercase tracking-wide">הוסף פריט שנמכר ללקוח זה</p>
+                  <div className="flex gap-2 flex-col sm:flex-row">
+                    <select
+                      value={itemState.shirtId || ''}
+                      onChange={e => setAddItemState(p => ({ ...p, [r.id]: { ...p[r.id], shirtId: e.target.value } }))}
+                      className="flex-1 bg-pitch border border-white/20 px-3 py-2 text-xs text-chalk focus:outline-none focus:border-turf"
+                    >
+                      <option value="">בחר חולצה...</option>
+                      {shirts.map(s => (
+                        <option key={s.id} value={s.id}>
+                          {s.name}{s.status === 'sold' ? ' ✓' : ''} — ₪{s.sale_price && s.sale_price < s.price ? s.sale_price : s.price}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="text"
+                      placeholder="הערה (אופציונלי)"
+                      value={itemState.note || ''}
+                      onChange={e => setAddItemState(p => ({ ...p, [r.id]: { ...p[r.id], note: e.target.value } }))}
+                      className="flex-1 bg-pitch border border-white/20 px-3 py-2 text-xs text-chalk focus:outline-none focus:border-turf placeholder-varnish"
+                    />
+                    <button
+                      onClick={() => handleAddExtraItem(r.id)}
+                      disabled={!itemState.shirtId || itemState.saving}
+                      className="px-4 py-2 bg-turf text-pitch text-xs font-bold font-heading uppercase disabled:opacity-40 whitespace-nowrap"
+                    >
+                      {itemState.saving ? 'שומר...' : 'הוסף'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {filtered.length === 0 && <p className="text-center py-12 text-varnish">אין בקשות</p>}
+    </div>
+  );
+}

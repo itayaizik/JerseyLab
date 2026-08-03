@@ -1,0 +1,164 @@
+{
+  "name": "Shirt",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "club": {
+      "type": "string"
+    },
+    "national_team": {
+      "type": "string"
+    },
+    "league": {
+      "type": "string"
+    },
+    "season": {
+      "type": "string"
+    },
+    "player_name": {
+      "type": "string"
+    },
+    "gender_category": {
+      "type": "string",
+      "enum": [
+        "men",
+        "kids",
+        "unisex"
+      ],
+      "default": "men"
+    },
+    "sport_category": {
+      "type": "string",
+      "enum": [
+        "football",
+        "basketball"
+      ],
+      "default": "football"
+    },
+    "price": {
+      "type": "number"
+    },
+    "sale_price": {
+      "type": "number"
+    },
+    "condition": {
+      "type": "string",
+      "enum": [
+        "new",
+        "like_new",
+        "used"
+      ],
+      "default": "new"
+    },
+    "description": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "main_image": {
+      "type": "string",
+      "format": "image_url"
+    },
+    "extra_images": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "image_url"
+      }
+    },
+    "sizes": {
+      "type": "object"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "available",
+        "reserved",
+        "sold",
+        "hidden"
+      ],
+      "default": "available"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_new": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_rare": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_retro": {
+      "type": "boolean",
+      "default": false
+    },
+    "best_seller": {
+      "type": "boolean",
+      "default": false
+    },
+    "limited_stock": {
+      "type": "boolean",
+      "default": false
+    },
+    "views_count": {
+      "type": "number",
+      "default": 0
+    },
+    "interest_count": {
+      "type": "number",
+      "default": 0
+    },
+    "category_id": {
+      "type": "string"
+    },
+    "in_stock_local": {
+      "type": "boolean",
+      "default": false
+    },
+    "fast_shipping": {
+      "type": "boolean",
+      "default": false
+    },
+    "local_stock_quantity": {
+      "type": "number",
+      "default": 0
+    },
+    "fast_shipping_note": {
+      "type": "string"
+    },
+    "local_stock_sizes": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "name",
+    "price"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

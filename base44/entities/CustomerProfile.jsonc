@@ -1,0 +1,104 @@
+{
+  "name": "CustomerProfile",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string"
+    },
+    "height": {
+      "type": "number"
+    },
+    "weight": {
+      "type": "number"
+    },
+    "body_build": {
+      "type": "string",
+      "enum": [
+        "very_slim",
+        "slim",
+        "average",
+        "broad",
+        "muscular"
+      ]
+    },
+    "usual_size": {
+      "type": "string"
+    },
+    "fit_preference": {
+      "type": "string",
+      "enum": [
+        "tight",
+        "semi_tight",
+        "regular",
+        "semi_loose",
+        "loose"
+      ],
+      "default": "regular"
+    },
+    "favorite_teams": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "favorite_players": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "shirt_styles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "retro",
+          "new",
+          "concept",
+          "national"
+        ]
+      }
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000
+    }
+  },
+  "required": [
+    "full_name"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

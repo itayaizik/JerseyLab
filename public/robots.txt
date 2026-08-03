@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /wishlist
+Disallow: /profile
+
+Sitemap: https://jerseylabil.base44.app/sitemap.xml
