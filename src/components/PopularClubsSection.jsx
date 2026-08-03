@@ -1,3 +1,4 @@
+import { getPopularClubs } from "@/api/popularClubs";
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
@@ -21,10 +22,10 @@ export default function PopularClubsSection({ title }) {
   const [clubs, setClubs] = useState([]);
 
   useEffect(() => {
-    base44.entities.PopularClub.filter({ active: true }, 'sort_order', 100)
-      .then(data => setClubs(data.length > 0 ? data : DEFAULT_CLUBS))
-      .catch(() => setClubs(DEFAULT_CLUBS));
-  }, []);
+  base44.entities.PopularClub.filter({ active: true }, 'sort_order', 100)
+    .then(data => setClubs(data.length > 0 ? data : DEFAULT_CLUBS))
+    .catch(() => setClubs(DEFAULT_CLUBS));
+}, []);
 
   useEffect(() => {
     const container = scrollRef.current;

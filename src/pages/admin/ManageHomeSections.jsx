@@ -1,6 +1,8 @@
+import { getCategoryCards } from "@/api/categoryCards";
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, GripVertical, Save, Loader2, ChevronUp, ChevronDown } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { getPopularClubs } from "@/api/popularClubs";
 
 const DEFAULT_CLUBS = [
   { name: 'ליברפול', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/c/cd/Liverpool_FC.svg/200px-Liverpool_FC.svg.png', href: '/catalog?q=liverpool', sort_order: 0, active: true },
@@ -184,10 +186,10 @@ export default function ManageHomeSections() {
   useEffect(() => {
     async function load() {
       const [clubsData, catsData, leaguesData] = await Promise.all([
-        base44.entities.PopularClub.list('sort_order', 100),
-        base44.entities.CategoryCard.list('sort_order', 100),
-        base44.entities.LeagueCard.list('sort_order', 100),
-      ]);
+  getPopularClubs(),
+  getCategoryCards(),
+  base44.entities.LeagueCard.list('sort_order', 100),
+]);
       setClubRecords(clubsData);
       setCats(catsData);
       setCatRecords(catsData);
