@@ -180,3 +180,19 @@ create policy "admin update shirt images" on storage.objects for update
 drop policy if exists "admin delete shirt images" on storage.objects;
 create policy "admin delete shirt images" on storage.objects for delete
   using (bucket_id = 'shirt-images' and public.is_admin());
+
+-- ── reviews_raw: optional photo + anonymous display name ────
+alter table reviews_raw add column if not exists image_url text;
+alter table reviews_raw add column if not exists is_anonymous boolean not null default false;
+
+-- ── Storage: customer-submitted review photos ───────────────
+-- NOTE: create the bucket by hand first — Storage > New bucket > name
+-- "review-images" > Public bucket: ON.
+
+drop policy if exists "public read review images" on storage.objects;
+create policy "public read review images" on storage.objects for select
+  using (bucket_id = 'review-images');
+
+drop policy if exists "authenticated upload review images" on storage.objects;
+create policy "authenticated upload review images" on storage.objects for insert
+  with check (bucket_id = 'review-images' and auth.uid() is not null);

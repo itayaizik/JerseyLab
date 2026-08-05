@@ -4,14 +4,14 @@ import { ChevronRight, ChevronLeft, Trophy } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const DEFAULT_LEAGUES = [
-  { name: 'ליגת העל', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/9/9d/Ligat_ha%27Al_logo.svg/200px-Ligat_ha%27Al_logo.svg.png', href: "/catalog?league=Ligat Ha'al" },
-  { name: 'פרמייר ליג', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Premier_League_Logo.svg/200px-Premier_League_Logo.svg.png', href: '/catalog?league=Premier League' },
-  { name: 'לה ליגה', logo_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/LaLiga_logo_2023.svg/200px-LaLiga_logo_2023.svg.png', href: '/catalog?league=La Liga' },
-  { name: 'סרייה א', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Serie_A_logo_2022.svg/200px-Serie_A_logo_2022.svg.png', href: '/catalog?league=Serie A' },
-  { name: 'בונדסליגה', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Bundesliga_logo_%282017%29.svg/200px-Bundesliga_logo_%282017%29.svg.png', href: '/catalog?league=Bundesliga' },
-  { name: 'ליגה צרפתית', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/0/03/Ligue_1_logo%282020%29.svg/200px-Ligue_1_logo%282020%29.svg.png', href: '/catalog?league=Ligue 1' },
-  { name: 'ליגת האלופות', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/b/bf/UEFA_Champions_League.svg/200px-UEFA_Champions_League.svg.png', href: '/catalog?league=Champions League' },
-  { name: 'מונדיאל', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/9/9a/FIFA_World_Cup.svg/200px-FIFA_World_Cup.svg.png', href: '/catalog?league=World Cup' },
+  { name: 'ליגת העל', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/9/9d/Ligat_ha%27Al_logo.svg/200px-Ligat_ha%27Al_logo.svg.png', href: `/catalog?q=${encodeURIComponent('ליגת העל')}` },
+  { name: 'פרמייר ליג', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Premier_League_Logo.svg/200px-Premier_League_Logo.svg.png', href: `/catalog?q=${encodeURIComponent('פרמייר ליג')}` },
+  { name: 'לה ליגה', logo_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/LaLiga_logo_2023.svg/200px-LaLiga_logo_2023.svg.png', href: `/catalog?q=${encodeURIComponent('לה ליגה')}` },
+  { name: 'סרייה א', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Serie_A_logo_2022.svg/200px-Serie_A_logo_2022.svg.png', href: `/catalog?q=${encodeURIComponent('סרייה א')}` },
+  { name: 'בונדסליגה', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Bundesliga_logo_%282017%29.svg/200px-Bundesliga_logo_%282017%29.svg.png', href: `/catalog?q=${encodeURIComponent('בונדסליגה')}` },
+  { name: 'ליגה צרפתית', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/0/03/Ligue_1_logo%282020%29.svg/200px-Ligue_1_logo%282020%29.svg.png', href: `/catalog?q=${encodeURIComponent('ליגה צרפתית')}` },
+  { name: 'ליגת האלופות', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/b/bf/UEFA_Champions_League.svg/200px-UEFA_Champions_League.svg.png', href: `/catalog?q=${encodeURIComponent('ליגת האלופות')}` },
+  { name: 'מונדיאל', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/9/9a/FIFA_World_Cup.svg/200px-FIFA_World_Cup.svg.png', href: `/catalog?q=${encodeURIComponent('מונדיאל')}` },
   { name: 'נבחרות', logo_url: '', href: '/catalog?type=national' },
   { name: 'רטרו', logo_url: '', href: '/catalog?tag=retro' },
 ];

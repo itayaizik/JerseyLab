@@ -4,16 +4,16 @@ import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const DEFAULT_CLUBS = [
-  { name: 'ליברפול', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/c/cd/Liverpool_FC.svg/200px-Liverpool_FC.svg.png', href: '/catalog?club=Liverpool' },
-  { name: 'ארסנל', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/5/53/Arsenal_FC.svg/200px-Arsenal_FC.svg.png', href: '/catalog?club=Arsenal' },
-  { name: "מנצ'סטר סיטי", logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/e/eb/Manchester_City_FC_badge.svg/200px-Manchester_City_FC_badge.svg.png', href: '/catalog?club=Manchester+City' },
-  { name: "מנצ'סטר יונייטד", logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/7/7a/Manchester_United_FC_crest.svg/200px-Manchester_United_FC_crest.svg.png', href: '/catalog?club=Manchester+United' },
-  { name: 'ברצלונה', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/4/47/FC_Barcelona_%28crest%29.svg/200px-FC_Barcelona_%28crest%29.svg.png', href: '/catalog?club=Barcelona' },
-  { name: 'ריאל מדריד', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/e/eb/Real_Madrid_CF.svg/200px-Real_Madrid_CF.svg.png', href: '/catalog?club=Real+Madrid' },
-  { name: 'יובנטוס', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/b/bc/Juventus_FC_2017_icon_%28black%29.svg/200px-Juventus_FC_2017_icon_%28black%29.svg.png', href: '/catalog?club=Juventus' },
-  { name: "פריז סן-ז'רמן", logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/a/a7/Paris_Saint-Germain_F.C..svg/200px-Paris_Saint-Germain_F.C..svg.png', href: '/catalog?club=Paris+Saint-Germain' },
-  { name: 'בייארן', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282002%E2%80%932017%29.svg/200px-FC_Bayern_M%C3%BCnchen_logo_%282002%E2%80%932017%29.svg.png', href: '/catalog?club=Bayern+Munich' },
-  { name: "צ'לסי", logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/c/cc/Chelsea_FC.svg/200px-Chelsea_FC.svg.png', href: '/catalog?club=Chelsea' },
+  { name: 'ליברפול', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/c/cd/Liverpool_FC.svg/200px-Liverpool_FC.svg.png', href: `/catalog?q=${encodeURIComponent('ליברפול')}` },
+  { name: 'ארסנל', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/5/53/Arsenal_FC.svg/200px-Arsenal_FC.svg.png', href: `/catalog?q=${encodeURIComponent('ארסנל')}` },
+  { name: "מנצ'סטר סיטי", logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/e/eb/Manchester_City_FC_badge.svg/200px-Manchester_City_FC_badge.svg.png', href: `/catalog?q=${encodeURIComponent('מנצסטר סיטי')}` },
+  { name: "מנצ'סטר יונייטד", logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/7/7a/Manchester_United_FC_crest.svg/200px-Manchester_United_FC_crest.svg.png', href: `/catalog?q=${encodeURIComponent('מנצסטר יונייטד')}` },
+  { name: 'ברצלונה', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/4/47/FC_Barcelona_%28crest%29.svg/200px-FC_Barcelona_%28crest%29.svg.png', href: `/catalog?q=${encodeURIComponent('ברצלונה')}` },
+  { name: 'ריאל מדריד', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/e/eb/Real_Madrid_CF.svg/200px-Real_Madrid_CF.svg.png', href: `/catalog?q=${encodeURIComponent('ריאל מדריד')}` },
+  { name: 'יובנטוס', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/b/bc/Juventus_FC_2017_icon_%28black%29.svg/200px-Juventus_FC_2017_icon_%28black%29.svg.png', href: `/catalog?q=${encodeURIComponent('יובנטוס')}` },
+  { name: "פריז סן-ז'רמן", logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/a/a7/Paris_Saint-Germain_F.C..svg/200px-Paris_Saint-Germain_F.C..svg.png', href: `/catalog?q=${encodeURIComponent('פריז סן זרמן')}` },
+  { name: 'בייארן', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282002%E2%80%932017%29.svg/200px-FC_Bayern_M%C3%BCnchen_logo_%282002%E2%80%932017%29.svg.png', href: `/catalog?q=${encodeURIComponent('באיירן מינכן')}` },
+  { name: "צ'לסי", logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/c/cc/Chelsea_FC.svg/200px-Chelsea_FC.svg.png', href: `/catalog?q=${encodeURIComponent('צלסי')}` },
 ];
 
 export default function PopularClubsSection({ title }) {

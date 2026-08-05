@@ -101,14 +101,14 @@ export default function Catalog() {
       s.league?.toLowerCase().includes(q) ||
       s.season?.toLowerCase().includes(q) ||
       s.description?.toLowerCase().includes(q) ||
-      s.tags?.some(t => t.toLowerCase().includes(q))
+      (Array.isArray(s.tags) && s.tags.some(t => t.toLowerCase().includes(q)))
     );
     if (gender) result = result.filter(s => s.gender_category === gender);
     if (sport) result = result.filter(s => s.sport_category === sport);
     if (sale === 'true') result = result.filter(s => s.sale_price && s.sale_price < s.price);
     if (isNew === 'true') result = result.filter(s => s.is_new);
     if (tag === 'retro') result = result.filter(s => s.is_retro);
-    if (type === 'national') result = result.filter(s => s.national_team);
+    if (type === 'national' || type === 'נבחרות') result = result.filter(s => s.national_team);
     if (type === 'player') result = result.filter(s => s.player_name);
     if (fast === 'true') result = result.filter(s => s.local_stock_sizes && Object.values(s.local_stock_sizes).some(q => Number(q) > 0));
     if (best === 'true') result = result.filter(s => s.best_seller === true);

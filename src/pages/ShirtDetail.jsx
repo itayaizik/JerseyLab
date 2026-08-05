@@ -25,6 +25,7 @@ export default function ShirtDetail() {
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [zoomed, setZoomed] = useState(false);
+  const [zoomOrigin, setZoomOrigin] = useState('50% 50%');
   const [user, setUser] = useState(null);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [interestOpen, setInterestOpen] = useState(searchParams.get('interest') === 'true');
@@ -251,14 +252,24 @@ export default function ShirtDetail() {
                 tabIndex={0}
                 aria-label={zoomed ? 'הקטן תמונה' : 'הגדל תמונה'}
                 aria-pressed={zoomed}
-                className={`aspect-square bg-gray-50 overflow-hidden relative ${zoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
-                onClick={() => setZoomed(!zoomed)}
+                className={`aspect-square bg-gray-50 overflow-hidden relative border-2 border-[#1B2A4A] ${zoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
+                style={{ boxShadow: '4px 4px 0 #E8622A' }}
+                onClick={() => { setZoomed(z => !z); setZoomOrigin('50% 50%'); }}
+                onMouseMove={(e) => {
+                  if (!zoomed) return;
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = ((e.clientX - rect.left) / rect.width) * 100;
+                  const y = ((e.clientY - rect.top) / rect.height) * 100;
+                  setZoomOrigin(`${x}% ${y}%`);
+                }}
+                onMouseLeave={() => setZoomOrigin('50% 50%')}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoomed(z => !z); } }}>
                 <ProductImage
                   eager
                   src={allImages[selectedImage]}
                   alt={shirt.name}
                   className={`w-full h-full object-cover transition-transform duration-300 ${zoomed ? 'scale-150' : ''}`}
+                  style={{ transformOrigin: zoomOrigin }}
                 />
               </div>
             </div>

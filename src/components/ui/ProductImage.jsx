@@ -9,7 +9,7 @@ const FALLBACK = 'https://placehold.co/400x400/f0f0f0/ccc?text=JersyLab';
  * - fallback placeholder on error
  * Parent container should be `relative` with a fixed aspect ratio.
  */
-export default function ProductImage({ src, alt = '', className = '', eager = false, fallback = FALLBACK }) {
+export default function ProductImage({ src, alt = '', className = '', eager = false, fallback = FALLBACK, style }) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
 
@@ -26,6 +26,7 @@ export default function ProductImage({ src, alt = '', className = '', eager = fa
         onLoad={() => setLoaded(true)}
         onError={() => { setErrored(true); setLoaded(true); }}
         className={`${className} ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        style={style}
       />
     </>
   );
