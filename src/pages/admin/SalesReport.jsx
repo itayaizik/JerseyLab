@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { TrendingUp, ShoppingBag, DollarSign, BarChart2, Calendar } from 'lucide-react';
+import { TrendingUp, ShoppingBag, DollarSign, BarChart2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const PERIOD_OPTIONS = [

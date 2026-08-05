@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Instagram, Heart, MessageCircle, ExternalLink } from 'lucide-react';
+import { Instagram, ExternalLink } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { Link } from 'react-router-dom';
 
 export default function InstagramSection({ title, instagramHandle = 'Jerseylabil' }) {
   const [posts, setPosts] = useState([]);

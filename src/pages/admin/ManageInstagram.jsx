@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Loader2, Instagram, GripVertical } from 'lucide-react';
+import { Plus, Trash2, Loader2, Instagram } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 export default function ManageInstagram() {

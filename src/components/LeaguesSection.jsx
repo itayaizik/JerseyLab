@@ -65,7 +65,7 @@ export default function LeaguesSection({ title }) {
           <div ref={scrollRef} className="flex gap-3 overflow-x-auto scroll-smooth pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {loopedLeagues.map((league, i) => (
               <Link
-                key={league.id || i}
+                key={`${league.id || league.name}-${i}`}
                 to={league.href || '#'}
                 className="flex-shrink-0 flex flex-col items-center gap-2 bg-white border-2 border-[#1B2A4A] p-4 hover:border-[#E8622A] hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
                 style={{ width: 110, boxShadow: '2px 2px 0 #1B2A4A' }}

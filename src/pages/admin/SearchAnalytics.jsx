@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, TrendingUp, Calendar, BarChart2 } from 'lucide-react';
+import { Search, TrendingUp, BarChart2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 export default function SearchAnalytics() {

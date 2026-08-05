@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { Heart, Share2, ChevronRight, Star, Copy, Check, Info, Shirt } from 'lucide-react';
+import { Heart, Share2, ChevronRight, Copy, Check, Info, Shirt } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import StatusBadge from '@/components/ui/StatusBadge';
 import TagBadge from '@/components/ui/TagBadge';
 import InterestModal, { CartModal } from '@/components/InterestModal';
 import ShirtCard from '@/components/ShirtCard';
-import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
 import ShirtReviews from '@/components/ShirtReviews';
 import ShippingBadge, { hasLocalStock, hasLocalStockForSize } from '@/components/ShippingBadge';
 import ShippingInfoModal from '@/components/ShippingInfoModal';

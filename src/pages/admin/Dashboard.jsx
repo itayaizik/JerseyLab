@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Shirt, Eye, MessageCircle, AlertTriangle, TrendingUp, Clock, Star } from 'lucide-react';
+import { Eye, MessageCircle, AlertTriangle, TrendingUp, Clock } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { StatusPieChart, TopViewedBarChart } from '@/components/admin/DashboardCharts';
 

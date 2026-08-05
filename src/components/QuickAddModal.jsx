@@ -8,7 +8,7 @@ import ShirtTypeChoice from '@/components/configurator/ShirtTypeChoice';
 import PersonalizationChoice from '@/components/configurator/PersonalizationChoice';
 import NameNumberInput from '@/components/configurator/NameNumberInput';
 import OrderSummary from '@/components/configurator/OrderSummary';
-import { getShirtTypeTip, getPersonalizationTip, calcTotal } from '@/components/configurator/recommendations';
+import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurator/recommendations';
 
 function getCart() {
   try { return JSON.parse(sessionStorage.getItem('jerseylab_cart') || '[]'); } catch { return []; }

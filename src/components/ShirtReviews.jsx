@@ -69,11 +69,12 @@ export default function ShirtReviews({ shirtId, user }) {
     setErrors({});
     try {
       await base44.entities.Review.create({
-        name: user.full_name,
+        reviewer_name: user.full_name,
         rating: form.rating,
         comment: form.comment,
         approved: false,
         user_id: user.id,
+        shirt_id: shirtId,
       });
       setSubmitted(true);
     } catch (err) {
@@ -113,7 +114,7 @@ export default function ShirtReviews({ shirtId, user }) {
           {reviews.map((r) => (
             <div key={r.id} className="bg-white p-4" style={{ border: '2px solid #1B2A4A' }}>
               <div className="flex items-center justify-between mb-2">
-                <span className="font-heading font-bold text-sm text-[#1B2A4A] uppercase">{r.name}</span>
+                <span className="font-heading font-bold text-sm text-[#1B2A4A] uppercase">{r.reviewer_name}</span>
                 <StarRating rating={r.rating} />
               </div>
               <p className="text-sm text-gray-600 font-body leading-relaxed">{r.comment}</p>

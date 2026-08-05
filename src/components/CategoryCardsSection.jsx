@@ -69,7 +69,7 @@ export default function CategoryCardsSection({ title }) {
           <div ref={scrollRef} className="flex gap-3 overflow-x-auto scroll-smooth pb-1 flex-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {loopedCats.map((cat, i) => (
               <Link
-                key={cat.id || i}
+                key={`${cat.id || cat.label}-${i}`}
                 to={cat.href || '#'}
                 className="flex-shrink-0 relative overflow-hidden group hover:-translate-y-1 hover:shadow-xl transition-all duration-200"
                 style={{ width: 160, height: 220, border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #1B2A4A' }}

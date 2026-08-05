@@ -1,4 +1,3 @@
-import { getPopularClubs } from "@/api/popularClubs";
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
@@ -68,7 +67,7 @@ export default function PopularClubsSection({ title }) {
           <div ref={scrollRef} className="flex gap-3 overflow-x-auto scroll-smooth pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {loopedClubs.map((club, i) => (
               <Link
-                key={club.id || i}
+                key={`${club.id || club.name}-${i}`}
                 to={club.href || club.logo_url || '#'}
                 className="flex-shrink-0 flex flex-col items-center gap-2 bg-white border-2 border-[#1B2A4A] p-4 hover:border-[#E8622A] hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
                 style={{ width: 110, boxShadow: '2px 2px 0 #1B2A4A' }}

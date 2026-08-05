@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Heart, MessageCircle, LogOut, Settings, Package, ArrowRight } from 'lucide-react';
+import { Heart, MessageCircle, LogOut, Package } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 export default function Profile() {

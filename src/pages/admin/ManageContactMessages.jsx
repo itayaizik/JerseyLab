@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, ArrowRight, Filter } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 export default function ManageContactMessages() {

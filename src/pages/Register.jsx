@@ -60,7 +60,7 @@ export default function Register() {
     setError('');
     setLoading(true);
     try {
-      await base44.auth.register({ email: basics.email, password: basics.password });
+      await base44.auth.register({ email: basics.email, password: basics.password, full_name: basics.full_name.trim() });
       if (prefsOverride) setPreferences(prefsOverride);
       setStep('otp');
     } catch (err) {

@@ -63,7 +63,7 @@ export default function ManageReviews() {
                   <span className={`text-xs px-2 py-0.5 font-bold ${r.approved ? 'bg-turf text-pitch' : 'bg-amber-500/20 text-amber-400'}`}>
                     {r.approved ? 'מאושר' : 'ממתין לאישור'}
                   </span>
-                  <span className="text-sm font-bold text-chalk">{r.name}</span>
+                  <span className="text-sm font-bold text-chalk">{r.reviewer_name}</span>
                   <div className="flex gap-0.5">
                     {[1,2,3,4,5].map(s => <Star key={s} className={`w-3 h-3 ${s <= r.rating ? 'fill-amber-400 text-amber-400' : 'text-varnish'}`} />)}
                   </div>

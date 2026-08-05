@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, Check, Loader2, Mail, Phone } from 'lucide-react';
+import { MessageCircle, Check, Loader2, Mail } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { friendlyError } from '@/lib/errorMessages';
 import Seo from '@/components/Seo';
@@ -72,6 +72,7 @@ export default function Contact() {
         name: form.name.trim(),
         email: form.email.trim(),
         message: form.message.trim(),
+        status: 'new',
       });
       base44.analytics.track({ eventName: 'contact_submitted' });
       setSubmitted(true);

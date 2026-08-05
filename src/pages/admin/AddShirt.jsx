@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, X, Loader2, Plus } from 'lucide-react';
+import { Upload, Loader2, Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { hasLocalStock } from '@/components/ShippingBadge';
 

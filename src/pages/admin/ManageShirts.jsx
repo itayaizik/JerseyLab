@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Edit, Trash2, Eye, Copy, Plus, Save, Loader2, AlertCircle, Check, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { Search, Edit, Trash2, Eye, Copy, Plus, Save, Loader2, AlertCircle, Check, ChevronUp, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import StatusBadge from '@/components/ui/StatusBadge';
 import ShirtEditForm from '@/components/admin/ShirtEditForm';
 import { hasLocalStock } from '@/components/ShippingBadge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';

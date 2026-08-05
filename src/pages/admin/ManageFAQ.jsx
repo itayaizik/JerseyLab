@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Edit, Check, X, GripVertical } from 'lucide-react';
+import { Plus, Trash2, Edit, Check } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 export default function ManageFAQ() {
