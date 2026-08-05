@@ -8,7 +8,7 @@ const adminLinks = [
   { to: '/admin/add-shirt', label: 'הוסף מוצר', icon: PlusCircle },
   { to: '/admin/bulk-import', label: 'ייבוא מסיבי', icon: Upload },
   { to: '/admin/shirts', label: 'ערוך מוצרים', icon: Shirt },
-  { to: '/admin/requests', label: 'בקשות לקוחות', icon: Users },
+  { to: '/admin/requests', label: 'הזמנות', icon: Users },
   { to: '/admin/contact-messages', label: 'פניות צור קשר', icon: Mail },
   { to: '/admin/categories', label: 'קטגוריות', icon: FolderOpen },
   { to: '/admin/reviews', label: 'ביקורות', icon: Star },

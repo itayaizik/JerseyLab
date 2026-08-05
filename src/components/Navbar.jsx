@@ -257,7 +257,7 @@ export default function Navbar() {
                             { to: '/admin', label: 'דשבורד' },
                             { to: '/admin/add-shirt', label: 'הוסף מוצר' },
                             { to: '/admin/shirts', label: 'ערוך מוצרים' },
-                            { to: '/admin/requests', label: 'בקשות לקוחות' },
+                            { to: '/admin/requests', label: 'הזמנות' },
                             { to: '/admin/categories', label: 'קטגוריות' },
                             { to: '/admin/reviews', label: 'ביקורות' },
                             { to: '/admin/faq', label: 'שאלות ותשובות' },
@@ -374,7 +374,7 @@ export default function Navbar() {
                         <p className="text-[10px] text-[#E8622A] font-heading uppercase tracking-widest mb-2">ניהול</p>
                         <Link to="/admin" className="block py-2 pr-2 text-sm font-body text-white/70 hover:text-[#E8622A]">דשבורד</Link>
                         <Link to="/admin/shirts" className="block py-2 pr-2 text-sm font-body text-white/70 hover:text-[#E8622A]">ערוך מוצרים</Link>
-                        <Link to="/admin/requests" className="block py-2 pr-2 text-sm font-body text-white/70 hover:text-[#E8622A]">בקשות לקוחות</Link>
+                        <Link to="/admin/requests" className="block py-2 pr-2 text-sm font-body text-white/70 hover:text-[#E8622A]">הזמנות</Link>
                       </div>
                     </>
                   )}

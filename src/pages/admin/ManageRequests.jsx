@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Phone, ExternalLink, Plus, X, Package, Trash2 } from 'lucide-react';
+import { MessageCircle, Phone, ExternalLink, Plus, X, Package, Trash2, Copy, Check } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { buildSupplierLine } from '@/lib/supplierText';
 
 export default function ManageRequests() {
   const [requests, setRequests] = useState([]);
@@ -10,6 +11,7 @@ export default function ManageRequests() {
   const [statusFilter, setStatusFilter] = useState('');
   const [expandedId, setExpandedId] = useState(null);
   const [addItemState, setAddItemState] = useState({}); // { [requestId]: { shirtId, note, saving } }
+  const [copiedId, setCopiedId] = useState(null);
 
   useEffect(() => {
     async function load() {
@@ -35,6 +37,14 @@ export default function ManageRequests() {
     if (!window.confirm('למחוק את הבקשה הזו? הפעולה בלתי הפיכה.')) return;
     await base44.entities.InterestRequest.delete(id);
     setRequests(p => p.filter(r => r.id !== id));
+  };
+
+  const handleCopySupplierText = async (request) => {
+    const shirt = shirts.find(s => s.id === request.shirt_id);
+    const line = buildSupplierLine(request, shirt);
+    await navigator.clipboard.writeText(line);
+    setCopiedId(request.id);
+    setTimeout(() => setCopiedId(id => (id === request.id ? null : id)), 1500);
   };
 
   const handleMarkShirtSold = async (shirtId) => {
@@ -78,7 +88,7 @@ export default function ManageRequests() {
     <div>
       <h1 className="font-heading font-black text-2xl mb-6 text-turf flex items-center gap-2">
         <MessageCircle className="w-6 h-6" />
-        בקשות לקוחות
+        הזמנות
       </h1>
 
       <div className="flex gap-3 mb-6">
@@ -151,6 +161,13 @@ export default function ManageRequests() {
                   >
                     {isExpanded ? <X className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
                     {isExpanded ? 'ביטול' : 'הוסף פריט'}
+                  </button>
+                  <button
+                    onClick={() => handleCopySupplierText(r)}
+                    className="flex items-center gap-1 text-xs text-turf hover:text-chalk border border-turf/40 hover:border-turf px-2 py-1.5 transition-colors"
+                  >
+                    {copiedId === r.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                    {copiedId === r.id ? 'הועתק!' : 'טקסט לספקית'}
                   </button>
                   <button
                     onClick={() => handleDelete(r.id)}
