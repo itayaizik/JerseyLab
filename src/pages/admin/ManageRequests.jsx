@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Phone, ExternalLink, Plus, X, Package } from 'lucide-react';
+import { MessageCircle, Phone, ExternalLink, Plus, X, Package, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 export default function ManageRequests() {
@@ -29,6 +29,12 @@ export default function ManageRequests() {
     setRequests(p => p.map(r => r.id === id ? { ...r, status } : r));
 
 
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('למחוק את הבקשה הזו? הפעולה בלתי הפיכה.')) return;
+    await base44.entities.InterestRequest.delete(id);
+    setRequests(p => p.filter(r => r.id !== id));
   };
 
   const handleMarkShirtSold = async (shirtId) => {
@@ -145,6 +151,13 @@ export default function ManageRequests() {
                   >
                     {isExpanded ? <X className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
                     {isExpanded ? 'ביטול' : 'הוסף פריט'}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(r.id)}
+                    className="flex items-center gap-1 text-xs text-varnish hover:text-red-400 border border-white/10 hover:border-red-400/40 px-2 py-1.5 transition-colors"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    מחק
                   </button>
                 </div>
               </div>

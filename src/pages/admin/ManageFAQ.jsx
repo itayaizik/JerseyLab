@@ -35,6 +35,7 @@ export default function ManageFAQ() {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('למחוק את השאלה הזו? הפעולה בלתי הפיכה.')) return;
     await base44.entities.FAQ.delete(id);
     setFaqs(p => p.filter(f => f.id !== id));
   };

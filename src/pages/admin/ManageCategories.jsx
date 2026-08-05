@@ -25,6 +25,7 @@ export default function ManageCategories() {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('למחוק את הקטגוריה הזו? הפעולה בלתי הפיכה.')) return;
     await base44.entities.Category.delete(id);
     setCategories(p => p.filter(c => c.id !== id));
   };

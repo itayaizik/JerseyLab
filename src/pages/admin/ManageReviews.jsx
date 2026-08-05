@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Star, Check, X, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 export default function ManageReviews() {
   const [reviews, setReviews] = useState([]);
+  const [shirts, setShirts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('pending'); // 'pending' | 'approved' | 'all'
 
   useEffect(() => { load(); }, []);
 
   async function load() {
-    const data = await base44.entities.Review.list('-created_date', 200);
+    const [data, allShirts] = await Promise.all([
+      base44.entities.Review.list('-created_date', 200),
+      base44.entities.Shirt.list('-created_date', 500),
+    ]);
     setReviews(data);
+    setShirts(allShirts);
     setLoading(false);
   }
 
@@ -55,21 +61,31 @@ export default function ManageReviews() {
       </div>
 
       <div className="space-y-3">
-        {filtered.map(r => (
+        {filtered.map(r => {
+          const shirt = shirts.find(s => s.id === r.shirt_id);
+          return (
           <div key={r.id} className={`border bg-white/5 p-4 ${r.approved ? 'border-turf/30' : 'border-amber-500/40'}`}>
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className={`text-xs px-2 py-0.5 font-bold ${r.approved ? 'bg-turf text-pitch' : 'bg-amber-500/20 text-amber-400'}`}>
                     {r.approved ? 'מאושר' : 'ממתין לאישור'}
                   </span>
-                  <span className="text-sm font-bold text-chalk">{r.reviewer_name}</span>
+                  <span className="text-sm font-bold text-chalk">{r.is_anonymous ? 'אנונימי' : r.reviewer_name}</span>
                   <div className="flex gap-0.5">
                     {[1,2,3,4,5].map(s => <Star key={s} className={`w-3 h-3 ${s <= r.rating ? 'fill-amber-400 text-amber-400' : 'text-varnish'}`} />)}
                   </div>
                   <span className="text-xs text-varnish font-mono mr-auto">{new Date(r.created_date).toLocaleDateString('he-IL')}</span>
                 </div>
+                <p className="text-xs text-varnish mb-1">
+                  חולצה: {shirt ? <Link to={`/shirt/${shirt.id}`} className="text-turf hover:underline">{shirt.name}</Link> : (r.shirt_id || 'לא ידוע')}
+                </p>
                 <p className="text-sm text-varnish">{r.comment}</p>
+                {r.image_url && (
+                  <a href={r.image_url} target="_blank" rel="noopener noreferrer" className="inline-block mt-2">
+                    <img src={r.image_url} alt="" className="w-16 h-16 object-cover border border-white/10 hover:opacity-80 transition-opacity" />
+                  </a>
+                )}
               </div>
               <div className="flex gap-1 flex-shrink-0">
                 {!r.approved ? (
@@ -90,7 +106,8 @@ export default function ManageReviews() {
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {filtered.length === 0 && (

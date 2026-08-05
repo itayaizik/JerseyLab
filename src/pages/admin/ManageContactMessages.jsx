@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail } from 'lucide-react';
+import { Mail, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 export default function ManageContactMessages() {
@@ -23,6 +23,12 @@ export default function ManageContactMessages() {
     const newStatus = currentStatus === 'new' ? 'טופל' : 'new';
     await base44.entities.ContactMessage.update(id, { status: newStatus });
     loadMessages();
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('למחוק את הפנייה הזו? הפעולה בלתי הפיכה.')) return;
+    await base44.entities.ContactMessage.delete(id);
+    setMessages(p => p.filter(m => m.id !== id));
   };
 
   const formatDate = (dateStr) => {
@@ -103,6 +109,13 @@ export default function ManageContactMessages() {
                     className="px-2 py-1 text-xs bg-white/10 hover:bg-white/20 transition-colors border border-white/10 text-chalk"
                   >
                     {msg.status === 'new' ? 'סמן כטופלה' : 'סמן כחדשה'}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(msg.id)}
+                    aria-label="מחק פנייה"
+                    className="p-1.5 bg-white/10 hover:bg-red-500/20 hover:text-red-400 transition-colors border border-white/10 text-chalk"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
