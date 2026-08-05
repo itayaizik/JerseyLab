@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Check, Loader2, ShoppingCart, Sparkles, ChevronRight, ChevronLeft, Send } from 'lucide-react';
+import { X, Check, Loader2, ShoppingCart, Sparkles, ChevronRight, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
@@ -10,7 +10,7 @@ import ShirtTypeChoice from '@/components/configurator/ShirtTypeChoice';
 import PersonalizationChoice from '@/components/configurator/PersonalizationChoice';
 import NameNumberInput from '@/components/configurator/NameNumberInput';
 import OrderSummary from '@/components/configurator/OrderSummary';
-import { getShirtTypeTip, getPersonalizationTip, calcTotal } from '@/components/configurator/recommendations';
+import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurator/recommendations';
 import { friendlyError } from '@/lib/errorMessages';
 
 // Cart stored in sessionStorage so it persists across page navigations in same session
@@ -62,6 +62,10 @@ export function CartModal({ open, onClose, user }) {
     setErrors({});
     setCartError('');
     try {
+      // Every item from this checkout shares one order_id so the admin
+      // panel can show them as a single grouped order instead of N
+      // disconnected rows, even though each item is still its own row.
+      const orderId = crypto.randomUUID();
       for (const item of cart) {
         const extras = [];
         if (item.playerVersion) extras.push('גרסת שחקן (+₪20)');
@@ -72,7 +76,7 @@ export function CartModal({ open, onClose, user }) {
           full_name: contactForm.full_name.trim(), phone: contactForm.phone.trim(),
           wanted_size: item.size,
           message: `סל קניות${extras.length ? ' | ' + extras.join(' | ') : ''} | מחיר סופי: ₪${itemTotal}`,
-          status: 'new', user_id: user?.id || '',
+          status: 'new', user_id: user?.id || '', order_id: orderId,
         });
       }
       base44.analytics.track({ eventName: 'cart_submitted', properties: { item_count: cart.length, total } });
@@ -191,7 +195,7 @@ export function CartModal({ open, onClose, user }) {
   );
 }
 
-export default function InterestModal({ shirt, open, onClose, user, initialSize }) {
+export default function InterestModal({ shirt, open, onClose, user, initialSize, onGoToCart }) {
   const [step, setStep] = useState('size');
   const [selectedSize, setSelectedSize] = useState('');
 
@@ -202,10 +206,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize 
   const [addName, setAddName] = useState('');
   const [customName, setCustomName] = useState('');
   const [customNumber, setCustomNumber] = useState('');
-  const [contact, setContact] = useState({ full_name: user?.full_name || '', phone: '', message: '' });
-  const [errors, setErrors] = useState({});
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [added, setAdded] = useState(false);
 
   const basePrice = (() => {
     if (!shirt) return 0;
@@ -214,16 +215,13 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize 
     return shirt.sale_price || shirt.price;
   })();
 
-  const total = calcTotal(basePrice, shirtType, addName);
-
-  const flow = ['size', 'shirtType', 'addName', ...(addName === 'yes' ? ['nameDetails'] : []), 'contact', 'summary'];
+  const flow = ['size', 'shirtType', 'addName', ...(addName === 'yes' ? ['nameDetails'] : []), 'summary'];
   const currentIndex = flow.indexOf(step);
-  const stepLabels = ['מידה', 'סוג חולצה', 'הדפסה', ...(addName === 'yes' ? ['שם ומספר'] : []), 'יצירת קשר', 'סיכום'];
+  const stepLabels = ['מידה', 'סוג חולצה', 'הדפסה', ...(addName === 'yes' ? ['שם ומספר'] : []), 'סיכום'];
 
   const reset = () => {
     setStep('size'); setSelectedSize(''); setShirtType(''); setAddName(''); setCustomName(''); setCustomNumber('');
-    setContact({ full_name: user?.full_name || '', phone: '', message: '' });
-    setErrors({}); setSubmitted(false);
+    setErrors({}); setAdded(false);
   };
   const handleClose = () => { reset(); onClose(); };
 
@@ -232,16 +230,13 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize 
     if (val !== 'yes') { setCustomName(''); setCustomNumber(''); }
   };
 
+  const [errors, setErrors] = useState({});
   const validateStep = (s) => {
     const errs = {};
     if (s === 'size' && !selectedSize) errs.size = 'יש לבחור מידה';
     if (s === 'shirtType' && !shirtType) errs.shirtType = 'יש לבחור סוג חולצה';
     if (s === 'addName' && !addName) errs.addName = 'יש לבחור';
     if (s === 'nameDetails' && (!customName.trim() || !customNumber.trim())) errs.nameDetails = 'יש למלא שם ומספר';
-    if (s === 'contact') {
-      if (!contact.full_name.trim()) errs.full_name = 'שדה חובה';
-      if (!contact.phone.trim()) errs.phone = 'שדה חובה';
-    }
     return errs;
   };
 
@@ -250,32 +245,26 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize 
   const goNext = () => { const errs = validateStep(step); if (Object.keys(errs).length) { setErrors(errs); return; } setErrors({}); const idx = flow.indexOf(step); setStep(flow[idx + 1]); };
   const goBack = () => { setErrors({}); const idx = flow.indexOf(step); setStep(flow[idx - 1]); };
 
-  const [submitError, setSubmitError] = useState('');
-  const handleSubmit = async () => {
-    setSubmitting(true);
-    setSubmitError('');
-    const extras = [];
-    if (shirtType === 'player') extras.push('גרסת שחקן (+₪20)');
-    if (addName === 'yes') extras.push(`הדפסת שם: ${customName} ${customNumber} (+₪15)`);
-    try {
-      await base44.entities.InterestRequest.create({
-        shirt_id: shirt.id, shirt_name: shirt.name,
-        full_name: contact.full_name.trim(), phone: contact.phone.trim(),
-        wanted_size: selectedSize,
-        message: [contact.message, ...extras].filter(Boolean).join(' | ') + ` | מחיר: ₪${total}`,
-        status: 'new', user_id: user?.id || '',
-      });
-      base44.analytics.track({ eventName: 'interest_submitted', properties: { shirt_id: shirt.id, size: selectedSize, total } });
-      base44.entities.Shirt.update(shirt.id, { interest_count: (shirt.interest_count || 0) + 1 }).catch(() => {});
-      setSubmitted(true);
-    } catch (err) {
-      setSubmitError(friendlyError(err, 'שליחת הבקשה נכשלה. נסה שוב בעוד רגע.'));
-    } finally {
-      setSubmitting(false);
-    }
+  const handleAddToCart = () => {
+    const cart = getCart();
+    cart.push({
+      shirtId: shirt.id, shirtName: shirt.name, image: shirt.main_image,
+      size: selectedSize, basePrice,
+      addName: addName === 'yes',
+      customName: addName === 'yes' ? `${customName} ${customNumber}`.trim() : '',
+      playerVersion: shirtType === 'player',
+      localStockSizes: shirt.local_stock_sizes || {},
+    });
+    setCart(cart);
+    base44.analytics.track({ eventName: 'interest_added_to_cart', properties: { shirt_id: shirt.id, size: selectedSize } });
+    base44.entities.Shirt.update(shirt.id, { interest_count: (shirt.interest_count || 0) + 1 }).catch(() => {});
+    setAdded(true);
   };
 
-  if (submitted) {
+  const handleContinueShopping = () => { handleClose(); };
+  const handleGoToCart = () => { reset(); onClose(); onGoToCart?.(); };
+
+  if (added) {
     return (
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent className="max-w-md text-right">
@@ -283,11 +272,16 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize 
             <div className="w-16 h-16 bg-[#E8622A] flex items-center justify-center mx-auto mb-4" style={{ border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #1B2A4A' }}>
               <Check className="w-8 h-8 text-white" />
             </div>
-            <h3 className="font-heading font-bold text-xl mb-2 text-[#1B2A4A] uppercase">הבקשה נשלחה!</h3>
-            <p className="text-gray-500 text-sm font-body">נחזור אליך בהקדם האפשרי עם כל הפרטים.</p>
-            <button onClick={handleClose} className="mt-6 bg-[#1B2A4A] text-white px-6 py-2.5 text-sm font-bold font-heading uppercase hover:bg-[#2a3f6b] transition-colors">
-              סגור
-            </button>
+            <h3 className="font-heading font-bold text-xl mb-2 text-[#1B2A4A] uppercase">נוסף לסל!</h3>
+            <p className="text-gray-500 text-sm font-body mb-6">רוצה להמשיך לקנות עוד, או לעבור לסל ולסיים את ההזמנה?</p>
+            <div className="flex gap-2">
+              <button onClick={handleContinueShopping} className="flex-1 border-2 border-[#1B2A4A] text-[#1B2A4A] px-4 py-2.5 text-sm font-bold font-heading uppercase hover:bg-[#F2ECD9] transition-colors">
+                המשך לקנות
+              </button>
+              <button onClick={handleGoToCart} className="flex-1 bg-[#1B2A4A] text-white px-4 py-2.5 text-sm font-bold font-heading uppercase hover:bg-[#2a3f6b] transition-colors">
+                עבור לסל
+              </button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -349,49 +343,16 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize 
               {errors.nameDetails && <p className="text-red-500 text-xs mt-2">{errors.nameDetails}</p>}
             </motion.div>
           )}
-          {step === 'contact' && (
-            <motion.div key="contact" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">איך ניצור איתך קשר?</h3>
-              <p className="text-sm text-gray-500 font-body mb-4">נחזור אליך עם פרטי החולצה והזמינות</p>
-              <div className="space-y-3">
-                <div>
-                  <label htmlFor="interest-name" className="text-sm font-medium block mb-1 font-body">שם מלא *</label>
-                  <input id="interest-name" value={contact.full_name} onChange={e => { setContact(p => ({ ...p, full_name: e.target.value })); setErrors(p => ({ ...p, full_name: undefined })); }} maxLength={100} autoComplete="name"
-                    className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.full_name ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
-                  {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name}</p>}
-                </div>
-                <div>
-                  <label htmlFor="interest-phone" className="text-sm font-medium block mb-1 font-body">טלפון *</label>
-                  <input id="interest-phone" value={contact.phone} onChange={e => { setContact(p => ({ ...p, phone: e.target.value })); setErrors(p => ({ ...p, phone: undefined })); }} type="tel" dir="ltr" maxLength={20} autoComplete="tel"
-                    className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.phone ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
-                  {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
-                </div>
-                <div>
-                  <label htmlFor="interest-message" className="text-sm font-medium block mb-1 font-body">משהו מיוחד שאתה מחפש? (אופציונלי)</label>
-                  <textarea id="interest-message" value={contact.message} onChange={e => setContact(p => ({ ...p, message: e.target.value }))} rows={2} maxLength={1000}
-                    className="w-full border-2 border-[#1B2A4A] px-3 py-2.5 text-sm bg-white focus:outline-none resize-none font-body" />
-                </div>
-              </div>
-            </motion.div>
-          )}
           {step === 'summary' && (
             <motion.div key="summary" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
               <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">הכול מוכן — נשאר רק לאשר</h3>
-              <p className="text-sm text-gray-500 font-body mb-4">הנה הבקשה שלך:</p>
+              <p className="text-sm text-gray-500 font-body mb-4">הנה הבחירה שלך:</p>
               <OrderSummary shirt={shirt} size={selectedSize} shirtType={shirtType} addName={addName}
                 customName={customName} customNumber={customNumber} basePrice={basePrice} />
-              <div className="bg-white border-2 border-[#1B2A4A]/30 p-3 mt-3 space-y-1 text-sm font-body">
-                <div className="flex justify-between"><span className="text-gray-500">שם</span><span className="font-bold text-[#1B2A4A]">{contact.full_name}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">טלפון</span><span className="font-bold text-[#1B2A4A] font-mono" dir="ltr">{contact.phone}</span></div>
-                {contact.message && <div className="flex justify-between gap-2"><span className="text-gray-500 flex-shrink-0">הערה</span><span className="text-[#1B2A4A] text-left">{contact.message}</span></div>}
-              </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {submitError && (
-          <div className="p-2.5 bg-red-50 border-2 border-red-300 text-red-700 text-xs font-body mb-3">{submitError}</div>
-        )}
         <div className="flex gap-2 mt-5">
           {step !== 'size' && (
             <button onClick={goBack} className="flex items-center gap-1 px-4 py-3 border-2 border-[#1B2A4A] text-[#1B2A4A] text-sm font-heading font-bold uppercase hover:bg-[#F2ECD9] transition-colors">
@@ -405,11 +366,10 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize 
             </button>
           )}
           {step === 'summary' && (
-            <button onClick={handleSubmit} disabled={submitting}
-              className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#E8622A] text-white text-sm font-heading font-bold uppercase hover:bg-[#D0551F] transition-colors disabled:opacity-50"
+            <button onClick={handleAddToCart}
+              className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#E8622A] text-white text-sm font-heading font-bold uppercase hover:bg-[#D0551F] transition-colors"
               style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
-              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-              {submitting ? 'שולח...' : 'שליחת בקשה'}
+              <ShoppingCart className="w-4 h-4" /> הוסף לסל
             </button>
           )}
         </div>

@@ -183,6 +183,12 @@ drop policy if exists "admin delete shirt images" on storage.objects;
 create policy "admin delete shirt images" on storage.objects for delete
   using (bucket_id = 'shirt-images' and public.is_admin());
 
+-- ── interest_requests_raw: group multi-item cart checkouts ──
+-- Every item from one cart checkout now shares an order_id (generated
+-- client-side per checkout) so the admin panel can display them as one
+-- order instead of N disconnected rows.
+alter table interest_requests_raw add column if not exists order_id text;
+
 -- ── reviews_raw: optional photo + anonymous display name ────
 alter table reviews_raw add column if not exists image_url text;
 alter table reviews_raw add column if not exists is_anonymous boolean not null default false;

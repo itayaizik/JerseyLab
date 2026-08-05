@@ -436,7 +436,7 @@ export default function ShirtDetail() {
 
       {/* Interest Modal */}
       {shirt &&
-      <InterestModal shirt={shirt} open={interestOpen} onClose={() => setInterestOpen(false)} user={user} initialSize={selectedSize} />
+      <InterestModal shirt={shirt} open={interestOpen} onClose={() => setInterestOpen(false)} user={user} initialSize={selectedSize} onGoToCart={() => setCartOpen(true)} />
       }
       <CartModal open={cartOpen} onClose={() => setCartOpen(false)} user={user} />
       <ShippingInfoModal open={shippingInfoOpen} onClose={() => setShippingInfoOpen(false)} />
