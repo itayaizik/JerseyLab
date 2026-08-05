@@ -46,10 +46,15 @@ export default function WishlistPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="font-heading font-black text-2xl mb-6 flex items-center gap-2" style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>
-        <Heart className="w-6 h-6 text-redcard fill-redcard" />
-        המועדפים שלי
-      </h1>
+      <div className="mb-6">
+        <h1 className="font-heading font-black text-2xl flex items-center gap-2" style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>
+          <Heart className="w-6 h-6 text-redcard fill-redcard" />
+          המועדפים שלי
+        </h1>
+        {!loading && !error && shirts.length > 0 && (
+          <p className="text-sm text-[#1B2A4A]/50 mt-1 font-body">{shirts.length} חולצות שמורות</p>
+        )}
+      </div>
       {error ? (
         <div className="text-center py-20 border-2 border-dashed border-[#1B2A4A]/20">
           <p className="font-heading font-bold text-xl text-[#1B2A4A]/40 mb-2 uppercase">לא הצלחנו לטעון את המועדפים</p>

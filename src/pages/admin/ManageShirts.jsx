@@ -17,6 +17,7 @@ function shirtToDraft(s) {
       tags: s.tags || [], status: s.status || 'available',
       featured: !!s.featured, is_new: !!s.is_new, is_rare: !!s.is_rare,
       is_retro: !!s.is_retro, best_seller: !!s.best_seller, limited_stock: !!s.limited_stock,
+      local_stock_player_version: !!s.local_stock_player_version, local_stock_custom_name: s.local_stock_custom_name || '',
     },
     sizes: s.sizes || {},
     localStockSizes: s.local_stock_sizes || {},

@@ -15,6 +15,7 @@ export default function AddShirt() {
     price: '', sale_price: '',
     condition: 'new', description: '', tags: [],
     status: 'available', featured: false, is_new: true, is_rare: false, is_retro: false, best_seller: false, limited_stock: false,
+    local_stock_player_version: false, local_stock_custom_name: '',
   });
   const [sizes, setSizes] = useState({});
   const [localStockSizes, setLocalStockSizes] = useState({});
@@ -308,6 +309,18 @@ export default function AddShirt() {
                   className="w-full bg-white/5 border border-white/10 px-2 py-1.5 text-sm text-chalk focus:border-turf focus:outline-none" />
               </div>
             ))}
+          </div>
+
+          <div className="pt-3 border-t border-white/10">
+            <p className="text-xs text-varnish mb-3">מה בדיוק מודפס על הפריט הספציפי שבמלאי? זה יוצג ללקוח כאפשרות "קנה בדיוק את זו" לעומת הזמנה בהתאמה אישית.</p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <label className="flex items-center gap-2 text-sm text-chalk cursor-pointer flex-shrink-0">
+                <input type="checkbox" checked={form.local_stock_player_version} onChange={e => handleChange('local_stock_player_version', e.target.checked)} className="accent-turf" />
+                גרסת שחקן
+              </label>
+              <input value={form.local_stock_custom_name} onChange={e => handleChange('local_stock_custom_name', e.target.value)} placeholder="שם ומספר על הגב (אם יש) — למשל Ronaldo 7"
+                className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
+            </div>
           </div>
         </div>
 

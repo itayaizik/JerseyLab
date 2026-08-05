@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Heart, MessageCircle, LogOut, Package } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import ProductImage from '@/components/ui/ProductImage';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [requests, setRequests] = useState([]);
+  const [shirtsById, setShirtsById] = useState({});
   const [wishlistCount, setWishlistCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -23,6 +25,11 @@ export default function Profile() {
         ]);
         setRequests(reqs);
         setWishlistCount(wl.length);
+        const shirtIds = [...new Set(reqs.map(r => r.shirt_id).filter(Boolean))];
+        if (shirtIds.length) {
+          const shirts = await Promise.all(shirtIds.map(id => base44.entities.Shirt.get(id).catch(() => null)));
+          setShirtsById(Object.fromEntries(shirts.filter(Boolean).map(s => [s.id, s])));
+        }
       } catch (err) {
         if (!navigator.onLine) { setError(true); }
         else { navigate('/login'); }
@@ -31,6 +38,18 @@ export default function Profile() {
     }
     load();
   }, []);
+
+  // Items from the same cart checkout share an order_id — group them so a
+  // multi-shirt order shows as one card instead of N disconnected ones.
+  const requestGroups = useMemo(() => {
+    const map = new Map();
+    for (const r of requests) {
+      const key = r.order_id || r.id;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(r);
+    }
+    return Array.from(map.values());
+  }, [requests]);
 
   const handleLogout = async () => {
     await base44.auth.logout('/');
@@ -148,70 +167,75 @@ export default function Profile() {
       <div className="max-w-5xl mx-auto px-6 pb-12" id="requests">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-heading font-black text-2xl text-[#1B2A4A] uppercase tracking-wide">הבקשות שלי</h2>
-          {requests.length > 0 && (
-            <span className="text-xs font-heading text-varnish uppercase">סה"כ {requests.length}</span>
+          {requestGroups.length > 0 && (
+            <span className="text-xs font-heading text-varnish uppercase">סה"כ {requestGroups.length}</span>
           )}
         </div>
 
-        {requests.length > 0 ? (
+        {requestGroups.length > 0 ? (
           <div className="space-y-4">
-            {requests.map(r => (
-              <div 
-                key={r.id} 
+            {requestGroups.map(group => {
+              const first = group[0];
+              return (
+              <div
+                key={first.order_id || first.id}
                 className="bg-white border-2 border-[#1B2A4A] overflow-hidden hover:border-turf hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 group"
                 style={{ boxShadow: '3px 3px 0 #1B2A4A' }}
               >
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-4 mb-3">
-                    <div className="flex-1">
-                      <Link 
-                        to={`/shirt/${r.shirt_id}`} 
-                        className="font-heading font-black text-base text-[#1B2A4A] hover:text-turf transition-colors uppercase line-clamp-2"
-                      >
-                        {r.shirt_name || 'חולצה'}
-                      </Link>
-                    </div>
-                    <span className={`${statusColors[r.status] || 'bg-gray-200'} text-white text-xs px-3 py-1.5 font-heading font-bold uppercase tracking-wide flex-shrink-0 rounded`}>
-                      {statusLabels[r.status] || r.status}
+                    <p className="font-body text-xs text-varnish">{new Date(first.created_date).toLocaleDateString('he-IL')}</p>
+                    <span className={`${statusColors[first.status] || 'bg-gray-200'} text-white text-xs px-3 py-1.5 font-heading font-bold uppercase tracking-wide flex-shrink-0 rounded`}>
+                      {statusLabels[first.status] || first.status}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3 pb-3 border-b border-gray-200">
-                    {r.wanted_size && (
-                      <div>
-                        <p className="text-varnish text-xs uppercase font-heading mb-0.5">מידה</p>
-                        <p className="font-mono font-bold text-sm text-[#1B2A4A]">{r.wanted_size}</p>
-                      </div>
+                  <div className="space-y-3">
+                    {group.map(r => {
+                      const shirt = shirtsById[r.shirt_id];
+                      return (
+                        <div key={r.id} className="flex gap-3 items-start pb-3 border-b border-gray-200 last:border-b-0 last:pb-0">
+                          <div className="w-16 h-16 flex-shrink-0 bg-[#F2ECD9] border-2 border-[#1B2A4A] relative overflow-hidden">
+                            <ProductImage src={shirt?.main_image} alt="" className="w-full h-full object-cover" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <Link
+                              to={`/shirt/${r.shirt_id}`}
+                              className="font-heading font-black text-sm text-[#1B2A4A] hover:text-turf transition-colors uppercase line-clamp-2"
+                            >
+                              {r.shirt_name || 'חולצה'}
+                            </Link>
+                            <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1 text-xs font-body text-varnish">
+                              {r.wanted_size && <span>מידה: <strong className="text-[#1B2A4A] font-mono">{r.wanted_size}</strong></span>}
+                              {r.message?.includes('גרסת שחקן') && <span className="text-[#E8622A] font-bold">גרסת שחקן</span>}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 mt-3 pt-3 border-t border-gray-200 text-xs">
+                    {first.phone && (
+                      <span className="text-varnish">טלפון: <span className="font-mono font-bold text-[#1B2A4A]" dir="ltr">{first.phone}</span></span>
                     )}
-                    {r.phone && (
-                      <div>
-                        <p className="text-varnish text-xs uppercase font-heading mb-0.5">טלפון</p>
-                        <p className="font-mono font-bold text-sm text-[#1B2A4A]" dir="ltr">{r.phone}</p>
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-varnish text-xs uppercase font-heading mb-0.5">תאריך</p>
-                      <p className="font-body text-sm text-[#1B2A4A]">{new Date(r.created_date).toLocaleDateString('he-IL')}</p>
-                    </div>
-                    {r.whatsapp && (
-                      <div>
-                        <p className="text-varnish text-xs uppercase font-heading mb-0.5">WhatsApp</p>
-                        <a href={`https://wa.me/${r.whatsapp}`} target="_blank" rel="noopener noreferrer" className="text-turf hover:underline text-sm font-bold">
-                          ✓
-                        </a>
-                      </div>
+                    {first.whatsapp && (
+                      <a href={`https://wa.me/${first.whatsapp}`} target="_blank" rel="noopener noreferrer" className="text-turf hover:underline font-bold">
+                        WhatsApp ✓
+                      </a>
                     )}
                   </div>
 
-                  {r.message && (
-                    <div className="bg-[#F2ECD9] border border-[#1B2A4A]/20 p-3 mb-2">
+                  {first.message && !first.message.includes('סל קניות') && (
+                    <div className="bg-[#F2ECD9] border border-[#1B2A4A]/20 p-3 mt-2">
                       <p className="text-varnish text-xs uppercase font-heading mb-1">הערה</p>
-                      <p className="text-sm text-[#1B2A4A] font-body">{r.message}</p>
+                      <p className="text-sm text-[#1B2A4A] font-body">{first.message}</p>
                     </div>
                   )}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="bg-white border-2 border-dashed border-[#1B2A4A]/30 rounded-lg p-12 text-center">

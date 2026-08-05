@@ -7,11 +7,13 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import StepIndicator from '@/components/configurator/StepIndicator';
 import SizeSelector from '@/components/configurator/SizeSelector';
 import ShirtTypeChoice from '@/components/configurator/ShirtTypeChoice';
+import ExactOrCustomChoice from '@/components/configurator/ExactOrCustomChoice';
 import PersonalizationChoice from '@/components/configurator/PersonalizationChoice';
 import NameNumberInput from '@/components/configurator/NameNumberInput';
 import OrderSummary from '@/components/configurator/OrderSummary';
 import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurator/recommendations';
 import { friendlyError } from '@/lib/errorMessages';
+import ProductImage from '@/components/ui/ProductImage';
 
 // Cart stored in sessionStorage so it persists across page navigations in same session
 function getCart() {
@@ -118,7 +120,7 @@ export function CartModal({ open, onClose, user }) {
         </DialogTitle>
         <div className="font-heading text-lg uppercase text-[#1B2A4A] flex items-center gap-2 mb-4">
           <ShoppingCart className="w-5 h-5 text-[#E8622A]" />
-          הסל שלי ({cart.length} פריטים)
+          הסל שלי {cart.length > 0 && `(${cart.length} פריטים)`}
         </div>
 
         {cart.length === 0 ? (
@@ -136,13 +138,15 @@ export function CartModal({ open, onClose, user }) {
               {cart.map((item, idx) => {
                 const itemTotal = item.basePrice + (item.addName ? 15 : 0) + (item.playerVersion ? 20 : 0);
                 return (
-                  <div key={idx} className="bg-[#F2ECD9] p-3 flex gap-3 items-start" style={{ border: '2px solid #1B2A4A' }}>
-                    {item.image && <img src={item.image} alt="" className="w-14 h-14 object-cover flex-shrink-0 border border-[#1B2A4A]" />}
+                  <div key={idx} className="bg-[#F2ECD9] p-3 flex gap-3 items-start border-2 border-[#1B2A4A]" style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
+                    <div className="w-16 h-16 flex-shrink-0 bg-white border-2 border-[#1B2A4A] relative overflow-hidden">
+                      <ProductImage src={item.image} alt="" className="w-full h-full object-cover" />
+                    </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-heading font-bold text-sm text-[#1B2A4A] uppercase truncate">{item.shirtName}</p>
                       <p className="text-xs text-gray-500 font-body">מידה: {item.size}</p>
                       {item.playerVersion && <p className="text-xs text-[#1B2A4A] font-bold font-body">גרסת שחקן (+₪20)</p>}
-                      {item.localStockSizes && Number(item.localStockSizes[item.size]) > 0 ? (
+                      {item.isExactStockItem ? (
                         <p className="text-xs text-green-700 font-bold font-body">מלאי בארץ — עד שבוע / איסוף מקריית אונו</p>
                       ) : (
                         <p className="text-xs text-[#E8622A] font-bold font-body">משלוח מהיר — עד 3 שבועות</p>
@@ -150,8 +154,9 @@ export function CartModal({ open, onClose, user }) {
                       {item.addName && <p className="text-xs text-[#E8622A] font-body">הדפסת שם: {item.customName} (+₪15)</p>}
                       <p className="font-mono font-bold text-[#1B2A4A] text-sm mt-1">₪{itemTotal}</p>
                     </div>
-                    <button type="button" onClick={() => removeItem(idx)} aria-label="הסר פריט מהסל" className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0">
-                      <X className="w-4 h-4" />
+                    <button type="button" onClick={() => removeItem(idx)} aria-label="הסר פריט מהסל"
+                      className="w-7 h-7 flex-shrink-0 flex items-center justify-center bg-white border-2 border-[#1B2A4A] text-[#1B2A4A] hover:bg-red-500 hover:border-red-500 hover:text-white transition-colors">
+                      <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 );
@@ -206,6 +211,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
   const [addName, setAddName] = useState('');
   const [customName, setCustomName] = useState('');
   const [customNumber, setCustomNumber] = useState('');
+  const [buyMode, setBuyMode] = useState(''); // '' | 'exact' | 'custom'
   const [added, setAdded] = useState(false);
 
   const basePrice = (() => {
@@ -215,13 +221,29 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
     return shirt.sale_price || shirt.price;
   })();
 
-  const flow = ['size', 'shirtType', 'addName', ...(addName === 'yes' ? ['nameDetails'] : []), 'summary'];
+  // If the selected size has local stock, offer "buy this exact item"
+  // (predetermined customization, fast shipping) vs a made-to-order custom
+  // shirt — skips the personalization steps entirely when buying exact.
+  const hasLocalStockForSize = !!(selectedSize && shirt?.local_stock_sizes && Number(shirt.local_stock_sizes[selectedSize]) > 0);
+  const buyingExact = hasLocalStockForSize && buyMode === 'exact';
+
+  const flow = [
+    'size',
+    ...(hasLocalStockForSize ? ['exactOrCustom'] : []),
+    ...(buyingExact ? [] : ['shirtType', 'addName', ...(addName === 'yes' ? ['nameDetails'] : [])]),
+    'summary',
+  ];
   const currentIndex = flow.indexOf(step);
-  const stepLabels = ['מידה', 'סוג חולצה', 'הדפסה', ...(addName === 'yes' ? ['שם ומספר'] : []), 'סיכום'];
+  const stepLabels = [
+    'מידה',
+    ...(hasLocalStockForSize ? ['בחירה'] : []),
+    ...(buyingExact ? [] : ['סוג חולצה', 'הדפסה', ...(addName === 'yes' ? ['שם ומספר'] : [])]),
+    'סיכום',
+  ];
 
   const reset = () => {
     setStep('size'); setSelectedSize(''); setShirtType(''); setAddName(''); setCustomName(''); setCustomNumber('');
-    setErrors({}); setAdded(false);
+    setBuyMode(''); setErrors({}); setAdded(false);
   };
   const handleClose = () => { reset(); onClose(); };
 
@@ -234,6 +256,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
   const validateStep = (s) => {
     const errs = {};
     if (s === 'size' && !selectedSize) errs.size = 'יש לבחור מידה';
+    if (s === 'exactOrCustom' && !buyMode) errs.buyMode = 'יש לבחור';
     if (s === 'shirtType' && !shirtType) errs.shirtType = 'יש לבחור סוג חולצה';
     if (s === 'addName' && !addName) errs.addName = 'יש לבחור';
     if (s === 'nameDetails' && (!customName.trim() || !customNumber.trim())) errs.nameDetails = 'יש למלא שם ומספר';
@@ -250,13 +273,14 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
     cart.push({
       shirtId: shirt.id, shirtName: shirt.name, image: shirt.main_image,
       size: selectedSize, basePrice,
-      addName: addName === 'yes',
-      customName: addName === 'yes' ? `${customName} ${customNumber}`.trim() : '',
-      playerVersion: shirtType === 'player',
+      addName: buyingExact ? !!shirt.local_stock_custom_name : addName === 'yes',
+      customName: buyingExact ? (shirt.local_stock_custom_name || '') : (addName === 'yes' ? `${customName} ${customNumber}`.trim() : ''),
+      playerVersion: buyingExact ? !!shirt.local_stock_player_version : shirtType === 'player',
       localStockSizes: shirt.local_stock_sizes || {},
+      isExactStockItem: buyingExact,
     });
     setCart(cart);
-    base44.analytics.track({ eventName: 'interest_added_to_cart', properties: { shirt_id: shirt.id, size: selectedSize } });
+    base44.analytics.track({ eventName: 'interest_added_to_cart', properties: { shirt_id: shirt.id, size: selectedSize, buy_mode: hasLocalStockForSize ? buyMode : null } });
     base44.entities.Shirt.update(shirt.id, { interest_count: (shirt.interest_count || 0) + 1 }).catch(() => {});
     setAdded(true);
   };
@@ -308,8 +332,16 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
             <motion.div key="size" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
               <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">בוא נמצא את החולצה בשבילך</h3>
               <p className="text-sm text-gray-500 font-body mb-4">איזו מידה אתה מחפש?</p>
-              <SizeSelector shirt={shirt} value={selectedSize} onChange={setSelectedSize} />
+              <SizeSelector shirt={shirt} value={selectedSize} onChange={(s) => { setSelectedSize(s); setBuyMode(''); }} />
               {errors.size && <p className="text-red-500 text-xs mt-2">{errors.size}</p>}
+            </motion.div>
+          )}
+          {step === 'exactOrCustom' && (
+            <motion.div key="exactOrCustom" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
+              <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">יש לנו את זו במלאי בארץ!</h3>
+              <p className="text-sm text-gray-500 font-body mb-4">רוצה לקנות בדיוק את הפריט שקיים, או להזמין גרסה משלך?</p>
+              <ExactOrCustomChoice shirt={shirt} value={buyMode} onChange={setBuyMode} />
+              {errors.buyMode && <p className="text-red-500 text-xs mt-2">{errors.buyMode}</p>}
             </motion.div>
           )}
           {step === 'shirtType' && (
@@ -347,8 +379,15 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
             <motion.div key="summary" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
               <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">הכול מוכן — נשאר רק לאשר</h3>
               <p className="text-sm text-gray-500 font-body mb-4">הנה הבחירה שלך:</p>
-              <OrderSummary shirt={shirt} size={selectedSize} shirtType={shirtType} addName={addName}
-                customName={customName} customNumber={customNumber} basePrice={basePrice} />
+              {buyingExact ? (
+                <OrderSummary shirt={shirt} size={selectedSize}
+                  shirtType={shirt.local_stock_player_version ? 'player' : 'regular'}
+                  addName={shirt.local_stock_custom_name ? 'yes' : 'no'}
+                  customName={shirt.local_stock_custom_name || ''} customNumber="" basePrice={basePrice} />
+              ) : (
+                <OrderSummary shirt={shirt} size={selectedSize} shirtType={shirtType} addName={addName}
+                  customName={customName} customNumber={customNumber} basePrice={basePrice} />
+              )}
             </motion.div>
           )}
         </AnimatePresence>

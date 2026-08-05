@@ -33,6 +33,12 @@ as $$
   select coalesce(auth.jwt() ->> 'email', '') in ('itayaizik8@gmail.com', 'itayaizik3@gmail.com');
 $$;
 
+-- ── shirts_raw: what's actually on the local-stock physical item ────
+-- Lets a customer choose "buy this exact one" (fast, predetermined
+-- customization) vs a made-to-order custom shirt.
+alter table shirts_raw add column if not exists local_stock_player_version boolean not null default false;
+alter table shirts_raw add column if not exists local_stock_custom_name text;
+
 -- ── shirts_raw ──────────────────────────────────────────────
 alter table shirts_raw enable row level security;
 drop policy if exists "public read shirts" on shirts_raw;
