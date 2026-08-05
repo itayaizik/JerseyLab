@@ -34,6 +34,7 @@ export default function ShirtReviews({ shirtId, user }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
+  const [lightboxImage, setLightboxImage] = useState('');
 
   useEffect(() => {
     loadData();
@@ -128,7 +129,9 @@ export default function ShirtReviews({ shirtId, user }) {
               </div>
               <p className="text-sm text-gray-600 font-body leading-relaxed">{r.comment}</p>
               {r.image_url && (
-                <img src={r.image_url} alt="" className="mt-3 w-24 h-24 object-cover border-2 border-[#1B2A4A]" />
+                <button type="button" onClick={() => setLightboxImage(r.image_url)} className="mt-3 block">
+                  <img src={r.image_url} alt="" className="w-40 h-40 object-cover border-2 border-[#1B2A4A] hover:opacity-90 transition-opacity cursor-zoom-in" />
+                </button>
               )}
             </div>
           ))}
@@ -201,6 +204,19 @@ export default function ShirtReviews({ shirtId, user }) {
             </button>
             {errors.submit && <p className="text-red-500 text-xs mt-2">{errors.submit}</p>}
           </form>
+        </div>
+      )}
+
+      {lightboxImage && (
+        <div
+          role="button"
+          tabIndex={0}
+          aria-label="סגור תמונה"
+          onClick={() => setLightboxImage('')}
+          onKeyDown={(e) => { if (e.key === 'Escape') setLightboxImage(''); }}
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-6 cursor-zoom-out"
+        >
+          <img src={lightboxImage} alt="" className="max-w-full max-h-full object-contain border-2 border-white" />
         </div>
       )}
     </div>
