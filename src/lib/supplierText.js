@@ -65,12 +65,14 @@ function translateTeamName(name) {
 }
 
 // The shirt's display name (Hebrew) always embeds the kit type as a plain
-// word — "בית"/"חוץ" — anything else (special editions, anniversary kits,
-// collabs) has neither, which is exactly the "Special" bucket.
+// word — "בית"/"חוץ"/"שלישית"/"רביעית" — anything else (special editions,
+// anniversary kits, collabs) has none of those, which is the "Special" bucket.
 function detectKitType(shirtName) {
   if (!shirtName) return '';
   if (shirtName.includes('בית')) return 'Home';
   if (shirtName.includes('חוץ')) return 'Away';
+  if (shirtName.includes('שלישית')) return 'Third';
+  if (shirtName.includes('רביעית')) return 'Fourth';
   return 'Special';
 }
 
@@ -87,7 +89,7 @@ function parseCustomization(message) {
 }
 
 // Builds one line of supplier-facing order text, fully in English:
-// "Real Madrid - Home - Player Version - Ronaldo 7 - Size L"
+// "Real Madrid - Home - 2025/26 - Player Version - Ronaldo 7 - Size L"
 // Regular version / no custom name are simply omitted, not written out.
 export function buildSupplierLine(request, shirt) {
   const teamHe = (shirt?.club || shirt?.national_team || '').trim();
@@ -97,6 +99,7 @@ export function buildSupplierLine(request, shirt) {
 
   const parts = [team];
   if (kit) parts.push(kit);
+  if (shirt?.season) parts.push(shirt.season);
   if (playerVersion) parts.push('Player Version');
   if (customText) parts.push(customText);
   if (request.wanted_size) parts.push(`Size ${request.wanted_size}`);
