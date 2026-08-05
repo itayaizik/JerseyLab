@@ -35,6 +35,8 @@ export default function Catalog() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
+  const PAGE_SIZE = 24;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const [filters, setFilters] = useState({
     gender: searchParams.get('gender') || '',
@@ -123,6 +125,7 @@ export default function Catalog() {
     if (filters.size) result = result.filter(s => s.sizes && Object.keys(s.sizes).some(sz => (sz === 'XXL' ? '2XL' : sz) === filters.size));
 
     setShirts(result);
+    setVisibleCount(PAGE_SIZE);
   }, [searchParams, filters, allShirtsRaw]);
 
   const { leagues, nationalTeams, allSizes } = useMemo(() => {
@@ -370,11 +373,22 @@ export default function Catalog() {
           {Array.from({ length: 8 }).map((_, i) => <ShirtCardSkeleton key={i} />)}
         </div>
       ) : shirts.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
-          {shirts.map((s, idx) => (
-            <ShirtCard key={s.id} shirt={s} user={user} eager={idx < 8} isWishlisted={wishlistIds.includes(s.id)} onToggleWishlist={toggleWishlist} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
+            {shirts.slice(0, visibleCount).map((s, idx) => (
+              <ShirtCard key={s.id} shirt={s} user={user} eager={idx < 8} isWishlisted={wishlistIds.includes(s.id)} onToggleWishlist={toggleWishlist} />
+            ))}
+          </div>
+          {visibleCount < shirts.length && (
+            <div className="flex justify-center mt-8">
+              <button onClick={() => setVisibleCount(c => c + PAGE_SIZE)}
+                className="px-6 py-2.5 border-2 border-[#1B2A4A] bg-white text-[#1B2A4A] text-sm font-bold font-heading uppercase hover:bg-[#F2ECD9] transition-colors"
+                style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
+                טען עוד ({shirts.length - visibleCount} נוספות)
+              </button>
+            </div>
+          )}
+        </>
       ) : (
         <EmptyState
           icon={Search}

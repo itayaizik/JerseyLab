@@ -5,4 +5,4 @@ Disallow: /admin/
 Disallow: /wishlist
 Disallow: /profile
 
-Sitemap: https://jerseylabil.base44.app/sitemap.xml
+Sitemap: https://jersey-lab-indol.vercel.app/sitemap.xml

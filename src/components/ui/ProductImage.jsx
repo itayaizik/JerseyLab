@@ -21,7 +21,7 @@ export default function ProductImage({ src, alt = '', className = '', eager = fa
         alt={alt}
         decoding="async"
         loading={eager ? 'eager' : 'lazy'}
-        fetchPriority={eager ? 'high' : 'auto'}
+        fetchpriority={eager ? 'high' : 'auto'}
         sizes="(max-width: 768px) 50vw, 25vw"
         onLoad={() => setLoaded(true)}
         onError={() => { setErrored(true); setLoaded(true); }}

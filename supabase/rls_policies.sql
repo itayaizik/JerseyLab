@@ -54,11 +54,13 @@ alter table interest_requests_raw enable row level security;
 drop policy if exists "own interest requests read" on interest_requests_raw;
 create policy "own interest requests read" on interest_requests_raw for select
   using (user_id = auth.uid()::text);
--- insert is NOT restricted to auth.uid() — InterestModal.jsx lets guests
--- (not logged in) submit a request too, with user_id = '' in that case.
+-- Guests (not logged in) can submit too — InterestModal.jsx sends
+-- user_id: '' in that case — but a request must be attributed to either
+-- the caller's own auth uid or the empty guest value, never someone
+-- else's uid (which would let one user's requests be spoofed as another's).
 drop policy if exists "own interest requests insert" on interest_requests_raw;
 create policy "own interest requests insert" on interest_requests_raw for insert
-  with check (true);
+  with check (user_id = coalesce(auth.uid()::text, '') or user_id = '');
 drop policy if exists "admin full access interest requests" on interest_requests_raw;
 create policy "admin full access interest requests" on interest_requests_raw for all using (public.is_admin()) with check (public.is_admin());
 
