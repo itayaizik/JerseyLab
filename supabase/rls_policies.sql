@@ -195,6 +195,14 @@ create policy "admin delete shirt images" on storage.objects for delete
 -- order instead of N disconnected rows.
 alter table interest_requests_raw add column if not exists order_id text;
 
+-- ── interest_requests_raw: how the customer wants to be reached ──
+-- Checkout now asks for an email (the order confirmation goes there) and lets
+-- the customer choose whether we follow up on WhatsApp or Instagram; the
+-- handle is only filled in for the Instagram case.
+alter table interest_requests_raw add column if not exists email text;
+alter table interest_requests_raw add column if not exists contact_channel text;
+alter table interest_requests_raw add column if not exists instagram_handle text;
+
 -- ── reviews_raw: optional photo + anonymous display name ────
 alter table reviews_raw add column if not exists image_url text;
 alter table reviews_raw add column if not exists is_anonymous boolean not null default false;

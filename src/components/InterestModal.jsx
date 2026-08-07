@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Check, Loader2, ShoppingCart, Sparkles, ChevronRight, ChevronLeft } from 'lucide-react';
+import { X, Check, Loader2, ShoppingCart, Sparkles, ChevronRight, ChevronLeft, MessageCircle, Instagram, Mail } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
@@ -15,6 +15,9 @@ import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurato
 import { friendlyError } from '@/lib/errorMessages';
 import ProductImage from '@/components/ui/ProductImage';
 import { hasLocalStockForSize } from '@/components/ShippingBadge';
+import ContactChannelChoice from '@/components/configurator/ContactChannelChoice';
+import { sendOrderConfirmation } from '@/lib/orderEmail';
+import { SHOP_PHONE, WHATSAPP_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/contact';
 
 // Cart stored in sessionStorage so it persists across page navigations in same session
 function getCart() {
@@ -25,11 +28,47 @@ function setCart(cart) {
   window.dispatchEvent(new Event('cart_updated'));
 }
 
+// Contact details are remembered between orders so a returning customer isn't
+// retyping them; the account supplies name/email when the customer is logged in.
+const CONTACT_KEY = 'jerseylab_contact';
+function getSavedContact() {
+  try { return JSON.parse(localStorage.getItem(CONTACT_KEY) || '{}'); } catch { return {}; }
+}
+
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+// Shown both before and after submitting: an order still needs a human on our
+// side, so nudge customers who want it moving quickly to reach out directly.
+function FastHandlingNote() {
+  return (
+    <div className="bg-[#F2ECD9] border-r-4 border-[#E8622A] p-3">
+      <p className="text-xs font-heading font-bold text-[#1B2A4A] uppercase mb-1.5">רוצה טיפול מהיר יותר?</p>
+      <p className="text-xs text-[#1B2A4A]/70 font-body mb-2 leading-relaxed">
+        מוזמנים לשלוח לנו הודעה ישירות — נענה ונסגור את ההזמנה מהר יותר.
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 bg-white border-2 border-[#1B2A4A] px-2.5 py-1.5 text-xs font-body text-[#1B2A4A] hover:bg-[#1B2A4A] hover:text-white transition-colors">
+          <MessageCircle className="w-3.5 h-3.5" />
+          <span dir="ltr">{SHOP_PHONE}</span>
+        </a>
+        <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 bg-white border-2 border-[#1B2A4A] px-2.5 py-1.5 text-xs font-body text-[#1B2A4A] hover:bg-[#1B2A4A] hover:text-white transition-colors">
+          <Instagram className="w-3.5 h-3.5" />
+          <span dir="ltr">@{INSTAGRAM_HANDLE}</span>
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export function CartModal({ open, onClose, user }) {
   const [cart, setCartState] = useState(getCart());
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [contactForm, setContactForm] = useState({ full_name: user?.full_name || '', phone: '' });
+  const [contactForm, setContactForm] = useState({
+    full_name: '', phone: '', email: '', contact_channel: '', instagram_handle: '',
+  });
   const [errors, setErrors] = useState({});
   const [cartError, setCartError] = useState('');
 
@@ -39,7 +78,25 @@ export function CartModal({ open, onClose, user }) {
     return () => window.removeEventListener('cart_updated', handler);
   }, []);
 
-  useEffect(() => { if (open) setCartState(getCart()); }, [open]);
+  // Re-seed on open so a customer who logs in mid-session picks up their
+  // account details instead of whatever the modal was first mounted with.
+  useEffect(() => {
+    if (!open) return;
+    setCartState(getCart());
+    const saved = getSavedContact();
+    setContactForm(prev => ({
+      full_name: user?.full_name || saved.full_name || prev.full_name || '',
+      email: user?.email || saved.email || prev.email || '',
+      phone: saved.phone || prev.phone || '',
+      contact_channel: saved.contact_channel || prev.contact_channel || '',
+      instagram_handle: saved.instagram_handle || prev.instagram_handle || '',
+    }));
+  }, [open, user]);
+
+  const setField = (field, value) => {
+    setContactForm(p => ({ ...p, [field]: value }));
+    setErrors(p => ({ ...p, [field]: undefined }));
+  };
 
   const removeItem = (idx) => {
     const c = [...cart];
@@ -55,15 +112,32 @@ export function CartModal({ open, onClose, user }) {
     return sum + price;
   }, 0);
 
+  // The cart is emptied on success but contactForm isn't, so the confirmation
+  // screen can still name the channel the customer picked.
+  const submittedChannelLabel = contactForm.contact_channel === 'instagram' ? 'אינסטגרם' : 'וואטסאפ';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = {};
     if (!contactForm.full_name.trim()) errs.full_name = 'שדה חובה';
     if (!contactForm.phone.trim()) errs.phone = 'שדה חובה';
+    if (!contactForm.email.trim()) errs.email = 'שדה חובה';
+    else if (!isValidEmail(contactForm.email.trim())) errs.email = 'נא להזין כתובת אימייל תקינה';
+    if (!contactForm.contact_channel) errs.contact_channel = 'בחר איך נחזור אליך';
+    if (contactForm.contact_channel === 'instagram' && !contactForm.instagram_handle.trim()) {
+      errs.instagram_handle = 'שדה חובה';
+    }
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setSubmitting(true);
     setErrors({});
     setCartError('');
+
+    const email = contactForm.email.trim();
+    const fullName = contactForm.full_name.trim();
+    const channel = contactForm.contact_channel;
+    // Stored without the leading @ so the admin panel can link straight to it.
+    const igHandle = contactForm.instagram_handle.trim().replace(/^@/, '');
+
     try {
       // Every item from this checkout shares one order_id so the admin
       // panel can show them as a single grouped order instead of N
@@ -76,13 +150,29 @@ export function CartModal({ open, onClose, user }) {
         const itemTotal = item.basePrice + (item.addName ? 15 : 0) + (item.playerVersion ? 20 : 0);
         await base44.entities.InterestRequest.create({
           shirt_id: item.shirtId, shirt_name: item.shirtName,
-          full_name: contactForm.full_name.trim(), phone: contactForm.phone.trim(),
+          full_name: fullName, phone: contactForm.phone.trim(),
+          email,
+          contact_channel: channel,
+          instagram_handle: channel === 'instagram' ? igHandle : '',
           wanted_size: item.size,
           message: `סל קניות${extras.length ? ' | ' + extras.join(' | ') : ''} | מחיר סופי: ₪${itemTotal}`,
           status: 'new', user_id: user?.id || '', order_id: orderId,
         });
       }
-      base44.analytics.track({ eventName: 'cart_submitted', properties: { item_count: cart.length, total } });
+
+      try {
+        localStorage.setItem(CONTACT_KEY, JSON.stringify({
+          full_name: fullName, phone: contactForm.phone.trim(), email,
+          contact_channel: channel, instagram_handle: igHandle,
+        }));
+      } catch { /* private mode / quota — not worth failing the order over */ }
+
+      // Confirmation mail is best-effort: the order is already saved, so a mail
+      // outage must not read to the customer as a failed checkout.
+      sendOrderConfirmation({ email, fullName, orderId, items: cart, total })
+        .catch(() => {});
+
+      base44.analytics.track({ eventName: 'cart_submitted', properties: { item_count: cart.length, total, contact_channel: channel } });
       setCart([]);
       setCartState([]);
       setSubmitted(true);
@@ -97,15 +187,28 @@ export function CartModal({ open, onClose, user }) {
     return (
       <Dialog open={open} onOpenChange={onClose}>
         <DialogContent className="max-w-md text-right">
-          <div className="text-center py-8">
-            <div className="w-16 h-16 bg-[#E8622A] flex items-center justify-center mx-auto mb-4" style={{ border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #1B2A4A' }}>
-              <Check className="w-8 h-8 text-white" />
+          <div className="py-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-[#E8622A] flex items-center justify-center mx-auto mb-4" style={{ border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #1B2A4A' }}>
+                <Check className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="font-heading font-bold text-xl mb-2 text-[#1B2A4A] uppercase">ההזמנה התקבלה!</h3>
+              <p className="text-gray-500 text-sm font-body mb-1">
+                נחזור אליך ב{submittedChannelLabel} בהקדם עם כל הפרטים.
+              </p>
+              <p className="text-gray-500 text-xs font-body flex items-center justify-center gap-1.5 mb-5">
+                <Mail className="w-3.5 h-3.5" />
+                אישור נשלח לאימייל שלך
+              </p>
             </div>
-            <h3 className="font-heading font-bold text-xl mb-2 text-[#1B2A4A] uppercase">הבקשה נשלחה!</h3>
-            <p className="text-gray-500 text-sm font-body">נחזור אליך בהקדם עם כל הפרטים.</p>
-            <button onClick={onClose} className="mt-6 bg-[#1B2A4A] text-white px-6 py-2.5 text-sm font-bold font-heading uppercase hover:bg-[#2a3f6b] transition-colors">
-              סגור
-            </button>
+
+            <FastHandlingNote />
+
+            <div className="text-center">
+              <button onClick={onClose} className="mt-5 bg-[#1B2A4A] text-white px-6 py-2.5 text-sm font-bold font-heading uppercase hover:bg-[#2a3f6b] transition-colors">
+                סגור
+              </button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -173,17 +276,44 @@ export function CartModal({ open, onClose, user }) {
               <p className="text-sm font-heading font-bold text-[#1B2A4A] uppercase">פרטי יצירת קשר</p>
               <div>
                 <label htmlFor="cart-name" className="text-sm font-medium block mb-1 font-body">שם מלא *</label>
-                <input id="cart-name" value={contactForm.full_name} onChange={e => { setContactForm(p => ({ ...p, full_name: e.target.value })); setErrors(p => ({ ...p, full_name: undefined })); }} maxLength={100} autoComplete="name"
+                <input id="cart-name" value={contactForm.full_name} onChange={e => setField('full_name', e.target.value)} maxLength={100} autoComplete="name"
                   className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.full_name ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
                 {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name}</p>}
               </div>
               <div>
                 <label htmlFor="cart-phone" className="text-sm font-medium block mb-1 font-body">טלפון *</label>
-                <input id="cart-phone" value={contactForm.phone} onChange={e => { setContactForm(p => ({ ...p, phone: e.target.value })); setErrors(p => ({ ...p, phone: undefined })); }} type="tel" dir="ltr" maxLength={20} autoComplete="tel"
+                <input id="cart-phone" value={contactForm.phone} onChange={e => setField('phone', e.target.value)} type="tel" dir="ltr" maxLength={20} autoComplete="tel"
                   className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.phone ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
                 {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
               </div>
+              <div>
+                <label htmlFor="cart-email" className="text-sm font-medium block mb-1 font-body">אימייל *</label>
+                <input id="cart-email" value={contactForm.email} onChange={e => setField('email', e.target.value)} type="email" dir="ltr" maxLength={254} autoComplete="email"
+                  className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.email ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
+                {errors.email ? <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                  : <p className="text-[11px] text-gray-500 mt-1 font-body">לשם נשלח אישור ההזמנה.</p>}
+              </div>
+
+              <div>
+                <label className="text-sm font-medium block mb-1.5 font-body">איך נוח לך שנחזור אליך? *</label>
+                <ContactChannelChoice
+                  value={contactForm.contact_channel}
+                  onChange={v => setField('contact_channel', v)}
+                  error={errors.contact_channel}
+                />
+              </div>
+
+              {contactForm.contact_channel === 'instagram' && (
+                <div>
+                  <label htmlFor="cart-ig" className="text-sm font-medium block mb-1 font-body">שם המשתמש שלך באינסטגרם *</label>
+                  <input id="cart-ig" value={contactForm.instagram_handle} onChange={e => setField('instagram_handle', e.target.value)} dir="ltr" maxLength={60} placeholder="@username"
+                    className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.instagram_handle ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
+                  {errors.instagram_handle && <p className="text-red-500 text-xs mt-1">{errors.instagram_handle}</p>}
+                </div>
+              )}
             </div>
+
+            <FastHandlingNote />
 
             {cartError && (
               <div className="p-2.5 bg-red-50 border-2 border-red-300 text-red-700 text-xs font-body">{cartError}</div>

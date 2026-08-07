@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Phone, ExternalLink, Plus, X, Package, Trash2, Copy, Check } from 'lucide-react';
+import { MessageCircle, Phone, Mail, ExternalLink, Plus, X, Package, Trash2, Copy, Check } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { buildSupplierLine } from '@/lib/supplierText';
 
@@ -163,11 +163,35 @@ export default function ManageRequests() {
                     })}
                   </div>
 
-                  <div className="flex flex-wrap gap-3 text-xs text-varnish">
+                  <div className="flex flex-wrap gap-3 text-xs text-varnish items-center">
                     {first.phone && <a href={`tel:${first.phone}`} className="flex items-center gap-1 hover:text-chalk"><Phone className="w-3 h-3" />{first.phone}</a>}
+                    {first.email && <a href={`mailto:${first.email}`} className="flex items-center gap-1 hover:text-chalk"><Mail className="w-3 h-3" />{first.email}</a>}
                     {first.whatsapp && <a href={`https://wa.me/${first.whatsapp}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-green-400"><MessageCircle className="w-3 h-3" />WhatsApp</a>}
                     {first.instagram && <a href={`https://instagram.com/${first.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-pink-400"><ExternalLink className="w-3 h-3" />{first.instagram}</a>}
                   </div>
+
+                  {/* Channel the customer asked to be reached on, with the handle
+                      to reach them at — this is the one they actually chose. */}
+                  {first.contact_channel && (
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="text-varnish">להחזיר תשובה ב:</span>
+                      {first.contact_channel === 'instagram' ? (
+                        <a href={`https://instagram.com/${(first.instagram_handle || '').replace('@', '')}`}
+                          target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2 py-1 bg-pink-500/15 border border-pink-400/40 text-pink-300 hover:bg-pink-500/25">
+                          <ExternalLink className="w-3 h-3" />
+                          @{(first.instagram_handle || '').replace('@', '') || '—'}
+                        </a>
+                      ) : (
+                        <a href={`https://wa.me/${(first.phone || '').replace(/\D/g, '').replace(/^0/, '972')}`}
+                          target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2 py-1 bg-green-500/15 border border-green-400/40 text-green-300 hover:bg-green-500/25">
+                          <MessageCircle className="w-3 h-3" />
+                          WhatsApp
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-2 items-end">
