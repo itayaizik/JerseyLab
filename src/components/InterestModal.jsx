@@ -16,6 +16,7 @@ import { friendlyError } from '@/lib/errorMessages';
 import ProductImage from '@/components/ui/ProductImage';
 import { hasLocalStockForSize } from '@/components/ShippingBadge';
 import ContactChannelChoice from '@/components/configurator/ContactChannelChoice';
+import HowItWorksNotice from '@/components/HowItWorksNotice';
 import { sendOrderConfirmation } from '@/lib/orderEmail';
 import { SHOP_PHONE, WHATSAPP_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/contact';
 
@@ -71,6 +72,10 @@ export function CartModal({ open, onClose, user }) {
   });
   const [errors, setErrors] = useState({});
   const [cartError, setCartError] = useState('');
+  // Deliberately not persisted with the rest of the contact details: since there
+  // is no payment on the site, every order should re-confirm that the customer
+  // knows a request is not a purchase.
+  const [acknowledged, setAcknowledged] = useState(false);
 
   useEffect(() => {
     const handler = () => setCartState(getCart());
@@ -127,6 +132,7 @@ export function CartModal({ open, onClose, user }) {
     if (contactForm.contact_channel === 'instagram' && !contactForm.instagram_handle.trim()) {
       errs.instagram_handle = 'שדה חובה';
     }
+    if (!acknowledged) errs.acknowledged = 'צריך לאשר שקראת איך ההזמנה עובדת';
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setSubmitting(true);
     setErrors({});
@@ -202,6 +208,12 @@ export function CartModal({ open, onClose, user }) {
               </p>
             </div>
 
+            {/* Repeated here on purpose: this is the screen a customer is most
+                likely to mistake for a completed purchase. */}
+            <div className="mb-4">
+              <HowItWorksNotice />
+            </div>
+
             <FastHandlingNote />
 
             <div className="text-center">
@@ -272,6 +284,8 @@ export function CartModal({ open, onClose, user }) {
               <span className="font-mono font-bold text-xl text-[#E8622A]">₪{total}</span>
             </div>
 
+            <HowItWorksNotice />
+
             <div className="space-y-3 pt-2">
               <p className="text-sm font-heading font-bold text-[#1B2A4A] uppercase">פרטי יצירת קשר</p>
               <div>
@@ -314,6 +328,20 @@ export function CartModal({ open, onClose, user }) {
             </div>
 
             <FastHandlingNote />
+
+            <div>
+              <label className={`flex items-start gap-2.5 p-3 border-2 cursor-pointer transition-colors ${
+                errors.acknowledged ? 'border-red-500 bg-red-50' : 'border-[#1B2A4A] bg-[#F2ECD9] hover:bg-[#E8DFC8]'
+              }`}>
+                <input type="checkbox" checked={acknowledged}
+                  onChange={e => { setAcknowledged(e.target.checked); setErrors(p => ({ ...p, acknowledged: undefined })); }}
+                  className="mt-0.5 w-4 h-4 flex-shrink-0 accent-[#E8622A]" />
+                <span className="text-xs font-body text-[#1B2A4A] leading-relaxed">
+                  קראתי והבנתי — <span className="font-bold">התשלום לא מתבצע באתר</span>, אלא מולכם ישירות אחרי שתחזרו אליי.
+                </span>
+              </label>
+              {errors.acknowledged && <p className="text-red-500 text-xs mt-1">{errors.acknowledged}</p>}
+            </div>
 
             {cartError && (
               <div className="p-2.5 bg-red-50 border-2 border-red-300 text-red-700 text-xs font-body">{cartError}</div>

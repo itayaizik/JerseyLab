@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import EmptyState from '@/components/ui/EmptyState';
 import Seo from '@/components/Seo';
+import HowItWorksNotice from '@/components/HowItWorksNotice';
 
 export default function FAQPage() {
   const [faqs, setFaqs] = useState([]);
@@ -27,15 +28,29 @@ export default function FAQPage() {
     );
   }
 
-  const faqJsonLd = faqs.length ? {
+  // Mirrors the HowItWorksNotice block so the no-payment-on-site answer is the
+  // one search engines surface too; it is always present, unlike the DB rows.
+  const howItWorksEntry = {
+    "@type": "Question",
+    name: "איך מזמינים? האם משלמים באתר?",
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: "באתר לא מתבצע תשלום. שליחת ההזמנה היא בקשה בלבד — אנחנו חוזרים אליך בוואטסאפ או באינסטגרם לאישור כל הפרטים, והתשלום מתבצע מולנו ישירות רק אחרי שסיכמנו."
+    }
+  };
+
+  const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map(f => ({
-      "@type": "Question",
-      name: f.question,
-      acceptedAnswer: { "@type": "Answer", text: f.answer }
-    }))
-  } : null;
+    mainEntity: [
+      howItWorksEntry,
+      ...faqs.map(f => ({
+        "@type": "Question",
+        name: f.question,
+        acceptedAnswer: { "@type": "Answer", text: f.answer }
+      }))
+    ]
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
@@ -55,6 +70,12 @@ export default function FAQPage() {
         </div>
         <h1 className="font-heading font-black text-4xl text-[#1B2A4A] uppercase mb-2" style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>שאלות ותשובות</h1>
         <p className="text-[#1B2A4A]/60 font-body text-sm">כל מה שצריך לדעת לפני שפונים אלינו</p>
+      </div>
+
+      {/* How ordering works — hard-coded rather than a DB row, because a
+          customer must never be able to reach this page without it. */}
+      <div className="mb-8">
+        <HowItWorksNotice variant="full" />
       </div>
 
       {/* FAQ List */}
