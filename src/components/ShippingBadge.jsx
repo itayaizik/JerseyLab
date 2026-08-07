@@ -1,5 +1,6 @@
 import React from 'react';
 import { Zap, Truck } from 'lucide-react';
+import { sizeQty } from '@/lib/sizes';
 
 export function hasLocalStock(shirt) {
   const sizes = shirt?.local_stock_sizes;
@@ -9,8 +10,9 @@ export function hasLocalStock(shirt) {
 
 export function hasLocalStockForSize(shirt, size) {
   if (!size) return hasLocalStock(shirt);
-  const sizes = shirt?.local_stock_sizes;
-  return !!(sizes && Number(sizes[size]) > 0);
+  // sizeQty, not a direct lookup: stock for this size may be filed under 'XXL'
+  // while the selector hands us '2XL' (or the other way round).
+  return sizeQty(shirt?.local_stock_sizes, size) > 0;
 }
 
 export function getShippingInfo(shirt, size) {

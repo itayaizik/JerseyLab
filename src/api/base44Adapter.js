@@ -30,7 +30,7 @@ const NO_RETURN_ON_CREATE = new Set(["SearchLog", "ContactMessage", "CustomerPro
 // Some columns in the *_raw tables store JSON (arrays/objects) as text
 // instead of native jsonb, so parse anything that looks like JSON back
 // into real arrays/objects — matches the shape Base44 used to return.
-function coerceRow(row) {
+export function coerceRow(row) {
   if (!row) return row;
   const out = { ...row };
   for (const [key, value] of Object.entries(out)) {
@@ -45,7 +45,7 @@ function coerceRow(row) {
   return out;
 }
 
-function coerceRows(rows) {
+export function coerceRows(rows) {
   return (rows || []).map(coerceRow);
 }
 

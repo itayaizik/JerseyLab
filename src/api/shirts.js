@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { coerceRows } from "@/api/base44Adapter";
 
 export async function getAllShirts() {
   const { data, error } = await supabase
@@ -6,10 +7,10 @@ export async function getAllShirts() {
     .select("*")
     .order("created_date", { ascending: false });
 
-  console.log("SUPABASE DATA:", data);
-  console.log("SUPABASE ERROR:", error);
-
   if (error) throw error;
 
-  return data;
+  // Same coercion the entity adapter applies: `sizes` and `local_stock_sizes`
+  // are stored as JSON *text*, so without this the catalog's size and
+  // fast-shipping filters read a raw string and silently match nothing.
+  return coerceRows(data);
 }

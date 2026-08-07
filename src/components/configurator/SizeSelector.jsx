@@ -1,27 +1,17 @@
 import React from 'react';
+import { shirtSizes, sizeQty } from '@/lib/sizes';
 
-const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '6-7Y', '8-9Y', '10-11Y', '12-13Y', '14-15Y'];
-
-function sortSizes(sizes) {
-  return [...sizes].sort((a, b) => {
-    const ai = SIZE_ORDER.indexOf(a), bi = SIZE_ORDER.indexOf(b);
-    if (ai === -1 && bi === -1) return a.localeCompare(b);
-    if (ai === -1) return 1;
-    if (bi === -1) return -1;
-    return ai - bi;
-  });
-}
+const FALLBACK_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 
 export default function SizeSelector({ shirt, value, onChange }) {
-  const allSizes = shirt.sizes && Object.keys(shirt.sizes).length > 0
-    ? sortSizes(Object.keys(shirt.sizes).filter(s => s !== '2XL'))
-    : ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+  const fromShirt = shirtSizes(shirt);
+  const allSizes = fromShirt.length > 0 ? fromShirt : FALLBACK_SIZES;
 
   return (
     <div>
       <div className="flex gap-2 flex-wrap">
         {allSizes.map(s => {
-          const isLocal = shirt.local_stock_sizes && Number(shirt.local_stock_sizes[s]) > 0;
+          const isLocal = sizeQty(shirt.local_stock_sizes, s) > 0;
           const isSelected = value === s;
           return (
             <button key={s} type="button" onClick={() => onChange(s)}
@@ -40,7 +30,7 @@ export default function SizeSelector({ shirt, value, onChange }) {
       </div>
       {value && (
         <div className="mt-3 text-xs font-body">
-          {shirt.local_stock_sizes && Number(shirt.local_stock_sizes[value]) > 0 ? (
+          {sizeQty(shirt.local_stock_sizes, value) > 0 ? (
             <p className="text-green-700 font-bold flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-green-600" />
               זמין במלאי בארץ — הגעה עד שבוע או איסוף מקריית אונו

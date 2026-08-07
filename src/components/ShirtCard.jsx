@@ -18,9 +18,9 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false 
   if (shirt.limited_stock) displayTags.push('מלאי מוגבל');
   if (shirt.sale_price && shirt.sale_price < shirt.price) displayTags.push('סייל');
 
-  // Display all available sizes (infinite inventory)
-  const SIZE_ORDER = ['XS','S','M','L','XL','XXL','3XL','6-7Y','8-9Y','10-11Y','12-13Y','14-15Y'];
-  const displayedSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+  // Display all available sizes (infinite inventory). Labels use the canonical
+  // spelling from lib/sizes so a card never says XXL where the rest of the site says 2XL.
+  const displayedSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 
   return (
     <div className="relative bg-white flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-200" style={{ boxShadow: '3px 3px 0px #1B2A4A', border: '2px solid #1B2A4A' }}>

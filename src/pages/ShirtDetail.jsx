@@ -14,6 +14,7 @@ import Seo from '@/components/Seo';
 import EmptyState from '@/components/ui/EmptyState';
 import TrustBar from '@/components/TrustBar';
 import { toast } from '@/components/ui/use-toast';
+import { shirtSizes } from '@/lib/sizes';
 
 const conditionLabels = { new: 'חדש', like_new: 'כמו חדש', used: 'משומש' };
 
@@ -113,20 +114,7 @@ export default function ShirtDetail() {
     [shirt]
   );
 
-  const sortedSizes = useMemo(() => {
-    if (!shirt?.sizes) return [];
-    const SIZE_ORDER = ['XS','S','M','L','XL','2XL','3XL','4XL','6-7Y','8-9Y','10-11Y','12-13Y','14-15Y'];
-    return Object.keys(shirt.sizes)
-      .map(s => (s === 'XXL' ? '2XL' : s))
-      .filter((s, i, arr) => arr.indexOf(s) === i)
-      .sort((a, b) => {
-        const ai = SIZE_ORDER.indexOf(a), bi = SIZE_ORDER.indexOf(b);
-        if (ai === -1 && bi === -1) return a.localeCompare(b);
-        if (ai === -1) return 1;
-        if (bi === -1) return -1;
-        return ai - bi;
-      });
-  }, [shirt]);
+  const sortedSizes = useMemo(() => shirtSizes(shirt), [shirt]);
 
   const displayTags = useMemo(() => {
     if (!shirt) return [];

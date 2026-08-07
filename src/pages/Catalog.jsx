@@ -8,8 +8,7 @@ import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
 import EmptyState from '@/components/ui/EmptyState';
 import Seo from '@/components/Seo';
 import { toast } from '@/components/ui/use-toast';
-
-const SIZE_ORDER = ['XS','S','M','L','XL','2XL','3XL','4XL','6-7Y','8-9Y','10-11Y','12-13Y','14-15Y'];
+import { shirtSizes, sortSizes } from '@/lib/sizes';
 
 const quickFilters = [
   { label: 'הכל', params: {} },
@@ -122,7 +121,7 @@ export default function Catalog() {
     if (filters.maxPrice) result = result.filter(s => s.price <= Number(filters.maxPrice));
     if (filters.league) result = result.filter(s => s.league === filters.league);
     if (filters.national_team) result = result.filter(s => s.national_team === filters.national_team);
-    if (filters.size) result = result.filter(s => s.sizes && Object.keys(s.sizes).some(sz => (sz === 'XXL' ? '2XL' : sz) === filters.size));
+    if (filters.size) result = result.filter(s => shirtSizes(s).includes(filters.size));
 
     setShirts(result);
     setVisibleCount(PAGE_SIZE);
@@ -131,14 +130,7 @@ export default function Catalog() {
   const { leagues, nationalTeams, allSizes } = useMemo(() => {
     const leagues = [...new Set(allShirtsRaw.map(s => s.league).filter(Boolean))].sort();
     const nationalTeams = [...new Set(allShirtsRaw.map(s => s.national_team).filter(Boolean))].sort();
-    const allSizes = [...new Set(
-      allShirtsRaw.flatMap(s => Object.keys(s.sizes || {}).map(sz => sz === 'XXL' ? '2XL' : sz))
-    )].sort((a, b) => {
-      const ai = SIZE_ORDER.indexOf(a), bi = SIZE_ORDER.indexOf(b);
-      if (ai === -1 && bi === -1) return a.localeCompare(b);
-      if (ai === -1) return 1; if (bi === -1) return -1;
-      return ai - bi;
-    });
+    const allSizes = sortSizes([...new Set(allShirtsRaw.flatMap(shirtSizes))]);
     return { leagues, nationalTeams, allSizes };
   }, [allShirtsRaw]);
 

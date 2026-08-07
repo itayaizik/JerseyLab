@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { Upload, Loader2, Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { sizeQty, setSizeQty } from '@/lib/sizes';
 
 const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+// Canonical spellings — see lib/sizes. Reads tolerate the legacy 'XXL' key,
+// writes always land on '2XL', so stock can no longer be filed under a spelling
+// the storefront then fails to find.
+const LOCAL_STOCK_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 const kidsSizeOptions = ['6-7Y', '8-9Y', '10-11Y', '12-13Y', '14-15Y'];
 
 /**
@@ -21,7 +26,7 @@ export default function ShirtEditForm({ draft, onChange }) {
 
   const setForm = (field, value) => onChange({ ...draft, form: { ...draft.form, [field]: value } });
   const setSizes = (size, qty) => onChange({ ...draft, sizes: { ...draft.sizes, [size]: Math.max(0, parseInt(qty) || 0) } });
-  const setLocal = (size, qty) => onChange({ ...draft, localStockSizes: { ...draft.localStockSizes, [size]: Math.max(0, parseInt(qty) || 0) } });
+  const setLocal = (size, qty) => onChange({ ...draft, localStockSizes: setSizeQty(draft.localStockSizes, size, qty) });
   const setMain = (url) => onChange({ ...draft, mainImageUrl: url });
   const addExtra = (url) => onChange({ ...draft, extraImageUrls: [...draft.extraImageUrls, url] });
   const removeExtra = (i) => onChange({ ...draft, extraImageUrls: draft.extraImageUrls.filter((_, idx) => idx !== i) });
@@ -142,10 +147,10 @@ export default function ShirtEditForm({ draft, onChange }) {
         <h3 className="font-heading font-bold text-sm text-turf">מלאי בארץ לפי מידה</h3>
         <p className="text-xs text-varnish">סמן כמות זמינה במלאי בארץ לכל מידה. מידה עם כמות גדולה מ-0 תוצג כ"מלאי בארץ". שאר המידות — "משלוח מהיר".</p>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          {['S', 'M', 'L', 'XL', 'XXL'].map(size => (
+          {LOCAL_STOCK_SIZES.map(size => (
             <div key={size} className="flex items-center gap-2">
               <span className="text-sm text-chalk font-mono w-12">{size}</span>
-              <input type="number" min="0" value={draft.localStockSizes[size] || ''} onChange={e => setLocal(size, e.target.value)} dir="ltr" placeholder="0" className="w-full bg-white/5 border border-white/10 px-2 py-1.5 text-sm text-chalk focus:border-turf focus:outline-none" />
+              <input type="number" min="0" value={sizeQty(draft.localStockSizes, size) || ''} onChange={e => setLocal(size, e.target.value)} dir="ltr" placeholder="0" className="w-full bg-white/5 border border-white/10 px-2 py-1.5 text-sm text-chalk focus:border-turf focus:outline-none" />
             </div>
           ))}
         </div>

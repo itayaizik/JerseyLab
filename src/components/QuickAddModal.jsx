@@ -10,6 +10,7 @@ import PersonalizationChoice from '@/components/configurator/PersonalizationChoi
 import NameNumberInput from '@/components/configurator/NameNumberInput';
 import OrderSummary from '@/components/configurator/OrderSummary';
 import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurator/recommendations';
+import { hasLocalStockForSize } from '@/components/ShippingBadge';
 
 function getCart() {
   try { return JSON.parse(sessionStorage.getItem('jerseylab_cart') || '[]'); } catch { return []; }
@@ -36,19 +37,19 @@ export default function QuickAddModal({ shirt, open, onClose }) {
     return shirt.sale_price || shirt.price;
   })();
 
-  const hasLocalStockForSize = !!(selectedSize && shirt?.local_stock_sizes && Number(shirt.local_stock_sizes[selectedSize]) > 0);
-  const buyingExact = hasLocalStockForSize && buyMode === 'exact';
+  const sizeHasLocalStock = hasLocalStockForSize(shirt, selectedSize) && !!selectedSize;
+  const buyingExact = sizeHasLocalStock && buyMode === 'exact';
 
   const flow = [
     'size',
-    ...(hasLocalStockForSize ? ['exactOrCustom'] : []),
+    ...(sizeHasLocalStock ? ['exactOrCustom'] : []),
     ...(buyingExact ? [] : ['shirtType', 'addName', ...(addName === 'yes' ? ['nameDetails'] : [])]),
     'summary',
   ];
   const currentIndex = flow.indexOf(step);
   const stepLabels = [
     'מידה',
-    ...(hasLocalStockForSize ? ['בחירה'] : []),
+    ...(sizeHasLocalStock ? ['בחירה'] : []),
     ...(buyingExact ? [] : ['סוג חולצה', 'הדפסה', ...(addName === 'yes' ? ['שם ומספר'] : [])]),
     'סיכום',
   ];

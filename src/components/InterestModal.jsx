@@ -14,6 +14,7 @@ import OrderSummary from '@/components/configurator/OrderSummary';
 import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurator/recommendations';
 import { friendlyError } from '@/lib/errorMessages';
 import ProductImage from '@/components/ui/ProductImage';
+import { hasLocalStockForSize } from '@/components/ShippingBadge';
 
 // Cart stored in sessionStorage so it persists across page navigations in same session
 function getCart() {
@@ -224,19 +225,19 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
   // If the selected size has local stock, offer "buy this exact item"
   // (predetermined customization, fast shipping) vs a made-to-order custom
   // shirt — skips the personalization steps entirely when buying exact.
-  const hasLocalStockForSize = !!(selectedSize && shirt?.local_stock_sizes && Number(shirt.local_stock_sizes[selectedSize]) > 0);
-  const buyingExact = hasLocalStockForSize && buyMode === 'exact';
+  const sizeHasLocalStock = hasLocalStockForSize(shirt, selectedSize) && !!selectedSize;
+  const buyingExact = sizeHasLocalStock && buyMode === 'exact';
 
   const flow = [
     'size',
-    ...(hasLocalStockForSize ? ['exactOrCustom'] : []),
+    ...(sizeHasLocalStock ? ['exactOrCustom'] : []),
     ...(buyingExact ? [] : ['shirtType', 'addName', ...(addName === 'yes' ? ['nameDetails'] : [])]),
     'summary',
   ];
   const currentIndex = flow.indexOf(step);
   const stepLabels = [
     'מידה',
-    ...(hasLocalStockForSize ? ['בחירה'] : []),
+    ...(sizeHasLocalStock ? ['בחירה'] : []),
     ...(buyingExact ? [] : ['סוג חולצה', 'הדפסה', ...(addName === 'yes' ? ['שם ומספר'] : [])]),
     'סיכום',
   ];
@@ -280,7 +281,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
       isExactStockItem: buyingExact,
     });
     setCart(cart);
-    base44.analytics.track({ eventName: 'interest_added_to_cart', properties: { shirt_id: shirt.id, size: selectedSize, buy_mode: hasLocalStockForSize ? buyMode : null } });
+    base44.analytics.track({ eventName: 'interest_added_to_cart', properties: { shirt_id: shirt.id, size: selectedSize, buy_mode: sizeHasLocalStock ? buyMode : null } });
     base44.entities.Shirt.update(shirt.id, { interest_count: (shirt.interest_count || 0) + 1 }).catch(() => {});
     setAdded(true);
   };
