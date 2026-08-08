@@ -17,15 +17,16 @@ import { toast } from '@/components/ui/use-toast';
 const HERO_TILT = [-7, 4, -3, 6];
 const HERO_LIFT = [6, -10, 12, -4];
 
-const categoryCards = [
-{ label: 'חולצות גברים', href: '/catalog?gender=men', emoji: '⚽' },
-{ label: 'חולצות ילדים', href: '/catalog?gender=kids', emoji: '👦' },
-{ label: 'נבחרות', href: '/catalog?type=national', emoji: '🏆' },
-{ label: 'רטרו', href: '/catalog?tag=retro', emoji: '🕰️' },
-{ label: 'שחקנים', href: '/catalog?type=player', emoji: '🌟' },
-{ label: 'NBA', href: '/catalog?sport=basketball', emoji: '🏀' },
-{ label: 'סייל', href: '/catalog?sale=true', emoji: '🔥' },
-{ label: 'חדשים', href: '/catalog?new=true', emoji: '✨' }];
+// Shortcuts under the hero search. This list already existed in the file but
+// nothing rendered it; the fast-shipping entry is new, since local stock is the
+// thing customers most want to filter for.
+const HERO_SHORTCUTS = [
+  { label: 'מלאי בארץ', href: '/catalog?fast=true', emoji: '⚡' },
+  { label: 'נבחרות', href: '/catalog?type=national', emoji: '🏆' },
+  { label: 'רטרו', href: '/catalog?tag=retro', emoji: '🕰️' },
+  { label: 'סייל', href: '/catalog?sale=true', emoji: '🔥' },
+  { label: 'ילדים', href: '/catalog?gender=kids', emoji: '👦' },
+];
 
 
 const whyUsCards = [
@@ -204,8 +205,10 @@ export default function Home() {
                 מצא חולצות של קבוצות, נבחרות ושחקנים אהובים במקום אחד.
               </p>
 
-              {/* Search */}
-              <form onSubmit={handleSearch} className="mb-5 max-w-md">
+              {/* Search + the shortcuts under it. An empty search box gives no
+                  hint what is worth typing, so the quick filters carry the
+                  browsing intent and the box handles the specific one. */}
+              <form onSubmit={handleSearch} className="mb-3 max-w-md">
                 <div className="flex border-2 border-[#1B2A4A] bg-white" style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
                   <input
                     type="text"
@@ -223,20 +226,23 @@ export default function Home() {
                 </div>
               </form>
 
-              {/* One CTA only. The cart button that used to sit here duplicated
-                  the navbar's — same action, same badge, both on screen at once —
-                  and a hero's job is discovery, not checkout. */}
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                <Link to="/catalog"
-                  className="inline-block bg-[#E8622A] text-white font-heading font-bold px-8 py-3 uppercase tracking-wider text-sm hover:bg-[#D0551F] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
-                  style={{ boxShadow: '3px 3px 0 #1B2A4A', textShadow: '1px 1px 4px rgba(0,0,0,0.25)' }}>
-                  מצא חולצות
-                </Link>
-                <Link to="/catalog?fast=true"
-                  className="text-sm font-body text-[#1B2A4A]/70 underline decoration-[#E8622A] decoration-2 underline-offset-4 hover:text-[#E8622A] transition-colors">
-                  או ראה מה יש במלאי בארץ ←
-                </Link>
-              </div>
+              <nav aria-label="קיצורי דרך לקטלוג" className="flex flex-wrap gap-2 mb-6 max-w-md">
+                {HERO_SHORTCUTS.map(c => (
+                  <Link key={c.href} to={c.href}
+                    className="inline-flex items-center gap-1.5 bg-white border-2 border-[#1B2A4A] px-3 py-1.5 text-xs font-heading font-bold text-[#1B2A4A] uppercase hover:bg-[#1B2A4A] hover:text-white transition-colors">
+                    <span aria-hidden="true">{c.emoji}</span>
+                    {c.label}
+                  </Link>
+                ))}
+              </nav>
+
+              {/* One CTA. The cart button that used to sit here duplicated the
+                  navbar's — same action, same badge, both on screen at once. */}
+              <Link to="/catalog"
+                className="inline-block bg-[#E8622A] text-white font-heading font-bold px-8 py-3 uppercase tracking-wider text-sm hover:bg-[#D0551F] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
+                style={{ boxShadow: '3px 3px 0 #1B2A4A', textShadow: '1px 1px 4px rgba(0,0,0,0.25)' }}>
+                מצא חולצות
+              </Link>
             </div>
 
             {/* Right: real shirts as a polaroid fan.
