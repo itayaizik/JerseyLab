@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShieldCheck, Camera, Ruler, Zap, Star, ChevronDown, MessageCircle, Instagram, Gift, Check, HelpCircle } from 'lucide-react';
+import { Search, ShieldCheck, Camera, Ruler, Zap, Star, ChevronDown, MessageCircle, Instagram, Gift, Check, HelpCircle, ArrowLeft } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import MysteryBoxInfo, { MYSTERY_BOX_HIGHLIGHTS } from '@/components/MysteryBoxInfo';
-import MysteryBoxConfigurator from '@/components/MysteryBoxConfigurator';
+import { BOX_TYPES as MYSTERY_BOX_PRICES } from '@/lib/mysteryBox';
 import { base44 } from '@/api/base44Client';
 import ShirtCard from '@/components/ShirtCard';
 import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
@@ -305,50 +305,74 @@ export default function Home() {
       {/* ===== MYSTERY BOX ===== */}
       {/* Sits directly under the hero: it is the cheapest way into the shop
           and has no catalogue row to be discovered through. */}
-      {/* The whole box is buyable from here — a tall narrow panel, with the
-          pitch beside it and the full write-up one click away in a dialog. */}
+      {/* Two panels: the box itself is one big link through to the page where
+          it is actually ordered, and beside it the explanation of what the
+          thing even is — the question the price alone never answered. */}
       <section className="max-w-7xl mx-auto px-6 pt-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)] gap-6 items-stretch">
 
-          <MysteryBoxConfigurator idPrefix="mb-home" />
-
-          <div className="bg-[#1B2A4A] border-2 border-[#1B2A4A] p-6 lg:p-8"
+          <Link to="/mystery-box"
+            className="group flex flex-col lg:min-h-[540px] bg-[#1B2A4A] border-2 border-[#1B2A4A] p-6 text-center hover:-translate-y-1 transition-transform"
             style={{ boxShadow: '5px 5px 0 #E8622A' }}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 flex-shrink-0 bg-[#E8622A] flex items-center justify-center">
-                <Gift className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-[10px] font-heading uppercase tracking-[0.2em] text-[#FFD95A]">חדש</p>
-                <h2 className="font-heading font-black text-3xl text-white uppercase leading-none">מיסטרי בוקס</h2>
-              </div>
+            <p className="text-[10px] font-heading uppercase tracking-[0.25em] text-[#FFD95A] mb-4">חדש</p>
+
+            <div className="mx-auto w-20 h-20 bg-[#E8622A] flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
+              <Gift className="w-10 h-10 text-white" />
             </div>
 
-            <p className="font-body text-sm text-white/75 leading-relaxed mb-5">
-              חולצה מקורית שאנחנו בוחרים בשבילך, במחיר נמוך משמעותית מהקטלוג.
-              רגיל ומונדיאל ₪70, רטרו ₪90.
+            <h2 className="font-heading font-black text-3xl text-white uppercase leading-none mb-2">מיסטרי בוקס</h2>
+            <p className="font-body text-sm text-white/60 leading-relaxed mb-5">
+              חולצה מפתיעה — אתה בוחר סגנון ומידה.
+            </p>
+
+            <div className="space-y-1.5 mb-6 text-right">
+              {MYSTERY_BOX_PRICES.map(p => (
+                <div key={p.label} className="flex items-center justify-between border-b border-white/10 pb-1.5">
+                  <span className="font-body text-sm text-white/70">{p.label}</span>
+                  <span className="font-mono font-bold text-base text-[#FFD95A]">₪{p.price}</span>
+                </div>
+              ))}
+            </div>
+
+            <span className="mt-auto flex items-center justify-center gap-2 bg-[#FFD95A] text-[#1B2A4A] py-3.5 font-heading font-bold text-sm uppercase tracking-wider group-hover:bg-white transition-colors">
+              להזמנה
+              <ArrowLeft className="w-4 h-4" />
+            </span>
+          </Link>
+
+          <div className="bg-white border-2 border-[#1B2A4A] p-6 lg:p-8 flex flex-col"
+            style={{ boxShadow: '5px 5px 0 #1B2A4A' }}>
+            <h2 className="flex items-center gap-2.5 font-heading font-black text-2xl text-[#1B2A4A] uppercase mb-4">
+              <span className="w-9 h-9 flex-shrink-0 bg-[#E8622A] flex items-center justify-center">
+                <HelpCircle className="w-5 h-5 text-white" />
+              </span>
+              מה זה מיסטרי בוקס?
+            </h2>
+
+            <p className="font-body text-sm text-[#1B2A4A]/75 leading-relaxed mb-3">
+              חולצת כדורגל מקורית שאנחנו בוחרים בשבילך, במחיר נמוך משמעותית ממה שהיא
+              עולה בקטלוג. אתה קובע את המסגרת — סגנון, מידה, ומה לא להכניס — ואנחנו
+              בוחרים בתוכה.
+            </p>
+            <p className="font-body text-sm text-[#1B2A4A]/75 leading-relaxed mb-5">
+              זה לא מלאי עודף ולא חולצות פגומות. זו אותה איכות בדיוק כמו כל דבר אחר
+              באתר; מה שמוזל זה ההפתעה, לא המוצר.
             </p>
 
             <ul className="space-y-2.5 mb-6">
               {MYSTERY_BOX_HIGHLIGHTS.map(line => (
-                <li key={line} className="flex gap-2 text-sm font-body text-white/70 leading-relaxed">
-                  <Check className="w-4 h-4 text-[#FFD95A] flex-shrink-0 mt-0.5" />
+                <li key={line} className="flex gap-2 text-sm font-body text-[#1B2A4A]/75 leading-relaxed">
+                  <Check className="w-4 h-4 text-[#E8622A] flex-shrink-0 mt-0.5" />
                   <span>{line}</span>
                 </li>
               ))}
             </ul>
 
-            <div className="flex flex-wrap gap-2">
-              <button type="button" onClick={() => setMysteryInfoOpen(true)}
-                className="inline-flex items-center justify-center gap-1.5 bg-[#FFD95A] text-[#1B2A4A] px-5 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-white transition-colors">
-                <HelpCircle className="w-4 h-4" />
-                איך זה עובד?
-              </button>
-              <Link to="/mystery-box"
-                className="inline-flex items-center justify-center gap-1.5 border-2 border-white/30 text-white/80 px-5 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:border-[#FFD95A] hover:text-[#FFD95A] transition-colors">
-                לעמוד המלא
-              </Link>
-            </div>
+            <button type="button" onClick={() => setMysteryInfoOpen(true)}
+              className="mt-auto self-start inline-flex items-center gap-1.5 border-2 border-[#1B2A4A] text-[#1B2A4A] px-5 py-2.5 font-heading font-bold text-sm uppercase tracking-wider hover:bg-[#1B2A4A] hover:text-white transition-colors"
+              style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
+              קרא את כל הפרטים
+            </button>
           </div>
         </div>
       </section>

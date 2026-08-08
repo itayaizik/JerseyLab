@@ -3,41 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Gift, Check, ShoppingCart, Shirt, Sparkles, Ban, MessageSquare } from 'lucide-react';
 import { addToCart } from '@/lib/cart';
 import { toast } from '@/components/ui/use-toast';
+import { BOX_TYPES, SIZES, NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 
-// The whole mystery box purchase, in one tall panel. Lives here rather than on
-// the page because the home page shows the same thing — two copies would let
-// the prices drift apart, which is the one thing that must never happen.
+// The whole mystery box purchase, in one tall panel. Prices come from
+// src/lib/mysteryBox.js so the home page's price list and what this actually
+// charges can never disagree.
 
-// A mystery box has no catalogue row behind it, so it carries a sentinel id.
-// The admin panel and the profile page both fall back to the stored name when
-// no shirt matches, which is what makes this work without a fake DB entry.
-export const MYSTERY_BOX_ID = 'mystery-box';
-
-export const BOX_TYPES = [
-  {
-    id: 'regular',
-    label: 'רגיל',
-    price: 70,
-    icon: Shirt,
-    blurb: 'חולצת מועדון מהעונות האחרונות — ליגות אירופה או ישראל.',
-  },
-  {
-    id: 'retro',
-    label: 'רטרו',
-    price: 90,
-    icon: Sparkles,
-    blurb: 'חולצה קלאסית מהארכיון. עונות ישנות ודגמים שכבר לא מייצרים.',
-  },
-  {
-    id: 'mundial',
-    label: 'מונדיאל',
-    price: 70,
-    icon: Gift,
-    blurb: 'חולצת נבחרת — מונדיאל או יורו, בית או חוץ.',
-  },
-];
-
-const SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+const TYPE_ICONS = { regular: Shirt, retro: Sparkles, mundial: Gift };
 
 // Swatches rather than a text field: picking from a list is one tap, and it
 // keeps the answers consistent enough for us to actually act on them.
@@ -52,9 +24,6 @@ const COLORS = [
   { label: 'סגול', hex: '#6A3DA8' },
   { label: 'ורוד', hex: '#E05A9B' },
 ];
-
-const NAME_PRICE = 10;
-const PATCHES_PRICE = 5;
 
 export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = '', headerAction = null }) {
   const [type, setType] = useState('regular');
@@ -122,7 +91,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           <div className="space-y-2">
             {BOX_TYPES.map(box => {
               const active = type === box.id;
-              const Icon = box.icon;
+              const Icon = TYPE_ICONS[box.id];
               return (
                 <button key={box.id} type="button" onClick={() => setType(box.id)}
                   aria-pressed={active}

@@ -5,8 +5,6 @@ import HowItWorksNotice from '@/components/HowItWorksNotice';
 import MysteryBoxInfo from '@/components/MysteryBoxInfo';
 import MysteryBoxConfigurator from '@/components/MysteryBoxConfigurator';
 
-export { MYSTERY_BOX_ID } from '@/components/MysteryBoxConfigurator';
-
 export default function MysteryBox() {
   return (
     <div className="bg-[#F2ECD9] min-h-screen">
