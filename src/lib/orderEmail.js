@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { cartItemTotal } from '@/lib/cart';
 
 // Calls the `send-order-confirmation` Edge Function, which holds the Resend API
 // key server-side — the browser must never see it. Callers treat this as
@@ -17,7 +18,11 @@ export async function sendOrderConfirmation({ email, fullName, orderId, items, t
         player_version: !!item.playerVersion,
         custom_name: item.addName ? (item.customName || '') : '',
         local_stock: !!item.isExactStockItem,
-        price: item.basePrice + (item.addName ? 15 : 0) + (item.playerVersion ? 20 : 0),
+        // Must go through the shared helper: items that price themselves (the
+        // mystery box, whose add-ons are +10/+5) would otherwise be mailed a
+        // total that disagrees with the one the customer just confirmed.
+        price: cartItemTotal(item),
+        notes: (item.details || []).map(d => `${d.label}: ${d.value}`).join(' | '),
       })),
     },
   });

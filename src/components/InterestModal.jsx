@@ -141,6 +141,9 @@ export function CartModal({ open, onClose, user }) {
         const extras = (item.extras || []).map(x => `${x.label} (+₪${x.price})`);
         if (item.playerVersion) extras.push('גרסת שחקן (+₪20)');
         if (item.addName) extras.push(`הדפסת שם: ${item.customName || ''} (+₪15)`);
+        // Preferences carry no price but must reach the order, or asking for
+        // them on the mystery box page would be theatre.
+        (item.details || []).forEach(d => extras.push(`${d.label}: ${d.value}`));
         const itemTotal = cartItemTotal(item);
         await base44.entities.InterestRequest.create({
           shirt_id: item.shirtId, shirt_name: item.shirtName,
@@ -253,6 +256,13 @@ export function CartModal({ open, onClose, user }) {
                           their own add-ons rather than the fixed ones below. */}
                       {item.extras?.map(x => (
                         <p key={x.label} className="text-xs text-[#E8622A] font-bold font-body">{x.label} (+₪{x.price})</p>
+                      ))}
+                      {/* Unpriced preferences (mystery box exclusions, notes).
+                          Shown so the customer can check them before sending. */}
+                      {item.details?.map(d => (
+                        <p key={d.label} className="text-xs text-[#1B2A4A]/60 font-body">
+                          <span className="font-bold">{d.label}:</span> {d.value}
+                        </p>
                       ))}
                       {item.playerVersion && <p className="text-xs text-[#1B2A4A] font-bold font-body">גרסת שחקן (+₪20)</p>}
                       {item.deliveryNote ? (

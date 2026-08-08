@@ -44,6 +44,7 @@ interface OrderItem {
   custom_name?: string;
   local_stock?: boolean;
   price?: number;
+  notes?: string;
 }
 
 function itemRow(item: OrderItem): string {
@@ -51,6 +52,9 @@ function itemRow(item: OrderItem): string {
   if (item.player_version) extras.push('גרסת שחקן');
   if (item.custom_name) extras.push(`הדפסה: ${esc(item.custom_name)}`);
   const eta = item.local_stock ? 'מלאי בארץ — עד שבוע' : 'משלוח מהיר — עד 3 שבועות';
+  // Mystery box exclusions and free-text notes. Echoing them back is the only
+  // written record the customer has that we took the request down correctly.
+  const notes = (item.notes || '').trim();
 
   return `
     <tr>
@@ -60,6 +64,7 @@ function itemRow(item: OrderItem): string {
           מידה: ${esc(item.size)}${extras.length ? ' · ' + extras.join(' · ') : ''}
         </p>
         <p style="margin:2px 0 0; font-family:'Assistant',Arial,sans-serif; font-size:11px; color:#E8622A;">${eta}</p>
+        ${notes ? `<p style="margin:4px 0 0; font-family:'Assistant',Arial,sans-serif; font-size:11px; color:#6B7280;">${esc(notes)}</p>` : ''}
       </td>
       <td style="padding:12px 0; border-bottom:1px solid #e5ded0; text-align:left; white-space:nowrap; vertical-align:top;">
         <span style="font-family:'Space Mono','Courier New',monospace; font-size:14px; font-weight:700; color:#1B2A4A;">₪${esc(item.price)}</span>
