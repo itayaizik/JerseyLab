@@ -58,7 +58,6 @@ export default function MysteryBox() {
   const [type, setType] = useState('regular');
   const [size, setSize] = useState('');
   const [addName, setAddName] = useState(false);
-  const [customName, setCustomName] = useState('');
   const [patches, setPatches] = useState(false);
   const [excludeClubs, setExcludeClubs] = useState('');
   const [excludeColors, setExcludeColors] = useState([]);
@@ -75,11 +74,10 @@ export default function MysteryBox() {
 
   const handleAdd = () => {
     if (!size) { setError('בחר מידה'); return; }
-    if (addName && !customName.trim()) { setError('כתוב את השם שיודפס מאחורה'); return; }
     setError('');
 
     const extras = [];
-    if (addName) extras.push({ label: `שם ומספר: ${customName.trim()}`, price: NAME_PRICE });
+    if (addName) extras.push({ label: 'שם ומספר מאחורה (לבחירתנו)', price: NAME_PRICE });
     if (patches) extras.push({ label: 'כל הפאצ\'ים', price: PATCHES_PRICE });
 
     // Preferences are not priced, so they travel separately from `extras` —
@@ -192,14 +190,10 @@ export default function MysteryBox() {
 
               <Field number={3} title="תוספות">
                 <div className="space-y-2">
+                  {/* No name field on purpose: the shirt is a surprise, so the
+                      print is too — we pick the player that fits it. */}
                   <Extra checked={addName} onChange={setAddName} label="שם ומספר מאחורה" price={NAME_PRICE}
-                    hint="הדפסה בסגנון החולצה שתקבל" />
-                  {addName && (
-                    <input id="mb-name" value={customName} maxLength={40}
-                      onChange={e => { setCustomName(e.target.value); setError(''); }}
-                      placeholder="MESSI 10" aria-label="שם ומספר להדפסה"
-                      className="w-full border-2 border-[#1B2A4A] px-3 py-2.5 text-sm bg-white focus:outline-none font-body" />
-                  )}
+                    hint="אנחנו בוחרים את השם והמספר שמתאימים לחולצה שתצא" />
                   <Extra checked={patches} onChange={setPatches} label="כל הפאצ'ים" price={PATCHES_PRICE}
                     hint="פאצ'ים של הליגה והטורניר, לפי החולצה" />
                 </div>
@@ -302,7 +296,7 @@ export default function MysteryBox() {
               <List items={[
                 'חולצה אחת, במידה שבחרת, מהסגנון שבחרת.',
                 'אנחנו בוחרים את הקבוצה, העונה והדגם — זה מה שהופך את זה למיסטרי.',
-                'תוספות שבחרת (שם ומספר, פאצ\'ים) מודפסות על החולצה שתצא.',
+                'בחרת שם ומספר? גם הם הפתעה — נדפיס את השחקן שמתאים לחולצה.',
                 'נעדכן אותך בדיוק איזו חולצה יצאה לפני שהיא נשלחת.',
               ]} />
             </Panel>
