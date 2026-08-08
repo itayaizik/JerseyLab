@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShieldCheck, Camera, Ruler, Zap, Star, ChevronDown, MessageCircle, Instagram, ShoppingCart } from 'lucide-react';
-import { CartModal } from '@/components/InterestModal';
+import { Search, ShieldCheck, Camera, Ruler, Zap, Star, ChevronDown, MessageCircle, Instagram } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ShirtCard from '@/components/ShirtCard';
 import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
@@ -52,8 +51,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
-  const [cartOpen, setCartOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
 
   // Four real shirts for the hero collage. Featured first since that is the
   // admin's own pick, then whatever else is loaded; only shirts that actually
@@ -70,13 +67,6 @@ export default function Home() {
       .slice(0, 4);
   }, [featuredShirts, newShirts, bestSellers]);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    try { setCartCount(JSON.parse(sessionStorage.getItem('jerseylab_cart') || '[]').length); } catch {}
-    const handler = () => { try { setCartCount(JSON.parse(sessionStorage.getItem('jerseylab_cart') || '[]').length); } catch {} };
-    window.addEventListener('cart_updated', handler);
-    return () => window.removeEventListener('cart_updated', handler);
-  }, []);
 
   useEffect(() => {
     async function load() {
@@ -175,7 +165,6 @@ export default function Home() {
         ]
       }}
     />
-    <CartModal open={cartOpen} onClose={() => setCartOpen(false)} user={user} />
 
     {loadError ? (
       <div className="max-w-lg mx-auto px-6 py-24 text-center">
@@ -234,19 +223,19 @@ export default function Home() {
                 </div>
               </form>
 
-              <div className="flex items-center gap-3">
+              {/* One CTA only. The cart button that used to sit here duplicated
+                  the navbar's — same action, same badge, both on screen at once —
+                  and a hero's job is discovery, not checkout. */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <Link to="/catalog"
                   className="inline-block bg-[#E8622A] text-white font-heading font-bold px-8 py-3 uppercase tracking-wider text-sm hover:bg-[#D0551F] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
                   style={{ boxShadow: '3px 3px 0 #1B2A4A', textShadow: '1px 1px 4px rgba(0,0,0,0.25)' }}>
                   מצא חולצות
                 </Link>
-                <button onClick={() => setCartOpen(true)}
-                  className="relative flex items-center gap-2 border-2 border-[#1B2A4A] bg-white px-4 py-3 text-sm font-heading font-bold uppercase hover:bg-[#F2ECD9] hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
-                  style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
-                  <ShoppingCart className="w-4 h-4" />
-                  {cartCount > 0 && <span className="absolute -top-2 -left-2 w-5 h-5 bg-[#E8622A] text-white text-xs rounded-full flex items-center justify-center font-mono">{cartCount}</span>}
-                  הסל
-                </button>
+                <Link to="/catalog?fast=true"
+                  className="text-sm font-body text-[#1B2A4A]/70 underline decoration-[#E8622A] decoration-2 underline-offset-4 hover:text-[#E8622A] transition-colors">
+                  או ראה מה יש במלאי בארץ ←
+                </Link>
               </div>
             </div>
 
