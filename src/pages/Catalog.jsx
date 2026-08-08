@@ -79,6 +79,11 @@ export default function Catalog() {
     setLoading(false);
   }
 
+  // Keep the search box in step with the URL. Switching category from the nav
+  // clears `q`, and without this the old term stayed in the input, contradicting
+  // the results next to it.
+  useEffect(() => { setSearchTerm(searchParams.get('q') || ''); }, [searchParams]);
+
   // Recompute visible shirts whenever URL params, local filters, or the raw list change.
   useEffect(() => {
     let result = [...allShirtsRaw];

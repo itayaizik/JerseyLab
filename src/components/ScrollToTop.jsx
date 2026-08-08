@@ -12,7 +12,11 @@ const getHashId = (hash) => {
 };
 
 export default function ScrollToTop() {
-  const { pathname, hash } = useLocation();
+  // `search` matters as much as `pathname` here: the catalog switches category
+  // through the query string alone, so without it a jump from ?gender=men to
+  // ?tag=retro swapped the grid while leaving the viewport halfway down the
+  // old results — it read as if the page had not changed at all.
+  const { pathname, search, hash } = useLocation();
   const navigationType = useNavigationType();
 
   useEffect(() => {
@@ -27,7 +31,7 @@ export default function ScrollToTop() {
     }
 
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-  }, [pathname, hash, navigationType]);
+  }, [pathname, search, hash, navigationType]);
 
   return null;
 }

@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Search, Heart, User, ChevronDown, Shield, LogOut, ShoppingCart, Home, LayoutGrid, HelpCircle, Mail, Ruler } from 'lucide-react';
+import { Menu, X, Search, Heart, User, ChevronDown, Shield, LogOut, ShoppingCart, Home, LayoutGrid, HelpCircle, Mail, Ruler, Baby, Flag, History, Star, Percent, Sparkles, Zap, ArrowLeft } from 'lucide-react';
 import { CartModal } from '@/components/InterestModal';
 import { base44 } from '@/api/base44Client';
 
 const categories = [
-  { label: 'גברים', href: '/catalog?gender=men' },
-  { label: 'ילדים', href: '/catalog?gender=kids' },
-  { label: 'נבחרות', href: '/catalog?type=national' },
-  { label: 'רטרו', href: '/catalog?tag=retro' },
-  { label: 'שחקנים', href: '/catalog?type=player' },
-  { label: 'סייל', href: '/catalog?sale=true' },
-  { label: 'חדשים', href: '/catalog?new=true' },
+  { label: 'גברים', href: '/catalog?gender=men', icon: User },
+  { label: 'ילדים', href: '/catalog?gender=kids', icon: Baby },
+  { label: 'נבחרות', href: '/catalog?type=national', icon: Flag },
+  { label: 'רטרו', href: '/catalog?tag=retro', icon: History },
+  { label: 'שחקנים', href: '/catalog?type=player', icon: Star },
+  { label: 'סייל', href: '/catalog?sale=true', icon: Percent },
+  { label: 'חדשים', href: '/catalog?new=true', icon: Sparkles },
+  { label: 'מלאי בארץ', href: '/catalog?fast=true', icon: Zap },
 ];
 
 // Desktop nav is icon-only, so every entry carries the icon it is shown as and
@@ -82,8 +83,23 @@ export default function Navbar() {
     return () => document.removeEventListener('click', handleClick);
   }, []);
 
-  // Close mobile menu on navigation
-  useEffect(() => { setMobileOpen(false); setCatOpen(false); }, [location.pathname]);
+  // Close the menus on navigation. Keyed on the query string too: picking a
+  // category from the catalog menu while already on /catalog leaves the path
+  // untouched, so on pathname alone the menu stayed open over the new results.
+  useEffect(() => { setMobileOpen(false); setCatOpen(false); }, [location.pathname, location.search]);
+
+  // Escape closes whichever menu is open.
+  useEffect(() => {
+    if (!catOpen && !adminOpen && !mobileOpen) return;
+    const onKey = (e) => {
+      if (e.key !== 'Escape') return;
+      setCatOpen(false);
+      setAdminOpen(false);
+      setMobileOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [catOpen, adminOpen, mobileOpen]);
 
   useEffect(() => {
     if (searchOpen && searchInputRef.current) searchInputRef.current.focus();
@@ -155,6 +171,7 @@ export default function Navbar() {
   const handleLogout = async () => { await base44.auth.logout('/'); };
 
   const isActive = (href) => location.pathname === href;
+  const currentUrl = location.pathname + location.search;
 
   return (
     <>
@@ -210,19 +227,33 @@ export default function Navbar() {
                   {!catOpen && <NavTip>קטלוג</NavTip>}
                 </button>
                 {catOpen && (
-                   <div className="absolute top-full right-0 mt-1 bg-[#0f1d38] border border-[#E8622A]/40 shadow-2xl min-w-44 z-40 max-h-96 overflow-y-auto">
-                    <div className="py-1">
-                      <Link to="/catalog" onClick={() => setCatOpen(false)}
-                        className="block px-4 py-2 text-xs text-[#E8622A] font-heading uppercase tracking-wider border-b border-white/10 hover:bg-[#E8622A]/10">
-                        כל הקטלוג →
-                      </Link>
-                      {categories.map(c => (
-                        <Link key={c.href} to={c.href} onClick={() => setCatOpen(false)}
-                          className="block px-4 py-2.5 text-sm hover:bg-[#E8622A] hover:text-white transition-colors font-body">
-                          {c.label}
-                        </Link>
-                      ))}
+                  <div role="menu" aria-label="קטגוריות בקטלוג"
+                    className="absolute top-full right-0 mt-2 w-[336px] bg-[#0f1d38] border-2 border-[#E8622A] z-40"
+                    style={{ boxShadow: '5px 5px 0 rgba(15,29,56,0.55)' }}>
+                    <p className="px-3 pt-3 pb-2 text-[10px] text-white/40 font-heading uppercase tracking-[0.2em]">
+                      עיין לפי קטגוריה
+                    </p>
+
+                    {/* Two columns: eight categories as one scannable block
+                        rather than a tall list the eye has to walk down. */}
+                    <div className="grid grid-cols-2 gap-1 px-2 pb-2">
+                      {categories.map(c => {
+                        const active = currentUrl === c.href;
+                        return (
+                          <Link key={c.href} to={c.href} role="menuitem" onClick={() => setCatOpen(false)}
+                            className={`group/cat flex items-center gap-2 px-2.5 py-2.5 text-sm font-body transition-colors ${active ? 'bg-[#E8622A] text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
+                            <c.icon className={`w-4 h-4 flex-shrink-0 transition-colors ${active ? 'text-white' : 'text-[#E8622A]'}`} />
+                            <span className="truncate">{c.label}</span>
+                          </Link>
+                        );
+                      })}
                     </div>
+
+                    <Link to="/catalog" role="menuitem" onClick={() => setCatOpen(false)}
+                      className={`flex items-center justify-between gap-2 px-3 py-2.5 text-xs font-heading font-bold uppercase tracking-wider border-t-2 transition-colors ${currentUrl === '/catalog' ? 'bg-[#E8622A] text-white border-[#E8622A]' : 'text-[#E8622A] border-[#E8622A]/30 hover:bg-[#E8622A] hover:text-white'}`}>
+                      כל הקטלוג
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                    </Link>
                   </div>
                 )}
               </div>
@@ -373,12 +404,16 @@ export default function Navbar() {
               <div className="pt-2">
                 <p className="text-[10px] text-[#E8622A] font-heading uppercase tracking-widest mb-2">קטגוריות</p>
                 <div className="grid grid-cols-2 gap-1">
-                  {categories.map(c => (
-                    <Link key={c.href} to={c.href}
-                      className="block py-2 px-3 text-sm text-white/80 hover:text-[#E8622A] hover:bg-white/5 font-body transition-colors">
-                      {c.label}
-                    </Link>
-                  ))}
+                  {categories.map(c => {
+                    const active = currentUrl === c.href;
+                    return (
+                      <Link key={c.href} to={c.href}
+                        className={`flex items-center gap-2 py-2 px-3 text-sm font-body transition-colors ${active ? 'bg-[#E8622A] text-white' : 'text-white/80 hover:text-[#E8622A] hover:bg-white/5'}`}>
+                        <c.icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-white' : 'text-[#E8622A]'}`} />
+                        <span className="truncate">{c.label}</span>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
 
