@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Heart } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Heart, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ShirtCard from '@/components/ShirtCard';
 import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
@@ -36,6 +36,15 @@ export default function WishlistPage() {
     load();
   }, []);
 
+  const clearAll = async () => {
+    if (!window.confirm(`להסיר את כל ${shirts.length} החולצות מהמועדפים?`)) return;
+    const items = await base44.entities.Wishlist.filter({ user_id: user.id });
+    await Promise.all(items.map(i => base44.entities.Wishlist.delete(i.id).catch(() => {})));
+    setWishlistIds([]);
+    setShirts([]);
+    toast({ title: 'המועדפים נוקו' });
+  };
+
   const toggleWishlist = async (shirtId) => {
     const items = await base44.entities.Wishlist.filter({ user_id: user.id, shirt_id: shirtId });
     if (items[0]) await base44.entities.Wishlist.delete(items[0].id);
@@ -46,15 +55,47 @@ export default function WishlistPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h1 className="font-heading font-black text-2xl flex items-center gap-2" style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>
-          <Heart className="w-6 h-6 text-redcard fill-redcard" />
-          המועדפים שלי
-        </h1>
+      {/* Same sticker header the other standalone pages use, so the wishlist
+          stops looking like a bare grid dropped onto the page. */}
+      <div className="flex flex-wrap items-end justify-between gap-4 mb-6 pb-5 border-b-2 border-[#1B2A4A]/15">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 flex-shrink-0 bg-[#1B2A4A] flex items-center justify-center"
+            style={{ boxShadow: '3px 3px 0 #E8622A' }}>
+            <Heart className="w-6 h-6 text-white fill-white" />
+          </div>
+          <div>
+            <h1 className="font-heading font-black text-2xl md:text-3xl text-[#1B2A4A] uppercase leading-none"
+              style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>
+              המועדפים שלי
+            </h1>
+            <p className="text-sm text-[#1B2A4A]/50 mt-1.5 font-body">
+              {loading ? 'טוען…' : shirts.length > 0 ? `${shirts.length} חולצות שמורות` : 'עדיין ריק'}
+            </p>
+          </div>
+        </div>
+
         {!loading && !error && shirts.length > 0 && (
-          <p className="text-sm text-[#1B2A4A]/50 mt-1 font-body">{shirts.length} חולצות שמורות</p>
+          <div className="flex items-center gap-2">
+            <Link to="/catalog"
+              className="px-3 py-2 text-xs font-heading font-bold uppercase tracking-wide text-[#1B2A4A] bg-white border-2 border-[#1B2A4A] hover:bg-[#F2ECD9] transition-colors"
+              style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
+              המשך לחפש
+            </Link>
+            <button onClick={clearAll}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-heading font-bold uppercase tracking-wide text-[#1B2A4A]/60 hover:text-red-600 transition-colors">
+              <Trash2 className="w-3.5 h-3.5" />
+              נקה הכל
+            </button>
+          </div>
         )}
       </div>
+
+      {/* Nothing is bought on the site, so say what the heart actually does. */}
+      {!loading && !error && shirts.length > 0 && (
+        <p className="mb-5 text-xs text-[#1B2A4A]/55 font-body bg-[#FFD95A]/25 border-r-2 border-[#FFD95A] px-3 py-2">
+          המועדפים נשמרים לחשבון שלך בלבד. כדי להזמין, היכנס לחולצה ושלח בקשה — ואנחנו נחזור אליך.
+        </p>
+      )}
       {error ? (
         <div className="text-center py-20 border-2 border-dashed border-[#1B2A4A]/20">
           <p className="font-heading font-bold text-xl text-[#1B2A4A]/40 mb-2 uppercase">לא הצלחנו לטעון את המועדפים</p>

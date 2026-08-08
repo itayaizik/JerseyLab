@@ -20,14 +20,7 @@ import HowItWorksNotice from '@/components/HowItWorksNotice';
 import { sendOrderConfirmation } from '@/lib/orderEmail';
 import { SHOP_PHONE, WHATSAPP_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/contact';
 
-// Cart stored in sessionStorage so it persists across page navigations in same session
-function getCart() {
-  try { return JSON.parse(sessionStorage.getItem('jerseylab_cart') || '[]'); } catch { return []; }
-}
-function setCart(cart) {
-  sessionStorage.setItem('jerseylab_cart', JSON.stringify(cart));
-  window.dispatchEvent(new Event('cart_updated'));
-}
+import { getCart, setCart, cartItemTotal, cartTotal } from '@/lib/cart';
 
 // Contact details are remembered between orders so a returning customer isn't
 // retyping them; the account supplies name/email when the customer is logged in.
@@ -110,12 +103,7 @@ export function CartModal({ open, onClose, user }) {
     setCartState(c);
   };
 
-  const total = cart.reduce((sum, item) => {
-    let price = item.basePrice;
-    if (item.addName) price += 15;
-    if (item.playerVersion) price += 20;
-    return sum + price;
-  }, 0);
+  const total = cartTotal(cart);
 
   // The cart is emptied on success but contactForm isn't, so the confirmation
   // screen can still name the channel the customer picked.
@@ -150,10 +138,10 @@ export function CartModal({ open, onClose, user }) {
       // disconnected rows, even though each item is still its own row.
       const orderId = crypto.randomUUID();
       for (const item of cart) {
-        const extras = [];
+        const extras = (item.extras || []).map(x => `${x.label} (+₪${x.price})`);
         if (item.playerVersion) extras.push('גרסת שחקן (+₪20)');
         if (item.addName) extras.push(`הדפסת שם: ${item.customName || ''} (+₪15)`);
-        const itemTotal = item.basePrice + (item.addName ? 15 : 0) + (item.playerVersion ? 20 : 0);
+        const itemTotal = cartItemTotal(item);
         await base44.entities.InterestRequest.create({
           shirt_id: item.shirtId, shirt_name: item.shirtName,
           full_name: fullName, phone: contactForm.phone.trim(),
@@ -252,7 +240,7 @@ export function CartModal({ open, onClose, user }) {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-3">
               {cart.map((item, idx) => {
-                const itemTotal = item.basePrice + (item.addName ? 15 : 0) + (item.playerVersion ? 20 : 0);
+                const itemTotal = cartItemTotal(item);
                 return (
                   <div key={idx} className="bg-[#F2ECD9] p-3 flex gap-3 items-start border-2 border-[#1B2A4A]" style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
                     <div className="w-16 h-16 flex-shrink-0 bg-white border-2 border-[#1B2A4A] relative overflow-hidden">
@@ -261,8 +249,15 @@ export function CartModal({ open, onClose, user }) {
                     <div className="flex-1 min-w-0">
                       <p className="font-heading font-bold text-sm text-[#1B2A4A] uppercase truncate">{item.shirtName}</p>
                       <p className="text-xs text-gray-500 font-body">מידה: {item.size}</p>
+                      {/* Items that price themselves (the mystery box) describe
+                          their own add-ons rather than the fixed ones below. */}
+                      {item.extras?.map(x => (
+                        <p key={x.label} className="text-xs text-[#E8622A] font-bold font-body">{x.label} (+₪{x.price})</p>
+                      ))}
                       {item.playerVersion && <p className="text-xs text-[#1B2A4A] font-bold font-body">גרסת שחקן (+₪20)</p>}
-                      {item.isExactStockItem ? (
+                      {item.deliveryNote ? (
+                        <p className="text-xs text-[#E8622A] font-bold font-body">{item.deliveryNote}</p>
+                      ) : item.isExactStockItem ? (
                         <p className="text-xs text-green-700 font-bold font-body">מלאי בארץ — עד שבוע / איסוף מקריית אונו</p>
                       ) : (
                         <p className="text-xs text-[#E8622A] font-bold font-body">משלוח מהיר — עד 3 שבועות</p>

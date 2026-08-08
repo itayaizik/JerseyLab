@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShieldCheck, Camera, Ruler, Zap, Star, ChevronDown, MessageCircle, Instagram } from 'lucide-react';
+import { Search, ShieldCheck, Camera, Ruler, Zap, Star, ChevronDown, MessageCircle, Instagram, Gift } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ShirtCard from '@/components/ShirtCard';
 import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
@@ -14,6 +14,7 @@ import ProductImage from '@/components/ui/ProductImage';
 import { toast } from '@/components/ui/use-toast';
 
 // Hand-set so the fan reads as a scattered stack rather than a straight row.
+const HERO_LINEUP = ['ביתר ירושלים', 'הפועל תל אביב', 'ברצלונה', 'ריאל מדריד'];
 const HERO_TILT = [-7, 4, -3, 6];
 const HERO_LIFT = [6, -10, 12, -4];
 
@@ -40,6 +41,7 @@ const whyUsCards = [
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [catalogShirts, setCatalogShirts] = useState([]);
   const [newShirts, setNewShirts] = useState([]);
   const [featuredShirts, setFeaturedShirts] = useState([]);
   const [bestSellers, setBestSellers] = useState([]);
@@ -53,20 +55,32 @@ export default function Home() {
   const [loadError, setLoadError] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
 
-  // Four real shirts for the hero collage. Featured first since that is the
-  // admin's own pick, then whatever else is loaded; only shirts that actually
-  // have a photo, because an empty frame in the hero looks broken. The
-  // container keeps its height while this is empty, so nothing shifts on load.
+  // Four named home kits for the hero collage — two Israeli, two Spanish. They
+  // are matched by club rather than pinned by id so a re-import cannot empty
+  // the hero, and the newest season always wins. Any slot that finds nothing
+  // falls back to the featured/new/best pool, so the collage is never short.
   const heroShirts = useMemo(() => {
+    const withPhoto = catalogShirts.filter(s => s?.main_image);
+    // The club name is stripped before testing for the kit: "ביתר ירושלים"
+    // contains "בית", so matching the raw name picks the away shirt too.
+    const newestHomeKit = (club) => withPhoto
+      .filter(s => s.club === club && (s.name || '').replace(club, '').includes('בית'))
+      .sort((a, b) => String(b.season || '').localeCompare(String(a.season || '')))[0];
+
     const seen = new Set();
-    return [...featuredShirts, ...newShirts, ...bestSellers]
-      .filter(s => {
-        if (!s?.main_image || seen.has(s.id)) return false;
-        seen.add(s.id);
-        return true;
-      })
-      .slice(0, 4);
-  }, [featuredShirts, newShirts, bestSellers]);
+    const picked = [];
+    const take = (shirt) => {
+      if (!shirt || seen.has(shirt.id)) return;
+      seen.add(shirt.id);
+      picked.push(shirt);
+    };
+
+    HERO_LINEUP.forEach(club => take(newestHomeKit(club)));
+    [...featuredShirts, ...newShirts, ...bestSellers, ...withPhoto].forEach(s => {
+      if (picked.length < 4) take(s?.main_image ? s : null);
+    });
+    return picked.slice(0, 4);
+  }, [catalogShirts, featuredShirts, newShirts, bestSellers]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -85,6 +99,7 @@ export default function Home() {
         setLoading(false);
         return;
       }
+      setCatalogShirts(allShirts);
       setNewShirts(allShirts.filter(s => s.is_new).slice(0, 8));
       setFeaturedShirts(allShirts.filter(s => s.featured).slice(0, 8));
       setBestSellers([...allShirts].filter(s => s.best_seller).sort((a,b) => (b.interest_count||0)-(a.interest_count||0)).slice(0, 8));
@@ -282,6 +297,33 @@ export default function Home() {
       <div className="w-full h-5 bg-[#E8622A]" style={{
         clipPath: 'polygon(0 0,2% 60%,5% 10%,8% 80%,11% 20%,14% 70%,17% 10%,20% 65%,23% 20%,26% 75%,29% 15%,32% 60%,35% 10%,38% 70%,41% 20%,44% 65%,47% 10%,50% 60%,53% 20%,56% 70%,59% 15%,62% 65%,65% 10%,68% 70%,71% 20%,74% 60%,77% 15%,80% 70%,83% 20%,86% 65%,89% 10%,92% 60%,95% 15%,98% 65%,100% 0,100% 100%,0 100%)'
       }} />
+
+      {/* ===== MYSTERY BOX ===== */}
+      {/* Sits directly under the hero: it is the cheapest way into the shop
+          and has no catalogue row to be discovered through. */}
+      <section className="max-w-7xl mx-auto px-6 pt-10">
+        <Link to="/mystery-box"
+          className="group block bg-[#1B2A4A] border-2 border-[#1B2A4A] overflow-hidden hover:-translate-y-0.5 transition-transform"
+          style={{ boxShadow: '5px 5px 0 #E8622A' }}>
+          <div className="flex flex-col sm:flex-row items-stretch">
+            <div className="flex items-center justify-center bg-[#E8622A] px-6 py-5 sm:py-0 sm:w-32 flex-shrink-0">
+              <Gift className="w-12 h-12 text-white group-hover:scale-110 transition-transform" />
+            </div>
+            <div className="flex-1 min-w-0 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-heading uppercase tracking-[0.2em] text-[#FFD95A] mb-1">חדש</p>
+                <h2 className="font-heading font-black text-2xl text-white uppercase leading-none mb-2">מיסטרי בוקס</h2>
+                <p className="font-body text-sm text-white/70 leading-relaxed">
+                  בוחר סגנון ומידה, אנחנו בוחרים את החולצה. רגיל ומונדיאל ₪70, רטרו ₪90.
+                </p>
+              </div>
+              <span className="flex-shrink-0 inline-flex items-center justify-center gap-1.5 bg-[#FFD95A] text-[#1B2A4A] px-5 py-3 font-heading font-bold text-sm uppercase tracking-wider group-hover:bg-white transition-colors">
+                בנה את הבוקס
+              </span>
+            </div>
+          </div>
+        </Link>
+      </section>
 
       {/* ===== SHIRT SECTIONS SPLIT ===== */}
       {(loading || newShirts.length > 0 || bestSellers.length > 0 || featuredShirts.length > 0) && (

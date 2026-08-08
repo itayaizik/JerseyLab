@@ -24,6 +24,7 @@ import ResetPassword from '@/pages/ResetPassword';
 import Home from '@/pages/Home';
 import Catalog from '@/pages/Catalog';
 import ShirtDetail from '@/pages/ShirtDetail';
+const MysteryBox = lazy(() => import('@/pages/MysteryBox'));
 const FAQPage = lazy(() => import('@/pages/FAQPage'));
 const Contact = lazy(() => import('@/pages/Contact'));
 const SizeGuide = lazy(() => import('@/pages/SizeGuide'));
@@ -86,6 +87,7 @@ const AuthenticatedApp = () => {
         <Route path="/" element={<Home />} />
         <Route path="/catalog" element={<Catalog />} />
         <Route path="/shirt/:id" element={<ShirtDetail />} />
+        <Route path="/mystery-box" element={<MysteryBox />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/size-guide" element={<SizeGuide />} />

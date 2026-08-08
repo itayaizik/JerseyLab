@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Search, Heart, User, ChevronDown, Shield, LogOut, ShoppingCart, Home, LayoutGrid, HelpCircle, Mail, Ruler, Baby, Flag, History, Star, Percent, Sparkles, Zap, ArrowLeft } from 'lucide-react';
+import { Menu, X, Search, Heart, User, ChevronDown, Shield, LogOut, ShoppingCart, Home, LayoutGrid, HelpCircle, Mail, Ruler, Baby, Flag, History, Star, Percent, Sparkles, Zap, ArrowLeft, Gift } from 'lucide-react';
 import { CartModal } from '@/components/InterestModal';
 import { base44 } from '@/api/base44Client';
 
@@ -24,6 +24,28 @@ const navLinks = [
   { label: 'צור קשר', href: '/contact', icon: Mail },
   { label: 'מדריך מידות', href: '/size-guide', icon: Ruler },
 ];
+
+// Mobile menu building blocks. Every group gets the same labelled header and
+// every tappable row the same 44px minimum, so the panel reads as one list
+// instead of the four differently-styled ones it grew into.
+function MobileSection({ title, children }) {
+  return (
+    <div>
+      <p className="text-[10px] text-[#E8622A] font-heading uppercase tracking-[0.2em] mb-2">{title}</p>
+      {children}
+    </div>
+  );
+}
+
+function MobileRow({ to, icon: Icon, active, children }) {
+  return (
+    <Link to={to}
+      className={`flex items-center gap-2.5 min-h-[44px] px-3 text-sm font-body transition-colors ${active ? 'bg-[#E8622A] text-white' : 'text-white/75 active:bg-white/10'}`}>
+      {Icon && <Icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-white' : 'text-[#E8622A]/80'}`} />}
+      <span>{children}</span>
+    </Link>
+  );
+}
 
 // Hover/focus tooltip under an icon-only control.
 function NavTip({ children }) {
@@ -87,6 +109,15 @@ export default function Navbar() {
   // category from the catalog menu while already on /catalog leaves the path
   // untouched, so on pathname alone the menu stayed open over the new results.
   useEffect(() => { setMobileOpen(false); setCatOpen(false); }, [location.pathname, location.search]);
+
+  // Freeze the page behind the open mobile panel — otherwise a scroll that
+  // starts on the panel carries on into the page underneath it.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [mobileOpen]);
 
   // Escape closes whichever menu is open.
   useEffect(() => {
@@ -186,23 +217,25 @@ export default function Navbar() {
         top: lastScrollY > 16 ? '16px' : '0',
         left: lastScrollY > 16 ? '16px' : '0',
         right: lastScrollY > 16 ? '16px' : '0',
-        background: 'rgba(27, 42, 74, 0.92)',
-        backdropFilter: 'blur(8px)',
+        background: '#1B2A4A',
         boxShadow: lastScrollY > 16 ? '0 8px 32px rgba(0, 0, 0, 0.15)' : 'none',
         borderRadius: lastScrollY > 16 ? '8px' : '0px',
         opacity: isVisible ? 1 : 0,
         pointerEvents: isVisible ? 'auto' : 'none',
         transform: isVisible ? 'translateY(0)' : 'translateY(-20px)'
       }}>
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 lg:px-6">
           <div className="flex items-center justify-between h-16">
 
             {/* Logo */}
-            <Link to="/" className="flex-shrink-0 flex items-center mr-6" aria-label="JerseyLab — דף הבית">
+            {/* No right margin below lg: at 375px the logo plus the action
+                icons plus a 24px margin overflowed the row, which shoved the
+                buttons out past the container padding to 3px from the edge. */}
+            <Link to="/" className="flex-shrink-0 flex items-center lg:mr-6" aria-label="JerseyLab — דף הבית">
               <img
                 src="https://media.base44.com/images/public/6a42e762005950f7dc39df84/f2c515307_image-removebg-preview2.png"
                 alt="JerseyLab — ONE PASSION. ONE LAB."
-                className="h-16 w-auto object-contain"
+                className="h-12 lg:h-16 w-auto object-contain"
                 style={{ mixBlendMode: 'screen', filter: 'saturate(2)' }}
               />
             </Link>
@@ -248,6 +281,15 @@ export default function Navbar() {
                         );
                       })}
                     </div>
+
+                    {/* Its own strip above the catalog link — a mystery box is
+                        not a filter over the catalogue, it is a product. */}
+                    <Link to="/mystery-box" role="menuitem" onClick={() => setCatOpen(false)}
+                      className={`flex items-center gap-2 mx-2 mb-2 px-2.5 py-2.5 text-sm font-body border-2 transition-colors ${currentUrl === '/mystery-box' ? 'bg-[#FFD95A] text-[#1B2A4A] border-[#FFD95A]' : 'text-[#FFD95A] border-[#FFD95A]/40 hover:bg-[#FFD95A] hover:text-[#1B2A4A]'}`}>
+                      <Gift className="w-4 h-4 flex-shrink-0" />
+                      <span className="font-bold">מיסטרי בוקס</span>
+                      <span className="mr-auto font-mono text-xs opacity-80">מ-₪70</span>
+                    </Link>
 
                     <Link to="/catalog" role="menuitem" onClick={() => setCatOpen(false)}
                       className={`flex items-center justify-between gap-2 px-3 py-2.5 text-xs font-heading font-bold uppercase tracking-wider border-t-2 transition-colors ${currentUrl === '/catalog' ? 'bg-[#E8622A] text-white border-[#E8622A]' : 'text-[#E8622A] border-[#E8622A]/30 hover:bg-[#E8622A] hover:text-white'}`}>
@@ -397,58 +439,77 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {mobileOpen && (
-          <div className="lg:hidden border-t-2 border-[#E8622A]/30 bg-[#0f1d38] max-h-[80vh] overflow-y-auto">
-            <div className="px-4 py-4 space-y-1">
-              <Link to="/" className="block py-2.5 text-sm font-heading hover:text-[#E8622A] border-b border-white/5">דף הבית</Link>
+          <div className="lg:hidden border-t-2 border-[#E8622A]/30 bg-[#0f1d38] max-h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain">
+            <div className="px-4 py-4 space-y-5">
 
-              <div className="pt-2">
-                <p className="text-[10px] text-[#E8622A] font-heading uppercase tracking-widest mb-2">קטגוריות</p>
-                <div className="grid grid-cols-2 gap-1">
+              <MobileSection title="עיין לפי קטגוריה">
+                <div className="grid grid-cols-2 gap-1.5">
                   {categories.map(c => {
                     const active = currentUrl === c.href;
                     return (
                       <Link key={c.href} to={c.href}
-                        className={`flex items-center gap-2 py-2 px-3 text-sm font-body transition-colors ${active ? 'bg-[#E8622A] text-white' : 'text-white/80 hover:text-[#E8622A] hover:bg-white/5'}`}>
+                        className={`flex items-center gap-2 min-h-[44px] px-3 text-sm font-body transition-colors ${active ? 'bg-[#E8622A] text-white' : 'text-white/80 active:bg-white/10 hover:bg-white/5'}`}>
                         <c.icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-white' : 'text-[#E8622A]'}`} />
                         <span className="truncate">{c.label}</span>
                       </Link>
                     );
                   })}
                 </div>
-              </div>
+                <Link to="/mystery-box"
+                  className={`mt-1.5 flex items-center gap-2 min-h-[44px] px-3 text-sm font-body border-2 transition-colors ${currentUrl === '/mystery-box' ? 'bg-[#FFD95A] text-[#1B2A4A] border-[#FFD95A]' : 'text-[#FFD95A] border-[#FFD95A]/40'}`}>
+                  <Gift className="w-4 h-4 flex-shrink-0" />
+                  <span className="font-bold">מיסטרי בוקס</span>
+                  <span className="mr-auto font-mono text-xs opacity-80">מ-₪70</span>
+                </Link>
+                <Link to="/catalog"
+                  className={`mt-1.5 flex items-center justify-between min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wider border-2 transition-colors ${currentUrl === '/catalog' ? 'bg-[#E8622A] text-white border-[#E8622A]' : 'text-[#E8622A] border-[#E8622A]/40 active:bg-[#E8622A] active:text-white'}`}>
+                  כל הקטלוג
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                </Link>
+              </MobileSection>
 
-              <div className="border-t border-white/10 pt-3 space-y-1">
-                {navLinks.slice(1).map(l => (
-                  <Link key={l.href} to={l.href} className="block py-2.5 text-sm font-body text-white/70 hover:text-[#E8622A]">{l.label}</Link>
+              <MobileSection title="באתר">
+                {navLinks.map(l => (
+                  <MobileRow key={l.href} to={l.href} icon={l.icon} active={currentUrl === l.href}>{l.label}</MobileRow>
                 ))}
-              </div>
+              </MobileSection>
 
               {user ? (
-                <div className="border-t border-white/10 pt-3 space-y-1">
-                  <Link to="/profile" className="block py-2.5 text-sm font-body text-white/70 hover:text-[#E8622A]">פרופיל</Link>
-                  <Link to="/wishlist" className="block py-2.5 text-sm font-body text-white/70 hover:text-[#E8622A]">מועדפים</Link>
+                <>
+                  <MobileSection title="החשבון שלי">
+                    <MobileRow to="/profile" icon={User} active={currentUrl === '/profile'}>פרופיל</MobileRow>
+                    <MobileRow to="/wishlist" icon={Heart} active={currentUrl === '/wishlist'}>מועדפים</MobileRow>
+                    <button onClick={handleLogout}
+                      className="w-full flex items-center gap-2.5 min-h-[44px] px-3 text-sm font-body text-red-400 active:bg-white/5 text-right">
+                      <LogOut className="w-4 h-4 flex-shrink-0" />
+                      <span>התנתקות</span>
+                    </button>
+                  </MobileSection>
+
                   {isAdmin && (
-                    <>
-                      <div className="border-t border-[#E8622A]/30 pt-2 mt-2">
-                        <p className="text-[10px] text-[#E8622A] font-heading uppercase tracking-widest mb-2">ניהול</p>
-                        <Link to="/admin" className="block py-2 pr-2 text-sm font-body text-white/70 hover:text-[#E8622A]">דשבורד</Link>
-                        <Link to="/admin/shirts" className="block py-2 pr-2 text-sm font-body text-white/70 hover:text-[#E8622A]">ערוך מוצרים</Link>
-                        <Link to="/admin/requests" className="block py-2 pr-2 text-sm font-body text-white/70 hover:text-[#E8622A]">הזמנות</Link>
-                      </div>
-                    </>
+                    <MobileSection title="ניהול">
+                      <MobileRow to="/admin" icon={Shield} active={currentUrl === '/admin'}>דשבורד</MobileRow>
+                      <MobileRow to="/admin/shirts" icon={LayoutGrid} active={currentUrl === '/admin/shirts'}>ערוך מוצרים</MobileRow>
+                      <MobileRow to="/admin/requests" icon={ShoppingCart} active={currentUrl === '/admin/requests'}>הזמנות</MobileRow>
+                    </MobileSection>
                   )}
-                  <button onClick={handleLogout} className="block py-2.5 text-sm text-red-400 hover:text-red-300 font-body w-full text-right">התנתקות</button>
-                </div>
+                </>
               ) : (
-                <div className="border-t border-white/10 pt-3 grid grid-cols-2 gap-2">
-                  <Link to="/login" className="block py-2.5 text-sm bg-[#E8622A] text-white text-center font-bold font-heading">כניסה</Link>
-                  <Link to="/register" className="block py-2.5 text-sm text-center border border-white/20 hover:border-[#E8622A] text-white/70 font-body">הרשמה</Link>
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <Link to="/login" className="flex items-center justify-center min-h-[44px] text-sm bg-[#E8622A] text-white font-bold font-heading">כניסה</Link>
+                  <Link to="/register" className="flex items-center justify-center min-h-[44px] text-sm border-2 border-white/25 active:border-[#E8622A] text-white/80 font-body">הרשמה</Link>
                 </div>
               )}
             </div>
           </div>
         )}
       </nav>
+
+      {/* Tap anywhere outside to dismiss. Sits under the nav (z-50) so the bar
+          and the open panel stay clickable. */}
+      {mobileOpen && (
+        <div className="lg:hidden fixed inset-0 z-40 bg-black/50" aria-hidden="true" onClick={() => setMobileOpen(false)} />
+      )}
     </>
   );
 }
