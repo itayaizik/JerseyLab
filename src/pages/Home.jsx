@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, ShieldCheck, Camera, Ruler, Zap, Star, ChevronDown, MessageCircle, Instagram, ShoppingCart } from 'lucide-react';
 import { CartModal } from '@/components/InterestModal';
@@ -11,7 +11,12 @@ import CategoryCardsSection from '@/components/CategoryCardsSection';
 import PromoBanner from '@/components/PromoBanner';
 import InstagramSection from '@/components/InstagramSection';
 import Seo from '@/components/Seo';
+import ProductImage from '@/components/ui/ProductImage';
 import { toast } from '@/components/ui/use-toast';
+
+// Hand-set so the fan reads as a scattered stack rather than a straight row.
+const HERO_TILT = [-7, 4, -3, 6];
+const HERO_LIFT = [6, -10, 12, -4];
 
 const categoryCards = [
 { label: 'חולצות גברים', href: '/catalog?gender=men', emoji: '⚽' },
@@ -49,6 +54,21 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+
+  // Four real shirts for the hero collage. Featured first since that is the
+  // admin's own pick, then whatever else is loaded; only shirts that actually
+  // have a photo, because an empty frame in the hero looks broken. The
+  // container keeps its height while this is empty, so nothing shifts on load.
+  const heroShirts = useMemo(() => {
+    const seen = new Set();
+    return [...featuredShirts, ...newShirts, ...bestSellers]
+      .filter(s => {
+        if (!s?.main_image || seen.has(s.id)) return false;
+        seen.add(s.id);
+        return true;
+      })
+      .slice(0, 4);
+  }, [featuredShirts, newShirts, bestSellers]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -230,29 +250,41 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right: Polaroid collage */}
-            <div className="relative h-64 md:h-80 hidden md:block">
-              {/* Decorative polaroids with offset rotation */}
-              <div className="polaroid absolute" style={{ top: '0%', right: '55%', width: 130, transform: 'rotate(-6deg)', zIndex: 3 }}>
-                <div className="w-full aspect-square bg-gray-100 overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=200&q=80&fm=webp" alt="" className="w-full h-full object-cover" />
-                </div>
-              </div>
-              <div className="polaroid absolute" style={{ top: '5%', right: '5%', width: 140, transform: 'rotate(5deg)', zIndex: 2 }}>
-                <div className="w-full aspect-square bg-gray-100 overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=200&q=80&fm=webp" alt="" className="w-full h-full object-cover" />
-                </div>
-              </div>
-              <div className="polaroid absolute" style={{ bottom: '0%', right: '45%', width: 120, transform: 'rotate(3deg)', zIndex: 1 }}>
-                <div className="w-full aspect-square bg-gray-100 overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=200&q=80&fm=webp" alt="" className="w-full h-full object-cover" />
-                </div>
-              </div>
-              <div className="polaroid absolute" style={{ bottom: '5%', right: '0%', width: 130, transform: 'rotate(-4deg)', zIndex: 4 }}>
-                <div className="w-full aspect-square bg-gray-100 overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=200&q=80&fm=webp" alt="" className="w-full h-full object-cover" />
-                </div>
-              </div>
+            {/* Right: real shirts as a polaroid fan.
+                Previously four Unsplash stock photos — a stadium, a ball, boots,
+                a pitch — with no jersey among them, absolutely positioned at
+                percentages that left a hole through the middle. Now it shows
+                actual stock, each photo linking to its product page, and fills
+                the caption strip `.polaroid` already reserves (padding-bottom:28px)
+                but nothing was using. A centred flex fan can't leave gaps the way
+                the hand-tuned percentages did. */}
+            <div className="relative h-64 md:h-80 hidden md:flex items-center justify-center" dir="ltr">
+              {heroShirts.map((shirt, i) => (
+                <Link
+                  key={shirt.id}
+                  to={`/shirt/${shirt.id}`}
+                  aria-label={shirt.name}
+                  className="polaroid relative block flex-shrink-0 transition-all duration-200 hover:-translate-y-2 hover:shadow-xl hover:!z-20"
+                  style={{
+                    // Proportional to the column, not fixed px and not vw: the
+                    // collage appears from `md` up, where this column is only
+                    // ~340px wide, so four fixed-width cards ran straight out of
+                    // it. 4x26% minus 3x4% of overlap is 92% of the container, so
+                    // the fan fits at any width by construction.
+                    width: '26%',
+                    marginLeft: i === 0 ? 0 : '-4%',
+                    transform: `rotate(${HERO_TILT[i]}deg) translateY(${HERO_LIFT[i]}px)`,
+                    zIndex: i + 1,
+                  }}
+                >
+                  <div className="relative w-full aspect-square bg-[#F2ECD9] overflow-hidden">
+                    <ProductImage src={shirt.main_image} alt={shirt.name} eager={i < 2} className="w-full h-full object-cover" />
+                  </div>
+                  <p dir="rtl" className="absolute bottom-1.5 inset-x-2 text-[10px] leading-tight text-[#1B2A4A]/70 font-body text-center truncate">
+                    {shirt.name}
+                  </p>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
