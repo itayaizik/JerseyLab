@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShieldCheck, Camera, Ruler, Zap, Star, ChevronDown, MessageCircle, Instagram, Gift } from 'lucide-react';
+import { Search, ShieldCheck, Camera, Ruler, Zap, Star, ChevronDown, MessageCircle, Instagram, Gift, Check, HelpCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import MysteryBoxInfo, { MYSTERY_BOX_HIGHLIGHTS } from '@/components/MysteryBoxInfo';
 import { base44 } from '@/api/base44Client';
 import ShirtCard from '@/components/ShirtCard';
 import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
@@ -54,6 +56,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
+  const [mysteryInfoOpen, setMysteryInfoOpen] = useState(false);
 
   // Four named home kits for the hero collage — two Israeli, two Spanish. They
   // are matched by club rather than pinned by id so a re-import cannot empty
@@ -302,28 +305,66 @@ export default function Home() {
       {/* Sits directly under the hero: it is the cheapest way into the shop
           and has no catalogue row to be discovered through. */}
       <section className="max-w-7xl mx-auto px-6 pt-10">
-        <Link to="/mystery-box"
-          className="group block bg-[#1B2A4A] border-2 border-[#1B2A4A] overflow-hidden hover:-translate-y-0.5 transition-transform"
+        <div className="bg-[#1B2A4A] border-2 border-[#1B2A4A] overflow-hidden"
           style={{ boxShadow: '5px 5px 0 #E8622A' }}>
           <div className="flex flex-col sm:flex-row items-stretch">
             <div className="flex items-center justify-center bg-[#E8622A] px-6 py-5 sm:py-0 sm:w-32 flex-shrink-0">
-              <Gift className="w-12 h-12 text-white group-hover:scale-110 transition-transform" />
+              <Gift className="w-12 h-12 text-white" />
             </div>
-            <div className="flex-1 min-w-0 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex-1 min-w-0 p-5 flex flex-col lg:flex-row lg:items-center gap-5">
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-heading uppercase tracking-[0.2em] text-[#FFD95A] mb-1">חדש</p>
                 <h2 className="font-heading font-black text-2xl text-white uppercase leading-none mb-2">מיסטרי בוקס</h2>
-                <p className="font-body text-sm text-white/70 leading-relaxed">
-                  בוחר סגנון ומידה, אנחנו בוחרים את החולצה. רגיל ומונדיאל ₪70, רטרו ₪90.
+                <p className="font-body text-sm text-white/70 leading-relaxed mb-3">
+                  רגיל ומונדיאל ₪70, רטרו ₪90.
                 </p>
+                {/* The three lines that answer "what am I actually buying?"
+                    before anyone clicks through to the page. */}
+                <ul className="space-y-1.5">
+                  {MYSTERY_BOX_HIGHLIGHTS.map(line => (
+                    <li key={line} className="flex gap-2 text-xs font-body text-white/65 leading-relaxed">
+                      <Check className="w-3.5 h-3.5 text-[#FFD95A] flex-shrink-0 mt-0.5" />
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <span className="flex-shrink-0 inline-flex items-center justify-center gap-1.5 bg-[#FFD95A] text-[#1B2A4A] px-5 py-3 font-heading font-bold text-sm uppercase tracking-wider group-hover:bg-white transition-colors">
-                בנה את הבוקס
-              </span>
+
+              <div className="flex-shrink-0 flex flex-col gap-2 sm:flex-row lg:flex-col">
+                <Link to="/mystery-box"
+                  className="inline-flex items-center justify-center gap-1.5 bg-[#FFD95A] text-[#1B2A4A] px-5 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-white transition-colors whitespace-nowrap">
+                  בנה את הבוקס
+                </Link>
+                <button type="button" onClick={() => setMysteryInfoOpen(true)}
+                  className="inline-flex items-center justify-center gap-1.5 border-2 border-white/30 text-white/80 px-5 py-2.5 font-heading font-bold text-xs uppercase tracking-wider hover:border-[#FFD95A] hover:text-[#FFD95A] transition-colors whitespace-nowrap">
+                  <HelpCircle className="w-3.5 h-3.5" />
+                  איך זה עובד?
+                </button>
+              </div>
             </div>
           </div>
-        </Link>
+        </div>
       </section>
+
+      {/* Full explanation without leaving the home page. */}
+      <Dialog open={mysteryInfoOpen} onOpenChange={setMysteryInfoOpen}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto bg-[#F2ECD9] border-2 border-[#1B2A4A] p-5">
+          <DialogTitle className="flex items-center gap-2 font-heading font-black text-xl text-[#1B2A4A] uppercase mb-4">
+            <span className="w-8 h-8 flex-shrink-0 bg-[#E8622A] flex items-center justify-center">
+              <Gift className="w-4 h-4 text-white" />
+            </span>
+            מיסטרי בוקס
+          </DialogTitle>
+
+          <MysteryBoxInfo compact />
+
+          <Link to="/mystery-box" onClick={() => setMysteryInfoOpen(false)}
+            className="mt-5 w-full flex items-center justify-center gap-2 bg-[#E8622A] text-white py-3.5 font-heading font-bold text-sm uppercase tracking-wider hover:bg-[#D0551F] transition-colors"
+            style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
+            בנה את הבוקס
+          </Link>
+        </DialogContent>
+      </Dialog>
 
       {/* ===== SHIRT SECTIONS SPLIT ===== */}
       {(loading || newShirts.length > 0 || bestSellers.length > 0 || featuredShirts.length > 0) && (

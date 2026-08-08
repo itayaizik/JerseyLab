@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Gift, Check, ShoppingCart, Shirt, Sparkles, Ban, MessageSquare, HelpCircle, Package, Truck, ShieldCheck } from 'lucide-react';
+import { Gift, Check, ShoppingCart, Shirt, Sparkles, Ban, MessageSquare } from 'lucide-react';
 import Seo from '@/components/Seo';
 import HowItWorksNotice from '@/components/HowItWorksNotice';
+import MysteryBoxInfo from '@/components/MysteryBoxInfo';
 import { addToCart } from '@/lib/cart';
 import { toast } from '@/components/ui/use-toast';
 
@@ -279,68 +280,7 @@ export default function MysteryBox() {
 
           {/* ===== Everything about it ===== */}
           <div className="space-y-5">
-
-            <Panel icon={Package} title="מה זה מיסטרי בוקס?">
-              <p>
-                חולצת כדורגל מקורית שאנחנו בוחרים בשבילך, במחיר נמוך משמעותית ממה שהיא
-                עולה בקטלוג. אתה קובע את המסגרת — סגנון, מידה, ומה <em>לא</em> להכניס —
-                ואנחנו בוחרים בתוכה.
-              </p>
-              <p>
-                זה לא מלאי עודף ולא חולצות פגומות. זו אותה איכות בדיוק כמו כל דבר אחר
-                באתר; מה שמוזל זה ההפתעה, לא המוצר.
-              </p>
-            </Panel>
-
-            <Panel icon={Check} title="מה מקבלים">
-              <List items={[
-                'חולצה אחת, במידה שבחרת, מהסגנון שבחרת.',
-                'אנחנו בוחרים את הקבוצה, העונה והדגם — זה מה שהופך את זה למיסטרי.',
-                'בחרת שם ומספר? גם הם הפתעה — נדפיס את השחקן שמתאים לחולצה.',
-                'נעדכן אותך בדיוק איזו חולצה יצאה לפני שהיא נשלחת.',
-              ]} />
-            </Panel>
-
-            <Panel icon={Ban} title="מה אפשר לפסול">
-              <p>
-                אתה לא בוחר את החולצה, אבל אתה כן יכול להוציא דברים מהמשחק. בשדות
-                בטופס אפשר לרשום קבוצות שלא תרצה לקבל, לסמן צבעים שלא מתאימים לך,
-                ולהוסיף כל הערה חופשית.
-              </p>
-              <List items={[
-                'קבוצות — יריבות, קבוצות שכבר יש לך, כל סיבה שהיא.',
-                'צבעים — למשל אם החולצה מיועדת למישהו שלא לובש אדום.',
-                'הערות — ליגה מועדפת, שחקן שתשמח לקבל, או שזו מתנה.',
-              ]} />
-              <p className="text-[#1B2A4A]/55">
-                ככל שתפסול יותר, כך מצטמצם המאגר שממנו אנחנו בוחרים — אם לא נשאר לנו
-                ממה לבחור, נחזור אליך לפני שנשלח משהו.
-              </p>
-            </Panel>
-
-            <Panel icon={ShieldCheck} title="אם לא אהבת">
-              <p>
-                לפני שהחולצה נשלחת אנחנו מראים לך מה יצא. אם זה לא מתאים — כתוב לנו
-                ונחליף לסגנון אחר, בלי ויכוח. אחרי שהחולצה כבר בדרך אליך אי אפשר
-                להחליף, כי היא כבר הוקצתה עבורך.
-              </p>
-            </Panel>
-
-            <Panel icon={Truck} title="זמני אספקה">
-              <p>
-                מיסטרי בוקס מגיע מהמלאי הכללי שלנו, כך שזמן ההגעה זהה להזמנה רגילה —
-                נעדכן אותך בזמן המדויק כשנחזור אליך לאישור ההזמנה.
-              </p>
-            </Panel>
-
-            <Panel icon={HelpCircle} title="למה זה זול יותר?">
-              <p>
-                כי אנחנו בוחרים. חולצות מסוימות יושבות אצלנו הרבה זמן פשוט כי אף אחד
-                לא חיפש בדיוק אותן — לא בגלל שמשהו לא בסדר בהן. המיסטרי בוקס מוציא
-                אותן לדרך, ואתה מקבל את ההנחה.
-              </p>
-            </Panel>
-
+            <MysteryBoxInfo />
             <HowItWorksNotice variant="full" />
           </div>
         </div>
@@ -363,35 +303,6 @@ function Field({ number, title, optional, children }) {
       </div>
       {children}
     </div>
-  );
-}
-
-function Panel({ icon: Icon, title, children }) {
-  return (
-    <section className="bg-white border-2 border-[#1B2A4A] p-5" style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
-      <h2 className="flex items-center gap-2 font-heading font-bold text-base text-[#1B2A4A] uppercase tracking-wide mb-3">
-        <span className="w-7 h-7 flex-shrink-0 bg-[#E8622A] flex items-center justify-center">
-          <Icon className="w-4 h-4 text-white" />
-        </span>
-        {title}
-      </h2>
-      <div className="space-y-2.5 text-sm font-body text-[#1B2A4A]/75 leading-relaxed">
-        {children}
-      </div>
-    </section>
-  );
-}
-
-function List({ items }) {
-  return (
-    <ul className="space-y-2">
-      {items.map(line => (
-        <li key={line} className="flex gap-2">
-          <Check className="w-4 h-4 text-[#E8622A] flex-shrink-0 mt-0.5" />
-          <span>{line}</span>
-        </li>
-      ))}
-    </ul>
   );
 }
 
