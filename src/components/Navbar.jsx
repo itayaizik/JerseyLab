@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Search, Heart, User, ChevronDown, Shield, LogOut, ShoppingCart } from 'lucide-react';
+import { Menu, X, Search, Heart, User, ChevronDown, Shield, LogOut, ShoppingCart, Home, LayoutGrid, HelpCircle, Mail, Ruler } from 'lucide-react';
 import { CartModal } from '@/components/InterestModal';
 import { base44 } from '@/api/base44Client';
 
@@ -14,12 +14,26 @@ const categories = [
   { label: 'חדשים', href: '/catalog?new=true' },
 ];
 
+// Desktop nav is icon-only, so every entry carries the icon it is shown as and
+// the label it is announced/tooltipped with — an icon with no accessible name
+// is just a mystery glyph. The mobile menu still renders the labels as text.
 const navLinks = [
-  { label: 'דף הבית', href: '/' },
-  { label: 'שאלות ותשובות', href: '/faq' },
-  { label: 'צור קשר', href: '/contact' },
-  { label: 'מדריך מידות', href: '/size-guide' },
+  { label: 'דף הבית', href: '/', icon: Home },
+  { label: 'שאלות ותשובות', href: '/faq', icon: HelpCircle },
+  { label: 'צור קשר', href: '/contact', icon: Mail },
+  { label: 'מדריך מידות', href: '/size-guide', icon: Ruler },
 ];
+
+// Hover/focus tooltip under an icon-only control.
+function NavTip({ children }) {
+  return (
+    <span
+      role="tooltip"
+      className="pointer-events-none absolute top-full right-1/2 translate-x-1/2 mt-1.5 whitespace-nowrap bg-[#0f1d38] border border-[#E8622A]/50 px-2 py-1 text-[10px] font-body text-white opacity-0 translate-y-1 transition-all duration-150 group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 group-focus-visible:translate-y-0">
+      {children}
+    </span>
+  );
+}
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -179,17 +193,21 @@ export default function Navbar() {
             {/* Desktop Nav */}
             <div className="hidden lg:flex items-center gap-1">
               {navLinks.slice(0, 1).map(l => (
-                <Link key={l.href} to={l.href}
-                  className={`px-3 py-2 text-sm font-heading tracking-wide transition-colors ${isActive(l.href) ? 'text-[#E8622A]' : 'text-white/80 hover:text-white'}`}>
-                  {l.label}
+                <Link key={l.href} to={l.href} aria-label={l.label} title={l.label}
+                  className={`group relative flex items-center justify-center w-10 h-10 transition-colors ${isActive(l.href) ? 'text-[#E8622A] bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/10'}`}>
+                  <l.icon className="w-[18px] h-[18px]" />
+                  <NavTip>{l.label}</NavTip>
                 </Link>
               ))}
 
               {/* Catalog dropdown */}
               <div ref={catRef} className="relative">
-                <button onClick={() => setCatOpen(!catOpen)}
-                  className={`flex items-center gap-1 px-3 py-2 text-sm font-heading tracking-wide transition-colors ${catOpen || location.pathname === '/catalog' ? 'text-[#E8622A]' : 'text-white/80 hover:text-white'}`}>
-                  קטלוג <ChevronDown className={`w-3 h-3 transition-transform ${catOpen ? 'rotate-180' : ''}`} />
+                <button onClick={() => setCatOpen(!catOpen)} aria-label="קטלוג" title="קטלוג"
+                  aria-expanded={catOpen} aria-haspopup="true"
+                  className={`group relative flex items-center justify-center gap-0.5 h-10 px-2.5 transition-colors ${catOpen || location.pathname === '/catalog' ? 'text-[#E8622A] bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/10'}`}>
+                  <LayoutGrid className="w-[18px] h-[18px]" />
+                  <ChevronDown className={`w-3 h-3 transition-transform ${catOpen ? 'rotate-180' : ''}`} />
+                  {!catOpen && <NavTip>קטלוג</NavTip>}
                 </button>
                 {catOpen && (
                    <div className="absolute top-full right-0 mt-1 bg-[#0f1d38] border border-[#E8622A]/40 shadow-2xl min-w-44 z-40 max-h-96 overflow-y-auto">
@@ -210,9 +228,10 @@ export default function Navbar() {
               </div>
 
               {navLinks.slice(1).map(l => (
-                <Link key={l.href} to={l.href}
-                  className={`px-3 py-2 text-sm font-heading tracking-wide transition-colors ${isActive(l.href) ? 'text-[#E8622A]' : 'text-white/80 hover:text-white'}`}>
-                  {l.label}
+                <Link key={l.href} to={l.href} aria-label={l.label} title={l.label}
+                  className={`group relative flex items-center justify-center w-10 h-10 transition-colors ${isActive(l.href) ? 'text-[#E8622A] bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/10'}`}>
+                  <l.icon className="w-[18px] h-[18px]" />
+                  <NavTip>{l.label}</NavTip>
                 </Link>
               ))}
             </div>
@@ -220,29 +239,33 @@ export default function Navbar() {
             {/* Right actions */}
             <div className="flex items-center gap-1">
               {/* Search */}
-              <button onClick={() => setSearchOpen(!searchOpen)}
-                className={`p-2.5 rounded transition-colors ${searchOpen ? 'text-[#E8622A]' : 'text-white/70 hover:text-white'}`} aria-label="חיפוש">
-                <Search className="w-4 h-4" />
+              <button onClick={() => setSearchOpen(!searchOpen)} title="חיפוש"
+                className={`group relative flex items-center justify-center w-10 h-10 transition-colors ${searchOpen ? 'text-[#E8622A] bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/10'}`} aria-label="חיפוש">
+                <Search className="w-[18px] h-[18px]" />
+                {!searchOpen && <NavTip>חיפוש</NavTip>}
               </button>
 
               {/* Cart */}
-              <button onClick={() => setCartOpen(true)}
-                className="relative p-2.5 text-white/70 hover:text-white transition-colors" aria-label="סל">
-                <ShoppingCart className="w-4 h-4" />
+              <button onClick={() => setCartOpen(true)} title="סל"
+                className="group relative flex items-center justify-center w-10 h-10 text-white/70 hover:text-white hover:bg-white/10 transition-colors" aria-label="סל">
+                <ShoppingCart className="w-[18px] h-[18px]" />
                 {cartCount > 0 && (
                   <span className="absolute top-1 left-1 w-4 h-4 bg-[#E8622A] text-white text-[9px] flex items-center justify-center font-mono font-bold">
                     {cartCount}
                   </span>
                 )}
+                <NavTip>סל</NavTip>
               </button>
 
               {user ? (
                 <>
-                  <Link to="/wishlist" className="p-2.5 text-white/70 hover:text-white transition-colors hidden sm:flex" aria-label="מועדפים">
-                    <Heart className="w-4 h-4" />
+                  <Link to="/wishlist" title="מועדפים" className="group relative hidden sm:flex items-center justify-center w-10 h-10 text-white/70 hover:text-white hover:bg-white/10 transition-colors" aria-label="מועדפים">
+                    <Heart className="w-[18px] h-[18px]" />
+                    <NavTip>מועדפים</NavTip>
                   </Link>
-                  <Link to="/profile" className="p-2.5 text-white/70 hover:text-white transition-colors hidden sm:flex" aria-label="פרופיל">
-                    <User className="w-4 h-4" />
+                  <Link to="/profile" title="פרופיל" className="group relative hidden sm:flex items-center justify-center w-10 h-10 text-white/70 hover:text-white hover:bg-white/10 transition-colors" aria-label="פרופיל">
+                    <User className="w-[18px] h-[18px]" />
+                    <NavTip>פרופיל</NavTip>
                   </Link>
 
                   {isAdmin && (
@@ -273,8 +296,9 @@ export default function Navbar() {
                     </div>
                   )}
 
-                  <button onClick={handleLogout} className="hidden lg:flex p-2.5 text-white/70 hover:text-white transition-colors" aria-label="התנתקות">
-                    <LogOut className="w-4 h-4" />
+                  <button onClick={handleLogout} title="התנתקות" className="group relative hidden lg:flex items-center justify-center w-10 h-10 text-white/70 hover:text-white hover:bg-white/10 transition-colors" aria-label="התנתקות">
+                    <LogOut className="w-[18px] h-[18px]" />
+                    <NavTip>התנתקות</NavTip>
                   </button>
                 </>
               ) : (

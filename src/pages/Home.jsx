@@ -189,13 +189,6 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             {/* Left: Text */}
             <div>
-              {/* Tape decoration */}
-              <div className="inline-block mb-3">
-                <div className="bg-[#FFD95A]/70 px-4 py-1 text-xs font-heading tracking-widest text-[#1B2A4A] uppercase" style={{ transform: 'rotate(-1deg)' }}>
-                  ★ אוסף בלעדי ★
-                </div>
-              </div>
-
               <h1 className="font-heading font-bold text-4xl md:text-5xl text-[#1B2A4A] leading-tight mb-4 uppercase">
                 חולצות כדורגל איכותיות,
                 <br />
