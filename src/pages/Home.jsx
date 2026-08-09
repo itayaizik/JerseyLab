@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShieldCheck, Camera, Ruler, Zap, Star, ChevronDown, MessageCircle, Instagram, Gift, Check, HelpCircle, ArrowLeft } from 'lucide-react';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import MysteryBoxInfo, { MYSTERY_BOX_HIGHLIGHTS } from '@/components/MysteryBoxInfo';
-import { BOX_TYPES as MYSTERY_BOX_PRICES } from '@/lib/mysteryBox';
+import { Search, ShieldCheck, Camera, Ruler, Zap, Star, ChevronDown, MessageCircle, Instagram, Gift } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ShirtCard from '@/components/ShirtCard';
 import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
@@ -57,7 +54,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
-  const [mysteryInfoOpen, setMysteryInfoOpen] = useState(false);
 
   // Four named home kits for the hero collage — two Israeli, two Spanish. They
   // are matched by club rather than pinned by id so a re-import cannot empty
@@ -305,97 +301,31 @@ export default function Home() {
       {/* ===== MYSTERY BOX ===== */}
       {/* Sits directly under the hero: it is the cheapest way into the shop
           and has no catalogue row to be discovered through. */}
-      {/* Two panels: the box itself is one big link through to the page where
-          it is actually ordered, and beside it the explanation of what the
-          thing even is — the question the price alone never answered. */}
+      {/* One wide banner, not a second storefront: the home page teases the
+          box and the product page does the explaining and the selling. */}
       <section className="max-w-7xl mx-auto px-6 pt-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)] gap-6 items-stretch">
-
-          <Link to="/mystery-box"
-            className="group flex flex-col lg:min-h-[540px] bg-[#1B2A4A] border-2 border-[#1B2A4A] p-6 text-center hover:-translate-y-1 transition-transform"
-            style={{ boxShadow: '5px 5px 0 #E8622A' }}>
-            <p className="text-[10px] font-heading uppercase tracking-[0.25em] text-[#FFD95A] mb-4">חדש</p>
-
-            <div className="mx-auto w-20 h-20 bg-[#E8622A] flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
-              <Gift className="w-10 h-10 text-white" />
+        <Link to="/mystery-box"
+          className="group block bg-[#1B2A4A] border-2 border-[#1B2A4A] overflow-hidden hover:-translate-y-0.5 transition-transform"
+          style={{ boxShadow: '5px 5px 0 #E8622A' }}>
+          <div className="flex flex-col sm:flex-row items-stretch">
+            <div className="flex items-center justify-center bg-[#E8622A] px-6 py-5 sm:py-0 sm:w-32 flex-shrink-0">
+              <Gift className="w-12 h-12 text-white group-hover:scale-110 transition-transform" />
             </div>
-
-            <h2 className="font-heading font-black text-3xl text-white uppercase leading-none mb-2">מיסטרי בוקס</h2>
-            <p className="font-body text-sm text-white/60 leading-relaxed mb-5">
-              חולצה מפתיעה — אתה בוחר סגנון ומידה.
-            </p>
-
-            <div className="space-y-1.5 mb-6 text-right">
-              {MYSTERY_BOX_PRICES.map(p => (
-                <div key={p.label} className="flex items-center justify-between border-b border-white/10 pb-1.5">
-                  <span className="font-body text-sm text-white/70">{p.label}</span>
-                  <span className="font-mono font-bold text-base text-[#FFD95A]">₪{p.price}</span>
-                </div>
-              ))}
-            </div>
-
-            <span className="mt-auto flex items-center justify-center gap-2 bg-[#FFD95A] text-[#1B2A4A] py-3.5 font-heading font-bold text-sm uppercase tracking-wider group-hover:bg-white transition-colors">
-              להזמנה
-              <ArrowLeft className="w-4 h-4" />
-            </span>
-          </Link>
-
-          <div className="bg-white border-2 border-[#1B2A4A] p-6 lg:p-8 flex flex-col"
-            style={{ boxShadow: '5px 5px 0 #1B2A4A' }}>
-            <h2 className="flex items-center gap-2.5 font-heading font-black text-2xl text-[#1B2A4A] uppercase mb-4">
-              <span className="w-9 h-9 flex-shrink-0 bg-[#E8622A] flex items-center justify-center">
-                <HelpCircle className="w-5 h-5 text-white" />
+            <div className="flex-1 min-w-0 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-heading uppercase tracking-[0.2em] text-[#FFD95A] mb-1">חדש</p>
+                <h2 className="font-heading font-black text-2xl text-white uppercase leading-none mb-2">מיסטרי בוקס</h2>
+                <p className="font-body text-sm text-white/70 leading-relaxed">
+                  בוחר סגנון ומידה, אנחנו בוחרים את החולצה. רגיל ומונדיאל ₪70, רטרו ₪90.
+                </p>
+              </div>
+              <span className="flex-shrink-0 inline-flex items-center justify-center gap-1.5 bg-[#FFD95A] text-[#1B2A4A] px-5 py-3 font-heading font-bold text-sm uppercase tracking-wider group-hover:bg-white transition-colors">
+                בנה את הבוקס
               </span>
-              מה זה מיסטרי בוקס?
-            </h2>
-
-            <p className="font-body text-sm text-[#1B2A4A]/75 leading-relaxed mb-3">
-              חולצת כדורגל מקורית שאנחנו בוחרים בשבילך, במחיר נמוך משמעותית ממה שהיא
-              עולה בקטלוג. אתה קובע את המסגרת — סגנון, מידה, ומה לא להכניס — ואנחנו
-              בוחרים בתוכה.
-            </p>
-            <p className="font-body text-sm text-[#1B2A4A]/75 leading-relaxed mb-5">
-              זה לא מלאי עודף ולא חולצות פגומות. זו אותה איכות בדיוק כמו כל דבר אחר
-              באתר; מה שמוזל זה ההפתעה, לא המוצר.
-            </p>
-
-            <ul className="space-y-2.5 mb-6">
-              {MYSTERY_BOX_HIGHLIGHTS.map(line => (
-                <li key={line} className="flex gap-2 text-sm font-body text-[#1B2A4A]/75 leading-relaxed">
-                  <Check className="w-4 h-4 text-[#E8622A] flex-shrink-0 mt-0.5" />
-                  <span>{line}</span>
-                </li>
-              ))}
-            </ul>
-
-            <button type="button" onClick={() => setMysteryInfoOpen(true)}
-              className="mt-auto self-start inline-flex items-center gap-1.5 border-2 border-[#1B2A4A] text-[#1B2A4A] px-5 py-2.5 font-heading font-bold text-sm uppercase tracking-wider hover:bg-[#1B2A4A] hover:text-white transition-colors"
-              style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
-              קרא את כל הפרטים
-            </button>
+            </div>
           </div>
-        </div>
+        </Link>
       </section>
-
-      {/* Full explanation without leaving the home page. */}
-      <Dialog open={mysteryInfoOpen} onOpenChange={setMysteryInfoOpen}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto bg-[#F2ECD9] border-2 border-[#1B2A4A] p-5">
-          <DialogTitle className="flex items-center gap-2 font-heading font-black text-xl text-[#1B2A4A] uppercase mb-4">
-            <span className="w-8 h-8 flex-shrink-0 bg-[#E8622A] flex items-center justify-center">
-              <Gift className="w-4 h-4 text-white" />
-            </span>
-            מיסטרי בוקס
-          </DialogTitle>
-
-          <MysteryBoxInfo compact />
-
-          <Link to="/mystery-box" onClick={() => setMysteryInfoOpen(false)}
-            className="mt-5 w-full flex items-center justify-center gap-2 bg-[#E8622A] text-white py-3.5 font-heading font-bold text-sm uppercase tracking-wider hover:bg-[#D0551F] transition-colors"
-            style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
-            בנה את הבוקס
-          </Link>
-        </DialogContent>
-      </Dialog>
 
       {/* ===== SHIRT SECTIONS SPLIT ===== */}
       {(loading || newShirts.length > 0 || bestSellers.length > 0 || featuredShirts.length > 0) && (

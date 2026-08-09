@@ -23,9 +23,11 @@ export const BOX_TYPES = [
   },
 ];
 
-// Patches are the only paid add-on. Name-and-number is not offered on a
-// mystery box: the shirt is unknown when the order is placed, so there is no
-// player to print.
+// Both add-ons are opt-in. Name-and-number is priced but deliberately not
+// specifiable: the shirt is unknown when the order is placed, so we pick the
+// player that fits whatever comes out. Letting the customer type a name would
+// promise a pairing the product cannot guarantee.
+export const NAME_PRICE = 10;
 export const PATCHES_PRICE = 5;
 
 export const SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];

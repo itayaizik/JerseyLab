@@ -34,16 +34,18 @@ export default function MysteryBox() {
         </div>
       </section>
 
-      {/* The configurator is a tall panel on the right; everything a customer
-          needs to know before committing runs down the column beside it. */}
+      {/* The configurator is the page. It gets the wider column and the top of
+          the reading order; the write-up sits beside it as support, because
+          the previous split gave the explanations twice the room and the box
+          itself read like a sidebar. */}
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] gap-6 items-start">
-          <MysteryBoxConfigurator idPrefix="mb-page" className="lg:sticky lg:top-24" />
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)] gap-6 items-start">
+          <MysteryBoxConfigurator idPrefix="mb-page" size="lg" />
 
-          <div className="space-y-5">
-            <MysteryBoxInfo />
+          <aside className="space-y-4 lg:sticky lg:top-24">
+            <MysteryBoxInfo compact />
             <HowItWorksNotice variant="full" />
-          </div>
+          </aside>
         </div>
       </div>
     </div>
