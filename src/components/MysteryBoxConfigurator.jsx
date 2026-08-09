@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Gift, Check, ShoppingCart, Shirt, Sparkles, Ban, MessageSquare } from 'lucide-react';
 import { addToCart } from '@/lib/cart';
 import { toast } from '@/components/ui/use-toast';
-import { BOX_TYPES, SIZES, NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID } from '@/lib/mysteryBox';
+import { BOX_TYPES, SIZES, PATCHES_PRICE, MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 
 // The whole mystery box purchase, in one tall panel. Prices come from
 // src/lib/mysteryBox.js so the home page's price list and what this actually
@@ -28,7 +28,6 @@ const COLORS = [
 export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = '', headerAction = null }) {
   const [type, setType] = useState('regular');
   const [size, setSize] = useState('');
-  const [addName, setAddName] = useState(false);
   const [patches, setPatches] = useState(false);
   const [excludeClubs, setExcludeClubs] = useState('');
   const [excludeColors, setExcludeColors] = useState([]);
@@ -37,7 +36,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   const navigate = useNavigate();
 
   const selected = BOX_TYPES.find(b => b.id === type);
-  const total = selected.price + (addName ? NAME_PRICE : 0) + (patches ? PATCHES_PRICE : 0);
+  const total = selected.price + (patches ? PATCHES_PRICE : 0);
 
   // Two of these can be on the page at once (home page and, after navigating,
   // the product page), so field ids have to be unique per instance.
@@ -52,7 +51,6 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     setError('');
 
     const extras = [];
-    if (addName) extras.push({ label: 'שם ומספר מאחורה (לבחירתנו)', price: NAME_PRICE });
     if (patches) extras.push({ label: 'כל הפאצ\'ים', price: PATCHES_PRICE });
 
     // Preferences are not priced, so they travel separately from `extras` —
@@ -131,14 +129,12 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         </Field>
 
         <Field number={3} title="תוספות">
-          <div className="space-y-2">
-            {/* No name field on purpose: the shirt is a surprise, so the
-                print is too — we pick the player that fits it. */}
-            <Extra checked={addName} onChange={setAddName} label="שם ומספר מאחורה" price={NAME_PRICE}
-              hint="אנחנו בוחרים את השם והמספר שמתאימים לחולצה שתצא" />
-            <Extra checked={patches} onChange={setPatches} label="כל הפאצ'ים" price={PATCHES_PRICE}
-              hint="פאצ'ים של הליגה והטורניר, לפי החולצה" />
-          </div>
+          {/* Name-and-number is deliberately not offered here. A mystery box
+              ships blank: we do not know which shirt will come out, so there
+              is no player to print, and asking would promise a choice the
+              product cannot keep. */}
+          <Extra checked={patches} onChange={setPatches} label="כל הפאצ'ים" price={PATCHES_PRICE}
+            hint="פאצ'ים של הליגה והטורניר, לפי החולצה" />
         </Field>
 
         <Field number={4} title="מה לא לשלוח" optional>
@@ -194,7 +190,6 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
       <div className="border-t-2 border-[#1B2A4A] p-4 bg-[#F2ECD9]/60">
         <div className="space-y-1.5 mb-3 text-sm font-body">
           <Row label={`מיסטרי בוקס ${selected.label}`} value={selected.price} />
-          {addName && <Row label="שם ומספר מאחורה" value={NAME_PRICE} />}
           {patches && <Row label="כל הפאצ'ים" value={PATCHES_PRICE} />}
           {size && <Row label="מידה" text={size} />}
         </div>
