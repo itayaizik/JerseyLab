@@ -75,14 +75,14 @@ function openingSentence(shirt) {
 function eraSentence(shirt, lead) {
   if (!shirt.is_retro) return null;
   if (lead.includes('רטרו')) {
-    return 'מהדורה שיצאה מהייצור — העיצוב, הספונסר והגזרה של אותה תקופה, לא שחזור מודרני.';
+    return 'מהדורה שיצאה מהייצור. העיצוב, הספונסר והגזרה של אותה תקופה, לא שחזור מודרני.';
   }
   const season = shirt.season;
   const team = shirt.club || shirt.national_team || '';
   return pick([
-    `דגם רטרו${season ? ` מעונת ${season}` : ''} — מהדורה שכבר לא מיוצרת, מהסוג שאספנים מחפשים ולא מוצאים בחנויות.`,
+    `דגם רטרו${season ? ` מעונת ${season}` : ''}. מהדורה שכבר לא מיוצרת, מהסוג שאספנים מחפשים ולא מוצאים בחנויות.`,
     `זו חולצת רטרו${season ? ` מעונת ${season}` : ''}: העיצוב, הספונסר והגזרה של אותה תקופה, לא שחזור מודרני.`,
-    `${team ? `${team} ` : ''}כפי שנראתה${season ? ` בעונת ${season}` : ' באותה תקופה'} — דגם רטרו שיצא מהייצור.`,
+    `${team ? `${team} ` : ''}כפי שנראתה${season ? ` בעונת ${season}` : ' באותה תקופה'}. דגם רטרו שיצא מהייצור.`,
   ], shirt.id + 'era');
 }
 
@@ -92,17 +92,17 @@ function leagueSentence(shirt, lead) {
   // Do not repeat a league the owner's own sentence already named.
   if (lead.includes(league)) return null;
   if (league === 'ליגת האלופות') {
-    return 'גרסת ליגת האלופות — הדגם עם הכיתובים והפאצ׳ים של המפעל האירופי.';
+    return 'גרסת ליגת האלופות, עם הכיתובים והפאצ׳ים של המפעל האירופי.';
   }
   if (league === 'מונדיאל' || league === 'יורו') {
-    return `דגם ${league} — החולצה שהנבחרת לבשה בטורניר.`;
+    return `דגם ${league}, החולצה שהנבחרת לבשה בטורניר.`;
   }
   if (league === 'נבחרות') return null;
   return `הקבוצה משחקת ב${league}.`;
 }
 
 function raritySentence(shirt) {
-  if (shirt.is_rare) return 'פריט נדיר — כמות מוגבלת מאוד, ולא תמיד אפשר להשיג אותו שוב.';
+  if (shirt.is_rare) return 'פריט נדיר בכמות מוגבלת מאוד, ולא תמיד אפשר להשיג אותו שוב.';
   if (shirt.limited_stock) return 'מלאי מוגבל.';
   if (shirt.best_seller) return 'אחת החולצות המבוקשות אצלנו.';
   return null;
@@ -111,7 +111,7 @@ function raritySentence(shirt) {
 function conditionSentence(shirt) {
   const map = {
     like_new: 'מצב כמו חדש.',
-    used: 'חולצה משומשת במצב טוב — נבדקה לפני שעלתה לאתר.',
+    used: 'חולצה משומשת במצב טוב, נבדקה לפני שעלתה לאתר.',
   };
   return map[shirt.condition] || null;
 }
@@ -125,7 +125,7 @@ function playerSentence(shirt) {
 function stockSentence(shirt) {
   const local = localStockSizes(shirt);
   if (local.length) {
-    return `יש מלאי בארץ במידות ${local.join(', ')} — משלוח תוך כשבוע או איסוף מקריית אונו.`;
+    return `יש מלאי בארץ במידות ${local.join(', ')}, עם משלוח תוך כשבוע או איסוף מקריית אונו.`;
   }
   return 'ההזמנה מיוחדת ומגיעה תוך כשלושה שבועות.';
 }
@@ -144,11 +144,50 @@ function personalisationSentence(shirt) {
   ], shirt.id + 'print');
 }
 
+// The opening words of every sentence this script can produce. An earlier
+// run's output is already stored in the database, so without this the context
+// sentences would be appended to themselves on every re-run and the
+// descriptions would grow without bound. Cutting the stored text at the first
+// generated sentence recovers the owner's original line, whatever state the
+// row is currently in.
+const GENERATED_MARKERS = [
+  'זמינה במידות',
+  'ההזמנה מיוחדת ומגיעה',
+  'יש מלאי בארץ במידות',
+  'אפשר להוסיף הדפסת',
+  'ניתן להזמין עם הדפסת',
+  'הקבוצה משחקת ב',
+  'מהדורה שיצאה מהייצור',
+  'דגם רטרו',
+  'זו חולצת רטרו',
+  'כפי שנראתה',
+  'גרסת ליגת האלופות',
+  'דגם מונדיאל',
+  'דגם יורו',
+  'עם השם והמספר של',
+  'פריט נדיר',
+  'מלאי מוגבל.',
+  'אחת החולצות המבוקשות',
+  'מצב כמו חדש.',
+  'חולצה משומשת במצב טוב',
+];
+
+function stripGenerated(text) {
+  let cut = text.length;
+  for (const marker of GENERATED_MARKERS) {
+    const at = text.indexOf(marker);
+    if (at !== -1 && at < cut) cut = at;
+  }
+  return text.slice(0, cut).replace(/[\s.,–—]+$/, '').trim();
+}
+
 function buildDescription(shirt) {
-  const existing = String(shirt.description || '').trim().replace(/\s+/g, ' ');
+  const stored = String(shirt.description || '').trim().replace(/\s+/g, ' ');
 
   // The owner's line leads when there is one; the opening is only generated
-  // to replace an empty field.
+  // to replace an empty field. Anything this script wrote previously is cut
+  // away first, so re-running rebuilds rather than accumulates.
+  const existing = stripGenerated(stored);
   const lead = existing || openingSentence(shirt);
   if (!lead) return null;
 
@@ -167,7 +206,15 @@ function buildDescription(shirt) {
 
   // Four to five sentences is enough substance for a product page without
   // padding it out with filler.
-  return sentences.slice(0, 7).join(' ');
+  return sentences
+    .slice(0, 7)
+    .join(' ')
+    // No dashes anywhere in the copy, including any that came in with the
+    // owner's own sentence.
+    .replace(/s*[—–]s*/g, ', ')
+    .replace(/s*,s*,/g, ',')
+    .replace(/s+/g, ' ')
+    .trim();
 }
 
 const sqlString = (value) => `'${String(value).replace(/'/g, "''")}'`;
