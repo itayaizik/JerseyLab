@@ -322,3 +322,33 @@ create policy "public read request images" on storage.objects for select
 drop policy if exists "anyone upload request images" on storage.objects;
 create policy "anyone upload request images" on storage.objects for insert
   with check (bucket_id = 'request-images');
+
+-- ═══════════════════════════════════════════════════════════
+-- Customer chat screenshots (social proof)
+-- ═══════════════════════════════════════════════════════════
+-- Screenshots of real WhatsApp/Instagram conversations with customers,
+-- uploaded from the admin panel and shown on the site. Managed entirely by the
+-- shop owner: no code change is needed to add, reorder, hide or remove one.
+--
+-- Images go in the existing `shirt-images` bucket, which is already admin-write
+-- and public-read, so no new bucket is required.
+
+create table if not exists chat_proofs_raw (
+  id           text primary key default gen_random_uuid()::text,
+  created_date timestamptz default now(),
+  updated_date timestamptz,
+  image_url    text not null,
+  caption      text,
+  sort_order   integer default 0,
+  active       boolean not null default true
+);
+
+alter table chat_proofs_raw enable row level security;
+
+drop policy if exists "public read active chat proofs" on chat_proofs_raw;
+create policy "public read active chat proofs" on chat_proofs_raw for select
+  using (active = true);
+
+drop policy if exists "admin full access chat proofs" on chat_proofs_raw;
+create policy "admin full access chat proofs" on chat_proofs_raw for all
+  using (public.is_admin()) with check (public.is_admin());

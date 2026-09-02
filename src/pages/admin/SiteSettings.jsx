@@ -3,12 +3,18 @@ import { Save, Loader2, Check } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const settingFields = [
-  { key: 'about_us_text', label: 'טקסט "מי אנחנו"', type: 'textarea' },
+  { key: 'about_us_text', label: 'טקסט "מי אנחנו"', type: 'textarea',
+    help: 'מופיע בדף הבית, וגוגל לוקח ממנו לעיתים את התיאור בתוצאות החיפוש. שורה ריקה יוצרת פסקה חדשה.' },
+  { key: 'homepage_hero_title', label: 'כותרת ראשית בדף הבית', type: 'text',
+    placeholder: 'חולצות כדורגל איכותיות,|נדירות ובמחירים טובים',
+    help: 'הסימן | שובר שורה. מה שאחריו מוצג בכתום.' },
+  { key: 'homepage_hero_subtitle', label: 'משפט מתחת לכותרת', type: 'text',
+    help: 'שורה אחת קצרה מתחת לכותרת הראשית.' },
+  { key: 'chat_proofs_title', label: 'כותרת קטע צילומי השיחות', type: 'text', placeholder: 'לקוחות מספרים',
+    help: 'הקטע מופיע רק אם העלית לפחות צילום אחד ב"צילומי שיחות".' },
   { key: 'whatsapp_link', label: 'קישור WhatsApp', type: 'text', placeholder: 'https://wa.me/972...' },
   { key: 'instagram_link', label: 'קישור Instagram', type: 'text', placeholder: 'https://instagram.com/...' },
   { key: 'email', label: 'אימייל', type: 'text' },
-  { key: 'homepage_hero_title', label: 'כותרת Hero', type: 'text' },
-  { key: 'homepage_hero_subtitle', label: 'תת כותרת Hero', type: 'text' },
   { key: 'contact_message', label: 'הודעת צור קשר', type: 'textarea' },
   { key: 'popular_clubs_title', label: 'כותרת "קבוצות פופולריות"', type: 'text', placeholder: 'קבוצות פופולריות' },
   { key: 'category_cards_title', label: 'כותרת "קנה לפי קטגוריה"', type: 'text', placeholder: 'קנה לפי קטגוריה' },
@@ -80,6 +86,9 @@ export default function SiteSettings() {
                 className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none"
               />
             )}
+            {/* Says where the value shows up, so a field can be changed with
+                some idea of what it will do. */}
+            {f.help && <p className="text-xs text-white/45 font-body mt-1 leading-relaxed">{f.help}</p>}
           </div>
         ))}
         <button onClick={handleSave} disabled={saving}

@@ -19,6 +19,7 @@ const TABLES = {
   CustomerProfile: "customer_profiles_raw",
   InstagramPost: "instagram_posts_raw",
   ShirtRequest: "shirt_requests_raw",
+  ChatProof: "chat_proofs_raw",
 };
 
 // Entities where the creator can't read the row back under RLS (public/

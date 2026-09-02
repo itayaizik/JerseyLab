@@ -9,6 +9,7 @@ import LeaguesSection from '@/components/LeaguesSection';
 import CategoryCardsSection from '@/components/CategoryCardsSection';
 import PromoBanner from '@/components/PromoBanner';
 import InstagramSection from '@/components/InstagramSection';
+import ChatProofsSection from '@/components/ChatProofsSection';
 import Seo from '@/components/Seo';
 import ProductImage from '@/components/ui/ProductImage';
 import { toast } from '@/components/ui/use-toast';
@@ -31,6 +32,15 @@ const HERO_SHORTCUTS = [
   { label: 'ילדים', href: '/catalog?gender=kids', emoji: '👦' },
 ];
 
+
+// Shown when the matching setting is empty. Everything below is editable from
+// ניהול > הגדרות אתר without touching code.
+const DEFAULT_HERO_TITLE = 'חולצות כדורגל איכותיות,|נדירות ובמחירים טובים';
+const DEFAULT_HERO_SUBTITLE = 'מצא חולצות של קבוצות, נבחרות ושחקנים אהובים במקום אחד.';
+const DEFAULT_ABOUT = `אנחנו אתר שמתמחה בחולצות כדורגל, נבחרות וחולצות מיוחדות לאוהדים ואספנים.
+המטרה שלנו היא לתת מקום פשוט, נוח ואמין למצוא חולצות יפות בלי להסתבך.
+כל חולצה נבדקת, מצולמת ומתוארת בכנות. מה שרואים זה מה שמקבלים.
+אנחנו נגישים בוואטסאפ ואינסטגרם ועונים מהר לכל שאלה.`;
 
 // Shortcuts to an empty catalogue are worse than no shortcut at all.
 const STOCKED_SHORTCUTS = withStock(HERO_SHORTCUTS);
@@ -209,13 +219,24 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             {/* Left: Text */}
             <div>
+              {/* Both lines come from ניהול > הגדרות אתר. The setting fields
+                  existed already but nothing read them, so editing them changed
+                  nothing. A "|" in the title splits it across two lines, with
+                  the second line in orange. */}
               <h1 className="font-heading font-bold text-4xl md:text-5xl text-[#1B2A4A] leading-tight mb-4 uppercase">
-                חולצות כדורגל איכותיות,
-                <br />
-                <span className="text-[#E8622A]">נדירות ובמחירים טובים</span>
+                {(siteSettings.homepage_hero_title || DEFAULT_HERO_TITLE)
+                  .split('|')
+                  .map((line, i, all) => (
+                    <React.Fragment key={i}>
+                      {i === all.length - 1 && all.length > 1
+                        ? <span className="text-[#E8622A]">{line.trim()}</span>
+                        : line.trim()}
+                      {i < all.length - 1 && <br />}
+                    </React.Fragment>
+                  ))}
               </h1>
               <p className="font-body text-[#1B2A4A]/70 text-base mb-6">
-                מצא חולצות של קבוצות, נבחרות ושחקנים אהובים במקום אחד.
+                {siteSettings.homepage_hero_subtitle || DEFAULT_HERO_SUBTITLE}
               </p>
 
               {/* Search + the shortcuts under it. An empty search box gives no
@@ -441,11 +462,8 @@ export default function Home() {
                 <div className="flex justify-center mb-3">
                   <div className="w-4 h-4 rounded-full bg-[#E8622A] border-2 border-[#1B2A4A]" />
                 </div>
-                <p className="font-body text-[#1B2A4A]/80 text-sm leading-loose">
-                  אנחנו אתר שמתמחה בחולצות כדורגל, נבחרות וחולצות מיוחדות לאוהדים ואספנים.
-                  המטרה שלנו היא לתת מקום פשוט, נוח ואמין למצוא חולצות יפות בלי להסתבך.
-                  כל חולצה נבדקת, מצולמת ומתוארת בכנות — מה שרואים זה מה שמקבלים.
-                  אנחנו נגישים בוואטסאפ ואינסטגרם ועונים מהר לכל שאלה.
+                <p className="font-body text-[#1B2A4A]/80 text-sm leading-loose whitespace-pre-line">
+                  {siteSettings.about_us_text || DEFAULT_ABOUT}
                 </p>
               </div>
             </div>
@@ -509,6 +527,8 @@ export default function Home() {
       }
 
       {/* ===== INSTAGRAM ===== */}
+      <ChatProofsSection title={siteSettings.chat_proofs_title} />
+
       <InstagramSection title={siteSettings.instagram_section_title} instagramHandle={siteSettings.instagram_handle || 'Jerseylabil'} />
 
       {/* ===== CONTACT ===== */}

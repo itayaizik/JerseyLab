@@ -367,6 +367,7 @@ export default function Navbar() {
                             { to: '/admin/shirts', label: 'ערוך מוצרים' },
                             { to: '/admin/requests', label: 'הזמנות' },
                             { to: '/admin/shirt-requests', label: 'בקשות לחולצות' },
+                            { to: '/admin/chat-proofs', label: 'צילומי שיחות' },
                             { to: '/admin/categories', label: 'קטגוריות' },
                             { to: '/admin/reviews', label: 'ביקורות' },
                             { to: '/admin/faq', label: 'שאלות ותשובות' },
