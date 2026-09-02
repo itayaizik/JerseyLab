@@ -218,3 +218,47 @@ create policy "public read review images" on storage.objects for select
 drop policy if exists "authenticated upload review images" on storage.objects;
 create policy "authenticated upload review images" on storage.objects for insert
   with check (bucket_id = 'review-images' and auth.uid() is not null);
+
+-- ── created_date: give every imported table its own default ──
+-- Base44 stamped `created_date` server-side. The imported tables kept the
+-- column but not the default, so every row the site wrote came in NULL and
+-- the admin panel rendered it as 01/01/1970. The adapter now stamps it
+-- client-side too; this is the backstop for anything written elsewhere
+-- (SQL, imports, future code paths).
+do $$
+declare
+  t text;
+begin
+  foreach t in array array[
+    'shirts_raw', 'wishlists_raw', 'interest_requests_raw', 'reviews_raw',
+    'faq_raw', 'admin_logs_raw', 'search_logs_raw', 'site_settings_raw',
+    'categories_raw', 'league_cards_raw', 'popular_clubs_raw',
+    'category_cards_raw', 'contact_messages_raw', 'customer_profiles_raw'
+  ]
+  loop
+    if exists (
+      select 1 from information_schema.columns
+      where table_schema = 'public' and table_name = t and column_name = 'created_date'
+    ) then
+      execute format('alter table public.%I alter column created_date set default now()', t);
+    end if;
+  end loop;
+end $$;
+
+-- Backfill rows that are already NULL. Only touches interest_requests_raw:
+-- an order with no date at all is worse than an approximate one, and this is
+-- the table the admin panel actually reads dates from. Uses the row's own
+-- created_at when the table has one, otherwise leaves it NULL so the UI can
+-- keep saying "ללא תאריך" rather than inventing a date.
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'interest_requests_raw'
+      and column_name = 'created_at'
+  ) then
+    execute 'update public.interest_requests_raw
+               set created_date = created_at
+             where created_date is null and created_at is not null';
+  end if;
+end $$;

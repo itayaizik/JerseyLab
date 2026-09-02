@@ -4,6 +4,7 @@ import { Heart, MessageCircle, LogOut, Package } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ProductImage from '@/components/ui/ProductImage';
 import { WHATSAPP_URL, INSTAGRAM_URL } from '@/lib/contact';
+import { formatDate } from '@/lib/dates';
 
 // An order moves through these three states; the badge alone did not tell a
 // customer whether anything was still going to happen.
@@ -208,7 +209,7 @@ export default function Profile() {
                   <div className="min-w-0">
                     <p className="font-mono text-xs text-[#FFD95A] font-bold tracking-wider">{ref}</p>
                     <p className="text-[11px] text-white/60 font-body mt-0.5">
-                      {new Date(first.created_date).toLocaleDateString('he-IL')}
+                      {formatDate(first.created_date, 'ללא תאריך')}
                       {group.length > 1 && ` · ${group.length} פריטים`}
                     </p>
                   </div>

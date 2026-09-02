@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, TrendingUp, BarChart2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { formatDateTime, dateSortValue, parseDate } from '@/lib/dates';
 
 export default function SearchAnalytics() {
   const [logs, setLogs] = useState([]);
@@ -18,7 +19,7 @@ export default function SearchAnalytics() {
   // Filter by period
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - period);
-  const filtered = logs.filter(l => new Date(l.created_date) >= cutoff);
+  const filtered = logs.filter(l => dateSortValue(l.created_date) >= cutoff.getTime());
 
   // Aggregate counts
   const counts = {};
@@ -42,7 +43,8 @@ export default function SearchAnalytics() {
     dailyCounts[key] = 0;
   }
   filtered.forEach(l => {
-    const d = new Date(l.created_date);
+    const d = parseDate(l.created_date);
+    if (!d) return;
     const key = d.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit' });
     if (key in dailyCounts) dailyCounts[key]++;
   });
@@ -138,7 +140,7 @@ export default function SearchAnalytics() {
           {filtered.slice(0, 100).map(l => (
             <div key={l.id} className="flex items-center justify-between text-sm py-1 border-b border-white/5">
               <span className="text-chalk font-body">{l.search_term}</span>
-              <span className="text-varnish text-xs font-mono">{new Date(l.created_date).toLocaleString('he-IL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+              <span className="text-varnish text-xs font-mono">{formatDateTime(l.created_date)}</span>
             </div>
           ))}
           {filtered.length === 0 && <p className="text-varnish text-sm">אין חיפושים בתקופה זו</p>}

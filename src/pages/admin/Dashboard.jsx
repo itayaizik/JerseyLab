@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Eye, MessageCircle, AlertTriangle, TrendingUp, Clock } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { StatusPieChart, TopViewedBarChart } from '@/components/admin/DashboardCharts';
+import { formatDate } from '@/lib/dates';
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -193,7 +194,7 @@ export default function Dashboard() {
               {recentLogs.map(log => (
                 <div key={log.id} className="flex items-center gap-3 py-2 border-b border-white/5 last:border-0">
                   <span className="text-xs text-varnish font-mono">
-                    {new Date(log.created_date).toLocaleDateString('he-IL')}
+                    {formatDate(log.created_date)}
                   </span>
                   <span className="text-sm">{log.action} — {log.details || log.entity_type}</span>
                 </div>

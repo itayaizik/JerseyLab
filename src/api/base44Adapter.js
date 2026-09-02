@@ -49,6 +49,16 @@ export function coerceRows(rows) {
   return (rows || []).map(coerceRow);
 }
 
+// Base44 stamped `created_date` itself. The imported Supabase tables carry the
+// column but no default, so every row written through this adapter landed with
+// a null date and rendered as 01/01/1970. Stamp it on the way in, and leave a
+// caller-supplied value alone.
+function stamped(payload) {
+  if (!payload || typeof payload !== "object") return payload;
+  if (payload.created_date) return payload;
+  return { ...payload, created_date: new Date().toISOString() };
+}
+
 function applySort(query, sort) {
   if (!sort) return query;
   const desc = sort.startsWith("-");
@@ -87,12 +97,13 @@ function makeEntity(table, entityName) {
     },
 
     async create(payload) {
+      const row = stamped(payload);
       if (skipReturn) {
-        const { error } = await supabase.from(table).insert(payload);
+        const { error } = await supabase.from(table).insert(row);
         if (error) throw error;
-        return payload;
+        return row;
       }
-      const { data, error } = await supabase.from(table).insert(payload).select();
+      const { data, error } = await supabase.from(table).insert(row).select();
       if (error) throw error;
       return coerceRow(data[0]);
     },
@@ -111,7 +122,7 @@ function makeEntity(table, entityName) {
 
     async bulkCreate(items) {
       if (!items || items.length === 0) return [];
-      const { data, error } = await supabase.from(table).insert(items).select();
+      const { data, error } = await supabase.from(table).insert(items.map(stamped)).select();
       if (error) throw error;
       return coerceRows(data);
     },

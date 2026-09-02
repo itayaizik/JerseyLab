@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Check, X, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { formatDate } from '@/lib/dates';
 
 export default function ManageReviews() {
   const [reviews, setReviews] = useState([]);
@@ -75,7 +76,7 @@ export default function ManageReviews() {
                   <div className="flex gap-0.5">
                     {[1,2,3,4,5].map(s => <Star key={s} className={`w-3 h-3 ${s <= r.rating ? 'fill-amber-400 text-amber-400' : 'text-varnish'}`} />)}
                   </div>
-                  <span className="text-xs text-varnish font-mono mr-auto">{new Date(r.created_date).toLocaleDateString('he-IL')}</span>
+                  <span className="text-xs text-varnish font-mono mr-auto">{formatDate(r.created_date)}</span>
                 </div>
                 <p className="text-xs text-varnish mb-1">
                   חולצה: {shirt ? <Link to={`/shirt/${shirt.id}`} className="text-turf hover:underline">{shirt.name}</Link> : (r.shirt_id || 'לא ידוע')}

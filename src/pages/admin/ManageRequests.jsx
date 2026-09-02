@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { MessageCircle, Phone, Mail, ExternalLink, Plus, X, Package, Trash2, Copy, Check } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { buildSupplierLine } from '@/lib/supplierText';
+import { formatDate, dateSortValue } from '@/lib/dates';
 
 export default function ManageRequests() {
   const [requests, setRequests] = useState([]);
@@ -90,7 +91,7 @@ export default function ManageRequests() {
       if (!map.has(key)) map.set(key, []);
       map.get(key).push(r);
     }
-    return Array.from(map.entries()).sort((a, b) => new Date(b[1][0].created_date) - new Date(a[1][0].created_date));
+    return Array.from(map.entries()).sort((a, b) => dateSortValue(b[1][0].created_date) - dateSortValue(a[1][0].created_date));
   }, [filtered]);
 
   if (loading) return <div className="flex items-center justify-center min-h-[50vh]"><div className="w-8 h-8 border-4 border-varnish border-t-turf rounded-full animate-spin" /></div>;
@@ -125,7 +126,7 @@ export default function ManageRequests() {
                     <span className={`text-xs px-2 py-1 font-bold ${statusColors[first.status]}`}>
                       {statusLabels[first.status]}
                     </span>
-                    <span className="text-xs text-varnish font-mono">{new Date(first.created_date).toLocaleDateString('he-IL')}</span>
+                    <span className="text-xs text-varnish font-mono">{formatDate(first.created_date, 'ללא תאריך')}</span>
                     {items.length > 1 && (
                       <span className="text-xs px-2 py-0.5 bg-turf/10 text-turf font-bold">{items.length} פריטים בהזמנה</span>
                     )}
