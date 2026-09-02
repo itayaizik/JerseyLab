@@ -4,6 +4,7 @@ import { Upload, Loader2, Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { hasLocalStock } from '@/components/ShippingBadge';
 import { sizeQty, setSizeQty } from '@/lib/sizes';
+import { trimShirtText } from '@/lib/shirtText';
 
 const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
 // Canonical spellings — see lib/sizes. Reads tolerate the legacy 'XXL' key,
@@ -110,7 +111,7 @@ export default function AddShirt() {
 
     setSubmitting(true);
     const shirt = await base44.entities.Shirt.create({
-      ...form,
+      ...trimShirtText(form),
       price: Number(form.price),
       sale_price: form.sale_price ? Number(form.sale_price) : null,
       local_stock_sizes: localStockSizes,
