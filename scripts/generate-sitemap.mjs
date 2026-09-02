@@ -8,6 +8,7 @@
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { ROOT, SITE_ORIGIN, escapeHtml, fetchShirts } from './lib/build-data.mjs';
+import { COLLECTIONS } from '../src/lib/collections.js';
 
 const OUT = resolve(ROOT, 'public/sitemap.xml');
 
@@ -44,6 +45,11 @@ const shirts = await fetchShirts({ label: 'sitemap' });
 
 const entries = [
   ...STATIC_ROUTES.map(urlEntry),
+  ...COLLECTIONS.map(c => urlEntry({
+    path: `/collections/${c.slug}`,
+    changefreq: 'weekly',
+    priority: '0.85',
+  })),
   ...shirts.map(s => urlEntry({
     path: `/shirt/${s.id}`,
     changefreq: 'weekly',

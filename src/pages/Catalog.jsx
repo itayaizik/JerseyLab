@@ -9,6 +9,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import Seo from '@/components/Seo';
 import { toast } from '@/components/ui/use-toast';
 import { shirtSizes, sortSizes } from '@/lib/sizes';
+import { COLLECTIONS } from '@/lib/collections';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
 
 const quickFilters = [
@@ -255,6 +256,18 @@ export default function Catalog() {
             </button>
           </div>
         </div>
+
+        {/* Collection landing pages. Unlike the quick filters below — which
+            only change a query string — each of these is a real page about one
+            subject, which is what search engines rank and people share. */}
+        <nav className="flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide" aria-label="קטגוריות">
+          {COLLECTIONS.map(c => (
+            <Link key={c.slug} to={`/collections/${c.slug}`}
+              className="flex-shrink-0 flex items-center min-h-[36px] px-3 text-xs font-body text-[#1B2A4A] bg-white border-2 border-[#1B2A4A]/25 whitespace-nowrap hover:border-[#1B2A4A] hover:bg-[#F2ECD9] transition-colors">
+              {c.name}
+            </Link>
+          ))}
+        </nav>
 
         {/* Quick filter pills. The mystery box leads because it is a product
             of its own, not one more way to slice the catalogue. */}

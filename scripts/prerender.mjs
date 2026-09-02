@@ -18,6 +18,7 @@ import { resolve, dirname } from 'node:path';
 import {
   ROOT, SITE_ORIGIN, escapeHtml, fetchShirts, shirtPrice, shirtDescription,
 } from './lib/build-data.mjs';
+import { COLLECTIONS, collectionShirts } from '../src/lib/collections.js';
 
 const DIST = resolve(ROOT, 'dist');
 const TEMPLATE_PATH = resolve(DIST, 'index.html');
@@ -257,4 +258,78 @@ for (const shirt of shirts) {
   writePage(path, withBody(html, inner));
 }
 
-console.log(`[prerender] ${STATIC_PAGES.length} static pages + ${shirts.length} product pages written to dist/`);
+// --- collection landing pages --------------------------------------------
+// These are the pages meant to rank for "חולצות רטרו" and the like, so the
+// served HTML carries the intro copy, the real list of shirts in the
+// collection, and an ItemList linking to each one — which is also how a
+// crawler discovers product pages without following JavaScript.
+
+for (const collection of COLLECTIONS) {
+  const path = `/collections/${collection.slug}`;
+  const url = SITE_ORIGIN + path;
+  const items = collectionShirts(collection, shirts);
+
+  let html = buildHead(TEMPLATE, {
+    path,
+    title: collection.title,
+    description: collection.description,
+    image: items.find(s => s.main_image)?.main_image,
+  });
+
+  html = withJsonLd(html, {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        name: collection.h1,
+        description: collection.description,
+        url,
+        inLanguage: 'he-IL',
+      },
+      {
+        '@type': 'ItemList',
+        name: collection.h1,
+        numberOfItems: items.length,
+        itemListElement: items.slice(0, 40).map((s, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          url: `${SITE_ORIGIN}/shirt/${s.id}`,
+          name: s.name,
+        })),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'דף הבית', item: `${SITE_ORIGIN}/` },
+          { '@type': 'ListItem', position: 2, name: 'קטלוג', item: `${SITE_ORIGIN}/catalog` },
+          { '@type': 'ListItem', position: 3, name: collection.h1, item: url },
+        ],
+      },
+    ],
+  });
+
+  const list = items.length
+    ? `<ul>${items.map(s => {
+        const price = shirtPrice(s);
+        return `<li><a href="/shirt/${escapeHtml(s.id)}">${escapeHtml(s.name)}</a>${price ? ` — ₪${escapeHtml(price)}` : ''}</li>`;
+      }).join('')}</ul>`
+    : `<p>אין כרגע מלאי בקטגוריה הזו. <a href="/request-shirt">אפשר לשלוח לנו בקשה</a> ונבדוק אם אפשר להשיג.</p>`;
+
+  const related = `<nav aria-label="קטגוריות נוספות">${
+    COLLECTIONS.filter(c => c.slug !== collection.slug)
+      .map(c => `<a href="/collections/${escapeHtml(c.slug)}">${escapeHtml(c.name)}</a>`)
+      .join(' ')
+  }</nav>`;
+
+  const inner =
+    `<header><a href="/">JerseyLab</a> · <a href="/catalog">קטלוג</a></header>` +
+    `<main><h1>${escapeHtml(collection.h1)}</h1>` +
+    `<p>${escapeHtml(collection.intro)}</p>` +
+    `<p>${escapeHtml(items.length)} חולצות בקטגוריה.</p>` +
+    list +
+    `</main>${related}`;
+
+  writePage(path, withBody(html, inner));
+}
+
+console.log(`[prerender] ${STATIC_PAGES.length} static + ${COLLECTIONS.length} collection + ${shirts.length} product pages written to dist/`);

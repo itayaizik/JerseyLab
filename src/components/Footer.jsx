@@ -1,6 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram } from 'lucide-react';
+import { COLLECTIONS } from '@/lib/collections';
+
+// The collections worth linking from every page on the site. Sitewide links
+// are what give these landing pages enough internal weight to be crawled
+// often, instead of sitting reachable only from each other.
+const FOOTER_COLLECTIONS = ['retro', 'national-teams', 'israeli-league', 'la-liga', 'premier-league']
+  .map(slug => COLLECTIONS.find(c => c.slug === slug))
+  .filter(Boolean);
 
 export default function Footer() {
   return (
@@ -35,10 +43,15 @@ export default function Footer() {
           <div>
             <h4 className="font-heading font-bold text-sm mb-4 text-[#E8622A] uppercase tracking-widest">קטלוג</h4>
             <div className="space-y-2">
-              <Link to="/catalog?gender=men" className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">חולצות גברים</Link>
+              {FOOTER_COLLECTIONS.map(c => (
+                <Link key={c.slug} to={`/collections/${c.slug}`}
+                  className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">
+                  חולצות {c.name}
+                </Link>
+              ))}
               <Link to="/catalog?sale=true" className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">סייל</Link>
-              <Link to="/catalog?new=true" className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">חדשים</Link>
-              <Link to="/size-guide" className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">מדריך מידות</Link>
+              <Link to="/mystery-box" className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">מיסטרי בוקס</Link>
+              <Link to="/request-shirt" className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">בקשת חולצה</Link>
             </div>
           </div>
 

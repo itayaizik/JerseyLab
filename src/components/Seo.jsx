@@ -25,7 +25,7 @@ function upsertLink(rel, href) {
   el.setAttribute('href', href);
 }
 
-export default function Seo({ title, description, image, type = 'website', canonicalPath, jsonLd }) {
+export default function Seo({ title, description, image, type = 'website', canonicalPath, jsonLd, noindex = false }) {
   const jsonLdStr = jsonLd ? JSON.stringify(jsonLd) : '';
 
   useEffect(() => {
@@ -54,6 +54,8 @@ export default function Seo({ title, description, image, type = 'website', canon
     upsertMeta('meta[name="twitter:description"]', 'name', 'twitter:description', description);
     upsertMeta('meta[name="twitter:image"]', 'name', 'twitter:image', image || DEFAULT_IMAGE);
 
+    upsertMeta('meta[name="robots"]', 'name', 'robots', noindex ? 'noindex, follow' : 'index, follow');
+
     // Canonical URL
     upsertLink('canonical', url);
 
@@ -70,7 +72,7 @@ export default function Seo({ title, description, image, type = 'website', canon
     } else if (script) {
       script.remove();
     }
-  }, [title, description, image, type, canonicalPath, jsonLdStr]);
+  }, [title, description, image, type, canonicalPath, jsonLdStr, noindex]);
 
   return null;
 }

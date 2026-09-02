@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
+import Seo from '@/components/Seo';
 
 
 export default function PageNotFound({}) {
@@ -21,6 +22,16 @@ export default function PageNotFound({}) {
     
     return (
         <main className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
+            {/* Reached by client-side navigation, a 404 was keeping the previous
+                page's title and canonical — so a URL that does not exist claimed
+                to be a real page. `noindex` also keeps mistyped URLs out of the
+                index entirely. */}
+            <Seo
+                title="הדף לא נמצא — JerseyLab"
+                description="הדף שחיפשת לא קיים באתר JerseyLab."
+                canonicalPath={location.pathname}
+                noindex
+            />
             <div className="max-w-md w-full">
                 <div className="text-center space-y-6">
                     {/* 404 Error Code */}
