@@ -12,6 +12,7 @@ import InstagramSection from '@/components/InstagramSection';
 import Seo from '@/components/Seo';
 import ProductImage from '@/components/ui/ProductImage';
 import { toast } from '@/components/ui/use-toast';
+import { SITE_ORIGIN } from '@/lib/siteUrl';
 
 // Hand-set so the fan reads as a scattered stack rather than a straight row.
 const HERO_LINEUP = ['ביתר ירושלים', 'הפועל תל אביב', 'ברצלונה', 'ריאל מדריד'];
@@ -162,7 +163,7 @@ export default function Home() {
           {
             "@type": "Organization",
             name: "JerseyLab",
-            url: typeof window !== "undefined" ? window.location.origin : "https://jerseylabil.base44.app",
+            url: SITE_ORIGIN,
             logo: { "@type": "ImageObject", url: "https://media.base44.com/images/public/6a42e762005950f7dc39df84/de8c45ac1_ChatGPTImageJul31202602_56_05AM.png", width: 512, height: 512 },
             description: "ארכיון בלעדי של חולצות כדורגל נדירות לאספנים ואוהדים.",
             sameAs: ["https://instagram.com/Jerseylabil"]
@@ -170,11 +171,11 @@ export default function Home() {
           {
             "@type": "WebSite",
             name: "JerseyLab",
-            url: typeof window !== "undefined" ? window.location.origin : "https://jerseylabil.base44.app",
+            url: SITE_ORIGIN,
             inLanguage: "he-IL",
             potentialAction: {
               "@type": "SearchAction",
-              target: { "@type": "EntryPoint", urlTemplate: (typeof window !== "undefined" ? window.location.origin : "https://jerseylabil.base44.app") + "/catalog?q={search_term_string}" },
+              target: { "@type": "EntryPoint", urlTemplate: (SITE_ORIGIN) + "/catalog?q={search_term_string}" },
               "query-input": "required name=search_term_string"
             }
           }

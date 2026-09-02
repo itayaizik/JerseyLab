@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { siteUrl } from '@/lib/siteUrl';
 
 const SITE_NAME = 'JerseyLab';
 const DEFAULT_IMAGE = 'https://media.base44.com/images/public/6a42e762005950f7dc39df84/de8c45ac1_ChatGPTImageJul31202602_56_05AM.png';
@@ -30,9 +31,11 @@ export default function Seo({ title, description, image, type = 'website', canon
   useEffect(() => {
     if (title) document.title = title;
 
+    // Always absolute to the canonical origin — never to whatever host this
+    // copy is being served from. See src/lib/siteUrl.js.
     const url = canonicalPath
-      ? window.location.origin + canonicalPath
-      : window.location.href;
+      ? siteUrl(canonicalPath)
+      : siteUrl(window.location.pathname + window.location.search);
 
     upsertMeta('meta[name="description"]', 'name', 'description', description);
 

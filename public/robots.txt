@@ -1,8 +1,10 @@
 User-agent: *
 Allow: /
+
+# Account and admin areas hold nothing a search engine should index.
 Disallow: /admin
 Disallow: /admin/
 Disallow: /wishlist
 Disallow: /profile
 
-Sitemap: https://jersey-lab-indol.vercel.app/sitemap.xml
+Sitemap: https://www.jerseylab.co/sitemap.xml

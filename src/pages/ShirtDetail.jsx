@@ -15,6 +15,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import TrustBar from '@/components/TrustBar';
 import { toast } from '@/components/ui/use-toast';
 import { shirtSizes } from '@/lib/sizes';
+import { SITE_ORIGIN } from '@/lib/siteUrl';
 
 const conditionLabels = { new: 'חדש', like_new: 'כמו חדש', used: 'משומש' };
 
@@ -128,7 +129,7 @@ export default function ShirtDetail() {
 
   const productJsonLd = useMemo(() => {
     if (!shirt) return null;
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://jerseylabil.base44.app";
+    const origin = SITE_ORIGIN;
     const desc = shirt.description
       ? shirt.description.slice(0, 155)
       : `${shirt.name} — ${shirt.club || shirt.national_team || ''} ${shirt.season || ''} ${shirt.player_name || ''}`.trim();

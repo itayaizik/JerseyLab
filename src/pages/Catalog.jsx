@@ -9,6 +9,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import Seo from '@/components/Seo';
 import { toast } from '@/components/ui/use-toast';
 import { shirtSizes, sortSizes } from '@/lib/sizes';
+import { SITE_ORIGIN } from '@/lib/siteUrl';
 
 const quickFilters = [
   { label: 'הכל', params: {} },
@@ -205,7 +206,7 @@ export default function Catalog() {
 
   const seoTitle = `${pageTitle()} — JerseyLab`;
   const seoDesc = `קטלוג חולצות כדורגל: ${pageTitle()}. חולצות של קבוצות, נבחרות ושחקנים במחירים טובים.`;
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://jerseylabil.base44.app";
+  const origin = SITE_ORIGIN;
   const catalogJsonLd = {
     "@context": "https://schema.org",
     "@graph": [

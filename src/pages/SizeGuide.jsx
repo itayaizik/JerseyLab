@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Ruler, Info } from 'lucide-react';
 import Seo from '@/components/Seo';
+import { SITE_ORIGIN } from '@/lib/siteUrl';
 
 // FAN VERSION — columns: S, M, L, XL, 2XL, 3XL
 const fanRows = [
@@ -124,7 +125,7 @@ export default function SizeGuide() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <Seo title="מדריך מידות — JerseyLab" description="מדריך מידות לחולצות כדורגל: טבלאות מידות לאוהד, גרסת שחקן, נשים וילדים. איך לבחור את המידה הנכונה לפי מידות הגוף." canonicalPath="/size-guide" jsonLd={{ "@context": "https://schema.org", "@type": "WebPage", name: "מדריך מידות — JerseyLab", description: "מדריך מידות לחולצות כדורגל וטבלאות מידה.", url: (typeof window !== "undefined" ? window.location.origin : "https://jerseylabil.base44.app") + "/size-guide", inLanguage: "he-IL" }} />
+      <Seo title="מדריך מידות — JerseyLab" description="מדריך מידות לחולצות כדורגל: טבלאות מידות לאוהד, גרסת שחקן, נשים וילדים. איך לבחור את המידה הנכונה לפי מידות הגוף." canonicalPath="/size-guide" jsonLd={{ "@context": "https://schema.org", "@type": "WebPage", name: "מדריך מידות — JerseyLab", description: "מדריך מידות לחולצות כדורגל וטבלאות מידה.", url: (SITE_ORIGIN) + "/size-guide", inLanguage: "he-IL" }} />
 
       {/* Header */}
       <div className="text-center mb-10">

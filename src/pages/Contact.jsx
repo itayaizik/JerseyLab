@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { friendlyError } from '@/lib/errorMessages';
 import { notifyNewEnquiry } from '@/lib/adminNotify';
 import Seo from '@/components/Seo';
+import { SITE_ORIGIN } from '@/lib/siteUrl';
 
 const InstagramIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -106,7 +107,7 @@ export default function Contact() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
-      <Seo title="צור קשר — JerseyLab" description="צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ בוואטסאפ ואינסטגרם. מענה מהיר ושירות אישי." canonicalPath="/contact" jsonLd={{ "@context": "https://schema.org", "@type": "WebPage", name: "צור קשר — JerseyLab", description: "צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ.", url: (typeof window !== "undefined" ? window.location.origin : "https://jerseylabil.base44.app") + "/contact", inLanguage: "he-IL" }} />
+      <Seo title="צור קשר — JerseyLab" description="צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ בוואטסאפ ואינסטגרם. מענה מהיר ושירות אישי." canonicalPath="/contact" jsonLd={{ "@context": "https://schema.org", "@type": "WebPage", name: "צור קשר — JerseyLab", description: "צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ.", url: (SITE_ORIGIN) + "/contact", inLanguage: "he-IL" }} />
 
       {/* Header */}
       <div className="text-center mb-10">
