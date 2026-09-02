@@ -18,6 +18,7 @@ const TABLES = {
   ContactMessage: "contact_messages_raw",
   CustomerProfile: "customer_profiles_raw",
   InstagramPost: "instagram_posts_raw",
+  ShirtRequest: "shirt_requests_raw",
 };
 
 // Entities where the creator can't read the row back under RLS (public/
@@ -25,7 +26,7 @@ const TABLES = {
 // profiles with no owning-user column) — so create() must not ask for it
 // back, or the whole insert gets rejected as an RLS violation on the
 // implicit read-back instead of actually inserting.
-const NO_RETURN_ON_CREATE = new Set(["SearchLog", "ContactMessage", "CustomerProfile", "Review", "InterestRequest"]);
+const NO_RETURN_ON_CREATE = new Set(["SearchLog", "ContactMessage", "CustomerProfile", "Review", "InterestRequest", "ShirtRequest"]);
 
 // Some columns in the *_raw tables store JSON (arrays/objects) as text
 // instead of native jsonb, so parse anything that looks like JSON back
@@ -57,6 +58,16 @@ function stamped(payload) {
   if (!payload || typeof payload !== "object") return payload;
   if (payload.created_date) return payload;
   return { ...payload, created_date: new Date().toISOString() };
+}
+
+// Same story for `updated_date` on the way out: nothing in the app was
+// writing it, so it stayed NULL forever and the sales report — which filters
+// "sold in the last N days" on it — compared every row against the epoch and
+// matched none of them.
+function touched(payload) {
+  if (!payload || typeof payload !== "object") return payload;
+  if (payload.updated_date) return payload;
+  return { ...payload, updated_date: new Date().toISOString() };
 }
 
 function applySort(query, sort) {
@@ -109,7 +120,7 @@ function makeEntity(table, entityName) {
     },
 
     async update(id, payload) {
-      const { data, error } = await supabase.from(table).update(payload).eq("id", id).select();
+      const { data, error } = await supabase.from(table).update(touched(payload)).eq("id", id).select();
       if (error) throw error;
       return coerceRow(data[0]);
     },

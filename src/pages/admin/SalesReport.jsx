@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { parseDate } from '@/lib/dates';
 import { TrendingUp, ShoppingBag, DollarSign, BarChart2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+// When a row was last touched. Nothing wrote `updated_date` until recently,
+// so historical rows have none — and `new Date(null)` is the epoch, which sits
+// before every cutoff and quietly dropped those sales from every period except
+// "all time". Falling back to the creation date keeps them in the report; it is
+// an approximation for anything created in one month and sold in another.
+function activityDate(row) {
+  return parseDate(row?.updated_date) || parseDate(row?.created_date);
+}
 
 const PERIOD_OPTIONS = [
   { label: '7 ימים', days: 7 },
@@ -40,14 +50,16 @@ export default function SalesReport() {
   const soldShirts = shirts.filter(s => {
     if (s.status !== 'sold') return false;
     if (!cutoff) return true;
-    return new Date(s.updated_date) >= cutoff;
+    const when = activityDate(s);
+    return when ? when >= cutoff : false;
   });
 
   // Closed requests in period
   const closedRequests = requests.filter(r => {
     if (r.status !== 'closed') return false;
     if (!cutoff) return true;
-    return new Date(r.updated_date) >= cutoff;
+    const when = activityDate(r);
+    return when ? when >= cutoff : false;
   });
 
   // Revenue from sold shirts (match closed requests to sold shirts)
@@ -69,7 +81,8 @@ export default function SalesReport() {
 
     const monthlySold = shirts.filter(s => {
       if (s.status !== 'sold') return false;
-      const upd = new Date(s.updated_date);
+      const upd = activityDate(s);
+      if (!upd) return false;
       return upd.getFullYear() === year && upd.getMonth() === month;
     });
     const monthlyRevenue = monthlySold.reduce((sum, s) => sum + (s.sale_price && s.sale_price < s.price ? s.sale_price : s.price || 0), 0);

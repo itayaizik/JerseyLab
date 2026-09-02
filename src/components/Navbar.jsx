@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Search, Heart, User, ChevronDown, Shield, LogOut, ShoppingCart, Home, LayoutGrid, HelpCircle, Mail, Ruler, Baby, Flag, History, Star, Percent, Sparkles, Zap, ArrowLeft, Gift } from 'lucide-react';
+import { Menu, X, Search, Heart, User, ChevronDown, Shield, LogOut, ShoppingCart, Home, LayoutGrid, HelpCircle, Mail, Ruler, Baby, Flag, History, Star, Percent, Sparkles, Zap, ArrowLeft, Gift, PackageSearch } from 'lucide-react';
 import { CartModal } from '@/components/InterestModal';
 import { base44 } from '@/api/base44Client';
+import { getCart } from '@/lib/cart';
 
 const categories = [
   { label: 'גברים', href: '/catalog?gender=men', icon: User },
@@ -79,8 +80,8 @@ export default function Navbar() {
   const searchInputRef = useRef(null);
 
   useEffect(() => {
-    try { setCartCount(JSON.parse(sessionStorage.getItem('jerseylab_cart') || '[]').length); } catch {}
-    const handler = () => { try { setCartCount(JSON.parse(sessionStorage.getItem('jerseylab_cart') || '[]').length); } catch {} };
+    setCartCount(getCart().length);
+    const handler = () => setCartCount(getCart().length);
     window.addEventListener('cart_updated', handler);
     return () => window.removeEventListener('cart_updated', handler);
   }, []);
@@ -291,6 +292,12 @@ export default function Navbar() {
                       <span className="mr-auto font-mono text-xs opacity-80">מ-₪70</span>
                     </Link>
 
+                    <Link to="/request-shirt" role="menuitem" onClick={() => setCatOpen(false)}
+                      className={`flex items-center gap-2 mx-2 mb-2 px-2.5 py-2.5 text-sm font-body border-2 transition-colors ${currentUrl === '/request-shirt' ? 'bg-white text-[#1B2A4A] border-white' : 'text-white/80 border-white/25 hover:bg-white hover:text-[#1B2A4A]'}`}>
+                      <PackageSearch className="w-4 h-4 flex-shrink-0" />
+                      <span className="font-bold">לא מצאת? בקש חולצה</span>
+                    </Link>
+
                     <Link to="/catalog" role="menuitem" onClick={() => setCatOpen(false)}
                       className={`flex items-center justify-between gap-2 px-3 py-2.5 text-xs font-heading font-bold uppercase tracking-wider border-t-2 transition-colors ${currentUrl === '/catalog' ? 'bg-[#E8622A] text-white border-[#E8622A]' : 'text-[#E8622A] border-[#E8622A]/30 hover:bg-[#E8622A] hover:text-white'}`}>
                       כל הקטלוג
@@ -354,6 +361,7 @@ export default function Navbar() {
                             { to: '/admin/add-shirt', label: 'הוסף מוצר' },
                             { to: '/admin/shirts', label: 'ערוך מוצרים' },
                             { to: '/admin/requests', label: 'הזמנות' },
+                            { to: '/admin/shirt-requests', label: 'בקשות לחולצות' },
                             { to: '/admin/categories', label: 'קטגוריות' },
                             { to: '/admin/reviews', label: 'ביקורות' },
                             { to: '/admin/faq', label: 'שאלות ותשובות' },
@@ -461,6 +469,11 @@ export default function Navbar() {
                   <span className="font-bold">מיסטרי בוקס</span>
                   <span className="mr-auto font-mono text-xs opacity-80">מ-₪70</span>
                 </Link>
+                <Link to="/request-shirt"
+                  className={`mt-1.5 flex items-center gap-2 min-h-[44px] px-3 text-sm font-body border-2 transition-colors ${currentUrl === '/request-shirt' ? 'bg-white text-[#1B2A4A] border-white' : 'text-white/80 border-white/25'}`}>
+                  <PackageSearch className="w-4 h-4 flex-shrink-0" />
+                  <span className="font-bold">לא מצאת? בקש חולצה</span>
+                </Link>
                 <Link to="/catalog"
                   className={`mt-1.5 flex items-center justify-between min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wider border-2 transition-colors ${currentUrl === '/catalog' ? 'bg-[#E8622A] text-white border-[#E8622A]' : 'text-[#E8622A] border-[#E8622A]/40 active:bg-[#E8622A] active:text-white'}`}>
                   כל הקטלוג
@@ -491,6 +504,7 @@ export default function Navbar() {
                       <MobileRow to="/admin" icon={Shield} active={currentUrl === '/admin'}>דשבורד</MobileRow>
                       <MobileRow to="/admin/shirts" icon={LayoutGrid} active={currentUrl === '/admin/shirts'}>ערוך מוצרים</MobileRow>
                       <MobileRow to="/admin/requests" icon={ShoppingCart} active={currentUrl === '/admin/requests'}>הזמנות</MobileRow>
+                      <MobileRow to="/admin/shirt-requests" icon={PackageSearch} active={currentUrl === '/admin/shirt-requests'}>בקשות לחולצות</MobileRow>
                     </MobileSection>
                   )}
                 </>

@@ -12,13 +12,7 @@ import OrderSummary from '@/components/configurator/OrderSummary';
 import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurator/recommendations';
 import { hasLocalStockForSize } from '@/components/ShippingBadge';
 
-function getCart() {
-  try { return JSON.parse(sessionStorage.getItem('jerseylab_cart') || '[]'); } catch { return []; }
-}
-function setCart(cart) {
-  sessionStorage.setItem('jerseylab_cart', JSON.stringify(cart));
-  window.dispatchEvent(new Event('cart_updated'));
-}
+import { getCart, setCart } from '@/lib/cart';
 
 export default function QuickAddModal({ shirt, open, onClose }) {
   const [step, setStep] = useState('size');

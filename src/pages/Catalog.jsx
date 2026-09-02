@@ -1,7 +1,7 @@
 import { getAllShirts } from "@/api/shirts";
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { Search, SlidersHorizontal, X, ChevronDown, Gift } from 'lucide-react';
+import { Search, SlidersHorizontal, X, ChevronDown, Gift, PackageSearch } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ShirtCard from '@/components/ShirtCard';
 import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
@@ -265,6 +265,12 @@ export default function Catalog() {
             מיסטרי בוקס
             <span className="font-mono opacity-70">₪70</span>
           </Link>
+          <Link to="/request-shirt"
+            className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-heading font-bold uppercase tracking-wide border-2 border-[#1B2A4A] bg-white text-[#1B2A4A] whitespace-nowrap hover:bg-[#1B2A4A] hover:text-white transition-colors"
+            style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
+            <PackageSearch className="w-3.5 h-3.5" />
+            בקש חולצה
+          </Link>
           {quickFilters.map((qf, i) => {
             const params = new URLSearchParams(qf.params).toString();
             const href = params ? `/catalog?${params}` : '/catalog';
@@ -395,13 +401,30 @@ export default function Catalog() {
           )}
         </>
       ) : (
-        <EmptyState
-          icon={Search}
-          title="לא נמצאו חולצות"
-          description="נסה לחפש משהו אחר או שנה את הסינון."
-          actionLabel="נקה סינון"
-          onAction={clearFilters}
-        />
+        <>
+          <EmptyState
+            icon={Search}
+            title="לא נמצאו חולצות"
+            description="נסה לחפש משהו אחר או שנה את הסינון."
+            actionLabel="נקה סינון"
+            onAction={clearFilters}
+          />
+
+          {/* The best moment on the whole site to offer this: someone just
+              searched for a shirt and we did not have it. */}
+          <div className="mt-4 bg-[#1B2A4A] border-2 border-[#1B2A4A] p-5 text-center"
+            style={{ boxShadow: '4px 4px 0 #E8622A' }}>
+            <p className="font-heading font-bold text-white uppercase mb-1.5">אנחנו יכולים להשיג אותה</p>
+            <p className="text-sm text-white/70 font-body mb-4 max-w-md mx-auto">
+              הקטלוג הוא לא הכל. שלח לנו תמונה או תיאור של החולצה שחיפשת ונבדוק אם אפשר להביא אותה.
+            </p>
+            <Link to="/request-shirt"
+              className="inline-flex items-center gap-2 bg-[#FFD95A] text-[#1B2A4A] px-6 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-white transition-colors">
+              <PackageSearch className="w-4 h-4" />
+              בקש חולצה
+            </Link>
+          </div>
+        </>
       )}
     </div>
   );

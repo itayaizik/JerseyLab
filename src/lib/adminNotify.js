@@ -60,3 +60,33 @@ export function notifyNewEnquiry({ name, email, phone, subject, message }) {
     body: message,
   }).catch(() => {});
 }
+
+// A customer asking for a shirt the catalogue does not carry. Takes the same
+// snake_case row the page writes to the database, so there is one spelling of
+// these fields rather than two that can drift apart. The photo URL goes in as
+// its own field: it is the part the owner needs to look at before answering.
+export function notifyShirtRequest(request) {
+  const headline = [request.club, request.season].filter(Boolean).join(' ')
+    || (request.shirt_description || '').slice(0, 60)
+    || 'ללא תיאור';
+
+  return notify({
+    kind: 'enquiry',
+    title: `${request.full_name} מחפש: ${headline}`,
+    fields: [
+      { label: 'שם', value: request.full_name },
+      { label: 'טלפון', value: request.phone },
+      { label: 'אימייל', value: request.email },
+      { label: 'לחזור ב', value: channelLabel(request.contact_channel) },
+      { label: 'אינסטגרם', value: request.instagram_handle ? `@${request.instagram_handle}` : '' },
+      { label: 'קבוצה', value: request.club },
+      { label: 'עונה', value: request.season },
+      { label: 'מידה', value: request.wanted_size },
+      { label: 'תמונה', value: request.image_url },
+    ],
+    reply_to: request.email || '',
+    body: [request.shirt_description, request.notes && `הערות: ${request.notes}`]
+      .filter(Boolean)
+      .join('\n\n'),
+  }).catch(() => {});
+}

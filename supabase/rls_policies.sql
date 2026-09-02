@@ -262,3 +262,63 @@ begin
              where created_date is null and created_at is not null';
   end if;
 end $$;
+
+-- ═══════════════════════════════════════════════════════════
+-- "Looking for a shirt we don't stock" requests
+-- ═══════════════════════════════════════════════════════════
+-- A customer describes the shirt they want, optionally attaches a photo of
+-- it, and we reply whether we can source it. Kept in its own table rather
+-- than folded into contact_messages_raw: these have a lifecycle (new →
+-- answered) and fields (size, photo) that a general enquiry does not.
+
+create table if not exists shirt_requests_raw (
+  id                text primary key default gen_random_uuid()::text,
+  created_date      timestamptz default now(),
+  full_name         text,
+  phone             text,
+  email             text,
+  contact_channel   text,
+  instagram_handle  text,
+  shirt_description text,
+  club              text,
+  season            text,
+  wanted_size       text,
+  image_url         text,
+  notes             text,
+  status            text default 'new',
+  admin_note        text,
+  user_id           text
+);
+
+alter table shirt_requests_raw enable row level security;
+
+-- Anyone may send a request — the form is open to logged-out visitors, the
+-- same as the order form. Reading back is deliberately NOT granted, so the
+-- adapter must not ask for the row after inserting (ShirtRequest is listed
+-- in NO_RETURN_ON_CREATE for exactly this reason).
+drop policy if exists "anyone can send a shirt request" on shirt_requests_raw;
+create policy "anyone can send a shirt request" on shirt_requests_raw for insert
+  with check (true);
+
+-- A signed-in customer can see their own requests.
+drop policy if exists "own shirt requests read" on shirt_requests_raw;
+create policy "own shirt requests read" on shirt_requests_raw for select
+  using (user_id is not null and user_id = auth.uid()::text);
+
+drop policy if exists "admin full access shirt requests" on shirt_requests_raw;
+create policy "admin full access shirt requests" on shirt_requests_raw for all
+  using (public.is_admin()) with check (public.is_admin());
+
+-- ── Storage: photos attached to those requests ─────────────
+-- NOTE: create the bucket by hand first — Storage > New bucket > name
+-- "request-images" > Public bucket: ON. Set a file size limit there too
+-- (2 MB is plenty; the client downscales to 1600px before uploading), since
+-- this is the one bucket a logged-out visitor can write to.
+
+drop policy if exists "public read request images" on storage.objects;
+create policy "public read request images" on storage.objects for select
+  using (bucket_id = 'request-images');
+
+drop policy if exists "anyone upload request images" on storage.objects;
+create policy "anyone upload request images" on storage.objects for insert
+  with check (bucket_id = 'request-images');

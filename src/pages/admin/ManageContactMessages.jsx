@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { formatDateTime } from '@/lib/dates';
 
 export default function ManageContactMessages() {
   const [messages, setMessages] = useState([]);
@@ -29,18 +30,6 @@ export default function ManageContactMessages() {
     if (!window.confirm('למחוק את הפנייה הזו? הפעולה בלתי הפיכה.')) return;
     await base44.entities.ContactMessage.delete(id);
     setMessages(p => p.filter(m => m.id !== id));
-  };
-
-  const formatDate = (dateStr) => {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return new Intl.DateTimeFormat('he-IL', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date);
   };
 
   return (
@@ -138,7 +127,7 @@ export default function ManageContactMessages() {
                 )}
                 <div>
                   <p className="text-white/50">תאריך</p>
-                  <p className="text-chalk">{formatDate(msg.created_date)}</p>
+                  <p className="text-chalk">{formatDateTime(msg.created_date)}</p>
                 </div>
               </div>
 

@@ -25,6 +25,7 @@ import Home from '@/pages/Home';
 import Catalog from '@/pages/Catalog';
 import ShirtDetail from '@/pages/ShirtDetail';
 const MysteryBox = lazy(() => import('@/pages/MysteryBox'));
+const RequestShirt = lazy(() => import('@/pages/RequestShirt'));
 const FAQPage = lazy(() => import('@/pages/FAQPage'));
 const Contact = lazy(() => import('@/pages/Contact'));
 const SizeGuide = lazy(() => import('@/pages/SizeGuide'));
@@ -40,6 +41,7 @@ const BulkImportShirts = lazy(() => import('@/pages/admin/BulkImportShirts'));
 const ManageShirts = lazy(() => import('@/pages/admin/ManageShirts'));
 const EditShirt = lazy(() => import('@/pages/admin/EditShirt'));
 const ManageRequests = lazy(() => import('@/pages/admin/ManageRequests'));
+const ManageShirtRequests = lazy(() => import('@/pages/admin/ManageShirtRequests'));
 const ManageContactMessages = lazy(() => import('@/pages/admin/ManageContactMessages'));
 const ManageCategories = lazy(() => import('@/pages/admin/ManageCategories'));
 const ManageReviews = lazy(() => import('@/pages/admin/ManageReviews'));
@@ -88,6 +90,7 @@ const AuthenticatedApp = () => {
         <Route path="/catalog" element={<Catalog />} />
         <Route path="/shirt/:id" element={<ShirtDetail />} />
         <Route path="/mystery-box" element={<MysteryBox />} />
+        <Route path="/request-shirt" element={<RequestShirt />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/size-guide" element={<SizeGuide />} />
@@ -108,6 +111,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin/shirts" element={<ManageShirts />} />
           <Route path="/admin/edit-shirt/:id" element={<EditShirt />} />
           <Route path="/admin/requests" element={<ManageRequests />} />
+          <Route path="/admin/shirt-requests" element={<ManageShirtRequests />} />
           <Route path="/admin/contact-messages" element={<ManageContactMessages />} />
           <Route path="/admin/categories" element={<ManageCategories />} />
           <Route path="/admin/reviews" element={<ManageReviews />} />
