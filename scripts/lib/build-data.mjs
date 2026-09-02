@@ -67,6 +67,30 @@ export async function fetchShirts({ label = 'build' } = {}) {
   return rows.filter(r => r.id && r.status !== 'hidden').map(coerce);
 }
 
+// The published FAQ, for the prerendered /faq page. FAQPage structured data is
+// what produces the expandable answers in Google's results, and it is one of
+// the formats AI assistants quote most readily — but it only existed after
+// JavaScript ran, which is exactly when a crawler is no longer looking.
+export async function fetchFaqs({ label = 'build' } = {}) {
+  const url = env('VITE_SUPABASE_URL');
+  const key = env('VITE_SUPABASE_ANON_KEY');
+  if (!url || !key) return [];
+
+  const endpoint = `${url}/rest/v1/faq_raw?select=question,answer,active,sort_order&active=eq.true&order=sort_order`;
+  try {
+    const res = await fetch(endpoint, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
+    if (!res.ok) {
+      console.warn(`[${label}] FAQ fetch returned ${res.status} — page ships without FAQ schema.`);
+      return [];
+    }
+    const rows = await res.json();
+    return rows.filter(r => r.question?.trim() && r.answer?.trim());
+  } catch (err) {
+    console.warn(`[${label}] FAQ fetch failed (${err.message}) — page ships without FAQ schema.`);
+    return [];
+  }
+}
+
 export function shirtPrice(shirt) {
   return shirt.sale_price && shirt.sale_price < shirt.price ? shirt.sale_price : shirt.price;
 }

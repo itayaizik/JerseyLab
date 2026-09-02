@@ -16,7 +16,7 @@
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import {
-  ROOT, SITE_ORIGIN, escapeHtml, fetchShirts, shirtPrice, shirtDescription,
+  ROOT, SITE_ORIGIN, escapeHtml, fetchShirts, fetchFaqs, shirtPrice, shirtDescription,
 } from './lib/build-data.mjs';
 import { COLLECTIONS, collectionShirts } from '../src/lib/collections.js';
 
@@ -171,29 +171,57 @@ const organisation = {
   sameAs: ['https://instagram.com/Jerseylabil'],
 };
 
+const faqs = await fetchFaqs({ label: 'prerender' });
+
+// Always present, whatever is in the database: a customer must never reach the
+// FAQ without finding out that nothing is paid on the site.
+const HOW_IT_WORKS_FAQ = {
+  question: 'איך מזמינים? האם משלמים באתר?',
+  answer: 'באתר לא מתבצע תשלום. שליחת ההזמנה היא בקשה בלבד. אנחנו חוזרים אליך בוואטסאפ או באינסטגרם לאישור כל הפרטים, והתשלום מתבצע מולנו ישירות רק אחרי שסיכמנו.',
+};
+
 for (const page of STATIC_PAGES) {
   let html = buildHead(TEMPLATE, page);
-  html = withJsonLd(html, {
-    '@context': 'https://schema.org',
-    '@graph': [
-      organisation,
-      {
-        '@type': page.path === '/' ? 'WebSite' : 'WebPage',
-        name: page.title,
-        description: page.description,
-        url: SITE_ORIGIN + page.path,
-        inLanguage: 'he-IL',
-        ...(page.path === '/' ? {
-          potentialAction: {
-            '@type': 'SearchAction',
-            target: { '@type': 'EntryPoint', urlTemplate: `${SITE_ORIGIN}/catalog?q={search_term_string}` },
-            'query-input': 'required name=search_term_string',
-          },
-        } : {}),
-      },
-    ],
-  });
-  writePage(page.path, withBody(html, shell(page)));
+
+  const graph = [
+    organisation,
+    {
+      '@type': page.path === '/' ? 'WebSite' : 'WebPage',
+      name: page.title,
+      description: page.description,
+      url: SITE_ORIGIN + page.path,
+      inLanguage: 'he-IL',
+      ...(page.path === '/' ? {
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: { '@type': 'EntryPoint', urlTemplate: `${SITE_ORIGIN}/catalog?q={search_term_string}` },
+          'query-input': 'required name=search_term_string',
+        },
+      } : {}),
+    },
+  ];
+
+  let body = page.body;
+
+  if (page.path === '/faq') {
+    const entries = [HOW_IT_WORKS_FAQ, ...faqs];
+    graph.push({
+      '@type': 'FAQPage',
+      mainEntity: entries.map(f => ({
+        '@type': 'Question',
+        name: f.question.trim(),
+        acceptedAnswer: { '@type': 'Answer', text: f.answer.trim() },
+      })),
+    });
+    // The questions and answers also go into the served markup, not only the
+    // structured data — a crawler that ignores JSON-LD still gets the text.
+    body += `<dl>${entries.map(f =>
+      `<dt>${escapeHtml(f.question.trim())}</dt><dd>${escapeHtml(f.answer.trim())}</dd>`
+    ).join('')}</dl>`;
+  }
+
+  html = withJsonLd(html, { '@context': 'https://schema.org', '@graph': graph });
+  writePage(page.path, withBody(html, shell({ ...page, body })));
 }
 
 const shirts = await fetchShirts({ label: 'prerender' });
