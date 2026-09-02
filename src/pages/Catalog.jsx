@@ -10,6 +10,7 @@ import Seo from '@/components/Seo';
 import { toast } from '@/components/ui/use-toast';
 import { shirtSizes, sortSizes } from '@/lib/sizes';
 import { COLLECTIONS } from '@/lib/collections';
+import { withStock } from '@/lib/catalogFacets';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
 
 const quickFilters = [
@@ -23,6 +24,13 @@ const quickFilters = [
   { label: 'ילדים', params: { gender: 'kids' } },
   { label: 'משלוח מהיר', params: { fast: 'true' } },
 ];
+
+// "הכל" has no query string and always stays; the rest are dropped when the
+// catalogue has nothing behind them.
+const stockedQuickFilters = withStock(quickFilters, qf => {
+  const params = new URLSearchParams(qf.params).toString();
+  return params ? `/catalog?${params}` : '/catalog';
+});
 
 export default function Catalog() {
   const [searchParams] = useSearchParams();
@@ -285,7 +293,7 @@ export default function Catalog() {
             <PackageSearch className="w-3.5 h-3.5" />
             בקש חולצה
           </Link>
-          {quickFilters.map((qf, i) => {
+          {stockedQuickFilters.map((qf, i) => {
             const params = new URLSearchParams(qf.params).toString();
             const href = params ? `/catalog?${params}` : '/catalog';
             return (

@@ -49,7 +49,6 @@ export default function Footer() {
                   חולצות {c.name}
                 </Link>
               ))}
-              <Link to="/catalog?sale=true" className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">סייל</Link>
               <Link to="/mystery-box" className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">מיסטרי בוקס</Link>
               <Link to="/request-shirt" className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">בקשת חולצה</Link>
             </div>

@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { withStock } from '@/lib/catalogFacets';
 
 const DEFAULT_CATS = [
   { label: 'ילדים', subtitle: 'כל הגלים ובחורות', href: '/catalog?gender=kids', image_url: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=400&q=80' },
@@ -41,7 +42,9 @@ export default function CategoryCardsSection({ title }) {
     if (scrollRef.current) scrollRef.current.scrollBy({ left: -dir * 220, behavior: 'smooth' });
   };
 
-  const displayCats = cats.length > 0 ? cats : DEFAULT_CATS;
+  // A card pointing at an empty catalogue is worse than one card fewer, and
+  // these come from the admin panel as well as the defaults below.
+  const displayCats = withStock(cats.length > 0 ? cats : DEFAULT_CATS);
   const loopedCats = [...displayCats, ...displayCats];
 
   return (

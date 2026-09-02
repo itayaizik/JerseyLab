@@ -4,6 +4,7 @@ import { Menu, X, Search, Heart, User, ChevronDown, Shield, LogOut, ShoppingCart
 import { CartModal } from '@/components/InterestModal';
 import { base44 } from '@/api/base44Client';
 import { getCart } from '@/lib/cart';
+import { withStock } from '@/lib/catalogFacets';
 
 const categories = [
   { label: 'גברים', href: '/catalog?gender=men', icon: User },
@@ -58,6 +59,10 @@ function NavTip({ children }) {
     </span>
   );
 }
+
+// Categories with nothing behind them are dropped rather than shown as links
+// to an empty page. See lib/catalogFacets.
+const stockedCategories = withStock(categories);
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -271,7 +276,7 @@ export default function Navbar() {
                     {/* Two columns: eight categories as one scannable block
                         rather than a tall list the eye has to walk down. */}
                     <div className="grid grid-cols-2 gap-1 px-2 pb-2">
-                      {categories.map(c => {
+                      {stockedCategories.map(c => {
                         const active = currentUrl === c.href;
                         return (
                           <Link key={c.href} to={c.href} role="menuitem" onClick={() => setCatOpen(false)}
@@ -452,7 +457,7 @@ export default function Navbar() {
 
               <MobileSection title="עיין לפי קטגוריה">
                 <div className="grid grid-cols-2 gap-1.5">
-                  {categories.map(c => {
+                  {stockedCategories.map(c => {
                     const active = currentUrl === c.href;
                     return (
                       <Link key={c.href} to={c.href}

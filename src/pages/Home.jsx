@@ -13,6 +13,7 @@ import Seo from '@/components/Seo';
 import ProductImage from '@/components/ui/ProductImage';
 import { toast } from '@/components/ui/use-toast';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
+import { withStock } from '@/lib/catalogFacets';
 
 // Hand-set so the fan reads as a scattered stack rather than a straight row.
 const HERO_LINEUP = ['ביתר ירושלים', 'הפועל תל אביב', 'ברצלונה', 'ריאל מדריד'];
@@ -30,6 +31,9 @@ const HERO_SHORTCUTS = [
   { label: 'ילדים', href: '/catalog?gender=kids', emoji: '👦' },
 ];
 
+
+// Shortcuts to an empty catalogue are worse than no shortcut at all.
+const STOCKED_SHORTCUTS = withStock(HERO_SHORTCUTS);
 
 const whyUsCards = [
 { title: 'חולצות נבדקות', desc: 'כל חולצה נבדקת לפני העלאה לאתר', icon: ShieldCheck },
@@ -236,7 +240,7 @@ export default function Home() {
               </form>
 
               <nav aria-label="קיצורי דרך לקטלוג" className="flex flex-wrap gap-2 mb-6 max-w-md">
-                {HERO_SHORTCUTS.map(c => (
+                {STOCKED_SHORTCUTS.map(c => (
                   <Link key={c.href} to={c.href}
                     className="inline-flex items-center gap-1.5 bg-white border-2 border-[#1B2A4A] px-3 py-1.5 text-xs font-heading font-bold text-[#1B2A4A] uppercase hover:bg-[#1B2A4A] hover:text-white transition-colors">
                     <span aria-hidden="true">{c.emoji}</span>
