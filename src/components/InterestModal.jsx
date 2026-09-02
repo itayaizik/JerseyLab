@@ -18,6 +18,7 @@ import { hasLocalStockForSize } from '@/components/ShippingBadge';
 import ContactChannelChoice from '@/components/configurator/ContactChannelChoice';
 import HowItWorksNotice from '@/components/HowItWorksNotice';
 import { sendOrderConfirmation } from '@/lib/orderEmail';
+import { notifyNewOrder } from '@/lib/adminNotify';
 import { SHOP_PHONE, WHATSAPP_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/contact';
 
 import { getCart, setCart, cartItemTotal, cartTotal } from '@/lib/cart';
@@ -168,6 +169,15 @@ export function CartModal({ open, onClose, user }) {
       // outage must not read to the customer as a failed checkout.
       sendOrderConfirmation({ email, fullName, orderId, items: cart, total })
         .catch(() => {});
+
+      // Same best-effort contract: tells the shop a request came in, so it does
+      // not sit unseen until someone happens to open the admin panel.
+      notifyNewOrder({
+        orderId, fullName, email,
+        phone: contactForm.phone.trim(),
+        channel, instagramHandle: channel === 'instagram' ? igHandle : '',
+        items: cart, total,
+      });
 
       base44.analytics.track({ eventName: 'cart_submitted', properties: { item_count: cart.length, total, contact_channel: channel } });
       setCart([]);

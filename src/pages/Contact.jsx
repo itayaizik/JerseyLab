@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MessageCircle, Check, Loader2, Mail } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { friendlyError } from '@/lib/errorMessages';
+import { notifyNewEnquiry } from '@/lib/adminNotify';
 import Seo from '@/components/Seo';
 
 const InstagramIcon = () => (
@@ -73,6 +74,13 @@ export default function Contact() {
         email: form.email.trim(),
         message: form.message.trim(),
         status: 'new',
+      });
+      notifyNewEnquiry({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone,
+        subject: form.subject,
+        message: form.message.trim(),
       });
       base44.analytics.track({ eventName: 'contact_submitted' });
       setSubmitted(true);
