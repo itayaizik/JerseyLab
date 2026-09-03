@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { cartItemTotal } from '@/lib/cart';
 
 // Calls the `send-order-confirmation` Edge Function, which holds the Resend API
-// key server-side — the browser must never see it. Callers treat this as
+// key server-side - the browser must never see it. Callers treat this as
 // best-effort: the order row is already written by the time we get here, so a
 // mail failure should never surface as a failed checkout.
 export async function sendOrderConfirmation({ email, fullName, orderId, items, total }) {

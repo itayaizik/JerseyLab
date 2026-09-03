@@ -18,7 +18,7 @@ const categories = [
 ];
 
 // Desktop nav is icon-only, so every entry carries the icon it is shown as and
-// the label it is announced/tooltipped with — an icon with no accessible name
+// the label it is announced/tooltipped with - an icon with no accessible name
 // is just a mystery glyph. The mobile menu still renders the labels as text.
 const navLinks = [
   { label: 'דף הבית', href: '/', icon: Home },
@@ -116,7 +116,7 @@ export default function Navbar() {
   // untouched, so on pathname alone the menu stayed open over the new results.
   useEffect(() => { setMobileOpen(false); setCatOpen(false); }, [location.pathname, location.search]);
 
-  // Freeze the page behind the open mobile panel — otherwise a scroll that
+  // Freeze the page behind the open mobile panel - otherwise a scroll that
   // starts on the panel carries on into the page underneath it.
   useEffect(() => {
     if (!mobileOpen) return;
@@ -142,7 +142,7 @@ export default function Navbar() {
     if (searchOpen && searchInputRef.current) searchInputRef.current.focus();
   }, [searchOpen]);
 
-  // Debounced autocomplete — fetches shirts once (cached), filters client-side
+  // Debounced autocomplete - fetches shirts once (cached), filters client-side
   useEffect(() => {
     const term = searchTerm.trim().toLowerCase();
     if (term.length < 2) { setSuggestions([]); return; }
@@ -216,7 +216,7 @@ export default function Navbar() {
 
       {/* Top accent bar */}
       <div className="bg-[#E8622A] text-white text-center py-1.5 text-xs font-heading tracking-widest uppercase hidden md:block">
-        ⚽ ארכיון בלעדי של חולצות כדורגל נדירות — משלוח לכל הארץ
+        ⚽ ארכיון בלעדי של חולצות כדורגל נדירות - משלוח לכל הארץ
       </div>
 
       <nav className="fixed z-50 text-white transition-all duration-300" style={{ 
@@ -237,10 +237,10 @@ export default function Navbar() {
             {/* No right margin below lg: at 375px the logo plus the action
                 icons plus a 24px margin overflowed the row, which shoved the
                 buttons out past the container padding to 3px from the edge. */}
-            <Link to="/" className="flex-shrink-0 flex items-center lg:mr-6" aria-label="JerseyLab — דף הבית">
+            <Link to="/" className="flex-shrink-0 flex items-center lg:mr-6" aria-label="JerseyLab - דף הבית">
               <img
                 src="https://media.base44.com/images/public/6a42e762005950f7dc39df84/f2c515307_image-removebg-preview2.png"
-                alt="JerseyLab — ONE PASSION. ONE LAB."
+                alt="JerseyLab - ONE PASSION. ONE LAB."
                 className="h-12 lg:h-16 w-auto object-contain"
                 style={{ mixBlendMode: 'screen', filter: 'saturate(2)' }}
               />
@@ -288,7 +288,7 @@ export default function Navbar() {
                       })}
                     </div>
 
-                    {/* Its own strip above the catalog link — a mystery box is
+                    {/* Its own strip above the catalog link - a mystery box is
                         not a filter over the catalogue, it is a product. */}
                     <Link to="/mystery-box" role="menuitem" onClick={() => setCatOpen(false)}
                       className={`flex items-center gap-2 mx-2 mb-2 px-2.5 py-2.5 text-sm font-body border-2 transition-colors ${currentUrl === '/mystery-box' ? 'bg-[#FFD95A] text-[#1B2A4A] border-[#FFD95A]' : 'text-[#FFD95A] border-[#FFD95A]/40 hover:bg-[#FFD95A] hover:text-[#1B2A4A]'}`}>

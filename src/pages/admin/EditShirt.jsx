@@ -7,7 +7,7 @@ import { sizeQty, setSizeQty } from '@/lib/sizes';
 import { trimShirtText } from '@/lib/shirtText';
 
 const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
-// Canonical spellings — see lib/sizes. Reads tolerate the legacy 'XXL' key,
+// Canonical spellings - see lib/sizes. Reads tolerate the legacy 'XXL' key,
 // writes always land on '2XL', so stock can no longer be filed under a spelling
 // the storefront then fails to find.
 const LOCAL_STOCK_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
@@ -209,7 +209,7 @@ export default function EditShirt() {
         {/* Local Stock by Size */}
         <div className="border border-white/10 bg-white/5 p-4 space-y-4">
           <h2 className="font-heading font-bold text-sm text-turf">מלאי בארץ לפי מידה</h2>
-          <p className="text-xs text-varnish">סמן כמות זמינה במלאי בארץ לכל מידה. מידה עם כמות גדולה מ-0 תוצג כ"מלאי בארץ" (הגעה עד שבוע או איסוף עצמי). שאר המידות — "משלוח מהיר" (עד 3 שבועות).</p>
+          <p className="text-xs text-varnish">סמן כמות זמינה במלאי בארץ לכל מידה. מידה עם כמות גדולה מ-0 תוצג כ"מלאי בארץ" (הגעה עד שבוע או איסוף עצמי). שאר המידות - "משלוח מהיר" (עד 3 שבועות).</p>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {LOCAL_STOCK_SIZES.map(size => (
               <div key={size} className="flex items-center gap-2">
@@ -226,7 +226,7 @@ export default function EditShirt() {
                 <input type="checkbox" checked={form.local_stock_player_version} onChange={e => handleChange('local_stock_player_version', e.target.checked)} className="accent-turf" />
                 גרסת שחקן
               </label>
-              <input value={form.local_stock_custom_name} onChange={e => handleChange('local_stock_custom_name', e.target.value)} placeholder="שם ומספר על הגב (אם יש) — למשל Ronaldo 7"
+              <input value={form.local_stock_custom_name} onChange={e => handleChange('local_stock_custom_name', e.target.value)} placeholder="שם ומספר על הגב (אם יש) - למשל Ronaldo 7"
                 className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
             </div>
           </div>

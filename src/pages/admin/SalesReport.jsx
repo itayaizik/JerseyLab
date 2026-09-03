@@ -5,7 +5,7 @@ import { TrendingUp, ShoppingBag, DollarSign, BarChart2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 // When a row was last touched. Nothing wrote `updated_date` until recently,
-// so historical rows have none — and `new Date(null)` is the epoch, which sits
+// so historical rows have none - and `new Date(null)` is the epoch, which sits
 // before every cutoff and quietly dropped those sales from every period except
 // "all time". Falling back to the creation date keeps them in the report; it is
 // an approximation for anything created in one month and sold in another.
@@ -70,7 +70,7 @@ export default function SalesReport() {
   const reservedShirts = shirts.filter(s => s.status === 'reserved');
   const potentialRevenue = reservedShirts.reduce((sum, s) => sum + (s.sale_price && s.sale_price < s.price ? s.sale_price : s.price || 0), 0);
 
-  // Monthly breakdown — last 6 months
+  // Monthly breakdown - last 6 months
   const monthlyData = [];
   for (let i = 5; i >= 0; i--) {
     const d = new Date();
@@ -95,7 +95,7 @@ export default function SalesReport() {
     effectivePrice: s.sale_price && s.sale_price < s.price ? s.sale_price : s.price || 0,
   })).sort((a, b) => b.effectivePrice - a.effectivePrice);
 
-  // Interest by shirt — top requested
+  // Interest by shirt - top requested
   const interestMap = {};
   requests.forEach(r => {
     if (!r.shirt_id) return;

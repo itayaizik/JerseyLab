@@ -1,7 +1,7 @@
 // Writes src/lib/catalogFacets.json: how many shirts sit behind each category
 // link in the navigation.
 //
-// Four links in the menus led to an empty page — ילדים, שחקנים, סייל and NBA —
+// Four links in the menus led to an empty page - ילדים, שחקנים, סייל and NBA -
 // because every shirt in the catalogue is a men's football shirt with no player
 // name and no sale price. A customer tapping one got nothing, and a crawler
 // following one got a thin page worth less than no page at all.

@@ -16,7 +16,7 @@ export default function ResetPassword() {
 
   useEffect(() => {
     // Supabase parses the recovery link's URL fragment and establishes a
-    // temporary session automatically — we just need to wait for it.
+    // temporary session automatically - we just need to wait for it.
     supabase.auth.getSession().then(({ data }) => {
       setHasRecoverySession(!!data.session);
       setReady(true);
@@ -47,7 +47,7 @@ export default function ResetPassword() {
       if (updateError) throw updateError;
       window.location.href = "/login";
     } catch (err) {
-      setError(friendlyError(err, "איפוס הסיסמה נכשל. הקישור עשוי להיות שגוי או פג תוקף — נסה שוב."));
+      setError(friendlyError(err, "איפוס הסיסמה נכשל. הקישור עשוי להיות שגוי או פג תוקף - נסה שוב."));
     } finally {
       setLoading(false);
     }

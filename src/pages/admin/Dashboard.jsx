@@ -94,7 +94,7 @@ export default function Dashboard() {
 
         {/* Top Viewed Chart */}
         <div className="border border-white/10 bg-white/5 p-4">
-          <h2 className="font-heading font-bold text-sm text-turf mb-4">חולצות — מובילות צפיות</h2>
+          <h2 className="font-heading font-bold text-sm text-turf mb-4">חולצות - מובילות צפיות</h2>
           <TopViewedBarChart shirts={shirtsData} />
         </div>
 
@@ -113,7 +113,7 @@ export default function Dashboard() {
                 <div key={r.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                   <div>
                     <p className="text-sm font-medium">{r.full_name}</p>
-                    <p className="text-xs text-varnish">{r.shirt_name} • {r.wanted_size || '—'}</p>
+                    <p className="text-xs text-varnish">{r.shirt_name} • {r.wanted_size || '-'}</p>
                   </div>
                   <span className="text-xs bg-turf text-pitch px-2 py-1 font-bold">חדש</span>
                 </div>
@@ -196,7 +196,7 @@ export default function Dashboard() {
                   <span className="text-xs text-varnish font-mono">
                     {formatDate(log.created_date)}
                   </span>
-                  <span className="text-sm">{log.action} — {log.details || log.entity_type}</span>
+                  <span className="text-sm">{log.action} - {log.details || log.entity_type}</span>
                 </div>
               ))}
             </div>

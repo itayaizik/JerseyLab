@@ -49,12 +49,12 @@ export default function ShirtDetail() {
     setError(false);
     setRelated([]);
     try {
-      // Direct single-shirt fetch — never loads the whole catalog
+      // Direct single-shirt fetch - never loads the whole catalog
       const s = await base44.entities.Shirt.get(id);
       setShirt(s);
       setLoading(false);
 
-      // Analytics + fire-and-forget view increment — never block the UI
+      // Analytics + fire-and-forget view increment - never block the UI
       base44.analytics.track({ eventName: 'product_view', properties: { shirt_id: s.id, club: s.club || s.national_team || '', status: s.status } });
       base44.entities.Shirt.update(id, { views_count: (s.views_count || 0) + 1 }).catch(() => {});
 
@@ -66,7 +66,7 @@ export default function ShirtDetail() {
     }
   }
 
-  // Background load of related shirts — does not block the main product rendering
+  // Background load of related shirts - does not block the main product rendering
   async function loadRelated(s) {
     try {
       if (!s.club && !s.national_team) return;
@@ -132,7 +132,7 @@ export default function ShirtDetail() {
     const origin = SITE_ORIGIN;
     const desc = shirt.description
       ? shirt.description.slice(0, 155)
-      : `${shirt.name} — ${shirt.club || shirt.national_team || ''} ${shirt.season || ''} ${shirt.player_name || ''}`.trim();
+      : `${shirt.name} - ${shirt.club || shirt.national_team || ''} ${shirt.season || ''} ${shirt.player_name || ''}`.trim();
     return {
       "@context": "https://schema.org",
       "@graph": [
@@ -213,10 +213,10 @@ export default function ShirtDetail() {
 
   const visibleThumbs = showAllImages ? allImages : allImages.slice(0, 3);
 
-  const seoTitle = `${shirt.name} — JerseyLab`;
+  const seoTitle = `${shirt.name} - JerseyLab`;
   const seoDesc = shirt.description
     ? shirt.description.slice(0, 155)
-    : `${shirt.name} — ${shirt.club || shirt.national_team || ''} ${shirt.season || ''} ${shirt.player_name || ''}`.trim();
+    : `${shirt.name} - ${shirt.club || shirt.national_team || ''} ${shirt.season || ''} ${shirt.player_name || ''}`.trim();
 
   return (
     <div>
@@ -371,7 +371,7 @@ export default function ShirtDetail() {
               </div>
             }
 
-            {/* Trust signals — reassure right before the CTA */}
+            {/* Trust signals - reassure right before the CTA */}
             <TrustBar />
 
             {/* Actions */}
@@ -384,7 +384,7 @@ export default function ShirtDetail() {
                   aria-label={`שלח בקשת התעניינות עבור ${shirt.name}`}>
                   אני מעוניין
                 </button>
-                <p className="text-center text-[11px] text-[#1B2A4A]/50 font-body">ללא התחייבות — נחזור אליך עם פרטי זמינות</p>
+                <p className="text-center text-[11px] text-[#1B2A4A]/50 font-body">ללא התחייבות - נחזור אליך עם פרטי זמינות</p>
                 </>
               )}
               <div className="flex gap-2">
@@ -430,7 +430,7 @@ export default function ShirtDetail() {
       <CartModal open={cartOpen} onClose={() => setCartOpen(false)} user={user} />
       <ShippingInfoModal open={shippingInfoOpen} onClose={() => setShippingInfoOpen(false)} />
 
-      {/* Sticky mobile CTA — keeps the primary action reachable while scrolling */}
+      {/* Sticky mobile CTA - keeps the primary action reachable while scrolling */}
       {shirt.status === 'available' && (
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t-2 border-[#1B2A4A] px-3 py-2 flex items-center gap-3" style={{ boxShadow: '0 -3px 0 #E8622A' }}>
           <div className="flex-1 min-w-0">

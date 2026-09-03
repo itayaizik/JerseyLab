@@ -4,7 +4,7 @@
 //
 // Recommendation philosophy: this is a sizing ADVISOR, not a height/weight calculator.
 // Priority: (1) the size the user usually wears, (2) their fit preference,
-// (3) height/weight/body as a consistency check — never overriding the user's stated size.
+// (3) height/weight/body as a consistency check - never overriding the user's stated size.
 
 export const SIZE_TABLES = {
   fan: [
@@ -53,14 +53,14 @@ export function recommendSize({ usualSize, fitPreference = 'regular', height, we
   const start = idx(usualSize);
   if (start === -1) return null;
 
-  // Step 1 — anchor on the usual size; a looser fit preference bumps up one size.
+  // Step 1 - anchor on the usual size; a looser fit preference bumps up one size.
   // (Tight fits don't downsize: football shirts already run slim.)
   let recommended = usualSize;
   if ((fitPreference === 'loose' || fitPreference === 'semi_loose') && start + 1 < order.length) {
     recommended = order[start + 1];
   }
 
-  // Step 2 — body check (weight primary) against the table, purely informational.
+  // Step 2 - body check (weight primary) against the table, purely informational.
   const h = Number(height);
   const w = Number(weight);
   let bodySize = null;

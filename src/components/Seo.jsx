@@ -31,7 +31,7 @@ export default function Seo({ title, description, image, type = 'website', canon
   useEffect(() => {
     if (title) document.title = title;
 
-    // Always absolute to the canonical origin — never to whatever host this
+    // Always absolute to the canonical origin - never to whatever host this
     // copy is being served from. See src/lib/siteUrl.js.
     const url = canonicalPath
       ? siteUrl(canonicalPath)

@@ -58,7 +58,7 @@ export const auth = {
   },
 
   setToken() {
-    // Supabase already persists the session after signIn/signUp/verifyOtp — nothing to do.
+    // Supabase already persists the session after signIn/signUp/verifyOtp - nothing to do.
   },
 
   async resendOtp(email) {

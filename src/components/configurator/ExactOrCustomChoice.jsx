@@ -3,16 +3,16 @@ import { PackageCheck, Wand2 } from 'lucide-react';
 
 export default function ExactOrCustomChoice({ shirt, value, onChange }) {
   const exactDesc = shirt.local_stock_player_version && shirt.local_stock_custom_name
-    ? `גרסת שחקן — ${shirt.local_stock_custom_name}`
+    ? `גרסת שחקן - ${shirt.local_stock_custom_name}`
     : shirt.local_stock_player_version
     ? 'גרסת שחקן, בלי הדפסה'
     : shirt.local_stock_custom_name
-    ? `גרסה רגילה — ${shirt.local_stock_custom_name}`
+    ? `גרסה רגילה - ${shirt.local_stock_custom_name}`
     : 'גרסה רגילה, בלי הדפסה';
 
   const options = [
-    { id: 'exact', label: 'קנה בדיוק את זו', desc: exactDesc, shipping: 'מלאי בארץ — עד שבוע', icon: PackageCheck },
-    { id: 'custom', label: 'הזמנה בהתאמה אישית', desc: 'בחר גרסה, שם ומספר משלך', shipping: 'הזמנה מיוחדת — עד 3 שבועות', icon: Wand2 },
+    { id: 'exact', label: 'קנה בדיוק את זו', desc: exactDesc, shipping: 'מלאי בארץ - עד שבוע', icon: PackageCheck },
+    { id: 'custom', label: 'הזמנה בהתאמה אישית', desc: 'בחר גרסה, שם ומספר משלך', shipping: 'הזמנה מיוחדת - עד 3 שבועות', icon: Wand2 },
   ];
 
   return (

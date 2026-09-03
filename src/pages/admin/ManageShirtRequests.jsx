@@ -57,7 +57,7 @@ export default function ManageShirtRequests() {
         <h1 className="font-heading font-black text-2xl text-turf mb-1">בקשות לחולצות</h1>
         <p className="text-sm text-varnish font-body">
           חולצות שלקוחות חיפשו ולא מצאו בקטלוג
-          {filter === 'all' && requests.length > 0 && ` — ${counts.new || 0} ממתינות לתשובה`}
+          {filter === 'all' && requests.length > 0 && ` - ${counts.new || 0} ממתינות לתשובה`}
         </p>
       </div>
 
@@ -88,7 +88,7 @@ export default function ManageShirtRequests() {
             return (
               <div key={r.id} className="bg-white/5 border border-white/10 p-4">
                 <div className="flex gap-4">
-                  {/* Photo, when the customer sent one. Opens full size —
+                  {/* Photo, when the customer sent one. Opens full size -
                       identifying a kit often needs the detail. */}
                   {r.image_url ? (
                     <button type="button" onClick={() => setLightbox(r.image_url)}

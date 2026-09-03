@@ -2,14 +2,14 @@ import React from 'react';
 import { Info, ShoppingCart, MessageCircle, CreditCard } from 'lucide-react';
 import { SHOP_PHONE, WHATSAPP_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/contact';
 
-// There is no checkout on the site — an order is a request, and payment is
+// There is no checkout on the site - an order is a request, and payment is
 // arranged with us directly afterwards. Customers have to understand that
 // *before* they submit, or the confirmation screen reads like a completed
 // purchase that never arrives. Shown in the cart and on the FAQ page.
 
 const STEPS = [
-  { icon: ShoppingCart, title: 'שולחים בקשה', text: 'בוחרים חולצה, מידה והתאמות — ושולחים. בלי תשלום, בלי כרטיס אשראי.' },
-  { icon: MessageCircle, title: 'חוזרים אליך', text: 'נוצר איתך קשר בערוץ שבחרת — וואטסאפ או אינסטגרם — לאישור כל הפרטים.' },
+  { icon: ShoppingCart, title: 'שולחים בקשה', text: 'בוחרים חולצה, מידה והתאמות - ושולחים. בלי תשלום, בלי כרטיס אשראי.' },
+  { icon: MessageCircle, title: 'חוזרים אליך', text: 'נוצר איתך קשר בערוץ שבחרת - וואטסאפ או אינסטגרם - לאישור כל הפרטים.' },
   { icon: CreditCard, title: 'סוגרים תשלום', text: 'רק אחרי שסיכמנו הכל מבצעים את התשלום ישירות מולנו, ואז ההזמנה יוצאת לדרך.' },
 ];
 
@@ -25,7 +25,7 @@ export default function HowItWorksNotice({ variant = 'compact' }) {
 
       <p className={`font-body leading-relaxed text-white/80 ${compact ? 'text-xs' : 'text-sm'}`}>
         <span className="text-[#FFD95A] font-bold">באתר לא מתבצע תשלום.</span>{' '}
-        שליחת ההזמנה היא בקשה בלבד — נחזור אליך בוואטסאפ או באינסטגרם כדי לאשר את כל הפרטים,
+        שליחת ההזמנה היא בקשה בלבד - נחזור אליך בוואטסאפ או באינסטגרם כדי לאשר את כל הפרטים,
         והתשלום מתבצע מולנו ישירות רק אחרי שסיכמנו.
       </p>
 

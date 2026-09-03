@@ -43,7 +43,7 @@ interface NotifyPayload {
   title?: string;
   reference?: string;
   reply_to?: string;
-  // Label/value pairs — whatever the caller wants shown, in order.
+  // Label/value pairs - whatever the caller wants shown, in order.
   fields?: { label?: string; value?: string }[];
   // Free-text block shown last (the customer's own message).
   body?: string;

@@ -25,13 +25,13 @@ export function notifyNewOrder({ orderId, fullName, phone, email, channel, insta
       (item.extras || []).forEach(x => extras.push(x.label));
       (item.details || []).forEach(d => extras.push(`${d.label}: ${d.value}`));
       const suffix = extras.length ? ` (${extras.join(', ')})` : '';
-      return `• ${item.shirtName} — מידה ${item.size} — ₪${cartItemTotal(item)}${suffix}`;
+      return `• ${item.shirtName} - מידה ${item.size} - ₪${cartItemTotal(item)}${suffix}`;
     })
     .join('\n');
 
   return notify({
     kind: 'order',
-    title: `${fullName} — ${items?.length || 0} פריטים, ₪${total}`,
+    title: `${fullName} - ${items?.length || 0} פריטים, ₪${total}`,
     reference: orderId ? `#${String(orderId).slice(-6).toUpperCase()}` : '',
     reply_to: email || '',
     fields: [
@@ -49,7 +49,7 @@ export function notifyNewOrder({ orderId, fullName, phone, email, channel, insta
 export function notifyNewEnquiry({ name, email, phone, subject, message }) {
   return notify({
     kind: 'enquiry',
-    title: subject?.trim() ? `${name} — ${subject}` : name,
+    title: subject?.trim() ? `${name} - ${subject}` : name,
     reply_to: email || '',
     fields: [
       { label: 'שם', value: name },

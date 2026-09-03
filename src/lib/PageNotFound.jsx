@@ -23,11 +23,11 @@ export default function PageNotFound({}) {
     return (
         <main className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
             {/* Reached by client-side navigation, a 404 was keeping the previous
-                page's title and canonical — so a URL that does not exist claimed
+                page's title and canonical - so a URL that does not exist claimed
                 to be a real page. `noindex` also keeps mistyped URLs out of the
                 index entirely. */}
             <Seo
-                title="הדף לא נמצא — JerseyLab"
+                title="הדף לא נמצא - JerseyLab"
                 description="הדף שחיפשת לא קיים באתר JerseyLab."
                 canonicalPath={location.pathname}
                 noindex

@@ -61,7 +61,7 @@ export default function ManageRequests() {
 
     setAddItemState(p => ({ ...p, [groupKey]: { ...p[groupKey], saving: true } }));
 
-    const extraLine = `\n[פריט נוסף שנמכר: ${shirt.name}${state.note ? ' — ' + state.note : ''}]`;
+    const extraLine = `\n[פריט נוסף שנמכר: ${shirt.name}${state.note ? ' - ' + state.note : ''}]`;
     const updatedMessage = (firstItem.message || '') + extraLine;
     await base44.entities.InterestRequest.update(firstItem.id, { message: updatedMessage });
 
@@ -80,7 +80,7 @@ export default function ManageRequests() {
   const statusColors = { new: 'bg-turf text-pitch', contacted: 'bg-blue-500/20 text-blue-400', closed: 'bg-white/5 text-varnish' };
   const statusLabels = { new: 'חדש', contacted: 'נוצר קשר', closed: 'סגור' };
 
-  // Every item from one cart checkout shares an order_id — group them so a
+  // Every item from one cart checkout shares an order_id - group them so a
   // 3-shirt order shows as one folder, not three disconnected requests.
   // Older rows (or a single "אני מעוניין" from before this existed) have no
   // order_id and just fall back to being their own group of one.
@@ -155,7 +155,7 @@ export default function ManageRequests() {
                           {reqShirt && reqShirt.status === 'sold' && (
                             <span className="text-xs text-varnish flex items-center gap-1 mt-1">
                               <Package className="w-3 h-3" />
-                              <span className="line-through">{reqShirt.name}</span> — נמכרה ✓
+                              <span className="line-through">{reqShirt.name}</span> - נמכרה ✓
                             </span>
                           )}
                           {r.message && <p className="text-xs text-varnish bg-white/5 p-2 mt-1 whitespace-pre-line">{r.message}</p>}
@@ -172,7 +172,7 @@ export default function ManageRequests() {
                   </div>
 
                   {/* Channel the customer asked to be reached on, with the handle
-                      to reach them at — this is the one they actually chose. */}
+                      to reach them at - this is the one they actually chose. */}
                   {first.contact_channel && (
                     <div className="flex items-center gap-2 text-xs">
                       <span className="text-varnish">להחזיר תשובה ב:</span>
@@ -181,7 +181,7 @@ export default function ManageRequests() {
                           target="_blank" rel="noopener noreferrer"
                           className="flex items-center gap-1 px-2 py-1 bg-pink-500/15 border border-pink-400/40 text-pink-300 hover:bg-pink-500/25">
                           <ExternalLink className="w-3 h-3" />
-                          @{(first.instagram_handle || '').replace('@', '') || '—'}
+                          @{(first.instagram_handle || '').replace('@', '') || '-'}
                         </a>
                       ) : (
                         <a href={`https://wa.me/${(first.phone || '').replace(/\D/g, '').replace(/^0/, '972')}`}
@@ -240,7 +240,7 @@ export default function ManageRequests() {
                       <option value="">בחר חולצה...</option>
                       {shirts.map(s => (
                         <option key={s.id} value={s.id}>
-                          {s.name}{s.status === 'sold' ? ' ✓' : ''} — ₪{s.sale_price && s.sale_price < s.price ? s.sale_price : s.price}
+                          {s.name}{s.status === 'sold' ? ' ✓' : ''} - ₪{s.sale_price && s.sale_price < s.price ? s.sale_price : s.price}
                         </option>
                       ))}
                     </select>

@@ -213,7 +213,7 @@ export default function ManageShirts() {
                 <tr className={`border-b border-white/5 hover:bg-white/5 ${expandedId === s.id ? 'bg-white/5' : ''}`}>
                   <td className="py-2 px-2">
                     <div className="w-12 h-12 bg-white/5 overflow-hidden">
-                      {s.main_image ? <img src={s.main_image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-varnish text-xs">—</div>}
+                      {s.main_image ? <img src={s.main_image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-varnish text-xs">-</div>}
                     </div>
                   </td>
                   <td className="py-2 px-2">
@@ -222,7 +222,7 @@ export default function ManageShirts() {
                     </button>
                     {s.player_name && <p className="text-xs text-varnish">{s.player_name}</p>}
                   </td>
-                  <td className="py-2 px-2 hidden md:table-cell text-varnish">{s.club || s.national_team || '—'}</td>
+                  <td className="py-2 px-2 hidden md:table-cell text-varnish">{s.club || s.national_team || '-'}</td>
                   <td className="py-2 px-2 font-mono">₪{s.sale_price && s.sale_price < s.price ? s.sale_price : s.price}</td>
                   <td className="py-2 px-2 hidden md:table-cell">
                     <div className="flex flex-wrap gap-1">
@@ -281,7 +281,7 @@ export default function ManageShirts() {
                       <ShirtEditForm draft={drafts[s.id]} onChange={(next) => updateDraft(s.id, next)} />
                       <div className="flex items-center justify-between mt-4 max-w-3xl">
                         <button onClick={() => setExpandedId(null)} className="text-sm text-varnish hover:text-turf">סגור עריכה</button>
-                        <span className="text-xs text-varnish">{dirty[s.id] ? 'שינויים לא שמורים — ישמרו ב"שמור הכל"' : 'אין שינויים'}</span>
+                        <span className="text-xs text-varnish">{dirty[s.id] ? 'שינויים לא שמורים - ישמרו ב"שמור הכל"' : 'אין שינויים'}</span>
                       </div>
                     </td>
                   </tr>

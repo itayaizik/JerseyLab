@@ -1,8 +1,8 @@
 // Writes a real HTML file for every public route, after `vite build`.
 //
 // The site is a Vite SPA: the server sends 4.5KB with an empty <div id="root">
-// and everything — title, description, canonical, structured data, the words on
-// the page — appears only once JavaScript has run. Google does render JS, but
+// and everything - title, description, canonical, structured data, the words on
+// the page - appears only once JavaScript has run. Google does render JS, but
 // in a second pass that can be days later, and it reads the canonical tag in
 // the *first* pass, when it does not yet exist. Every one of the 185 pages was
 // therefore served identical, contentless HTML. That is most of the reason the
@@ -25,7 +25,7 @@ const TEMPLATE_PATH = resolve(DIST, 'index.html');
 const DEFAULT_IMAGE = 'https://media.base44.com/images/public/6a42e762005950f7dc39df84/de8c45ac1_ChatGPTImageJul31202602_56_05AM.png';
 
 if (!existsSync(TEMPLATE_PATH)) {
-  console.error('[prerender] dist/index.html not found — run `vite build` first.');
+  console.error('[prerender] dist/index.html not found - run `vite build` first.');
   process.exit(1);
 }
 const TEMPLATE = readFileSync(TEMPLATE_PATH, 'utf8');
@@ -34,7 +34,7 @@ const TEMPLATE = readFileSync(TEMPLATE_PATH, 'utf8');
 // carries prerendered markup would nest one page inside another. Vite empties
 // dist/ on every build, but fail loudly rather than ship that silently.
 if (!TEMPLATE.includes('<div id="root"></div>')) {
-  console.error('[prerender] dist/index.html is not a clean Vite template — run a fresh `vite build`.');
+  console.error('[prerender] dist/index.html is not a clean Vite template - run a fresh `vite build`.');
   process.exit(1);
 }
 
@@ -43,49 +43,49 @@ if (!TEMPLATE.includes('<div id="root"></div>')) {
 const STATIC_PAGES = [
   {
     path: '/',
-    title: 'JerseyLab — חולצות כדורגל נדירות לאספנים ואוהדים',
-    description: 'חולצות כדורגל איכותיות ונדירות לאספנים ואוהדים. מצא חולצות של קבוצות, נבחרות ושחקנים אהובים — חדשות, רטרו ומהדורות מיוחדות במחירים טובים.',
+    title: 'JerseyLab - חולצות כדורגל נדירות לאספנים ואוהדים',
+    description: 'חולצות כדורגל איכותיות ונדירות לאספנים ואוהדים. מצא חולצות של קבוצות, נבחרות ושחקנים אהובים - חדשות, רטרו ומהדורות מיוחדות במחירים טובים.',
     h1: 'חולצות כדורגל איכותיות, נדירות ובמחירים טובים',
-    body: `<p>JerseyLab מוכר חולצות כדורגל מקוריות — חולצות מועדון, נבחרות, רטרו וגרסאות שחקן. מלאי בארץ עם משלוח מהיר, והזמנות מיוחדות של חולצות שלא נמצאות בקטלוג.</p>`,
+    body: `<p>JerseyLab מוכר חולצות כדורגל מקוריות - חולצות מועדון, נבחרות, רטרו וגרסאות שחקן. מלאי בארץ עם משלוח מהיר, והזמנות מיוחדות של חולצות שלא נמצאות בקטלוג.</p>`,
   },
   {
     path: '/catalog',
-    title: 'קטלוג — JerseyLab',
+    title: 'קטלוג - JerseyLab',
     description: 'קטלוג חולצות כדורגל: חולצות של קבוצות, נבחרות ושחקנים במחירים טובים. רטרו, מהדורות מיוחדות ומלאי זמין בארץ.',
     h1: 'קטלוג חולצות כדורגל',
-    body: `<p>כל החולצות במלאי — לפי קבוצה, נבחרת, עונה ומידה. אפשר לסנן לפי רטרו, נבחרות, סייל ומלאי זמין בארץ.</p>`,
+    body: `<p>כל החולצות במלאי - לפי קבוצה, נבחרת, עונה ומידה. אפשר לסנן לפי רטרו, נבחרות, סייל ומלאי זמין בארץ.</p>`,
   },
   {
     path: '/mystery-box',
-    title: 'מיסטרי בוקס — JerseyLab',
+    title: 'מיסטרי בוקס - JerseyLab',
     description: 'מיסטרי בוקס של JerseyLab: חולצת כדורגל מפתיעה לפי סגנון ומידה שתבחר. רגיל ₪70, רטרו ₪90, מונדיאל ₪70. אפשר לסמן קבוצות וצבעים שלא תרצה לקבל.',
     h1: 'מיסטרי בוקס',
-    body: `<p>אתה בוחר סגנון ומידה — אנחנו בוחרים את החולצה. רגיל ₪70, מונדיאל ₪70, רטרו ₪90. תוספת שם ומספר ₪10, כל הפאצ'ים ₪5. אפשר לסמן קבוצות וצבעים שלא תרצה לקבל.</p>`,
+    body: `<p>אתה בוחר סגנון ומידה - אנחנו בוחרים את החולצה. רגיל ₪70, מונדיאל ₪70, רטרו ₪90. תוספת שם ומספר ₪10, כל הפאצ'ים ₪5. אפשר לסמן קבוצות וצבעים שלא תרצה לקבל.</p>`,
   },
   {
     path: '/request-shirt',
-    title: 'מחפשים חולצה שאין באתר? — JerseyLab',
+    title: 'מחפשים חולצה שאין באתר? - JerseyLab',
     description: 'לא מצאתם את החולצה בקטלוג? שלחו לנו בקשה עם תמונה או תיאור, ונבדוק אם אפשר להשיג אותה ובאיזה מחיר.',
     h1: 'מחפשים חולצה שאין באתר?',
-    body: `<p>הקטלוג הוא לא הכל. שלחו תמונה או תיאור של החולצה שאתם מחפשים — קבוצה, עונה ומידה — ונחזור אליכם עם תשובה ומחיר.</p>`,
+    body: `<p>הקטלוג הוא לא הכל. שלחו תמונה או תיאור של החולצה שאתם מחפשים - קבוצה, עונה ומידה - ונחזור אליכם עם תשובה ומחיר.</p>`,
   },
   {
     path: '/faq',
-    title: 'שאלות ותשובות — JerseyLab',
+    title: 'שאלות ותשובות - JerseyLab',
     description: 'שאלות ותשובות נפוצות על רכישת חולצות כדורגל ב-JerseyLab: משלוחים, מידות, זמינות ופרטי הזמנה.',
     h1: 'שאלות ותשובות',
-    body: `<p>באתר לא מתבצע תשלום. שליחת ההזמנה היא בקשה בלבד — נחזור אליך בוואטסאפ או באינסטגרם לאישור הפרטים, והתשלום מתבצע מולנו ישירות רק אחרי שסיכמנו.</p>`,
+    body: `<p>באתר לא מתבצע תשלום. שליחת ההזמנה היא בקשה בלבד - נחזור אליך בוואטסאפ או באינסטגרם לאישור הפרטים, והתשלום מתבצע מולנו ישירות רק אחרי שסיכמנו.</p>`,
   },
   {
     path: '/contact',
-    title: 'צור קשר — JerseyLab',
+    title: 'צור קשר - JerseyLab',
     description: 'צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ בוואטסאפ ואינסטגרם. מענה מהיר ושירות אישי.',
     h1: 'צור קשר',
     body: `<p>אפשר להשיג אותנו בוואטסאפ 050-558-6255 או באינסטגרם @Jerseylabil. נשמח לעזור עם מידות, זמינות והזמנות מיוחדות.</p>`,
   },
   {
     path: '/size-guide',
-    title: 'מדריך מידות — JerseyLab',
+    title: 'מדריך מידות - JerseyLab',
     description: 'מדריך מידות לחולצות כדורגל: טבלאות מידות לאוהד, גרסת שחקן, נשים וילדים. איך לבחור את המידה הנכונה לפי מידות הגוף.',
     h1: 'מדריך מידות',
     body: `<p>טבלאות מידות לחולצות אוהד וגרסת שחקן, למבוגרים ולילדים, לפי היקף חזה ואורך.</p>`,
@@ -130,7 +130,7 @@ function withJsonLd(html, data) {
 }
 
 // React clears #root when it mounts, so this is crawler-facing content that
-// costs visitors nothing. It is real markup, not hidden text — the same facts
+// costs visitors nothing. It is real markup, not hidden text - the same facts
 // the rendered page shows.
 function withBody(html, inner) {
   return html.replace(
@@ -147,7 +147,7 @@ function shell({ h1, body }) {
 }
 
 // Written as flat `<route>.html` files, paired with `"cleanUrls": true` in
-// vercel.json so Vercel serves dist/shirt/abc.html at /shirt/abc — the exact
+// vercel.json so Vercel serves dist/shirt/abc.html at /shirt/abc - the exact
 // URL the sitemap advertises and Google will crawl. Directory-index resolution
 // for an extensionless path is host-specific behaviour; this is documented and
 // explicit instead. Routes with no file (a shirt added since the last build,
@@ -214,7 +214,7 @@ for (const page of STATIC_PAGES) {
       })),
     });
     // The questions and answers also go into the served markup, not only the
-    // structured data — a crawler that ignores JSON-LD still gets the text.
+    // structured data - a crawler that ignores JSON-LD still gets the text.
     body += `<dl>${entries.map(f =>
       `<dt>${escapeHtml(f.question.trim())}</dt><dd>${escapeHtml(f.answer.trim())}</dd>`
     ).join('')}</dl>`;
@@ -231,7 +231,7 @@ for (const shirt of shirts) {
   const url = SITE_ORIGIN + path;
   const price = shirtPrice(shirt);
   const description = shirtDescription(shirt);
-  const title = `${shirt.name} — JerseyLab`;
+  const title = `${shirt.name} - JerseyLab`;
 
   let html = buildHead(TEMPLATE, { path, title, description, image: shirt.main_image });
   html = withJsonLd(html, {
@@ -289,7 +289,7 @@ for (const shirt of shirts) {
 // --- collection landing pages --------------------------------------------
 // These are the pages meant to rank for "חולצות רטרו" and the like, so the
 // served HTML carries the intro copy, the real list of shirts in the
-// collection, and an ItemList linking to each one — which is also how a
+// collection, and an ItemList linking to each one - which is also how a
 // crawler discovers product pages without following JavaScript.
 
 for (const collection of COLLECTIONS) {
@@ -339,7 +339,7 @@ for (const collection of COLLECTIONS) {
   const list = items.length
     ? `<ul>${items.map(s => {
         const price = shirtPrice(s);
-        return `<li><a href="/shirt/${escapeHtml(s.id)}">${escapeHtml(s.name)}</a>${price ? ` — ₪${escapeHtml(price)}` : ''}</li>`;
+        return `<li><a href="/shirt/${escapeHtml(s.id)}">${escapeHtml(s.name)}</a>${price ? ` - ₪${escapeHtml(price)}` : ''}</li>`;
       }).join('')}</ul>`
     : `<p>אין כרגע מלאי בקטגוריה הזו. <a href="/request-shirt">אפשר לשלוח לנו בקשה</a> ונבדוק אם אפשר להשיג.</p>`;
 

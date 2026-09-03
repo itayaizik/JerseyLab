@@ -35,7 +35,7 @@ export default function FAQPage() {
     name: "איך מזמינים? האם משלמים באתר?",
     acceptedAnswer: {
       "@type": "Answer",
-      text: "באתר לא מתבצע תשלום. שליחת ההזמנה היא בקשה בלבד — אנחנו חוזרים אליך בוואטסאפ או באינסטגרם לאישור כל הפרטים, והתשלום מתבצע מולנו ישירות רק אחרי שסיכמנו."
+      text: "באתר לא מתבצע תשלום. שליחת ההזמנה היא בקשה בלבד - אנחנו חוזרים אליך בוואטסאפ או באינסטגרם לאישור כל הפרטים, והתשלום מתבצע מולנו ישירות רק אחרי שסיכמנו."
     }
   };
 
@@ -54,7 +54,7 @@ export default function FAQPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <Seo title="שאלות ותשובות — JerseyLab" description="שאלות ותשובות נפוצות על רכישת חולצות כדורגל ב-JerseyLab: משלוחים, מידות, זמינות ופרטי הזמנה." canonicalPath="/faq" jsonLd={faqJsonLd} />
+      <Seo title="שאלות ותשובות - JerseyLab" description="שאלות ותשובות נפוצות על רכישת חולצות כדורגל ב-JerseyLab: משלוחים, מידות, זמינות ופרטי הזמנה." canonicalPath="/faq" jsonLd={faqJsonLd} />
 
       {/* Header */}
       <div className="text-center mb-10">
@@ -72,7 +72,7 @@ export default function FAQPage() {
         <p className="text-[#1B2A4A]/60 font-body text-sm">כל מה שצריך לדעת לפני שפונים אלינו</p>
       </div>
 
-      {/* How ordering works — hard-coded rather than a DB row, because a
+      {/* How ordering works - hard-coded rather than a DB row, because a
           customer must never be able to reach this page without it. */}
       <div className="mb-8">
         <HowItWorksNotice variant="full" />

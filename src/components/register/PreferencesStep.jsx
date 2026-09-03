@@ -19,7 +19,7 @@ export default function PreferencesStep({ data, onChange, onFinish, onSkip, onBa
   return (
     <div>
       <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">העדפות כדורגל</h3>
-      <p className="text-sm text-gray-500 font-body mb-4">נדייק עבורך חולצות שיתאימו לטעם שלך — הכול אופציונלי</p>
+      <p className="text-sm text-gray-500 font-body mb-4">נדייק עבורך חולצות שיתאימו לטעם שלך - הכול אופציונלי</p>
 
       <div className="mb-4">
         <label className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase block mb-1.5">קבוצות שאתה אוהב</label>

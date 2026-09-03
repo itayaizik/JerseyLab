@@ -91,7 +91,7 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-md text-right">
-        <DialogTitle className="sr-only">הוספה לסל — {shirt.name}</DialogTitle>
+        <DialogTitle className="sr-only">הוספה לסל - {shirt.name}</DialogTitle>
 
         <div className="flex gap-3 items-start mb-1">
           {shirt.main_image && <img src={shirt.main_image} alt="" className="w-14 h-14 object-cover border-2 border-[#1B2A4A] flex-shrink-0" />}
@@ -148,7 +148,7 @@ export default function QuickAddModal({ shirt, open, onClose }) {
           )}
           {step === 'summary' && (
             <motion.div key="summary" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">הכול מוכן — נשאר רק לאשר</h3>
+              <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">הכול מוכן - נשאר רק לאשר</h3>
               <p className="text-sm text-gray-500 font-body mb-4">הנה הבחירה שלך:</p>
               {buyingExact ? (
                 <OrderSummary shirt={shirt} size={selectedSize}

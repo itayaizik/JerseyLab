@@ -60,8 +60,8 @@ alter table interest_requests_raw enable row level security;
 drop policy if exists "own interest requests read" on interest_requests_raw;
 create policy "own interest requests read" on interest_requests_raw for select
   using (user_id = auth.uid()::text);
--- Guests (not logged in) can submit too — InterestModal.jsx sends
--- user_id: '' in that case — but a request must be attributed to either
+-- Guests (not logged in) can submit too - InterestModal.jsx sends
+-- user_id: '' in that case - but a request must be attributed to either
 -- the caller's own auth uid or the empty guest value, never someone
 -- else's uid (which would let one user's requests be spoofed as another's).
 drop policy if exists "own interest requests insert" on interest_requests_raw;
@@ -168,7 +168,7 @@ drop policy if exists "admin full access instagram posts" on instagram_posts_raw
 create policy "admin full access instagram posts" on instagram_posts_raw for all using (public.is_admin()) with check (public.is_admin());
 
 -- ── Storage: shirt image uploads (admin panel) ──────────────
--- NOTE: create the bucket by hand first — Storage > New bucket > name
+-- NOTE: create the bucket by hand first - Storage > New bucket > name
 -- "shirt-images" > Public bucket: ON. Inserting into storage.buckets via
 -- SQL doesn't reliably work on all projects, so this only sets the
 -- policies on storage.objects (works regardless of how the bucket was made).
@@ -208,7 +208,7 @@ alter table reviews_raw add column if not exists image_url text;
 alter table reviews_raw add column if not exists is_anonymous boolean not null default false;
 
 -- ── Storage: customer-submitted review photos ───────────────
--- NOTE: create the bucket by hand first — Storage > New bucket > name
+-- NOTE: create the bucket by hand first - Storage > New bucket > name
 -- "review-images" > Public bucket: ON.
 
 drop policy if exists "public read review images" on storage.objects;
@@ -292,7 +292,7 @@ create table if not exists shirt_requests_raw (
 
 alter table shirt_requests_raw enable row level security;
 
--- Anyone may send a request — the form is open to logged-out visitors, the
+-- Anyone may send a request - the form is open to logged-out visitors, the
 -- same as the order form. Reading back is deliberately NOT granted, so the
 -- adapter must not ask for the row after inserting (ShirtRequest is listed
 -- in NO_RETURN_ON_CREATE for exactly this reason).
@@ -310,7 +310,7 @@ create policy "admin full access shirt requests" on shirt_requests_raw for all
   using (public.is_admin()) with check (public.is_admin());
 
 -- ── Storage: photos attached to those requests ─────────────
--- NOTE: create the bucket by hand first — Storage > New bucket > name
+-- NOTE: create the bucket by hand first - Storage > New bucket > name
 -- "request-images" > Public bucket: ON. Set a file size limit there too
 -- (2 MB is plenty; the client downscales to 1600px before uploading), since
 -- this is the one bucket a logged-out visitor can write to.

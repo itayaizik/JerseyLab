@@ -151,7 +151,7 @@ export default function BulkImportShirts() {
               </span>
             </p>
             <p>
-              תצוגה מקדימה — שם: <span className="text-chalk">{preview.name}</span>
+              תצוגה מקדימה - שם: <span className="text-chalk">{preview.name}</span>
               {preview.club ? <>{' '}· קבוצה: <span className="text-chalk">{preview.club}</span></> : null}
               {preview.league ? <>{' '}· ליגה: <span className="text-chalk">{preview.league}</span></> : null}
             </p>

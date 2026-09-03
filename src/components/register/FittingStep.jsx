@@ -50,7 +50,7 @@ export default function FittingStep({ data, onChange, onContinue, onBack }) {
       <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">התאמת מידות</h3>
       <p className="text-sm text-gray-500 font-body mb-4">נתאים לך חולצות לפי הרגלי הלבישה שלך</p>
 
-      {/* 1 — usual size (required, most important) */}
+      {/* 1 - usual size (required, most important) */}
       <label className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase block mb-1">
         איזו מידה אתה בדרך כלל לובש? <span className="text-[#E8622A]">*</span>
       </label>
@@ -72,7 +72,7 @@ export default function FittingStep({ data, onChange, onContinue, onBack }) {
         ))}
       </div>
 
-      {/* 2 — fit preference */}
+      {/* 2 - fit preference */}
       <label className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase block mt-4 mb-1.5">העדפת גזרה</label>
       <div className="grid grid-cols-5 gap-1">
         {FITS.map((f) => (
@@ -91,7 +91,7 @@ export default function FittingStep({ data, onChange, onContinue, onBack }) {
         ))}
       </div>
 
-      {/* 3 — body details (optional, for refinement) */}
+      {/* 3 - body details (optional, for refinement) */}
       <p className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase mt-4 mb-1.5">פרטי גוף <span className="font-body normal-case text-[10px] text-[#1B2A4A]/40">(אופציונלי, לדיוק ההמלצה)</span></p>
       <div className="grid grid-cols-2 gap-3">
         <div>

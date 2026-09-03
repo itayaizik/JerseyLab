@@ -35,7 +35,7 @@ const SizeGuide = lazy(() => import('@/pages/SizeGuide'));
 const WishlistPage = lazy(() => import('@/pages/WishlistPage'));
 const Profile = lazy(() => import('@/pages/Profile'));
 
-// Admin Pages (code-split — only loaded for admins)
+// Admin Pages (code-split - only loaded for admins)
 const Dashboard = lazy(() => import('@/pages/admin/Dashboard'));
 const AddShirt = lazy(() => import('@/pages/admin/AddShirt'));
 const BulkImportShirts = lazy(() => import('@/pages/admin/BulkImportShirts'));

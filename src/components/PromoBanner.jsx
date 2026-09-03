@@ -68,7 +68,7 @@ export default function PromoBanner({ title, subtitle, buttonText, buttonLink, i
             {title || 'מבצע ענק על חולצות סייל'}
           </h2>
           <p className="font-body text-white/70 text-sm md:text-base mb-5 max-w-md">
-            {subtitle || 'הנחות מיוחדות על מאות חולצות — לזמן מוגבל בלבד!'}
+            {subtitle || 'הנחות מיוחדות על מאות חולצות - לזמן מוגבל בלבד!'}
           </p>
 
           <Link

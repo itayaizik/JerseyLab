@@ -3,7 +3,7 @@ import { Ruler, Info } from 'lucide-react';
 import Seo from '@/components/Seo';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
 
-// FAN VERSION — columns: S, M, L, XL, 2XL, 3XL
+// FAN VERSION - columns: S, M, L, XL, 2XL, 3XL
 const fanRows = [
   { measure: 'אורך (ס"מ)', S: '69-71',   M: '71-73',   L: '73-75',  XL: '75-78',  '2XL': '78-81',  '3XL': '81-83' },
   { measure: 'רוחב (ס"מ)', S: '53-55',   M: '55-57',   L: '57-58',  XL: '58-60',  '2XL': '60-62',  '3XL': '62-64' },
@@ -11,7 +11,7 @@ const fanRows = [
   { measure: 'משקל (ק"ג)', S: '50-62',   M: '62-70',   L: '70-83',  XL: '83-90',  '2XL': '90-97',  '3XL': '97-104' },
 ];
 
-// PLAYER VERSION — columns: S, M, L, XL, 2XL, 3XL
+// PLAYER VERSION - columns: S, M, L, XL, 2XL, 3XL
 const playerRows = [
   { measure: 'אורך (ס"מ)', S: '67-69',   M: '69-71',   L: '71-73',  XL: '75-76',  '2XL': '76-78',  '3XL': '78-79' },
   { measure: 'רוחב (ס"מ)', S: '49-51',   M: '51-53',   L: '53-55',  XL: '55-57',  '2XL': '57-60',  '3XL': '60-63' },
@@ -19,7 +19,7 @@ const playerRows = [
   { measure: 'משקל (ק"ג)', S: '50-62',   M: '62-75',   L: '75-80',  XL: '80-85',  '2XL': '85-90',  '3XL': '90-95' },
 ];
 
-// WOMEN'S VERSION — columns: S, M, L, XL
+// WOMEN'S VERSION - columns: S, M, L, XL
 const womenRows = [
   { measure: 'אורך (ס"מ)', S: '61-63',   M: '63-66', L: '66-69',   XL: '69-71' },
   { measure: 'רוחב (ס"מ)', S: '40-41',   M: '41-44', L: '44-47',   XL: '47-50' },
@@ -29,7 +29,7 @@ const womenRows = [
 const adultSizes = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 const womenSizes = ['S', 'M', 'L', 'XL'];
 
-// KIDS VERSION — rows per size, columns: HEIGHT, AGE, LENGTH, WIDTH, WAIST
+// KIDS VERSION - rows per size, columns: HEIGHT, AGE, LENGTH, WIDTH, WAIST
 const kidsRows = [
   { size: '14', height: '85-95',   age: '2-3',   length: '41', width: '33', waist: '19-36' },
   { size: '16', height: '95-105',  age: '3-4',   length: '44', width: '35', waist: '20-37' },
@@ -41,7 +41,7 @@ const kidsRows = [
   { size: '28', height: '155-165', age: '11-12', length: '62', width: '47', waist: '26-50' },
 ];
 
-// Measurement-rows table (FAN / PLAYER / WOMEN) — first column = measure name
+// Measurement-rows table (FAN / PLAYER / WOMEN) - first column = measure name
 function MeasureTable({ rows, sizes }) {
   return (
     <div className="overflow-x-auto">
@@ -69,7 +69,7 @@ function MeasureTable({ rows, sizes }) {
   );
 }
 
-// Size-rows table (KIDS) — first column = size number
+// Size-rows table (KIDS) - first column = size number
 function KidsTable({ data }) {
   const cols = [
     { key: 'size', label: 'מידה' },
@@ -110,7 +110,7 @@ const tips = [
   'רוחב נמדד מבית שחי לבית שחי (מתחת לבית השחי)',
   'גובה ומשקל מתארים טווח מומלץ לבחירת המידה',
   'בין שתי מידות? תמיד עדיף לקחת את הגדולה יותר',
-  'מידות עשויות להשתנות בין יצרנים — פנה אלינו לאישור',
+  'מידות עשויות להשתנות בין יצרנים - פנה אלינו לאישור',
 ];
 
 const TABS = [
@@ -125,7 +125,7 @@ export default function SizeGuide() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <Seo title="מדריך מידות — JerseyLab" description="מדריך מידות לחולצות כדורגל: טבלאות מידות לאוהד, גרסת שחקן, נשים וילדים. איך לבחור את המידה הנכונה לפי מידות הגוף." canonicalPath="/size-guide" jsonLd={{ "@context": "https://schema.org", "@type": "WebPage", name: "מדריך מידות — JerseyLab", description: "מדריך מידות לחולצות כדורגל וטבלאות מידה.", url: (SITE_ORIGIN) + "/size-guide", inLanguage: "he-IL" }} />
+      <Seo title="מדריך מידות - JerseyLab" description="מדריך מידות לחולצות כדורגל: טבלאות מידות לאוהד, גרסת שחקן, נשים וילדים. איך לבחור את המידה הנכונה לפי מידות הגוף." canonicalPath="/size-guide" jsonLd={{ "@context": "https://schema.org", "@type": "WebPage", name: "מדריך מידות - JerseyLab", description: "מדריך מידות לחולצות כדורגל וטבלאות מידה.", url: (SITE_ORIGIN) + "/size-guide", inLanguage: "he-IL" }} />
 
       {/* Header */}
       <div className="text-center mb-10">

@@ -213,7 +213,7 @@ export default function Catalog() {
     return keys.every(k => searchParams.get(k) === qf.params[k]);
   });
 
-  const seoTitle = `${pageTitle()} — JerseyLab`;
+  const seoTitle = `${pageTitle()} - JerseyLab`;
   const seoDesc = `קטלוג חולצות כדורגל: ${pageTitle()}. חולצות של קבוצות, נבחרות ושחקנים במחירים טובים.`;
   const origin = SITE_ORIGIN;
   const catalogJsonLd = {
@@ -265,8 +265,8 @@ export default function Catalog() {
           </div>
         </div>
 
-        {/* Collection landing pages. Unlike the quick filters below — which
-            only change a query string — each of these is a real page about one
+        {/* Collection landing pages. Unlike the quick filters below - which
+            only change a query string - each of these is a real page about one
             subject, which is what search engines rank and people share. */}
         <nav className="flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide" aria-label="קטגוריות">
           {COLLECTIONS.map(c => (
@@ -315,7 +315,7 @@ export default function Catalog() {
               <X className="w-3 h-3" /> נקה סינון
             </button>
           </div>
-          {/* Primary filters — always visible */}
+          {/* Primary filters - always visible */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <div>
               <label className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase block mb-1.5">מצב</label>
@@ -350,7 +350,7 @@ export default function Catalog() {
             )}
           </div>
 
-          {/* More filters toggle — progressive disclosure */}
+          {/* More filters toggle - progressive disclosure */}
           <button type="button"
             onClick={() => setShowMoreFilters(!showMoreFilters)}
             className="flex items-center gap-1.5 mt-4 text-xs font-heading font-bold text-[#1B2A4A] uppercase tracking-wide hover:text-[#E8622A] transition-colors">
@@ -359,7 +359,7 @@ export default function Catalog() {
             {hasAdvancedFilters && <span className="w-1.5 h-1.5 bg-[#E8622A] rounded-full" />}
           </button>
 
-          {/* Advanced filters — revealed on demand */}
+          {/* Advanced filters - revealed on demand */}
           {(showMoreFilters || hasAdvancedFilters) && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4 pt-4 border-t border-[#1B2A4A]/10">
               {nationalTeams.length > 0 && (

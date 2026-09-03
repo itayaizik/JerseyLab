@@ -70,7 +70,7 @@ export default function Home() {
   const [loadError, setLoadError] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
 
-  // Four named home kits for the hero collage — two Israeli, two Spanish. They
+  // Four named home kits for the hero collage - two Israeli, two Spanish. They
   // are matched by club rather than pinned by id so a re-import cannot empty
   // the hero, and the newest season always wins. Any slot that finds nothing
   // falls back to the featured/new/best pool, so the collage is never short.
@@ -126,7 +126,7 @@ export default function Home() {
       setSiteSettings(settingsObj);
       setLoading(false);
 
-      // User/wishlist loads after content is visible — does not block the first paint.
+      // User/wishlist loads after content is visible - does not block the first paint.
       try {
         const me = await base44.auth.me();
         setUser(me);
@@ -168,8 +168,8 @@ export default function Home() {
   return (
   <div style={{ background: 'transparent' }}>
     <Seo
-      title="JerseyLab — חולצות כדורגל נדירות לאספנים ואוהדים"
-      description="חולצות כדורגל איכותיות ונדירות לאספנים ואוהדים. מצא חולצות של קבוצות, נבחרות ושחקנים אהובים — חדשות, רטרו ומהדורות מיוחדות במחירים טובים."
+      title="JerseyLab - חולצות כדורגל נדירות לאספנים ואוהדים"
+      description="חולצות כדורגל איכותיות ונדירות לאספנים ואוהדים. מצא חולצות של קבוצות, נבחרות ושחקנים אהובים - חדשות, רטרו ומהדורות מיוחדות במחירים טובים."
       canonicalPath="/"
       jsonLd={{
         "@context": "https://schema.org",
@@ -271,7 +271,7 @@ export default function Home() {
               </nav>
 
               {/* One CTA. The cart button that used to sit here duplicated the
-                  navbar's — same action, same badge, both on screen at once. */}
+                  navbar's - same action, same badge, both on screen at once. */}
               <Link to="/catalog"
                 className="inline-block bg-[#E8622A] text-white font-heading font-bold px-8 py-3 uppercase tracking-wider text-sm hover:bg-[#D0551F] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
                 style={{ boxShadow: '3px 3px 0 #1B2A4A', textShadow: '1px 1px 4px rgba(0,0,0,0.25)' }}>
@@ -280,8 +280,8 @@ export default function Home() {
             </div>
 
             {/* Right: real shirts as a polaroid fan.
-                Previously four Unsplash stock photos — a stadium, a ball, boots,
-                a pitch — with no jersey among them, absolutely positioned at
+                Previously four Unsplash stock photos - a stadium, a ball, boots,
+                a pitch - with no jersey among them, absolutely positioned at
                 percentages that left a hole through the middle. Now it shows
                 actual stock, each photo linking to its product page, and fills
                 the caption strip `.polaroid` already reserves (padding-bottom:28px)

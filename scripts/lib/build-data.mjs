@@ -45,7 +45,7 @@ export async function fetchShirts({ label = 'build' } = {}) {
   const url = env('VITE_SUPABASE_URL');
   const key = env('VITE_SUPABASE_ANON_KEY');
   if (!url || !key) {
-    console.warn(`[${label}] Supabase credentials not found — continuing without catalogue data.`);
+    console.warn(`[${label}] Supabase credentials not found - continuing without catalogue data.`);
     return [];
   }
 
@@ -54,11 +54,11 @@ export async function fetchShirts({ label = 'build' } = {}) {
   try {
     res = await fetch(endpoint, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
   } catch (err) {
-    console.warn(`[${label}] Supabase unreachable (${err.message}) — continuing without catalogue data.`);
+    console.warn(`[${label}] Supabase unreachable (${err.message}) - continuing without catalogue data.`);
     return [];
   }
   if (!res.ok) {
-    console.warn(`[${label}] Supabase returned ${res.status} — continuing without catalogue data.`);
+    console.warn(`[${label}] Supabase returned ${res.status} - continuing without catalogue data.`);
     return [];
   }
 
@@ -69,7 +69,7 @@ export async function fetchShirts({ label = 'build' } = {}) {
 
 // The published FAQ, for the prerendered /faq page. FAQPage structured data is
 // what produces the expandable answers in Google's results, and it is one of
-// the formats AI assistants quote most readily — but it only existed after
+// the formats AI assistants quote most readily - but it only existed after
 // JavaScript ran, which is exactly when a crawler is no longer looking.
 export async function fetchFaqs({ label = 'build' } = {}) {
   const url = env('VITE_SUPABASE_URL');
@@ -80,13 +80,13 @@ export async function fetchFaqs({ label = 'build' } = {}) {
   try {
     const res = await fetch(endpoint, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
     if (!res.ok) {
-      console.warn(`[${label}] FAQ fetch returned ${res.status} — page ships without FAQ schema.`);
+      console.warn(`[${label}] FAQ fetch returned ${res.status} - page ships without FAQ schema.`);
       return [];
     }
     const rows = await res.json();
     return rows.filter(r => r.question?.trim() && r.answer?.trim());
   } catch (err) {
-    console.warn(`[${label}] FAQ fetch failed (${err.message}) — page ships without FAQ schema.`);
+    console.warn(`[${label}] FAQ fetch failed (${err.message}) - page ships without FAQ schema.`);
     return [];
   }
 }
@@ -96,7 +96,7 @@ export function shirtPrice(shirt) {
 }
 
 // One-line summary used as the meta description when the shirt has no
-// description of its own — better than repeating the site-wide boilerplate on
+// description of its own - better than repeating the site-wide boilerplate on
 // 178 pages, which is what search engines treat as duplicate content.
 export function shirtDescription(shirt) {
   if (shirt.description?.trim()) return shirt.description.trim().slice(0, 300);
@@ -108,5 +108,5 @@ export function shirtDescription(shirt) {
     shirt.is_retro ? 'רטרו' : null,
   ].filter(Boolean);
   const price = shirtPrice(shirt);
-  return `${parts.join(' · ')}${price ? ` — ₪${price}` : ''}. חולצת כדורגל מקורית מ-JerseyLab, משלוח לכל הארץ.`;
+  return `${parts.join(' · ')}${price ? ` - ₪${price}` : ''}. חולצת כדורגל מקורית מ-JerseyLab, משלוח לכל הארץ.`;
 }

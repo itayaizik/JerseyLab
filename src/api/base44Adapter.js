@@ -23,15 +23,15 @@ const TABLES = {
 };
 
 // Entities where the creator can't read the row back under RLS (public/
-// unapproved writes — contact messages, search logs, unapproved reviews,
-// profiles with no owning-user column) — so create() must not ask for it
+// unapproved writes - contact messages, search logs, unapproved reviews,
+// profiles with no owning-user column) - so create() must not ask for it
 // back, or the whole insert gets rejected as an RLS violation on the
 // implicit read-back instead of actually inserting.
 const NO_RETURN_ON_CREATE = new Set(["SearchLog", "ContactMessage", "CustomerProfile", "Review", "InterestRequest", "ShirtRequest"]);
 
 // Some columns in the *_raw tables store JSON (arrays/objects) as text
 // instead of native jsonb, so parse anything that looks like JSON back
-// into real arrays/objects — matches the shape Base44 used to return.
+// into real arrays/objects - matches the shape Base44 used to return.
 export function coerceRow(row) {
   if (!row) return row;
   const out = { ...row };
@@ -40,7 +40,7 @@ export function coerceRow(row) {
       try {
         out[key] = JSON.parse(value);
       } catch {
-        // not actually JSON — leave as-is
+        // not actually JSON - leave as-is
       }
     }
   }
@@ -62,8 +62,8 @@ function stamped(payload) {
 }
 
 // Same story for `updated_date` on the way out: nothing in the app was
-// writing it, so it stayed NULL forever and the sales report — which filters
-// "sold in the last N days" on it — compared every row against the epoch and
+// writing it, so it stayed NULL forever and the sales report - which filters
+// "sold in the last N days" on it - compared every row against the epoch and
 // matched none of them.
 function touched(payload) {
   if (!payload || typeof payload !== "object") return payload;

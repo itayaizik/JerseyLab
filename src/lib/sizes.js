@@ -1,7 +1,7 @@
 // Size labels come from two eras of data entry: the admin forms write 'XXL',
 // while shirts imported from Base44 store the same size as '2XL' (178 shirts in
-// production: 168 'XXL', 17 '2XL'). Anything that reads a size — a selector, a
-// stock lookup, a filter — has to treat the two as the same size, otherwise the
+// production: 168 'XXL', 17 '2XL'). Anything that reads a size - a selector, a
+// stock lookup, a filter - has to treat the two as the same size, otherwise the
 // size silently disappears or reports no local stock.
 //
 // '2XL' is the canonical label; the aliases are only ever used for lookups.

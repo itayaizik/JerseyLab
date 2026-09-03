@@ -93,7 +93,7 @@ export default function WishlistPage() {
       {/* Nothing is bought on the site, so say what the heart actually does. */}
       {!loading && !error && shirts.length > 0 && (
         <p className="mb-5 text-xs text-[#1B2A4A]/55 font-body bg-[#FFD95A]/25 border-r-2 border-[#FFD95A] px-3 py-2">
-          המועדפים נשמרים לחשבון שלך בלבד. כדי להזמין, היכנס לחולצה ושלח בקשה — ואנחנו נחזור אליך.
+          המועדפים נשמרים לחשבון שלך בלבד. כדי להזמין, היכנס לחולצה ושלח בקשה - ואנחנו נחזור אליך.
         </p>
       )}
       {error ? (
@@ -119,7 +119,7 @@ export default function WishlistPage() {
           bordered
           icon={Heart}
           title="אין חולצות במועדפים"
-          description="לחץ על הלב בחולצה שאהבת והיא תישמר כאן — תוכל לחזור אליה מתי שתרצה."
+          description="לחץ על הלב בחולצה שאהבת והיא תישמר כאן - תוכל לחזור אליה מתי שתרצה."
           actionLabel="גלה חולצות"
           actionTo="/catalog"
         />

@@ -9,7 +9,7 @@ const SKIP_BELOW_BYTES = 400_000;
 // full-size originals were going straight into product/review thumbnails.
 // Downscale + re-encode as webp client-side before it ever hits storage.
 // Falls back to the original file on any failure (old browser, decode
-// error, non-raster image) — never block the actual upload over this.
+// error, non-raster image) - never block the actual upload over this.
 async function compressImage(file) {
   if (!file.type?.startsWith("image/") || file.type === "image/svg+xml") return file;
   if (file.size < SKIP_BELOW_BYTES) return file;

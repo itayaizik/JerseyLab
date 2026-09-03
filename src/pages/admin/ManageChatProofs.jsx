@@ -6,8 +6,8 @@ import { formatDate } from '@/lib/dates';
 // Screenshots of real conversations with customers, shown on the site as
 // proof that people actually buy here and get answered.
 //
-// Everything about them is managed from this page — upload, caption, order,
-// hide, delete — so the section can be filled and changed without touching
+// Everything about them is managed from this page - upload, caption, order,
+// hide, delete - so the section can be filled and changed without touching
 // code. Images go to the existing shirt-images bucket, which is already
 // admin-write and public-read.
 

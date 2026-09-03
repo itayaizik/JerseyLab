@@ -11,7 +11,7 @@ import { toast } from '@/components/ui/use-toast';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
 import { COLLECTIONS, findCollection, collectionShirts } from '@/lib/collections';
 
-// A landing page per subject — "חולצות רטרו", "חולצות ברצלונה" — rather than a
+// A landing page per subject - "חולצות רטרו", "חולצות ברצלונה" - rather than a
 // query string on /catalog. Same grid as the catalogue, but with a title, an
 // intro, and a URL that is about one thing, which is what a search engine can
 // rank and a person can share.
@@ -69,7 +69,7 @@ export default function Collection() {
     }
   }, [user, navigate]);
 
-  // An unknown slug is a genuine 404, not an empty collection page — otherwise
+  // An unknown slug is a genuine 404, not an empty collection page - otherwise
   // every typo becomes a thin page competing with the real ones.
   if (!collection) return <PageNotFound />;
 
@@ -135,7 +135,7 @@ export default function Collection() {
         <div className="bg-[#1B2A4A] border-2 border-[#1B2A4A] p-6 text-center"
           style={{ boxShadow: '4px 4px 0 #E8622A' }}>
           <p className="font-heading font-bold text-white uppercase mb-1.5">אין כרגע מלאי בקטגוריה הזו</p>
-          <p className="text-sm text-white/70 font-body mb-4">אבל אנחנו יכולים להשיג — שלח לנו בקשה ונבדוק.</p>
+          <p className="text-sm text-white/70 font-body mb-4">אבל אנחנו יכולים להשיג - שלח לנו בקשה ונבדוק.</p>
           <Link to="/request-shirt"
             className="inline-flex items-center gap-2 bg-[#FFD95A] text-[#1B2A4A] px-5 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-white transition-colors">
             <PackageSearch className="w-4 h-4" />

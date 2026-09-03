@@ -16,7 +16,7 @@ const STATUS_STYLE = {
   closed: 'bg-white text-[#1B2A4A]',
 };
 
-// Short, readable handle for an order — what a customer quotes to us in chat.
+// Short, readable handle for an order - what a customer quotes to us in chat.
 function orderRef(request) {
   return `#${String(request.order_id || request.id).slice(-6).toUpperCase()}`;
 }
@@ -55,7 +55,7 @@ export default function Profile() {
     load();
   }, []);
 
-  // Items from the same cart checkout share an order_id — group them so a
+  // Items from the same cart checkout share an order_id - group them so a
   // multi-shirt order shows as one card instead of N disconnected ones.
   const requestGroups = useMemo(() => {
     const map = new Map();
@@ -203,7 +203,7 @@ export default function Profile() {
                 className="bg-white border-2 border-[#1B2A4A]"
                 style={{ boxShadow: '4px 4px 0 #1B2A4A' }}
               >
-                {/* Order header — the reference number is what a customer
+                {/* Order header - the reference number is what a customer
                     actually needs when they message us about this order. */}
                 <div className="flex items-center justify-between gap-3 px-4 py-3 bg-[#1B2A4A]">
                   <div className="min-w-0">
@@ -287,7 +287,7 @@ export default function Profile() {
                 )}
 
                 {/* Nothing is paid on the site, so the only real next action is
-                    to talk to us — make it one tap, with the order already
+                    to talk to us - make it one tap, with the order already
                     named in the message. */}
                 <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t-2 border-[#1B2A4A]/10 bg-[#F2ECD9]/60">
                   <p className="text-[11px] text-[#1B2A4A]/60 font-body">

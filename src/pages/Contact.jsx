@@ -107,7 +107,7 @@ export default function Contact() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
-      <Seo title="צור קשר — JerseyLab" description="צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ בוואטסאפ ואינסטגרם. מענה מהיר ושירות אישי." canonicalPath="/contact" jsonLd={{ "@context": "https://schema.org", "@type": "WebPage", name: "צור קשר — JerseyLab", description: "צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ.", url: (SITE_ORIGIN) + "/contact", inLanguage: "he-IL" }} />
+      <Seo title="צור קשר - JerseyLab" description="צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ בוואטסאפ ואינסטגרם. מענה מהיר ושירות אישי." canonicalPath="/contact" jsonLd={{ "@context": "https://schema.org", "@type": "WebPage", name: "צור קשר - JerseyLab", description: "צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ.", url: (SITE_ORIGIN) + "/contact", inLanguage: "he-IL" }} />
 
       {/* Header */}
       <div className="text-center mb-10">
@@ -123,7 +123,7 @@ export default function Contact() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-        {/* Left — contact channels */}
+        {/* Left - contact channels */}
         <div className="space-y-4">
           <p className="font-heading font-bold text-xs uppercase tracking-widest text-[#1B2A4A]/50 mb-4">פנה אלינו ישירות</p>
 
@@ -154,7 +154,7 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Right — form */}
+        {/* Right - form */}
         <form onSubmit={handleSubmit} className="bg-white p-6 space-y-4"
           style={{ border: '2px solid #1B2A4A', boxShadow: '4px 4px 0 #1B2A4A' }}>
           <p className="font-heading font-bold text-xs uppercase tracking-widest text-[#1B2A4A]/50 mb-2">שלח הודעה</p>

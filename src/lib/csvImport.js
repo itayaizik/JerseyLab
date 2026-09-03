@@ -20,7 +20,7 @@ export function decodeCsvBytes(input) {
     return { text, encoding: 'utf-8-sig' };
   }
 
-  // Try strict UTF-8 — throws on invalid byte sequences (e.g. Windows-1255 bytes)
+  // Try strict UTF-8 - throws on invalid byte sequences (e.g. Windows-1255 bytes)
   try {
     const text = new TextDecoder('utf-8', { fatal: true }).decode(arr);
     return { text, encoding: 'utf-8' };
@@ -59,7 +59,7 @@ export function parseCSV(text) {
       } else if (ch === '\n') {
         row.push(field); field = ''; rows.push(row); row = [];
       } else if (ch === '\r') {
-        // ignore — handled by \n
+        // ignore - handled by \n
       } else {
         field += ch;
       }
@@ -95,7 +95,7 @@ export function rowsToObjects(text) {
 export function validateDecoded(text) {
   const issues = [];
   if (text.indexOf(REPLACEMENT) !== -1) {
-    issues.push('זוהו תווים שבורים (\uFFFD) בקובץ — הקידוד אינו UTF-8 או Windows-1255. שמור את הקובץ מחדש כ-UTF-8 ב-Excel (Save As → CSV UTF-8).');
+    issues.push('זוהו תווים שבורים (\uFFFD) בקובץ - הקידוד אינו UTF-8 או Windows-1255. שמור את הקובץ מחדש כ-UTF-8 ב-Excel (Save As → CSV UTF-8).');
   }
   return {
     ok: issues.length === 0,

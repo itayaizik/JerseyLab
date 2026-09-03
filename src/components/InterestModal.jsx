@@ -39,7 +39,7 @@ function FastHandlingNote() {
     <div className="bg-[#F2ECD9] border-r-4 border-[#E8622A] p-3">
       <p className="text-xs font-heading font-bold text-[#1B2A4A] uppercase mb-1.5">רוצה טיפול מהיר יותר?</p>
       <p className="text-xs text-[#1B2A4A]/70 font-body mb-2 leading-relaxed">
-        מוזמנים לשלוח לנו הודעה ישירות — נענה ונסגור את ההזמנה מהר יותר.
+        מוזמנים לשלוח לנו הודעה ישירות - נענה ונסגור את ההזמנה מהר יותר.
       </p>
       <div className="flex flex-wrap gap-2">
         <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
@@ -163,7 +163,7 @@ export function CartModal({ open, onClose, user }) {
           full_name: fullName, phone: contactForm.phone.trim(), email,
           contact_channel: channel, instagram_handle: igHandle,
         }));
-      } catch { /* private mode / quota — not worth failing the order over */ }
+      } catch { /* private mode / quota - not worth failing the order over */ }
 
       // Confirmation mail is best-effort: the order is already saved, so a mail
       // outage must not read to the customer as a failed checkout.
@@ -278,9 +278,9 @@ export function CartModal({ open, onClose, user }) {
                       {item.deliveryNote ? (
                         <p className="text-xs text-[#E8622A] font-bold font-body">{item.deliveryNote}</p>
                       ) : item.isExactStockItem ? (
-                        <p className="text-xs text-green-700 font-bold font-body">מלאי בארץ — עד שבוע / איסוף מקריית אונו</p>
+                        <p className="text-xs text-green-700 font-bold font-body">מלאי בארץ - עד שבוע / איסוף מקריית אונו</p>
                       ) : (
-                        <p className="text-xs text-[#E8622A] font-bold font-body">משלוח מהיר — עד 3 שבועות</p>
+                        <p className="text-xs text-[#E8622A] font-bold font-body">משלוח מהיר - עד 3 שבועות</p>
                       )}
                       {item.addName && <p className="text-xs text-[#E8622A] font-body">הדפסת שם: {item.customName} (+₪15)</p>}
                       <p className="font-mono font-bold text-[#1B2A4A] text-sm mt-1">₪{itemTotal}</p>
@@ -352,7 +352,7 @@ export function CartModal({ open, onClose, user }) {
                   onChange={e => { setAcknowledged(e.target.checked); setErrors(p => ({ ...p, acknowledged: undefined })); }}
                   className="mt-0.5 w-4 h-4 flex-shrink-0 accent-[#E8622A]" />
                 <span className="text-xs font-body text-[#1B2A4A] leading-relaxed">
-                  קראתי והבנתי — <span className="font-bold">התשלום לא מתבצע באתר</span>, אלא מולכם ישירות אחרי שתחזרו אליי.
+                  קראתי והבנתי - <span className="font-bold">התשלום לא מתבצע באתר</span>, אלא מולכם ישירות אחרי שתחזרו אליי.
                 </span>
               </label>
               {errors.acknowledged && <p className="text-red-500 text-xs mt-1">{errors.acknowledged}</p>}
@@ -397,7 +397,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
 
   // If the selected size has local stock, offer "buy this exact item"
   // (predetermined customization, fast shipping) vs a made-to-order custom
-  // shirt — skips the personalization steps entirely when buying exact.
+  // shirt - skips the personalization steps entirely when buying exact.
   const sizeHasLocalStock = hasLocalStockForSize(shirt, selectedSize) && !!selectedSize;
   const buyingExact = sizeHasLocalStock && buyMode === 'exact';
 
@@ -489,7 +489,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-md text-right max-h-[90vh] overflow-y-auto">
-        <DialogTitle className="sr-only">אני מעוניין — {shirt.name}</DialogTitle>
+        <DialogTitle className="sr-only">אני מעוניין - {shirt.name}</DialogTitle>
 
         <div className="flex gap-3 items-start mb-1">
           {shirt.main_image && <img src={shirt.main_image} alt="" className="w-14 h-14 object-cover border-2 border-[#1B2A4A] flex-shrink-0" />}
@@ -551,7 +551,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
           )}
           {step === 'summary' && (
             <motion.div key="summary" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">הכול מוכן — נשאר רק לאשר</h3>
+              <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">הכול מוכן - נשאר רק לאשר</h3>
               <p className="text-sm text-gray-500 font-body mb-4">הנה הבחירה שלך:</p>
               {buyingExact ? (
                 <OrderSummary shirt={shirt} size={selectedSize}

@@ -2,8 +2,8 @@ import counts from './catalogFacets.json';
 
 // Whether a category link has anything behind it.
 //
-// Four links in the navigation pointed at an empty catalogue — ילדים, שחקנים,
-// סייל and NBA — because every shirt is a men's football shirt with no player
+// Four links in the navigation pointed at an empty catalogue - ילדים, שחקנים,
+// סייל and NBA - because every shirt is a men's football shirt with no player
 // name and no sale price. Tapping one got a customer nothing.
 //
 // The counts are measured at build time (scripts/generate-facets.mjs), so this

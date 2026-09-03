@@ -51,7 +51,7 @@ function itemRow(item: OrderItem): string {
   const extras: string[] = [];
   if (item.player_version) extras.push('גרסת שחקן');
   if (item.custom_name) extras.push(`הדפסה: ${esc(item.custom_name)}`);
-  const eta = item.local_stock ? 'מלאי בארץ — עד שבוע' : 'משלוח מהיר — עד 3 שבועות';
+  const eta = item.local_stock ? 'מלאי בארץ - עד שבוע' : 'משלוח מהיר - עד 3 שבועות';
   // Mystery box exclusions and free-text notes. Echoing them back is the only
   // written record the customer has that we took the request down correctly.
   const notes = (item.notes || '').trim();
@@ -126,7 +126,7 @@ function buildHtml(fullName: string, items: OrderItem[], total: number, orderId:
                   <tr><td style="padding:14px; text-align:right;">
                     <p style="margin:0 0 6px; font-family:'Oswald','Arial Narrow',Arial,sans-serif; font-weight:700; font-size:13px; text-transform:uppercase; color:#1B2A4A;">רוצה טיפול מהיר יותר?</p>
                     <p style="margin:0 0 10px; font-family:'Assistant',Arial,sans-serif; font-size:13px; line-height:1.6; color:#1B2A4A;">
-                      מוזמנים לשלוח לנו הודעה ישירות — נענה ונסגור את ההזמנה מהר יותר.
+                      מוזמנים לשלוח לנו הודעה ישירות - נענה ונסגור את ההזמנה מהר יותר.
                     </p>
                     <p style="margin:0; font-family:'Assistant',Arial,sans-serif; font-size:13px; line-height:1.9; color:#1B2A4A;">
                       <a href="${WHATSAPP_URL}" style="color:#1B2A4A; font-weight:700; text-decoration:none;">WhatsApp <span dir="ltr">${SHOP_PHONE}</span></a><br>
@@ -191,7 +191,7 @@ Deno.serve(async (req: Request) => {
     body: JSON.stringify({
       from: FROM,
       to: [email],
-      subject: 'ההזמנה שלך התקבלה — Jersey Lab',
+      subject: 'ההזמנה שלך התקבלה - Jersey Lab',
       html: buildHtml(String(full_name ?? ''), items as OrderItem[], Number(total) || 0, String(order_id ?? '')),
     }),
   });

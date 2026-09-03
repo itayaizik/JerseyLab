@@ -2,7 +2,7 @@
 //
 // The catalogue's descriptions run to a median of 34 characters and 19 shirts
 // have none at all, which is far too thin to rank a product page. This does not
-// invent anything: every sentence is assembled from fields already on the row —
+// invent anything: every sentence is assembled from fields already on the row -
 // club, season, kit type, league, retro flag, player, stock and sizes. Nothing
 // is said about fabric, fit, or provenance, because those are not in the data
 // and a guess there is a returned parcel and a disappointed customer.
@@ -21,7 +21,7 @@ import { normalizeLeague } from '../src/lib/collections.js';
 const OUT_DIR = resolve(ROOT, 'scripts/out');
 const OUT_SQL = resolve(OUT_DIR, 'descriptions.sql');
 
-// Deterministic pick so a rerun produces the same text for the same shirt —
+// Deterministic pick so a rerun produces the same text for the same shirt -
 // otherwise every build would rewrite all 178 rows for no reason.
 function pick(options, seed) {
   let h = 0;
@@ -178,7 +178,7 @@ function stripGenerated(text) {
     const at = text.indexOf(marker);
     if (at !== -1 && at < cut) cut = at;
   }
-  return text.slice(0, cut).replace(/[\s.,–—]+$/, '').trim();
+  return text.slice(0, cut).replace(/[\s.,–-]+$/, '').trim();
 }
 
 function buildDescription(shirt) {
@@ -211,7 +211,7 @@ function buildDescription(shirt) {
     .join(' ')
     // No dashes anywhere in the copy, including any that came in with the
     // owner's own sentence.
-    .replace(/s*[—–]s*/g, ', ')
+    .replace(/s*[-–]s*/g, ', ')
     .replace(/s*,s*,/g, ',')
     .replace(/s+/g, ' ')
     .trim();
@@ -221,7 +221,7 @@ const sqlString = (value) => `'${String(value).replace(/'/g, "''")}'`;
 
 const shirts = await fetchShirts({ label: 'descriptions' });
 if (!shirts.length) {
-  console.error('[descriptions] no catalogue data — nothing to write.');
+  console.error('[descriptions] no catalogue data - nothing to write.');
   process.exit(1);
 }
 

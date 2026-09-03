@@ -15,7 +15,7 @@ export default function ScrollToTop() {
   // `search` matters as much as `pathname` here: the catalog switches category
   // through the query string alone, so without it a jump from ?gender=men to
   // ?tag=retro swapped the grid while leaving the viewport halfway down the
-  // old results — it read as if the page had not changed at all.
+  // old results - it read as if the page had not changed at all.
   const { pathname, search, hash } = useLocation();
   const navigationType = useNavigationType();
 

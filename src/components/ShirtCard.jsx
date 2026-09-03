@@ -29,7 +29,7 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false 
         <StatusBadge status={shirt.status} />
       </div>
 
-      {/* Wishlist — larger touch target on mobile */}
+      {/* Wishlist - larger touch target on mobile */}
       {user && onToggleWishlist && (
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleWishlist(shirt.id); }}
@@ -53,24 +53,24 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false 
           </div>
         </div>
 
-        {/* Info — fixed-height rows so every card aligns */}
+        {/* Info - fixed-height rows so every card aligns */}
         <div className="p-2.5 flex flex-col flex-1 gap-1">
-          {/* Tags + shipping — reserved area */}
+          {/* Tags + shipping - reserved area */}
           <div className="min-h-[1.25rem] flex gap-1 flex-wrap items-center">
             {displayTags.map(t => <TagBadge key={t} tag={t} />)}
             {hasLocalStock(shirt) && <ShippingBadge shirt={shirt} compact />}
           </div>
 
-          {/* Title — fixed 2-line height */}
+          {/* Title - fixed 2-line height */}
           <h3 className="font-heading font-bold text-xs md:text-sm text-[#1B2A4A] leading-tight line-clamp-2 uppercase tracking-wide min-h-[2.5rem]">{shirt.name}</h3>
 
-          {/* Subtitle — fixed 1-line height (always rendered) */}
+          {/* Subtitle - fixed 1-line height (always rendered) */}
           <p className="text-[11px] text-gray-500 font-body truncate min-h-[1rem]">{shirt.club || shirt.national_team}{shirt.season ? ` • ${shirt.season}` : ''}</p>
 
-          {/* Player — fixed 1-line height (always rendered) */}
+          {/* Player - fixed 1-line height (always rendered) */}
           <p className="text-[11px] text-[#E8622A] font-medium font-body truncate min-h-[1rem]">{shirt.player_name || '\u00A0'}</p>
 
-          {/* Price + sizes — pushed to bottom */}
+          {/* Price + sizes - pushed to bottom */}
           <div className="mt-auto pt-1 space-y-1">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
@@ -98,7 +98,7 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false 
         </div>
       </Link>
 
-      {/* Action buttons — always visible */}
+      {/* Action buttons - always visible */}
       {shirt.status === 'available' && (
         <div className="grid grid-cols-2 gap-0 transition-opacity duration-200">
           <Link

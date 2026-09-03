@@ -58,7 +58,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     if (addName) extras.push({ label: 'שם ומספר מאחורה (לבחירתנו)', price: NAME_PRICE });
     if (patches) extras.push({ label: 'כל הפאצ\'ים', price: PATCHES_PRICE });
 
-    // Preferences are not priced, so they travel separately from `extras` —
+    // Preferences are not priced, so they travel separately from `extras` -
     // they still have to reach the order, or the whole point of asking is lost.
     const details = [];
     if (excludeClubs.trim()) details.push({ label: 'לא לשלוח קבוצות', value: excludeClubs.trim() });
@@ -67,13 +67,13 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
     addToCart({
       shirtId: MYSTERY_BOX_ID,
-      shirtName: `מיסטרי בוקס — ${selected.label}`,
+      shirtName: `מיסטרי בוקס - ${selected.label}`,
       size,
       basePrice: selected.price,
       unitPrice: total,
       extras,
       details,
-      deliveryNote: 'מיסטרי בוקס — נעדכן מה יצא לפני המשלוח',
+      deliveryNote: 'מיסטרי בוקס - נעדכן מה יצא לפני המשלוח',
     });
 
     toast({ title: 'המיסטרי בוקס נוסף לסל', description: 'פתח את הסל כדי לשלוח את הבקשה.' });
@@ -140,7 +140,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                 surprise, so the print is too. Saying so on the row itself is
                 what stops it reading like a missing input. */}
             <Extra checked={addName} onChange={setAddName} label="שם ומספר מאחורה" price={NAME_PRICE}
-              hint="אנחנו בוחרים את השם והמספר שמתאימים לחולצה שתצא — זה חלק מההפתעה" />
+              hint="אנחנו בוחרים את השם והמספר שמתאימים לחולצה שתצא - זה חלק מההפתעה" />
             <Extra checked={patches} onChange={setPatches} label="כל הפאצ'ים" price={PATCHES_PRICE}
               hint="פאצ'ים של הליגה והטורניר, לפי החולצה" />
           </div>
@@ -148,7 +148,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
         <Field number={4} title="מה לא לשלוח" optional lg={lg}>
           <p className="text-xs font-body text-[#1B2A4A]/55 mb-3 leading-relaxed">
-            ההפתעה נשארת הפתעה — אבל אנחנו נמנע ממה שתסמן כאן.
+            ההפתעה נשארת הפתעה - אבל אנחנו נמנע ממה שתסמן כאן.
           </p>
 
           <label htmlFor={fid('clubs')} className="flex items-center gap-1.5 text-xs font-heading font-bold text-[#1B2A4A] uppercase tracking-wide mb-1.5">
@@ -189,7 +189,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           </label>
           <textarea id={fid('notes')} value={notes} maxLength={500} rows={3}
             onChange={e => setNotes(e.target.value)}
-            placeholder="ליגה שאתה מעדיף, שחקן שתשמח לקבל, מתנה למישהו — כל דבר שיעזור לנו לבחור."
+            placeholder="ליגה שאתה מעדיף, שחקן שתשמח לקבל, מתנה למישהו - כל דבר שיעזור לנו לבחור."
             className="w-full border-2 border-[#1B2A4A]/30 focus:border-[#1B2A4A] px-3 py-2.5 text-sm bg-white focus:outline-none font-body resize-none" />
           <p className="text-[11px] text-[#1B2A4A]/40 font-mono mt-1">{notes.length}/500</p>
         </Field>
@@ -218,7 +218,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           הוסף לסל
         </button>
         <p className="text-[11px] text-center text-[#1B2A4A]/50 font-body mt-2">
-          בלי תשלום באתר — שליחת בקשה בלבד.
+          בלי תשלום באתר - שליחת בקשה בלבד.
         </p>
       </div>
     </div>

@@ -1,5 +1,5 @@
-// Rows imported from Base44 — and every row written before the adapter started
-// stamping it — can have a null `created_date`. `new Date(null)` is the epoch,
+// Rows imported from Base44 - and every row written before the adapter started
+// stamping it - can have a null `created_date`. `new Date(null)` is the epoch,
 // so those were all rendering as 01/01/1970 instead of admitting they have no
 // date. These helpers make a missing date look missing.
 
@@ -9,12 +9,12 @@ export function parseDate(value) {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
-export function formatDate(value, fallback = '—') {
+export function formatDate(value, fallback = '-') {
   const d = parseDate(value);
   return d ? d.toLocaleDateString('he-IL') : fallback;
 }
 
-export function formatDateTime(value, fallback = '—') {
+export function formatDateTime(value, fallback = '-') {
   const d = parseDate(value);
   if (!d) return fallback;
   return d.toLocaleString('he-IL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });

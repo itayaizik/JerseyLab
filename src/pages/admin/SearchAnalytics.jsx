@@ -84,7 +84,7 @@ export default function SearchAnalytics() {
         </div>
         <div className="bg-white/5 border border-white/10 p-4">
           <p className="text-xs text-varnish font-heading uppercase mb-1">הכי מבוקש</p>
-          <p className="font-mono font-bold text-lg text-turf truncate">{top[0]?.[0] || '—'}</p>
+          <p className="font-mono font-bold text-lg text-turf truncate">{top[0]?.[0] || '-'}</p>
         </div>
       </div>
 

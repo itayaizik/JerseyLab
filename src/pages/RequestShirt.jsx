@@ -14,7 +14,7 @@ import { SIZE_ORDER } from '@/lib/sizes';
 // describes the shirt, optionally attaches a photo of it, and we answer
 // whether we can source it and for how much.
 //
-// Deliberately open to logged-out visitors — requiring an account here would
+// Deliberately open to logged-out visitors - requiring an account here would
 // lose exactly the customers this page exists to capture.
 
 // Same contact details the cart remembers, so someone who has ordered before
@@ -106,8 +106,8 @@ export default function RequestShirt() {
     if (form.contact_channel === 'instagram' && !form.instagram_handle.trim()) {
       errs.instagram_handle = 'שדה חובה';
     }
-    // A photo on its own is a valid request — plenty of people have the picture
-    // but not the words — so a description is only required when there is none.
+    // A photo on its own is a valid request - plenty of people have the picture
+    // but not the words - so a description is only required when there is none.
     if (!form.shirt_description.trim() && !image) {
       errs.shirt_description = 'תאר את החולצה או צרף תמונה';
     }
@@ -173,7 +173,7 @@ export default function RequestShirt() {
         <Link to="/catalog"
           className="inline-block bg-[#1B2A4A] text-white px-6 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-[#E8622A] transition-colors"
           style={{ boxShadow: '3px 3px 0 #E8622A' }}>
-          בינתיים — לקטלוג
+          בינתיים - לקטלוג
         </Link>
       </div>
     );
@@ -182,7 +182,7 @@ export default function RequestShirt() {
   return (
     <div className="bg-[#F2ECD9] min-h-screen">
       <Seo
-        title="מחפשים חולצה שאין באתר? — JerseyLab"
+        title="מחפשים חולצה שאין באתר? - JerseyLab"
         description="לא מצאתם את החולצה בקטלוג? שלחו לנו בקשה עם תמונה או תיאור, ונבדוק אם אפשר להשיג אותה ובאיזה מחיר."
         canonicalPath="/request-shirt"
       />
@@ -202,7 +202,7 @@ export default function RequestShirt() {
             מחפשים חולצה שאין באתר?
           </h1>
           <p className="font-body text-white/75 text-sm md:text-base max-w-lg mx-auto">
-            הקטלוג הוא לא הכל. שלחו לנו תמונה או תיאור של החולצה שאתם מחפשים —
+            הקטלוג הוא לא הכל. שלחו לנו תמונה או תיאור של החולצה שאתם מחפשים -
             נבדוק אם אפשר להשיג אותה ונחזור אליכם עם תשובה ומחיר.
           </p>
         </div>
@@ -242,7 +242,7 @@ export default function RequestShirt() {
               </select>
             </Field>
 
-            {/* The photo. Easily the most useful field on this form — a picture
+            {/* The photo. Easily the most useful field on this form - a picture
                 identifies a kit far faster than any description of it. */}
             <div>
               <p className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase block mb-1.5">
@@ -321,7 +321,7 @@ export default function RequestShirt() {
             {submitting ? 'שולח…' : 'שלח בקשה'}
           </button>
           <p className="text-[11px] text-center text-[#1B2A4A]/50 font-body">
-            בלי התחייבות ובלי תשלום — בקשה בלבד.
+            בלי התחייבות ובלי תשלום - בקשה בלבד.
           </p>
         </form>
       </div>

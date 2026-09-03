@@ -9,7 +9,7 @@ export default function MysteryBox() {
   return (
     <div className="bg-[#F2ECD9] min-h-screen">
       <Seo
-        title="מיסטרי בוקס — JerseyLab"
+        title="מיסטרי בוקס - JerseyLab"
         description="מיסטרי בוקס של JerseyLab: חולצת כדורגל מפתיעה לפי סגנון ומידה שתבחר. רגיל ₪70, רטרו ₪90, מונדיאל ₪70. אפשר לסמן קבוצות וצבעים שלא תרצה לקבל."
         canonicalPath="/mystery-box"
       />
@@ -29,7 +29,7 @@ export default function MysteryBox() {
             מיסטרי בוקס
           </h1>
           <p className="font-body text-white/75 text-sm md:text-base max-w-xl mx-auto">
-            אתה בוחר סגנון ומידה — אנחנו בוחרים את החולצה.
+            אתה בוחר סגנון ומידה - אנחנו בוחרים את החולצה.
           </p>
         </div>
       </section>

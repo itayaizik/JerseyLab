@@ -16,10 +16,10 @@ const STEP_KEYS = ['basics', 'fitting', 'preferences', 'otp'];
 const STEP_LABELS = ['פרטים', 'מידות', 'העדפות', 'אימות'];
 
 const META = {
-  basics: { title: 'יצירת חשבון', subtitle: 'שלב 1 מתוך 4 — בוא נכיר אותך' },
-  fitting: { title: 'התאמת מידות', subtitle: 'שלב 2 מתוך 4 — נתאים לך חולצות בדיוק' },
-  preferences: { title: 'העדפות כדורגל', subtitle: 'שלב 3 מתוך 4 — נדייק עבורך' },
-  otp: { title: 'אימות אימייל', subtitle: 'שלב 4 מתוך 4 — כמעט סיימנו' },
+  basics: { title: 'יצירת חשבון', subtitle: 'שלב 1 מתוך 4 - בוא נכיר אותך' },
+  fitting: { title: 'התאמת מידות', subtitle: 'שלב 2 מתוך 4 - נתאים לך חולצות בדיוק' },
+  preferences: { title: 'העדפות כדורגל', subtitle: 'שלב 3 מתוך 4 - נדייק עבורך' },
+  otp: { title: 'אימות אימייל', subtitle: 'שלב 4 מתוך 4 - כמעט סיימנו' },
 };
 
 const DEFAULT_FITTING = { height: '', weight: '', body_build: '', usual_size: '', fit_preference: 'regular' };

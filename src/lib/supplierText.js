@@ -1,6 +1,6 @@
 // Hebrew -> English lookup for the clubs/national teams currently in the
 // catalog (pulled from shirts_raw). New clubs added later that aren't in
-// this table just fall back to their Hebrew name — update this list when
+// this table just fall back to their Hebrew name - update this list when
 // that happens rather than trying to auto-translate arbitrary text.
 const TEAM_NAMES_EN = {
   'אורוגוואי': 'Uruguay',
@@ -65,7 +65,7 @@ function translateTeamName(name) {
 }
 
 // The shirt's display name (Hebrew) always embeds the kit type as a plain
-// word — "בית"/"חוץ"/"שלישית"/"רביעית" — anything else (special editions,
+// word - "בית"/"חוץ"/"שלישית"/"רביעית" - anything else (special editions,
 // anniversary kits, collabs) has none of those, which is the "Special" bucket.
 function detectKitType(shirtName) {
   if (!shirtName) return '';
@@ -77,7 +77,7 @@ function detectKitType(shirtName) {
 }
 
 // Player-version and custom name+number aren't stored as their own columns
-// — InterestModal folds them into the free-text `message` as
+// - InterestModal folds them into the free-text `message` as
 // "גרסת שחקן (+₪20)" and "הדפסת שם: {name} {number} (+₪15)". Parse them
 // back out rather than duplicating that formatting logic in two places.
 function parseCustomization(message) {

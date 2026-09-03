@@ -300,7 +300,7 @@ export default function ManageHomeSections() {
             />
           ))}
         </div>
-        {clubs.length === 0 && <p className="text-varnish text-sm text-center py-6">אין קבוצות — לחץ הוסף</p>}
+        {clubs.length === 0 && <p className="text-varnish text-sm text-center py-6">אין קבוצות - לחץ הוסף</p>}
       </section>
 
       {/* Category Cards */}
@@ -326,7 +326,7 @@ export default function ManageHomeSections() {
             />
           ))}
         </div>
-        {cats.length === 0 && <p className="text-varnish text-sm text-center py-6">אין קטגוריות — לחץ הוסף</p>}
+        {cats.length === 0 && <p className="text-varnish text-sm text-center py-6">אין קטגוריות - לחץ הוסף</p>}
       </section>
 
       {/* Leagues & Tournaments */}
@@ -337,7 +337,7 @@ export default function ManageHomeSections() {
             <Plus className="w-3 h-3" /> הוסף ליגה
           </button>
         </div>
-        <p className="text-xs text-varnish mb-3">שם • URL לוגו (אופציונלי — בלי לוגו יוצג אייקון גביע) • קישור • פעיל/כבוי</p>
+        <p className="text-xs text-varnish mb-3">שם • URL לוגו (אופציונלי - בלי לוגו יוצג אייקון גביע) • קישור • פעיל/כבוי</p>
         <div className="space-y-2">
           {leagues.map((league, i) => (
             <LeagueRow
@@ -352,7 +352,7 @@ export default function ManageHomeSections() {
             />
           ))}
         </div>
-        {leagues.length === 0 && <p className="text-varnish text-sm text-center py-6">אין ליגות — לחץ הוסף</p>}
+        {leagues.length === 0 && <p className="text-varnish text-sm text-center py-6">אין ליגות - לחץ הוסף</p>}
       </section>
     </div>
   );

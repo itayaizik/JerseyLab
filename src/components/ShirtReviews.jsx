@@ -138,7 +138,7 @@ export default function ShirtReviews({ shirtId, user }) {
         </div>
       )}
 
-      {/* Write review — only for verified buyers */}
+      {/* Write review - only for verified buyers */}
       {!user ? (
         <div className="bg-[#F2ECD9] p-4 flex items-center gap-3" style={{ border: '2px solid #1B2A4A' }}>
           <Lock className="w-4 h-4 text-[#1B2A4A] flex-shrink-0" />

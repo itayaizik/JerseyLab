@@ -18,12 +18,12 @@ const settingFields = [
   { key: 'contact_message', label: 'הודעת צור קשר', type: 'textarea' },
   { key: 'popular_clubs_title', label: 'כותרת "קבוצות פופולריות"', type: 'text', placeholder: 'קבוצות פופולריות' },
   { key: 'category_cards_title', label: 'כותרת "קנה לפי קטגוריה"', type: 'text', placeholder: 'קנה לפי קטגוריה' },
-  { key: 'promo_banner_active', label: 'באנר מבצע — פעיל? (כתוב "yes" להצגה)', type: 'text', placeholder: 'yes' },
-  { key: 'promo_banner_title', label: 'באנר — כותרת ראשית', type: 'text', placeholder: 'מבצע ענק על חולצות סייל' },
-  { key: 'promo_banner_subtitle', label: 'באנר — תת כותרת', type: 'text', placeholder: 'הנחות מיוחדות לזמן מוגבל' },
-  { key: 'promo_banner_button_text', label: 'באנר — טקסט כפתור', type: 'text', placeholder: 'לחולצות הסייל ←' },
-  { key: 'promo_banner_button_link', label: 'באנר — קישור כפתור', type: 'text', placeholder: '/catalog?sale=true' },
-  { key: 'promo_banner_image', label: 'באנר — תמונת רקע (URL)', type: 'text', placeholder: 'https://...' },
+  { key: 'promo_banner_active', label: 'באנר מבצע - פעיל? (כתוב "yes" להצגה)', type: 'text', placeholder: 'yes' },
+  { key: 'promo_banner_title', label: 'באנר - כותרת ראשית', type: 'text', placeholder: 'מבצע ענק על חולצות סייל' },
+  { key: 'promo_banner_subtitle', label: 'באנר - תת כותרת', type: 'text', placeholder: 'הנחות מיוחדות לזמן מוגבל' },
+  { key: 'promo_banner_button_text', label: 'באנר - טקסט כפתור', type: 'text', placeholder: 'לחולצות הסייל ←' },
+  { key: 'promo_banner_button_link', label: 'באנר - קישור כפתור', type: 'text', placeholder: '/catalog?sale=true' },
+  { key: 'promo_banner_image', label: 'באנר - תמונת רקע (URL)', type: 'text', placeholder: 'https://...' },
 ];
 
 export default function SiteSettings() {

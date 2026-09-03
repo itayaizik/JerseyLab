@@ -2,7 +2,7 @@
 // public/ into dist/.
 //
 // The hand-written sitemap listed five static pages on the wrong domain. The
-// 178 product pages — the ones that could rank for an actual shirt name — were
+// 178 product pages - the ones that could rank for an actual shirt name - were
 // never submitted to Google at all.
 
 import { writeFileSync } from 'node:fs';

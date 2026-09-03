@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { sizeQty, setSizeQty } from '@/lib/sizes';
 
 const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
-// Canonical spellings — see lib/sizes. Reads tolerate the legacy 'XXL' key,
+// Canonical spellings - see lib/sizes. Reads tolerate the legacy 'XXL' key,
 // writes always land on '2XL', so stock can no longer be filed under a spelling
 // the storefront then fails to find.
 const LOCAL_STOCK_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
@@ -13,7 +13,7 @@ const kidsSizeOptions = ['6-7Y', '8-9Y', '10-11Y', '12-13Y', '14-15Y'];
 /**
  * Presentational shirt editor. Receives a `draft` object and reports every
  * change via `onChange(nextDraft)`. Owns only transient UI state (uploads,
- * tag input, url mode). No persistence — the parent decides when to save.
+ * tag input, url mode). No persistence - the parent decides when to save.
  *
  * draft shape: { form, sizes, localStockSizes, mainImageUrl, extraImageUrls }
  */
@@ -145,7 +145,7 @@ export default function ShirtEditForm({ draft, onChange }) {
       {/* Local Stock by Size */}
       <div className="border border-white/10 bg-white/5 p-4 space-y-4">
         <h3 className="font-heading font-bold text-sm text-turf">מלאי בארץ לפי מידה</h3>
-        <p className="text-xs text-varnish">סמן כמות זמינה במלאי בארץ לכל מידה. מידה עם כמות גדולה מ-0 תוצג כ"מלאי בארץ". שאר המידות — "משלוח מהיר".</p>
+        <p className="text-xs text-varnish">סמן כמות זמינה במלאי בארץ לכל מידה. מידה עם כמות גדולה מ-0 תוצג כ"מלאי בארץ". שאר המידות - "משלוח מהיר".</p>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {LOCAL_STOCK_SIZES.map(size => (
             <div key={size} className="flex items-center gap-2">
@@ -162,7 +162,7 @@ export default function ShirtEditForm({ draft, onChange }) {
               <input type="checkbox" checked={draft.form.local_stock_player_version || false} onChange={e => setForm('local_stock_player_version', e.target.checked)} className="accent-turf" />
               גרסת שחקן
             </label>
-            <input value={draft.form.local_stock_custom_name || ''} onChange={e => setForm('local_stock_custom_name', e.target.value)} placeholder="שם ומספר על הגב (אם יש) — למשל Ronaldo 7"
+            <input value={draft.form.local_stock_custom_name || ''} onChange={e => setForm('local_stock_custom_name', e.target.value)} placeholder="שם ומספר על הגב (אם יש) - למשל Ronaldo 7"
               className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
           </div>
         </div>

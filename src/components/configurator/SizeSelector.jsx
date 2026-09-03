@@ -33,10 +33,10 @@ export default function SizeSelector({ shirt, value, onChange }) {
           {sizeQty(shirt.local_stock_sizes, value) > 0 ? (
             <p className="text-green-700 font-bold flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-green-600" />
-              זמין במלאי בארץ — הגעה עד שבוע או איסוף מקריית אונו
+              זמין במלאי בארץ - הגעה עד שבוע או איסוף מקריית אונו
             </p>
           ) : (
-            <p className="text-[#E8622A] font-bold">משלוח מהיר — הגעה עד 3 שבועות</p>
+            <p className="text-[#E8622A] font-bold">משלוח מהיר - הגעה עד 3 שבועות</p>
           )}
         </div>
       )}
