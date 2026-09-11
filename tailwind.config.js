@@ -67,10 +67,12 @@ module.exports = {
   			}
   		},
   		fontFamily: {
-  			heading: ['Oswald', 'sans-serif'],
-  			body: ['Assistant', 'sans-serif'],
-  			display: ['Playfair Display', 'serif'],
-  			mono: ['Space Mono', 'monospace']
+  			// Heebo and Assistant both cover Hebrew. The previous heading face,
+  			// Oswald, did not, so every Hebrew heading fell back silently.
+  			heading: ['Heebo', 'Assistant', 'system-ui', 'sans-serif'],
+  			body: ['Assistant', 'Heebo', 'system-ui', 'sans-serif'],
+  			display: ['Heebo', 'Assistant', 'sans-serif'],
+  			mono: ['Space Mono', 'ui-monospace', 'monospace']
   		},
   		keyframes: {
   			'accordion-down': {
