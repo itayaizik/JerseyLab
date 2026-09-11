@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Check, Loader2, ShoppingCart, Sparkles, ChevronRight, ChevronLeft, MessageCircle, Instagram, Mail } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import StepIndicator from '@/components/configurator/StepIndicator';
@@ -22,6 +21,7 @@ import { notifyNewOrder } from '@/lib/adminNotify';
 import { SHOP_PHONE, WHATSAPP_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/contact';
 
 import { getCart, setCart, cartItemTotal, cartTotal } from '@/lib/cart';
+import EmptyState from '@/components/ui/EmptyState';
 
 // Contact details are remembered between orders so a returning customer isn't
 // retyping them; the account supplies name/email when the customer is logged in.
@@ -241,13 +241,17 @@ export function CartModal({ open, onClose, user }) {
         </div>
 
         {cart.length === 0 ? (
-          <div className="py-6 text-center">
-            <ShoppingCart className="w-12 h-12 mx-auto mb-3 text-[#1B2A4A]/20" />
-            <p className="font-heading font-bold text-base text-[#1B2A4A] uppercase mb-1">הסל ריק</p>
-            <p className="text-sm text-[#1B2A4A]/50 font-body mb-5">הוסף חולצות מהקטלוג כדי להתחיל.</p>
-            <Link to="/catalog" onClick={onClose} className="inline-flex items-center gap-2 bg-[#E8622A] text-white px-6 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-[#D0551F] transition-colors" style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
-              גלה חולצות
-            </Link>
+          <div onClick={onClose} role="presentation">
+            <EmptyState
+              compact
+              icon={ShoppingCart}
+              title="הסל ריק"
+              description="הוסיפו חולצות מהקטלוג, או בנו מיסטרי בוקס ונבחר עבורכם."
+              actionLabel="גלה חולצות"
+              actionTo="/catalog"
+              secondaryLabel="מיסטרי בוקס"
+              secondaryTo="/mystery-box"
+            />
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">

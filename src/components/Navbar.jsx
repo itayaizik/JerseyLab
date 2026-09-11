@@ -4,6 +4,7 @@ import { Menu, X, Search, Heart, User, ChevronDown, Shield, LogOut, ShoppingCart
 import { CartModal } from '@/components/InterestModal';
 import { base44 } from '@/api/base44Client';
 import { getCart } from '@/lib/cart';
+import PromoBar from '@/components/PromoBar';
 import { withStock } from '@/lib/catalogFacets';
 
 const categories = [
@@ -74,8 +75,6 @@ export default function Navbar() {
   const [searchTerm, setSearchTerm] = useState('');
   const [cartOpen, setCartOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [suggestions, setSuggestions] = useState([]);
   const allShirtsRef = useRef(null);
   const navigate = useNavigate();
@@ -83,6 +82,21 @@ export default function Navbar() {
   const catRef = useRef(null);
   const adminRef = useRef(null);
   const searchInputRef = useRef(null);
+  const headerRef = useRef(null);
+  const [headerHeight, setHeaderHeight] = useState(64);
+
+  // The header's height changes with the promo strip, the open search bar and
+  // the breakpoint, so it is observed rather than assumed.
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const sync = () => setHeaderHeight(el.getBoundingClientRect().height);
+    sync();
+    const observer = new ResizeObserver(sync);
+    observer.observe(el);
+    window.addEventListener('resize', sync);
+    return () => { observer.disconnect(); window.removeEventListener('resize', sync); };
+  }, []);
 
   useEffect(() => {
     setCartCount(getCart().length);
@@ -168,22 +182,6 @@ export default function Navbar() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  useEffect(() => {
-    let ticking = false;
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const scrollY = window.scrollY;
-          setLastScrollY(scrollY);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
@@ -214,21 +212,17 @@ export default function Navbar() {
     <>
       <CartModal open={cartOpen} onClose={() => setCartOpen(false)} user={user} />
 
-      {/* Top accent bar */}
-      <div className="bg-[#E8622A] text-white text-center py-1.5 text-xs font-heading tracking-widest uppercase hidden md:block">
-        ⚽ ארכיון בלעדי של חולצות כדורגל נדירות - משלוח לכל הארץ
-      </div>
+      {/* Reserves the header's real height. Without it the fixed bar covered
+          the top 40px of every page. Measured rather than hardcoded, so the
+          promo strip appearing or being dismissed cannot leave a gap. */}
+      <div aria-hidden="true" style={{ height: headerHeight }} />
 
-      <nav className="fixed z-50 text-white transition-all duration-300" style={{ 
-        top: lastScrollY > 16 ? '16px' : '0',
-        left: lastScrollY > 16 ? '16px' : '0',
-        right: lastScrollY > 16 ? '16px' : '0',
+      <div ref={headerRef} className="fixed top-0 left-0 right-0 z-50">
+        <PromoBar />
+
+      <nav className="relative z-10 text-white" style={{
         background: '#1B2A4A',
-        boxShadow: lastScrollY > 16 ? '0 8px 32px rgba(0, 0, 0, 0.15)' : 'none',
-        borderRadius: lastScrollY > 16 ? '8px' : '0px',
-        opacity: isVisible ? 1 : 0,
-        pointerEvents: isVisible ? 'auto' : 'none',
-        transform: isVisible ? 'translateY(0)' : 'translateY(-20px)'
+        boxShadow: '0 2px 12px rgba(27, 42, 74, 0.18)',
       }}>
         <div className="max-w-7xl mx-auto px-4 lg:px-6">
           <div className="flex items-center justify-between h-16">
@@ -524,6 +518,7 @@ export default function Navbar() {
           </div>
         )}
       </nav>
+      </div>
 
       {/* Tap anywhere outside to dismiss. Sits under the nav (z-50) so the bar
           and the open panel stay clickable. */}

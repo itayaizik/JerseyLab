@@ -116,12 +116,13 @@ export default function WishlistPage() {
         </div>
       ) : (
         <EmptyState
-          bordered
           icon={Heart}
           title="אין חולצות במועדפים"
-          description="לחץ על הלב בחולצה שאהבת והיא תישמר כאן - תוכל לחזור אליה מתי שתרצה."
+          description="לחצו על הלב בחולצה שאהבתם והיא תישמר כאן, כדי לחזור אליה מתי שתרצו."
           actionLabel="גלה חולצות"
           actionTo="/catalog"
+          secondaryLabel="בקש חולצה שאין באתר"
+          secondaryTo="/request-shirt"
         />
       )}
     </div>

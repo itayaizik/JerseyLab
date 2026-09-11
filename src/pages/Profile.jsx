@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import ProductImage from '@/components/ui/ProductImage';
 import { WHATSAPP_URL, INSTAGRAM_URL } from '@/lib/contact';
 import { formatDate } from '@/lib/dates';
+import EmptyState from '@/components/ui/EmptyState';
 
 // An order moves through these three states; the badge alone did not tell a
 // customer whether anything was still going to happen.
@@ -304,18 +305,15 @@ export default function Profile() {
             })}
           </div>
         ) : (
-          <div className="bg-white border-2 border-dashed border-[#1B2A4A]/30 rounded-lg p-12 text-center">
-            <MessageCircle className="w-12 h-12 mx-auto mb-4 text-[#1B2A4A]/20" />
-            <p className="text-varnish text-sm mb-4 font-body">עדיין לא שלחת בקשות התעניינות</p>
-            <Link 
-              to="/catalog" 
-              className="inline-flex items-center gap-2 bg-[#E8622A] text-white px-6 py-3 font-heading font-bold text-sm uppercase hover:bg-[#D0551F] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
-              style={{ boxShadow: '2px 2px 0 #1B2A4A', textShadow: '1px 1px 3px rgba(0,0,0,0.2)' }}
-            >
-              <Package className="w-4 h-4" />
-              לקטלוג
-            </Link>
-          </div>
+          <EmptyState
+            icon={MessageCircle}
+            title="עדיין לא שלחת בקשות"
+            description="כשתשלח הזמנה היא תופיע כאן, עם מספר סימוכין ומעקב אחרי הסטטוס."
+            actionLabel="לקטלוג"
+            actionTo="/catalog"
+            secondaryLabel="בקש חולצה שאין באתר"
+            secondaryTo="/request-shirt"
+          />
         )}
       </div>
     </div>
