@@ -199,3 +199,30 @@ update shirts_raw
        local_stock_sizes = case when local_stock_sizes like '{%' then (local_stock_sizes::jsonb - 'XS')::text else local_stock_sizes end,
        description = regexp_replace(regexp_replace(description, 'XS,\s*', '', 'g'), ',\s*XS(?=[.,])', '', 'g')
  where league = 'ליגת העל';
+
+-- 12 ------------------------------------------------------------------------
+-- 13 September 2026: local stock as individual shirts, and a reset to zero.
+--
+-- Local stock was a count per size plus one printed name for the whole shirt,
+-- so it could not hold two size S shirts with different names on the back.
+-- local_stock_items is a list with one entry per physical shirt:
+-- { id, size, name, number, player_version }. local_stock_sizes stays, derived
+-- from the list on every save, because the catalogue filter, the shipping badge
+-- and the facet build only need the per-size summary.
+
+alter table shirts_raw add column if not exists local_stock_items text default '[]';
+
+-- At the owner's instruction all local stock was set to zero, to be entered
+-- again shirt by shirt. The "יש מלאי בארץ" sentence in the twelve affected
+-- descriptions was replaced by the special-order sentence. The rows as they
+-- were are in backups.shirts_local_stock_20260913.
+
+update shirts_raw
+   set local_stock_sizes = '{}',
+       in_stock_local = false,
+       local_stock_player_version = false,
+       local_stock_custom_name = null,
+       description = regexp_replace(description, 'יש מלאי בארץ במידות [^.]*\.', 'ההזמנה מיוחדת ומגיעה תוך כשלושה שבועות.')
+ where coalesce(local_stock_sizes,'') ~ '[1-9]' or in_stock_local is true
+    or local_stock_player_version is true or coalesce(local_stock_custom_name,'') <> ''
+    or description like '%יש מלאי בארץ%';

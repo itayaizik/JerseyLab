@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Upload, Loader2, Plus, ArrowRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { hasLocalStock } from '@/components/ShippingBadge';
-import { sizeQty, setSizeQty } from '@/lib/sizes';
 import { trimShirtText } from '@/lib/shirtText';
+import LocalStockEditor from '@/components/admin/LocalStockEditor';
+import { stockItems, stockPayload } from '@/lib/localStock';
 
 const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
 // Canonical spellings - see lib/sizes. Reads tolerate the legacy 'XXL' key,
@@ -18,7 +18,7 @@ export default function EditShirt() {
   const navigate = useNavigate();
   const [form, setForm] = useState(null);
   const [sizes, setSizes] = useState({});
-  const [localStockSizes, setLocalStockSizes] = useState({});
+  const [localStockItems, setLocalStockItems] = useState([]);
   const [mainImageUrl, setMainImageUrl] = useState('');
   const [mainImageUrlInput, setMainImageUrlInput] = useState('');
   const [extraImageUrls, setExtraImageUrls] = useState([]);
@@ -42,11 +42,9 @@ export default function EditShirt() {
         featured: s.featured || false, is_new: s.is_new || false,
         is_rare: s.is_rare || false, is_retro: s.is_retro || false, best_seller: s.best_seller || false,
         limited_stock: s.limited_stock || false,
-        local_stock_player_version: s.local_stock_player_version || false,
-        local_stock_custom_name: s.local_stock_custom_name || '',
       });
       setSizes(s.sizes || {});
-      setLocalStockSizes(s.local_stock_sizes || {});
+      setLocalStockItems(stockItems(s));
       setMainImageUrl(s.main_image || '');
       setExtraImageUrls(s.extra_images || []);
       setLoading(false);
@@ -56,7 +54,6 @@ export default function EditShirt() {
 
   const handleChange = (field, value) => setForm(p => ({ ...p, [field]: value }));
   const handleSizeChange = (size, qty) => setSizes(p => ({ ...p, [size]: Math.max(0, parseInt(qty) || 0) }));
-  const handleLocalStockChange = (size, qty) => setLocalStockSizes(p => setSizeQty(p, size, qty));
 
   const handleMainImage = async (e) => {
     const file = e.target.files[0];
@@ -103,8 +100,7 @@ export default function EditShirt() {
     setSubmitting(true);
     await base44.entities.Shirt.update(id, {
       ...trimShirtText(form), price: Number(form.price), sale_price: form.sale_price ? Number(form.sale_price) : null,
-      local_stock_sizes: localStockSizes,
-      in_stock_local: hasLocalStock({ local_stock_sizes: localStockSizes }),
+      ...stockPayload(localStockItems),
       main_image: mainImageUrl, extra_images: extraImageUrls, sizes,
     });
     const user = await base44.auth.me();
@@ -206,31 +202,7 @@ export default function EditShirt() {
           {uploading && <p className="text-xs text-turf"><Loader2 className="w-3 h-3 animate-spin inline" /> מעלה...</p>}
         </div>
 
-        {/* Local Stock by Size */}
-        <div className="border border-white/10 bg-white/5 p-4 space-y-4">
-          <h2 className="font-heading font-bold text-sm text-turf">מלאי בארץ לפי מידה</h2>
-          <p className="text-xs text-varnish">סמן כמות זמינה במלאי בארץ לכל מידה. מידה עם כמות גדולה מ-0 תוצג כ"מלאי בארץ" (הגעה עד שבוע או איסוף עצמי). שאר המידות - "משלוח מהיר" (עד 3 שבועות).</p>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            {LOCAL_STOCK_SIZES.map(size => (
-              <div key={size} className="flex items-center gap-2">
-                <span className="text-sm text-chalk font-mono w-12">{size}</span>
-                <input type="number" min="0" value={sizeQty(localStockSizes, size) || ''} onChange={e => handleLocalStockChange(size, e.target.value)} dir="ltr" placeholder="0" className="w-full bg-white/5 border border-white/10 px-2 py-1.5 text-sm text-chalk focus:border-turf focus:outline-none" />
-              </div>
-            ))}
-          </div>
-
-          <div className="pt-3 border-t border-white/10">
-            <p className="text-xs text-varnish mb-3">מה בדיוק מודפס על הפריט הספציפי שבמלאי? זה יוצג ללקוח כאפשרות "קנה בדיוק את זו" לעומת הזמנה בהתאמה אישית.</p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <label className="flex items-center gap-2 text-sm text-chalk cursor-pointer flex-shrink-0">
-                <input type="checkbox" checked={form.local_stock_player_version} onChange={e => handleChange('local_stock_player_version', e.target.checked)} className="accent-turf" />
-                גרסת שחקן
-              </label>
-              <input value={form.local_stock_custom_name} onChange={e => handleChange('local_stock_custom_name', e.target.value)} placeholder="שם ומספר על הגב (אם יש) - למשל Ronaldo 7"
-                className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
-            </div>
-          </div>
-        </div>
+        <LocalStockEditor items={localStockItems} onChange={setLocalStockItems} sizes={LOCAL_STOCK_SIZES} />
 
         {/* Status & Flags */}
         <div className="border border-white/10 bg-white/5 p-4 space-y-4">

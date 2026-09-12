@@ -1,27 +1,47 @@
 import React from 'react';
 import { PackageCheck, Wand2 } from 'lucide-react';
+import { stockPrint } from '@/lib/localStock';
 
-export default function ExactOrCustomChoice({ shirt, value, onChange }) {
-  const exactDesc = shirt.local_stock_player_version && shirt.local_stock_custom_name
-    ? `גרסת שחקן - ${shirt.local_stock_custom_name}`
-    : shirt.local_stock_player_version
-    ? 'גרסת שחקן, בלי הדפסה'
-    : shirt.local_stock_custom_name
-    ? `גרסה רגילה - ${shirt.local_stock_custom_name}`
-    : 'גרסה רגילה, בלי הדפסה';
+// "Buy exactly this one" or "make me my own".
+//
+// Local stock is held as individual shirts, so one size can have several: a
+// size S printed MESSI 10 and another printed YAMAL 19 are two different
+// purchases. Each is offered as its own option, headed by what is printed on
+// its back, and choosing one records which shirt it was - the order then says
+// which of the two the customer wants instead of just "size S from stock".
 
+export default function ExactOrCustomChoice({ items = [], value, itemId, onChange }) {
   const options = [
-    { id: 'exact', label: 'קנה בדיוק את זו', desc: exactDesc, shipping: 'מלאי בארץ - עד שבוע', icon: PackageCheck },
-    { id: 'custom', label: 'הזמנה בהתאמה אישית', desc: 'בחר גרסה, שם ומספר משלך', shipping: 'הזמנה מיוחדת - עד 3 שבועות', icon: Wand2 },
+    ...items.map(item => {
+      const print = stockPrint(item);
+      return {
+        key: `exact-${item.id}`,
+        mode: 'exact',
+        id: item.id,
+        label: print ? `קנה בדיוק את זו · ${print}` : 'קנה בדיוק את זו',
+        desc: [item.player_version ? 'גרסת שחקן' : 'גרסה רגילה', !print && 'בלי הדפסה'].filter(Boolean).join(' · '),
+        shipping: 'מלאי בארץ - עד שבוע',
+        icon: PackageCheck,
+      };
+    }),
+    {
+      key: 'custom',
+      mode: 'custom',
+      id: '',
+      label: 'הזמנה בהתאמה אישית',
+      desc: 'בחר גרסה, שם ומספר משלך',
+      shipping: 'הזמנה מיוחדת - עד 3 שבועות',
+      icon: Wand2,
+    },
   ];
 
   return (
     <div className="grid grid-cols-1 gap-2">
       {options.map(opt => {
         const Icon = opt.icon;
-        const isSelected = value === opt.id;
+        const isSelected = value === opt.mode && (opt.mode !== 'exact' || itemId === opt.id);
         return (
-          <button key={opt.id} type="button" onClick={() => onChange(opt.id)}
+          <button key={opt.key} type="button" onClick={() => onChange(opt.mode, opt.id)} aria-pressed={isSelected}
             className={`flex items-start gap-3 p-3.5 border-2 transition-all duration-200 text-right ${
               isSelected ? 'border-brand-navy bg-brand-navy text-white' : 'border-brand-navy/30 bg-white text-brand-navy hover:border-brand-navy hover:bg-brand-cream'
             }`}>

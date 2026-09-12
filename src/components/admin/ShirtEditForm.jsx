@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Upload, Loader2, Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { sizeQty, setSizeQty, sizeAliases, normalizeSize } from '@/lib/sizes';
+import { sizeAliases, normalizeSize } from '@/lib/sizes';
+import LocalStockEditor from '@/components/admin/LocalStockEditor';
 
 // '2XL', not 'XXL': the canonical spelling, so the label the owner sees matches
 // the key that gets written. The legacy 'XXL' is still read, via sizeAliases.
@@ -17,7 +18,7 @@ const kidsSizeOptions = ['6-7Y', '8-9Y', '10-11Y', '12-13Y', '14-15Y'];
  * change via `onChange(nextDraft)`. Owns only transient UI state (uploads,
  * tag input, url mode). No persistence - the parent decides when to save.
  *
- * draft shape: { form, sizes, localStockSizes, mainImageUrl, extraImageUrls }
+ * draft shape: { form, sizes, localStockItems, mainImageUrl, extraImageUrls }
  */
 export default function ShirtEditForm({ draft, onChange }) {
   const [uploading, setUploading] = useState(false);
@@ -39,7 +40,6 @@ export default function ShirtEditForm({ draft, onChange }) {
     if (value !== '') next[normalizeSize(size)] = Number(value) === 0 ? 0 : 1;
     onChange({ ...draft, sizes: next });
   };
-  const setLocal = (size, qty) => onChange({ ...draft, localStockSizes: setSizeQty(draft.localStockSizes, size, qty) });
   const setMain = (url) => onChange({ ...draft, mainImageUrl: url });
   const addExtra = (url) => onChange({ ...draft, extraImageUrls: [...draft.extraImageUrls, url] });
   const removeExtra = (i) => onChange({ ...draft, extraImageUrls: draft.extraImageUrls.filter((_, idx) => idx !== i) });
@@ -178,31 +178,7 @@ export default function ShirtEditForm({ draft, onChange }) {
         {uploading && <p className="text-xs text-turf"><Loader2 className="w-3 h-3 animate-spin inline" /> מעלה...</p>}
       </div>
 
-      {/* Local Stock by Size */}
-      <div className="border border-white/10 bg-white/5 p-4 space-y-4">
-        <h3 className="font-heading font-bold text-sm text-turf">מלאי בארץ לפי מידה</h3>
-        <p className="text-xs text-varnish">סמן כמות זמינה במלאי בארץ לכל מידה. מידה עם כמות גדולה מ-0 תוצג כ"מלאי בארץ". שאר המידות - "משלוח מהיר".</p>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          {LOCAL_STOCK_SIZES.map(size => (
-            <div key={size} className="flex items-center gap-2">
-              <span className="text-sm text-chalk font-mono w-12">{size}</span>
-              <input type="number" min="0" value={sizeQty(draft.localStockSizes, size) || ''} onChange={e => setLocal(size, e.target.value)} dir="ltr" placeholder="0" className="w-full bg-white/5 border border-white/10 px-2 py-1.5 text-sm text-chalk focus:border-turf focus:outline-none" />
-            </div>
-          ))}
-        </div>
-
-        <div className="pt-3 border-t border-white/10">
-          <p className="text-xs text-varnish mb-3">מה בדיוק מודפס על הפריט הספציפי שבמלאי? זה יוצג ללקוח כאפשרות "קנה בדיוק את זו" לעומת הזמנה בהתאמה אישית.</p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <label className="flex items-center gap-2 text-sm text-chalk cursor-pointer flex-shrink-0">
-              <input type="checkbox" checked={draft.form.local_stock_player_version || false} onChange={e => setForm('local_stock_player_version', e.target.checked)} className="accent-turf" />
-              גרסת שחקן
-            </label>
-            <input value={draft.form.local_stock_custom_name || ''} onChange={e => setForm('local_stock_custom_name', e.target.value)} placeholder="שם ומספר על הגב (אם יש) - למשל Ronaldo 7"
-              className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
-          </div>
-        </div>
-      </div>
+      <LocalStockEditor items={draft.localStockItems || []} onChange={items => onChange({ ...draft, localStockItems: items })} sizes={currentSizeOptions} />
 
       {/* Status & Flags */}
       <div className="border border-white/10 bg-white/5 p-4 space-y-4">

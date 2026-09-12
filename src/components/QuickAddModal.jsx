@@ -11,6 +11,7 @@ import NameNumberInput from '@/components/configurator/NameNumberInput';
 import OrderSummary from '@/components/configurator/OrderSummary';
 import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurator/recommendations';
 import { hasLocalStockForSize } from '@/components/ShippingBadge';
+import { itemsForSize, stockPrint } from '@/lib/localStock';
 
 import { getCart, setCart } from '@/lib/cart';
 
@@ -22,6 +23,7 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   const [customName, setCustomName] = useState('');
   const [customNumber, setCustomNumber] = useState('');
   const [buyMode, setBuyMode] = useState(''); // '' | 'exact' | 'custom'
+  const [stockItemId, setStockItemId] = useState(''); // which physical shirt, when buying exact
   const [added, setAdded] = useState(false);
 
   const basePrice = (() => {
@@ -33,6 +35,8 @@ export default function QuickAddModal({ shirt, open, onClose }) {
 
   const sizeHasLocalStock = hasLocalStockForSize(shirt, selectedSize) && !!selectedSize;
   const buyingExact = sizeHasLocalStock && buyMode === 'exact';
+  const sizeStockItems = selectedSize ? itemsForSize(shirt, selectedSize) : [];
+  const stockItem = buyingExact ? sizeStockItems.find(item => item.id === stockItemId) || null : null;
 
   const flow = [
     'size',
@@ -49,7 +53,7 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   ];
 
   const reset = () => {
-    setStep('size'); setSelectedSize(''); setShirtType(''); setAddName(''); setCustomName(''); setCustomNumber(''); setBuyMode(''); setAdded(false);
+    setStep('size'); setSelectedSize(''); setShirtType(''); setAddName(''); setCustomName(''); setCustomNumber(''); setBuyMode(''); setStockItemId(''); setAdded(false);
   };
   const handleClose = () => { reset(); onClose(); };
 
@@ -60,7 +64,7 @@ export default function QuickAddModal({ shirt, open, onClose }) {
 
   const canProceed = () => {
     if (step === 'size') return !!selectedSize;
-    if (step === 'exactOrCustom') return !!buyMode;
+    if (step === 'exactOrCustom') return !!buyMode && (buyMode !== 'exact' || !!stockItem);
     if (step === 'shirtType') return !!shirtType;
     if (step === 'addName') return addName !== '';
     if (step === 'nameDetails') return !!(customName.trim() && customNumber.trim());
@@ -75,11 +79,12 @@ export default function QuickAddModal({ shirt, open, onClose }) {
     cart.push({
       shirtId: shirt.id, shirtName: shirt.name, image: shirt.main_image,
       size: selectedSize, basePrice,
-      addName: buyingExact ? !!shirt.local_stock_custom_name : addName === 'yes',
-      customName: buyingExact ? (shirt.local_stock_custom_name || '') : (addName === 'yes' ? `${customName} ${customNumber}`.trim() : ''),
-      playerVersion: buyingExact ? !!shirt.local_stock_player_version : shirtType === 'player',
+      addName: buyingExact ? !!stockPrint(stockItem) : addName === 'yes',
+      customName: buyingExact ? stockPrint(stockItem) : (addName === 'yes' ? `${customName} ${customNumber}`.trim() : ''),
+      playerVersion: buyingExact ? !!stockItem?.player_version : shirtType === 'player',
       localStockSizes: shirt.local_stock_sizes || {},
       isExactStockItem: buyingExact,
+      stockItemId: buyingExact ? stockItem?.id || '' : '',
     });
     setCart(cart);
     setAdded(true);
@@ -108,14 +113,17 @@ export default function QuickAddModal({ shirt, open, onClose }) {
             <motion.div key="size" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
               <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">בוא נתאים לך את החולצה</h3>
               <p className="text-sm text-gray-500 font-body mb-4">איזו מידה הכי מתאימה לך?</p>
-              <SizeSelector shirt={shirt} value={selectedSize} onChange={(s) => { setSelectedSize(s); setBuyMode(''); }} />
+              <SizeSelector shirt={shirt} value={selectedSize} onChange={(s) => { setSelectedSize(s); setBuyMode(''); setStockItemId(''); }} />
             </motion.div>
           )}
           {step === 'exactOrCustom' && (
             <motion.div key="exactOrCustom" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
               <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">יש לנו את זו במלאי בארץ!</h3>
-              <p className="text-sm text-gray-500 font-body mb-4">רוצה לקנות בדיוק את הפריט שקיים, או להזמין גרסה משלך?</p>
-              <ExactOrCustomChoice shirt={shirt} value={buyMode} onChange={setBuyMode} />
+              <p className="text-sm text-gray-500 font-body mb-4">
+                {sizeStockItems.length > 1 ? 'יש אצלנו כמה חולצות במידה הזו. אפשר לקנות אחת מהן כמו שהיא, או להזמין גרסה משלך.' : 'רוצה לקנות בדיוק את החולצה שקיימת, או להזמין גרסה משלך?'}
+              </p>
+              <ExactOrCustomChoice items={sizeStockItems} value={buyMode} itemId={stockItemId}
+                onChange={(mode, id) => { setBuyMode(mode); setStockItemId(id || ''); }} />
             </motion.div>
           )}
           {step === 'shirtType' && (
@@ -152,9 +160,9 @@ export default function QuickAddModal({ shirt, open, onClose }) {
               <p className="text-sm text-gray-500 font-body mb-4">הנה הבחירה שלך:</p>
               {buyingExact ? (
                 <OrderSummary shirt={shirt} size={selectedSize}
-                  shirtType={shirt.local_stock_player_version ? 'player' : 'regular'}
-                  addName={shirt.local_stock_custom_name ? 'yes' : 'no'}
-                  customName={shirt.local_stock_custom_name || ''} customNumber="" basePrice={basePrice} />
+                  shirtType={stockItem?.player_version ? 'player' : 'regular'}
+                  addName={stockPrint(stockItem) ? 'yes' : 'no'}
+                  customName={stockItem?.name || ''} customNumber={stockItem?.number || ''} basePrice={basePrice} />
               ) : (
                 <OrderSummary shirt={shirt} size={selectedSize} shirtType={shirtType} addName={addName}
                   customName={customName} customNumber={customNumber} basePrice={basePrice} />

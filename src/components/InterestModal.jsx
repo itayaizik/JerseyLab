@@ -14,6 +14,7 @@ import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurato
 import { friendlyError } from '@/lib/errorMessages';
 import ProductImage from '@/components/ui/ProductImage';
 import { hasLocalStockForSize } from '@/components/ShippingBadge';
+import { itemsForSize, stockPrint } from '@/lib/localStock';
 import ContactChannelChoice from '@/components/configurator/ContactChannelChoice';
 import HowItWorksNotice from '@/components/HowItWorksNotice';
 import { sendOrderConfirmation } from '@/lib/orderEmail';
@@ -142,6 +143,7 @@ export function CartModal({ open, onClose, user }) {
         const extras = (item.extras || []).map(x => `${x.label} (+₪${x.price})`);
         if (item.playerVersion) extras.push('גרסת שחקן (+₪20)');
         if (item.addName) extras.push(`הדפסת שם: ${item.customName || ''} (+₪15)`);
+        if (item.isExactStockItem) extras.push('חולצה קיימת מהמלאי בארץ');
         // Preferences carry no price but must reach the order, or asking for
         // them on the mystery box page would be theatre.
         (item.details || []).forEach(d => extras.push(`${d.label}: ${d.value}`));
@@ -393,6 +395,8 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
     if (!open) return;
     const size = initialSize || '';
     setSelectedSize(size);
+    setBuyMode('');
+    setStockItemId('');
     if (!size) { setStep('size'); return; }
     setStep(hasLocalStockForSize(shirt, size) ? 'exactOrCustom' : 'shirtType');
   }, [open, initialSize, shirt]);
@@ -401,6 +405,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
   const [customName, setCustomName] = useState('');
   const [customNumber, setCustomNumber] = useState('');
   const [buyMode, setBuyMode] = useState(''); // '' | 'exact' | 'custom'
+  const [stockItemId, setStockItemId] = useState(''); // which physical shirt, when buying exact
   const [added, setAdded] = useState(false);
 
   const basePrice = (() => {
@@ -415,6 +420,8 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
   // shirt - skips the personalization steps entirely when buying exact.
   const sizeHasLocalStock = hasLocalStockForSize(shirt, selectedSize) && !!selectedSize;
   const buyingExact = sizeHasLocalStock && buyMode === 'exact';
+  const sizeStockItems = selectedSize ? itemsForSize(shirt, selectedSize) : [];
+  const stockItem = buyingExact ? sizeStockItems.find(item => item.id === stockItemId) || null : null;
 
   const flow = [
     'size',
@@ -432,7 +439,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
 
   const reset = () => {
     setStep('size'); setSelectedSize(''); setShirtType(''); setAddName(''); setCustomName(''); setCustomNumber('');
-    setBuyMode(''); setErrors({}); setAdded(false);
+    setBuyMode(''); setStockItemId(''); setErrors({}); setAdded(false);
   };
   const handleClose = () => { reset(); onClose(); };
 
@@ -445,7 +452,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
   const validateStep = (s) => {
     const errs = {};
     if (s === 'size' && !selectedSize) errs.size = 'יש לבחור מידה';
-    if (s === 'exactOrCustom' && !buyMode) errs.buyMode = 'יש לבחור';
+    if (s === 'exactOrCustom' && (!buyMode || (buyMode === 'exact' && !stockItem))) errs.buyMode = 'יש לבחור';
     if (s === 'shirtType' && !shirtType) errs.shirtType = 'יש לבחור סוג חולצה';
     if (s === 'addName' && !addName) errs.addName = 'יש לבחור';
     if (s === 'nameDetails' && (!customName.trim() || !customNumber.trim())) errs.nameDetails = 'יש למלא שם ומספר';
@@ -462,11 +469,14 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
     cart.push({
       shirtId: shirt.id, shirtName: shirt.name, image: shirt.main_image,
       size: selectedSize, basePrice,
-      addName: buyingExact ? !!shirt.local_stock_custom_name : addName === 'yes',
-      customName: buyingExact ? (shirt.local_stock_custom_name || '') : (addName === 'yes' ? `${customName} ${customNumber}`.trim() : ''),
-      playerVersion: buyingExact ? !!shirt.local_stock_player_version : shirtType === 'player',
+      addName: buyingExact ? !!stockPrint(stockItem) : addName === 'yes',
+      customName: buyingExact ? stockPrint(stockItem) : (addName === 'yes' ? `${customName} ${customNumber}`.trim() : ''),
+      playerVersion: buyingExact ? !!stockItem?.player_version : shirtType === 'player',
       localStockSizes: shirt.local_stock_sizes || {},
       isExactStockItem: buyingExact,
+      // Which physical shirt, so the order says which of two size S shirts
+      // with different prints the customer chose.
+      stockItemId: buyingExact ? stockItem?.id || '' : '',
     });
     setCart(cart);
     base44.entities.Shirt.update(shirt.id, { interest_count: (shirt.interest_count || 0) + 1 }).catch(() => {});
@@ -520,15 +530,18 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
             <motion.div key="size" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
               <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">בוא נמצא את החולצה בשבילך</h3>
               <p className="text-sm text-gray-500 font-body mb-4">איזו מידה אתה מחפש?</p>
-              <SizeSelector shirt={shirt} value={selectedSize} onChange={(s) => { setSelectedSize(s); setBuyMode(''); }} />
+              <SizeSelector shirt={shirt} value={selectedSize} onChange={(s) => { setSelectedSize(s); setBuyMode(''); setStockItemId(''); }} />
               {errors.size && <p className="text-red-500 text-xs mt-2">{errors.size}</p>}
             </motion.div>
           )}
           {step === 'exactOrCustom' && (
             <motion.div key="exactOrCustom" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
               <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">יש לנו את זו במלאי בארץ!</h3>
-              <p className="text-sm text-gray-500 font-body mb-4">רוצה לקנות בדיוק את הפריט שקיים, או להזמין גרסה משלך?</p>
-              <ExactOrCustomChoice shirt={shirt} value={buyMode} onChange={setBuyMode} />
+              <p className="text-sm text-gray-500 font-body mb-4">
+                {sizeStockItems.length > 1 ? 'יש אצלנו כמה חולצות במידה הזו. אפשר לקנות אחת מהן כמו שהיא, או להזמין גרסה משלך.' : 'רוצה לקנות בדיוק את החולצה שקיימת, או להזמין גרסה משלך?'}
+              </p>
+              <ExactOrCustomChoice items={sizeStockItems} value={buyMode} itemId={stockItemId}
+                onChange={(mode, id) => { setBuyMode(mode); setStockItemId(id || ''); }} />
               {errors.buyMode && <p className="text-red-500 text-xs mt-2">{errors.buyMode}</p>}
             </motion.div>
           )}
@@ -569,9 +582,9 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
               <p className="text-sm text-gray-500 font-body mb-4">הנה הבחירה שלך:</p>
               {buyingExact ? (
                 <OrderSummary shirt={shirt} size={selectedSize}
-                  shirtType={shirt.local_stock_player_version ? 'player' : 'regular'}
-                  addName={shirt.local_stock_custom_name ? 'yes' : 'no'}
-                  customName={shirt.local_stock_custom_name || ''} customNumber="" basePrice={basePrice} />
+                  shirtType={stockItem?.player_version ? 'player' : 'regular'}
+                  addName={stockPrint(stockItem) ? 'yes' : 'no'}
+                  customName={stockItem?.name || ''} customNumber={stockItem?.number || ''} basePrice={basePrice} />
               ) : (
                 <OrderSummary shirt={shirt} size={selectedSize} shirtType={shirtType} addName={addName}
                   customName={customName} customNumber={customNumber} basePrice={basePrice} />

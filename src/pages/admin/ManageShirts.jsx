@@ -8,6 +8,7 @@ import ProductImage from '@/components/ui/ProductImage';
 import { searchShirts } from '@/lib/search';
 import { shirtSizes, isSizeAvailable } from '@/lib/sizes';
 import { dateSortValue } from '@/lib/dates';
+import { stockItems, stockPayload } from '@/lib/localStock';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 // Quick filters: the questions the owner actually asks of the catalogue, one
@@ -61,11 +62,9 @@ function shirtToDraft(s) {
       condition: s.condition || 'new', description: s.description || '',
       tags: s.tags || [], status: s.status || 'available',
       featured: !!s.featured, is_new: !!s.is_new, is_rare: !!s.is_rare,
-      is_retro: !!s.is_retro, best_seller: !!s.best_seller, limited_stock: !!s.limited_stock,
-      local_stock_player_version: !!s.local_stock_player_version, local_stock_custom_name: s.local_stock_custom_name || '',
-    },
+      is_retro: !!s.is_retro, best_seller: !!s.best_seller, limited_stock: !!s.limited_stock,    },
     sizes: s.sizes || {},
-    localStockSizes: s.local_stock_sizes || {},
+    localStockItems: stockItems(s),
     mainImageUrl: s.main_image || '',
     extraImageUrls: s.extra_images || [],
   };
@@ -76,8 +75,8 @@ function buildPayload(d) {
     ...d.form,
     price: Number(d.form.price) || 0,
     sale_price: d.form.sale_price ? Number(d.form.sale_price) : null,
-    local_stock_sizes: d.localStockSizes,
-    in_stock_local: hasLocalStock({ local_stock_sizes: d.localStockSizes }),
+    // Items, plus the per-size summary and flag derived from them.
+    ...stockPayload(d.localStockItems || []),
     main_image: d.mainImageUrl,
     extra_images: d.extraImageUrls,
     sizes: d.sizes,
