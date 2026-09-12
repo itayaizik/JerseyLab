@@ -164,7 +164,7 @@ export default function SalesReport() {
               contentStyle={{ background: '#0C0D0E', border: '1px solid rgba(255,255,255,0.1)', color: '#F9FAF7', fontSize: 12 }}
               formatter={(val) => [`₪${val.toLocaleString()}`, 'הכנסה']}
             />
-            <Bar dataKey="revenue" fill="#E8622A" radius={[2, 2, 0, 0]} />
+            <Bar dataKey="revenue" fill="var(--brand-orange)" radius={[2, 2, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

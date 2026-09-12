@@ -167,18 +167,18 @@ export default function RequestShirt() {
   if (submitted) {
     return (
       <div className="max-w-lg mx-auto px-4 py-20 text-center">
-        <div className="w-16 h-16 bg-[#E8622A] flex items-center justify-center mx-auto mb-5"
-          style={{ border: '2px solid #1B2A4A', boxShadow: '4px 4px 0 #1B2A4A' }}>
+        <div className="w-16 h-16 bg-brand-orange flex items-center justify-center mx-auto mb-5"
+          style={{ border: '2px solid var(--brand-navy)', boxShadow: '4px 4px 0 var(--brand-navy)' }}>
           <Check className="w-8 h-8 text-white" />
         </div>
-        <h2 className="font-heading font-black text-2xl text-[#1B2A4A] uppercase mb-2">הבקשה נשלחה!</h2>
-        <p className="text-[#1B2A4A]/60 text-sm font-body mb-6">
+        <h2 className="font-heading font-black text-2xl text-brand-navy uppercase mb-2">הבקשה נשלחה!</h2>
+        <p className="text-brand-navy/60 text-sm font-body mb-6">
           נבדוק אם אפשר להשיג את החולצה ונחזור אליך
           ב{form.contact_channel === 'instagram' ? 'אינסטגרם' : 'וואטסאפ'} עם תשובה ומחיר.
         </p>
         <Link to="/catalog"
-          className="inline-block bg-[#1B2A4A] text-white px-6 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-[#E8622A] transition-colors"
-          style={{ boxShadow: '3px 3px 0 #E8622A' }}>
+          className="inline-block bg-brand-navy text-white px-6 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-brand-orange transition-colors"
+          style={{ boxShadow: '3px 3px 0 var(--brand-orange)' }}>
           בינתיים - לקטלוג
         </Link>
       </div>
@@ -186,7 +186,7 @@ export default function RequestShirt() {
   }
 
   return (
-    <div className="bg-[#F2ECD9] min-h-screen">
+    <div className="bg-brand-cream min-h-screen">
       <Seo
         title="מחפשים חולצה שאין באתר? - JerseyLab"
         description="לא מצאתם את החולצה בקטלוג? שלחו לנו בקשה עם תמונה או תיאור, ונבדוק אם אפשר להשיג אותה ובאיזה מחיר."
@@ -194,14 +194,14 @@ export default function RequestShirt() {
       />
 
       {/* Hero */}
-      <section className="relative overflow-hidden border-b-2 border-[#1B2A4A]" style={{ background: '#1B2A4A' }}>
+      <section className="relative overflow-hidden border-b-2 border-brand-navy" style={{ background: 'var(--brand-navy)' }}>
         <div className="absolute inset-0 opacity-[0.12]" style={{
           backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)',
           backgroundSize: '28px 28px'
         }} />
         <div className="relative max-w-2xl mx-auto px-4 py-9 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 mb-3 bg-[#E8622A]"
-            style={{ boxShadow: '4px 4px 0 #FFD95A' }}>
+          <div className="inline-flex items-center justify-center w-14 h-14 mb-3 bg-brand-orange"
+            style={{ boxShadow: '4px 4px 0 var(--brand-gold)' }}>
             <Search className="w-7 h-7 text-white" />
           </div>
           <h1 className="font-heading font-black text-3xl md:text-4xl text-white uppercase mb-2">
@@ -215,8 +215,8 @@ export default function RequestShirt() {
       </section>
 
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <form onSubmit={handleSubmit} className="bg-white border-2 border-[#1B2A4A] p-5 space-y-6"
-          style={{ boxShadow: '5px 5px 0 #1B2A4A' }}>
+        <form onSubmit={handleSubmit} className="bg-white border-2 border-brand-navy p-5 space-y-6"
+          style={{ boxShadow: '5px 5px 0 var(--brand-navy)' }}>
 
           {/* ── What they are after ── */}
           <Section number={1} title="איזו חולצה?">
@@ -251,25 +251,25 @@ export default function RequestShirt() {
             {/* The photo. Easily the most useful field on this form - a picture
                 identifies a kit far faster than any description of it. */}
             <div>
-              <p className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase block mb-1.5">
+              <p className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">
                 תמונה של החולצה
               </p>
               {imagePreview ? (
                 <div className="relative inline-block">
-                  <img src={imagePreview} alt="התמונה שצירפת" className="w-32 h-32 object-cover border-2 border-[#1B2A4A]" />
+                  <img src={imagePreview} alt="התמונה שצירפת" className="w-32 h-32 object-cover border-2 border-brand-navy" />
                   <button type="button" onClick={clearImage} aria-label="הסר תמונה"
-                    className="absolute -top-2 -left-2 w-7 h-7 flex items-center justify-center bg-white border-2 border-[#1B2A4A] text-[#1B2A4A] hover:bg-red-500 hover:border-red-500 hover:text-white transition-colors">
+                    className="absolute -top-2 -left-2 w-7 h-7 flex items-center justify-center bg-white border-2 border-brand-navy text-brand-navy hover:bg-red-500 hover:border-red-500 hover:text-white transition-colors">
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-[#1B2A4A]/40 hover:border-[#1B2A4A] hover:bg-[#F2ECD9]/60 transition-colors py-6 cursor-pointer">
-                  <ImageIcon className="w-7 h-7 text-[#1B2A4A]/40" />
-                  <span className="text-sm font-body text-[#1B2A4A]/70 flex items-center gap-1.5">
+                <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-brand-navy/40 hover:border-brand-navy hover:bg-brand-cream/60 transition-colors py-6 cursor-pointer">
+                  <ImageIcon className="w-7 h-7 text-brand-navy/40" />
+                  <span className="text-sm font-body text-brand-navy/70 flex items-center gap-1.5">
                     <Upload className="w-3.5 h-3.5" />
                     צרף תמונה
                   </span>
-                  <span className="text-[11px] font-body text-[#1B2A4A]/40">צילום מסך מאינסטגרם או מגוגל עובד מצוין</span>
+                  <span className="text-[11px] font-body text-brand-navy/40">צילום מסך מאינסטגרם או מגוגל עובד מצוין</span>
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImagePick} className="hidden" />
                 </label>
               )}
@@ -325,12 +325,12 @@ export default function RequestShirt() {
           {submitError && <p role="alert" className="text-red-600 text-sm font-body">{submitError}</p>}
 
           <button type="submit" disabled={submitting}
-            className="w-full flex items-center justify-center gap-2 bg-[#E8622A] text-white py-4 font-heading font-bold text-base uppercase tracking-wider hover:bg-[#D0551F] disabled:opacity-60 transition-colors"
-            style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
+            className="w-full flex items-center justify-center gap-2 bg-brand-orange text-white py-4 font-heading font-bold text-base uppercase tracking-wider hover:bg-brand-orange-dark disabled:opacity-60 transition-colors"
+            style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}>
             {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
             {submitting ? 'שולח…' : 'שלח בקשה'}
           </button>
-          <p className="text-[11px] text-center text-[#1B2A4A]/50 font-body">
+          <p className="text-[11px] text-center text-brand-navy/50 font-body">
             בלי התחייבות ובלי תשלום - בקשה בלבד.
           </p>
         </form>
@@ -342,17 +342,17 @@ export default function RequestShirt() {
 // Shared input styling. The error state only swaps the border colour, so it
 // lives here instead of being repeated on every field.
 function inputClass(error) {
-  return `w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none font-body ${error ? 'border-red-500' : 'border-[#1B2A4A]'}`;
+  return `w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none font-body ${error ? 'border-red-500' : 'border-brand-navy'}`;
 }
 
 function Section({ number, title, children }) {
   return (
     <section className="space-y-3">
       <div className="flex items-center gap-2">
-        <span className="w-6 h-6 flex-shrink-0 bg-[#1B2A4A] text-white font-mono font-bold text-xs flex items-center justify-center">
+        <span className="w-6 h-6 flex-shrink-0 bg-brand-navy text-white font-mono font-bold text-xs flex items-center justify-center">
           {number}
         </span>
-        <h2 className="font-heading font-bold text-sm text-[#1B2A4A] uppercase tracking-wide">{title}</h2>
+        <h2 className="font-heading font-bold text-sm text-brand-navy uppercase tracking-wide">{title}</h2>
       </div>
       {children}
     </section>
@@ -362,7 +362,7 @@ function Section({ number, title, children }) {
 function Field({ label, htmlFor, error, children }) {
   return (
     <div>
-      <label htmlFor={htmlFor} className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase block mb-1.5">
+      <label htmlFor={htmlFor} className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">
         {label}
       </label>
       {children}

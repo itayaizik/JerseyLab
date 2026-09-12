@@ -137,7 +137,7 @@ export default function Register() {
       footer={showFooter ? (
         <>
           כבר יש לך חשבון?{' '}
-          <Link to="/login" className="text-[#E8622A] font-bold hover:underline">התחבר</Link>
+          <Link to="/login" className="text-brand-orange font-bold hover:underline">התחבר</Link>
         </>
       ) : null}
     >

@@ -17,10 +17,10 @@ export default function SizeSelector({ shirt, value, onChange }) {
             <button key={s} type="button" onClick={() => onChange(s)}
               className={`flex flex-col items-center justify-center min-h-[3rem] min-w-[3rem] px-3 py-1.5 border-2 text-sm font-mono transition-all duration-200 ${
                 isSelected
-                  ? (isLocal ? 'border-green-700 bg-green-600 text-white scale-105' : 'bg-[#1B2A4A] text-white border-[#1B2A4A] scale-105')
+                  ? (isLocal ? 'border-green-700 bg-green-600 text-white scale-105' : 'bg-brand-navy text-white border-brand-navy scale-105')
                   : isLocal
                     ? 'border-green-600 text-green-700 bg-green-50 hover:bg-green-100'
-                    : 'border-[#1B2A4A] text-[#1B2A4A] bg-white hover:bg-[#F2ECD9]'
+                    : 'border-brand-navy text-brand-navy bg-white hover:bg-brand-cream'
               }`}>
               <span className="font-bold">{s}</span>
               {isLocal && <span className="text-[8px] font-heading font-bold uppercase leading-none mt-0.5">מלאי בארץ</span>}
@@ -36,7 +36,7 @@ export default function SizeSelector({ shirt, value, onChange }) {
               זמין במלאי בארץ - הגעה עד שבוע או איסוף מקריית אונו
             </p>
           ) : (
-            <p className="text-[#E8622A] font-bold">משלוח מהיר - הגעה עד 3 שבועות</p>
+            <p className="text-brand-orange font-bold">משלוח מהיר - הגעה עד 3 שבועות</p>
           )}
         </div>
       )}

@@ -17,8 +17,8 @@ export default function ContactChannelChoice({ value, onChange, error }) {
             <button key={opt.id} type="button" onClick={() => onChange(opt.id)}
               className={`flex flex-col items-center gap-1.5 p-3 border-2 transition-all duration-200 text-center ${
                 isSelected
-                  ? 'border-[#1B2A4A] bg-[#1B2A4A] text-white'
-                  : `bg-white text-[#1B2A4A] hover:bg-[#F2ECD9] ${error ? 'border-red-500' : 'border-[#1B2A4A]/30 hover:border-[#1B2A4A]'}`
+                  ? 'border-brand-navy bg-brand-navy text-white'
+                  : `bg-white text-brand-navy hover:bg-brand-cream ${error ? 'border-red-500' : 'border-brand-navy/30 hover:border-brand-navy'}`
               }`}>
               <Icon className="w-5 h-5" />
               <span className="text-sm font-heading font-bold uppercase leading-none">{opt.label}</span>

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/generate-facets.mjs && node scripts/generate-sitemap.mjs && vite build && node scripts/prerender.mjs",
+    "build": "node scripts/check-brand-tokens.mjs && node scripts/generate-facets.mjs && node scripts/generate-sitemap.mjs && vite build && node scripts/prerender.mjs",
+    "check:tokens": "node scripts/check-brand-tokens.mjs",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",

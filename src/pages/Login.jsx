@@ -38,7 +38,7 @@ export default function Login() {
       footer={
         <>
           אין לך חשבון?{" "}
-          <Link to="/register" className="text-[#E8622A] font-bold hover:underline">
+          <Link to="/register" className="text-brand-orange font-bold hover:underline">
             הרשמה
           </Link>
         </>
@@ -46,8 +46,8 @@ export default function Login() {
     >
       <button
         onClick={handleGoogle}
-        className="w-full h-11 text-sm font-medium border-2 border-[#1B2A4A] bg-white hover:bg-[#F2ECD9] transition-colors flex items-center justify-center gap-2 mb-5 font-body"
-        style={{ boxShadow: '2px 2px 0 #1B2A4A' }}
+        className="w-full h-11 text-sm font-medium border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors flex items-center justify-center gap-2 mb-5 font-body"
+        style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}
       >
         <GoogleIcon className="w-5 h-5" />
         המשך עם Google
@@ -55,7 +55,7 @@ export default function Login() {
 
       <div className="relative mb-5">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t-2 border-[#1B2A4A]/20" />
+          <div className="w-full border-t-2 border-brand-navy/20" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-white px-3 text-gray-400 font-heading">או</span>
@@ -70,7 +70,7 @@ export default function Login() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="text-sm font-medium block mb-1 font-body text-[#1B2A4A]">אימייל</label>
+          <label className="text-sm font-medium block mb-1 font-body text-brand-navy">אימייל</label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -81,7 +81,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               maxLength={254}
-              className="w-full pl-10 pr-3 h-11 border-2 border-[#1B2A4A] bg-white text-sm focus:outline-none focus:border-[#E8622A] transition-colors font-body"
+              className="w-full pl-10 pr-3 h-11 border-2 border-brand-navy bg-white text-sm focus:outline-none focus:border-brand-orange transition-colors font-body"
               dir="ltr"
               required
             />
@@ -89,8 +89,8 @@ export default function Login() {
         </div>
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="text-sm font-medium font-body text-[#1B2A4A]">סיסמה</label>
-            <Link to="/forgot-password" className="text-xs text-[#E8622A] hover:underline font-body">
+            <label className="text-sm font-medium font-body text-brand-navy">סיסמה</label>
+            <Link to="/forgot-password" className="text-xs text-brand-orange hover:underline font-body">
               שכחת סיסמה?
             </Link>
           </div>
@@ -103,7 +103,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               maxLength={128}
-              className="w-full pl-10 pr-3 h-11 border-2 border-[#1B2A4A] bg-white text-sm focus:outline-none focus:border-[#E8622A] transition-colors font-body"
+              className="w-full pl-10 pr-3 h-11 border-2 border-brand-navy bg-white text-sm focus:outline-none focus:border-brand-orange transition-colors font-body"
               dir="ltr"
               required
             />
@@ -111,8 +111,8 @@ export default function Login() {
         </div>
         <button
           type="submit"
-          className="w-full h-11 bg-[#E8622A] text-white font-bold font-heading uppercase tracking-wide text-sm hover:bg-[#D0551F] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-          style={{ boxShadow: '3px 3px 0 #1B2A4A' }}
+          className="w-full h-11 bg-brand-orange text-white font-bold font-heading uppercase tracking-wide text-sm hover:bg-brand-orange-dark transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}
           disabled={loading}
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogIn className="w-4 h-4" />}

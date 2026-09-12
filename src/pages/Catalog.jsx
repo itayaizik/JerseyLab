@@ -235,16 +235,16 @@ export default function Catalog() {
       <div className="mb-5">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
-            <p className="text-xs text-[#1B2A4A]/40 font-heading uppercase tracking-widest mb-1">JerseyLab Archive</p>
-            <h1 className="font-heading font-black text-3xl md:text-4xl text-[#1B2A4A] uppercase">{pageTitle()}</h1>
+            <p className="text-xs text-brand-navy/40 font-heading uppercase tracking-widest mb-1">JerseyLab Archive</p>
+            <h1 className="font-heading font-black text-3xl md:text-4xl text-brand-navy uppercase">{pageTitle()}</h1>
             {!loading && !loadError && (
-              <p className="text-sm text-[#1B2A4A]/50 mt-1 font-body">{shirts.length} חולצות נמצאו</p>
+              <p className="text-sm text-brand-navy/50 mt-1 font-body">{shirts.length} חולצות נמצאו</p>
             )}
           </div>
 
           {/* Search + filter buttons */}
           <div className="flex gap-2">
-            <form onSubmit={handleSearch} className="flex border-2 border-[#1B2A4A] bg-white flex-1 md:w-80" style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
+            <form onSubmit={handleSearch} className="flex border-2 border-brand-navy bg-white flex-1 md:w-80" style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
               <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} maxLength={100} autoComplete="off"
                 placeholder="חפש לפי שחקן, קבוצה, עונה..." className="flex-1 px-3 py-2 text-sm focus:outline-none font-body" />
               {searchTerm && (
@@ -252,13 +252,13 @@ export default function Catalog() {
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
-              <button type="submit" className="px-3 text-[#1B2A4A] hover:text-[#E8622A] border-r-2 border-[#1B2A4A]">
+              <button type="submit" className="px-3 text-brand-navy hover:text-brand-orange border-r-2 border-brand-navy">
                 <Search className="w-4 h-4" />
               </button>
             </form>
             <button onClick={() => setFiltersOpen(!filtersOpen)}
-              className={`flex items-center gap-1.5 px-3 py-2 border-2 text-sm font-bold font-heading uppercase transition-colors ${filtersOpen || hasActiveFilters ? 'bg-[#1B2A4A] text-white border-[#1B2A4A]' : 'border-[#1B2A4A] bg-white text-[#1B2A4A] hover:bg-[#F2ECD9]'}`}
-              style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
+              className={`flex items-center gap-1.5 px-3 py-2 border-2 text-sm font-bold font-heading uppercase transition-colors ${filtersOpen || hasActiveFilters ? 'bg-brand-navy text-white border-brand-navy' : 'border-brand-navy bg-white text-brand-navy hover:bg-brand-cream'}`}
+              style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
               <SlidersHorizontal className="w-4 h-4" />
               <span>סינון{hasActiveFilters ? ' ●' : ''}</span>
             </button>
@@ -271,7 +271,7 @@ export default function Catalog() {
         <nav className="flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide" aria-label="קטגוריות">
           {COLLECTIONS.map(c => (
             <Link key={c.slug} to={`/collections/${c.slug}`}
-              className="flex-shrink-0 flex items-center min-h-[44px] px-3 text-xs font-body text-[#1B2A4A] bg-white border-2 border-[#1B2A4A]/25 whitespace-nowrap hover:border-[#1B2A4A] hover:bg-[#F2ECD9] transition-colors">
+              className="flex-shrink-0 flex items-center min-h-[44px] px-3 text-xs font-body text-brand-navy bg-white border-2 border-brand-navy/25 whitespace-nowrap hover:border-brand-navy hover:bg-brand-cream transition-colors">
               {c.name}
             </Link>
           ))}
@@ -281,15 +281,15 @@ export default function Catalog() {
             of its own, not one more way to slice the catalogue. */}
         <div className="flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide">
           <Link to="/mystery-box"
-            className="flex-shrink-0 flex items-center gap-1.5 min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 border-[#1B2A4A] bg-[#FFD95A] text-[#1B2A4A] whitespace-nowrap hover:bg-[#1B2A4A] hover:text-[#FFD95A] transition-colors"
-            style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
+            className="flex-shrink-0 flex items-center gap-1.5 min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 border-brand-navy bg-brand-gold text-brand-navy whitespace-nowrap hover:bg-brand-navy hover:text-brand-gold transition-colors"
+            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
             <Gift className="w-3.5 h-3.5" />
             מיסטרי בוקס
             <span className="font-mono opacity-70">₪70</span>
           </Link>
           <Link to="/request-shirt"
-            className="flex-shrink-0 flex items-center gap-1.5 min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 border-[#1B2A4A] bg-white text-[#1B2A4A] whitespace-nowrap hover:bg-[#1B2A4A] hover:text-white transition-colors"
-            style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
+            className="flex-shrink-0 flex items-center gap-1.5 min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 border-brand-navy bg-white text-brand-navy whitespace-nowrap hover:bg-brand-navy hover:text-white transition-colors"
+            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
             <PackageSearch className="w-3.5 h-3.5" />
             בקש חולצה
           </Link>
@@ -298,7 +298,7 @@ export default function Catalog() {
             const href = params ? `/catalog?${params}` : '/catalog';
             return (
               <Link key={i} to={href}
-                className={`flex-shrink-0 flex items-center min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 transition-colors whitespace-nowrap ${activeQuickFilter === i ? 'bg-[#1B2A4A] text-white border-[#1B2A4A]' : 'border-[#1B2A4A]/30 text-[#1B2A4A] bg-white hover:border-[#1B2A4A] hover:bg-[#F2ECD9]'}`}>
+                className={`flex-shrink-0 flex items-center min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 transition-colors whitespace-nowrap ${activeQuickFilter === i ? 'bg-brand-navy text-white border-brand-navy' : 'border-brand-navy/30 text-brand-navy bg-white hover:border-brand-navy hover:bg-brand-cream'}`}>
                 {qf.label}
               </Link>
             );
@@ -308,19 +308,19 @@ export default function Catalog() {
 
       {/* Advanced Filters panel */}
       {filtersOpen && (
-        <div className="border-2 border-[#1B2A4A] bg-white p-5 mb-6" style={{ boxShadow: '4px 4px 0 #1B2A4A' }}>
+        <div className="border-2 border-brand-navy bg-white p-5 mb-6" style={{ boxShadow: '4px 4px 0 var(--brand-navy)' }}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-heading font-bold text-sm text-[#1B2A4A] uppercase tracking-wide">סינון מתקדם</h3>
-            <button onClick={clearFilters} className="text-xs text-[#E8622A] font-bold font-heading uppercase hover:underline flex items-center gap-1">
+            <h3 className="font-heading font-bold text-sm text-brand-navy uppercase tracking-wide">סינון מתקדם</h3>
+            <button onClick={clearFilters} className="text-xs text-brand-orange font-bold font-heading uppercase hover:underline flex items-center gap-1">
               <X className="w-3 h-3" /> נקה סינון
             </button>
           </div>
           {/* Primary filters - always visible */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <div>
-              <label className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase block mb-1.5">מצב</label>
+              <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">מצב</label>
               <select value={filters.condition} onChange={e => handleFilterChange('condition', e.target.value)}
-                className="w-full border-2 border-[#1B2A4A] px-3 py-2 text-sm focus:outline-none bg-white font-body">
+                className="w-full border-2 border-brand-navy px-3 py-2 text-sm focus:outline-none bg-white font-body">
                 <option value="">הכל</option>
                 <option value="new">חדש</option>
                 <option value="like_new">כמו חדש</option>
@@ -329,20 +329,20 @@ export default function Catalog() {
             </div>
 
             <div>
-              <label className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase block mb-1.5">טווח מחיר</label>
+              <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">טווח מחיר</label>
               <div className="flex gap-2">
                 <input type="number" value={filters.minPrice} onChange={e => handleFilterChange('minPrice', e.target.value)}
-                  placeholder="מין" className="w-full border-2 border-[#1B2A4A] px-2 py-2 text-sm focus:outline-none font-body" dir="ltr" />
+                  placeholder="מין" className="w-full border-2 border-brand-navy px-2 py-2 text-sm focus:outline-none font-body" dir="ltr" />
                 <input type="number" value={filters.maxPrice} onChange={e => handleFilterChange('maxPrice', e.target.value)}
-                  placeholder="מקס" className="w-full border-2 border-[#1B2A4A] px-2 py-2 text-sm focus:outline-none font-body" dir="ltr" />
+                  placeholder="מקס" className="w-full border-2 border-brand-navy px-2 py-2 text-sm focus:outline-none font-body" dir="ltr" />
               </div>
             </div>
 
             {leagues.length > 0 && (
               <div>
-                <label className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase block mb-1.5">ליגה</label>
+                <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">ליגה</label>
                 <select value={filters.league} onChange={e => handleFilterChange('league', e.target.value)}
-                  className="w-full border-2 border-[#1B2A4A] px-3 py-2 text-sm focus:outline-none bg-white font-body">
+                  className="w-full border-2 border-brand-navy px-3 py-2 text-sm focus:outline-none bg-white font-body">
                   <option value="">הכל</option>
                   {leagues.map(l => <option key={l} value={l}>{l}</option>)}
                 </select>
@@ -353,20 +353,20 @@ export default function Catalog() {
           {/* More filters toggle - progressive disclosure */}
           <button type="button"
             onClick={() => setShowMoreFilters(!showMoreFilters)}
-            className="flex items-center gap-1.5 mt-4 text-xs font-heading font-bold text-[#1B2A4A] uppercase tracking-wide hover:text-[#E8622A] transition-colors">
+            className="flex items-center gap-1.5 mt-4 text-xs font-heading font-bold text-brand-navy uppercase tracking-wide hover:text-brand-orange transition-colors">
             <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showMoreFilters || hasAdvancedFilters ? 'rotate-180' : ''}`} />
             {showMoreFilters || hasAdvancedFilters ? 'פחות מסננים' : 'מסננים נוספים'}
-            {hasAdvancedFilters && <span className="w-1.5 h-1.5 bg-[#E8622A] rounded-full" />}
+            {hasAdvancedFilters && <span className="w-1.5 h-1.5 bg-brand-orange rounded-full" />}
           </button>
 
           {/* Advanced filters - revealed on demand */}
           {(showMoreFilters || hasAdvancedFilters) && (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4 pt-4 border-t border-[#1B2A4A]/10">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4 pt-4 border-t border-brand-navy/10">
               {nationalTeams.length > 0 && (
                 <div>
-                  <label className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase block mb-1.5">נבחרת</label>
+                  <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">נבחרת</label>
                   <select value={filters.national_team} onChange={e => handleFilterChange('national_team', e.target.value)}
-                    className="w-full border-2 border-[#1B2A4A] px-3 py-2 text-sm focus:outline-none bg-white font-body">
+                    className="w-full border-2 border-brand-navy px-3 py-2 text-sm focus:outline-none bg-white font-body">
                     <option value="">הכל</option>
                     {nationalTeams.map(n => <option key={n} value={n}>{n}</option>)}
                   </select>
@@ -375,12 +375,12 @@ export default function Catalog() {
 
               {allSizes.length > 0 && (
                 <div className="col-span-2 md:col-span-2 lg:col-span-3">
-                  <label className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase block mb-1.5">מידה</label>
+                  <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">מידה</label>
                   <div className="flex gap-1.5 flex-wrap">
                     {allSizes.map(s => (
                       <button key={s} type="button"
                         onClick={() => handleFilterChange('size', filters.size === s ? '' : s)}
-                        className={`text-xs px-3 py-1.5 border-2 font-mono transition-colors ${filters.size === s ? 'bg-[#1B2A4A] text-white border-[#1B2A4A]' : 'border-[#1B2A4A]/40 text-[#1B2A4A] bg-transparent hover:border-[#1B2A4A] hover:bg-[#F2ECD9]'}`}>
+                        className={`text-xs px-3 py-1.5 border-2 font-mono transition-colors ${filters.size === s ? 'bg-brand-navy text-white border-brand-navy' : 'border-brand-navy/40 text-brand-navy bg-transparent hover:border-brand-navy hover:bg-brand-cream'}`}>
                         {s}
                       </button>
                     ))}
@@ -394,10 +394,10 @@ export default function Catalog() {
 
       {/* Grid */}
       {loadError ? (
-        <div className="text-center py-20 border-2 border-dashed border-[#1B2A4A]/20">
-          <p className="font-heading font-bold text-xl text-[#1B2A4A]/40 mb-2 uppercase">לא הצלחנו לטעון את הקטלוג</p>
-          <p className="text-sm text-[#1B2A4A]/30 font-body mb-4">בדוק את החיבור לאינטרנט ונסה שוב</p>
-          <button onClick={loadShirts} className="px-4 py-2 bg-[#E8622A] text-white text-sm font-bold font-heading uppercase hover:bg-[#D0551F] transition-colors">
+        <div className="text-center py-20 border-2 border-dashed border-brand-navy/20">
+          <p className="font-heading font-bold text-xl text-brand-navy/40 mb-2 uppercase">לא הצלחנו לטעון את הקטלוג</p>
+          <p className="text-sm text-brand-navy/30 font-body mb-4">בדוק את החיבור לאינטרנט ונסה שוב</p>
+          <button onClick={loadShirts} className="px-4 py-2 bg-brand-orange text-white text-sm font-bold font-heading uppercase hover:bg-brand-orange-dark transition-colors">
             נסה שוב
           </button>
         </div>
@@ -415,8 +415,8 @@ export default function Catalog() {
           {visibleCount < shirts.length && (
             <div className="flex justify-center mt-8">
               <button onClick={() => setVisibleCount(c => c + PAGE_SIZE)}
-                className="px-6 py-2.5 border-2 border-[#1B2A4A] bg-white text-[#1B2A4A] text-sm font-bold font-heading uppercase hover:bg-[#F2ECD9] transition-colors"
-                style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
+                className="px-6 py-2.5 border-2 border-brand-navy bg-white text-brand-navy text-sm font-bold font-heading uppercase hover:bg-brand-cream transition-colors"
+                style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
                 טען עוד ({shirts.length - visibleCount} נוספות)
               </button>
             </div>
@@ -434,14 +434,14 @@ export default function Catalog() {
 
           {/* The best moment on the whole site to offer this: someone just
               searched for a shirt and we did not have it. */}
-          <div className="mt-4 bg-[#1B2A4A] border-2 border-[#1B2A4A] p-5 text-center"
-            style={{ boxShadow: '4px 4px 0 #E8622A' }}>
+          <div className="mt-4 bg-brand-navy border-2 border-brand-navy p-5 text-center"
+            style={{ boxShadow: '4px 4px 0 var(--brand-orange)' }}>
             <p className="font-heading font-bold text-white uppercase mb-1.5">אנחנו יכולים להשיג אותה</p>
             <p className="text-sm text-white/70 font-body mb-4 max-w-md mx-auto">
               הקטלוג הוא לא הכל. שלח לנו תמונה או תיאור של החולצה שחיפשת ונבדוק אם אפשר להביא אותה.
             </p>
             <Link to="/request-shirt"
-              className="inline-flex items-center gap-2 bg-[#FFD95A] text-[#1B2A4A] px-6 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-white transition-colors">
+              className="inline-flex items-center gap-2 bg-brand-gold text-brand-navy px-6 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-white transition-colors">
               <PackageSearch className="w-4 h-4" />
               בקש חולצה
             </Link>

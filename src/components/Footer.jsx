@@ -13,13 +13,13 @@ const FOOTER_COLLECTIONS = ['retro', 'national-teams', 'israeli-league', 'la-lig
 
 export default function Footer() {
   return (
-    <footer className="bg-[#1B2A4A] text-white">
+    <footer className="bg-brand-navy text-white">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="bg-[#E8622A] px-2.5 py-1 font-heading font-bold text-white text-lg leading-tight">
+              <div className="bg-brand-orange px-2.5 py-1 font-heading font-bold text-white text-lg leading-tight">
                 <div>LAB</div>
                 <div>JERSEY</div>
               </div>
@@ -31,7 +31,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-heading font-bold text-sm mb-4 text-[#E8622A] uppercase tracking-widest">דף הבית</h4>
+            <h4 className="font-heading font-bold text-sm mb-4 text-brand-orange uppercase tracking-widest">דף הבית</h4>
             <div className="space-y-2">
               <Link to="/" className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">דף הבית</Link>
               <Link to="/catalog" className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">קטלוג</Link>
@@ -42,7 +42,7 @@ export default function Footer() {
 
           {/* Catalog */}
           <div>
-            <h4 className="font-heading font-bold text-sm mb-4 text-[#E8622A] uppercase tracking-widest">קטלוג</h4>
+            <h4 className="font-heading font-bold text-sm mb-4 text-brand-orange uppercase tracking-widest">קטלוג</h4>
             <div className="space-y-2">
               {FOOTER_COLLECTIONS.map(c => (
                 <Link key={c.slug} to={`/collections/${c.slug}`}
@@ -57,7 +57,7 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="font-heading font-bold text-sm mb-4 text-[#E8622A] uppercase tracking-widest">צור קשר</h4>
+            <h4 className="font-heading font-bold text-sm mb-4 text-brand-orange uppercase tracking-widest">צור קשר</h4>
             <div className="space-y-2">
               <Link to="/faq" className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">שאלות ותשובות</Link>
               <Link to="/contact" className="block text-sm text-white/80 hover:text-white hover:translate-x-1 transition-all duration-200 font-body">צור קשר</Link>
@@ -69,7 +69,7 @@ export default function Footer() {
             reachable from every page, and consumer law requires the business
             details to be published; the footer is where both belong. */}
         <nav className="border-t border-white/10 mt-10 pt-6" aria-label="מידע משפטי">
-          <h4 className="font-heading font-bold text-sm mb-3 text-[#E8622A] uppercase tracking-widest">מידע משפטי</h4>
+          <h4 className="font-heading font-bold text-sm mb-3 text-brand-orange uppercase tracking-widest">מידע משפטי</h4>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
             {LEGAL_PAGES.map(p => (
               <Link key={p.path} to={p.path}
@@ -88,7 +88,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
-              className="w-9 h-9 flex items-center justify-center border border-white/20 hover:bg-[#E8622A] hover:border-[#E8622A] transition-colors"
+              className="w-9 h-9 flex items-center justify-center border border-white/20 hover:bg-brand-orange hover:border-brand-orange transition-colors"
             >
               <Instagram className="w-4 h-4 text-white" />
             </a>

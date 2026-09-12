@@ -60,10 +60,10 @@ export default function ResetPassword() {
         title="קישור לא תקין"
         subtitle="קישור האיפוס חסר או פג תוקף"
         footer={
-          <Link to="/forgot-password" className="text-[#E8622A] font-bold hover:underline">בקש קישור חדש</Link>
+          <Link to="/forgot-password" className="text-brand-orange font-bold hover:underline">בקש קישור חדש</Link>
         }
       >
-        <p className="text-sm text-[#1B2A4A]/70 text-center font-body leading-relaxed">
+        <p className="text-sm text-brand-navy/70 text-center font-body leading-relaxed">
           הקישור שבו השתמשת נראה חלקי או שפג תוקפו. בקש קישור איפוס סיסמה חדש.
         </p>
       </AuthLayout>
@@ -83,7 +83,7 @@ export default function ResetPassword() {
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="text-sm font-medium block mb-1 font-body text-[#1B2A4A]">סיסמה חדשה</label>
+          <label className="text-sm font-medium block mb-1 font-body text-brand-navy">סיסמה חדשה</label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -94,7 +94,7 @@ export default function ResetPassword() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               maxLength={128}
-              className="w-full pl-10 pr-3 h-11 border-2 border-[#1B2A4A] bg-white text-sm focus:outline-none focus:border-[#E8622A] transition-colors font-body"
+              className="w-full pl-10 pr-3 h-11 border-2 border-brand-navy bg-white text-sm focus:outline-none focus:border-brand-orange transition-colors font-body"
               dir="ltr"
               required
               disabled={!ready}
@@ -102,7 +102,7 @@ export default function ResetPassword() {
           </div>
         </div>
         <div>
-          <label className="text-sm font-medium block mb-1 font-body text-[#1B2A4A]">אימות סיסמה</label>
+          <label className="text-sm font-medium block mb-1 font-body text-brand-navy">אימות סיסמה</label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -112,7 +112,7 @@ export default function ResetPassword() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               maxLength={128}
-              className="w-full pl-10 pr-3 h-11 border-2 border-[#1B2A4A] bg-white text-sm focus:outline-none focus:border-[#E8622A] transition-colors font-body"
+              className="w-full pl-10 pr-3 h-11 border-2 border-brand-navy bg-white text-sm focus:outline-none focus:border-brand-orange transition-colors font-body"
               dir="ltr"
               required
               disabled={!ready}
@@ -121,8 +121,8 @@ export default function ResetPassword() {
         </div>
         <button
           type="submit"
-          className="w-full h-11 bg-[#E8622A] text-white font-bold font-heading uppercase tracking-wide text-sm hover:bg-[#D0551F] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-          style={{ boxShadow: '3px 3px 0 #1B2A4A' }}
+          className="w-full h-11 bg-brand-orange text-white font-bold font-heading uppercase tracking-wide text-sm hover:bg-brand-orange-dark transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}
           disabled={loading || !ready}
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}

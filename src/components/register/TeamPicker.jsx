@@ -37,7 +37,7 @@ export default function TeamPicker({ values = [], onChange }) {
       {values.length > 0 && (
         <div className="flex gap-1.5 flex-wrap mb-3">
           {values.map((t) => (
-            <span key={t} className="inline-flex items-center gap-1 bg-[#1B2A4A] text-white text-xs px-2.5 py-1.5 font-body">
+            <span key={t} className="inline-flex items-center gap-1 bg-brand-navy text-white text-xs px-2.5 py-1.5 font-body">
               {t}
               <button type="button" onClick={() => onChange(values.filter((x) => x !== t))} className="opacity-70 hover:opacity-100" aria-label="הסר">
                 <X className="w-3 h-3" />
@@ -48,13 +48,13 @@ export default function TeamPicker({ values = [], onChange }) {
       )}
 
       <div className="relative mb-3">
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1B2A4A]/40" />
+        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-navy/40" />
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleEnter(); } }}
           placeholder="חפש קבוצה…"
-          className="w-full border-2 border-[#1B2A4A] pr-9 pl-3 py-2.5 text-sm bg-white focus:outline-none font-body"
+          className="w-full border-2 border-brand-navy pr-9 pl-3 py-2.5 text-sm bg-white focus:outline-none font-body"
         />
       </div>
 
@@ -68,8 +68,8 @@ export default function TeamPicker({ values = [], onChange }) {
               onClick={() => toggle(t)}
               className={`px-3 py-1.5 border-2 text-xs font-heading font-bold transition-colors ${
                 selected
-                  ? 'bg-[#1B2A4A] text-white border-[#1B2A4A]'
-                  : 'border-[#1B2A4A]/30 text-[#1B2A4A] bg-white hover:border-[#1B2A4A] hover:bg-[#F2ECD9]'
+                  ? 'bg-brand-navy text-white border-brand-navy'
+                  : 'border-brand-navy/30 text-brand-navy bg-white hover:border-brand-navy hover:bg-brand-cream'
               }`}
             >
               {t}
@@ -80,7 +80,7 @@ export default function TeamPicker({ values = [], onChange }) {
           <button
             type="button"
             onClick={addCustom}
-            className="px-3 py-1.5 border-2 border-dashed border-[#E8622A] text-[#E8622A] text-xs font-heading font-bold hover:bg-[#E8622A] hover:text-white transition-colors flex items-center gap-1"
+            className="px-3 py-1.5 border-2 border-dashed border-brand-orange text-brand-orange text-xs font-heading font-bold hover:bg-brand-orange hover:text-white transition-colors flex items-center gap-1"
           >
             <Plus className="w-3 h-3" /> {query}
           </button>

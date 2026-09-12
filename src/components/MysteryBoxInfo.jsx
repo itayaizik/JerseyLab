@@ -75,30 +75,30 @@ export default function MysteryBoxInfo({ compact = false }) {
         const Icon = panel.icon;
         return (
           <section key={panel.title}
-            className={compact ? 'border-b-2 border-[#1B2A4A]/10 pb-4 last:border-b-0 last:pb-0' : 'bg-white border-2 border-[#1B2A4A] p-5'}
-            style={compact ? undefined : { boxShadow: '3px 3px 0 #1B2A4A' }}>
-            <h3 className={`flex items-center gap-2 font-heading font-bold text-[#1B2A4A] uppercase tracking-wide mb-3 ${compact ? 'text-sm' : 'text-base'}`}>
-              <span className={`flex-shrink-0 bg-[#E8622A] flex items-center justify-center ${compact ? 'w-6 h-6' : 'w-7 h-7'}`}>
+            className={compact ? 'border-b-2 border-brand-navy/10 pb-4 last:border-b-0 last:pb-0' : 'bg-white border-2 border-brand-navy p-5'}
+            style={compact ? undefined : { boxShadow: '3px 3px 0 var(--brand-navy)' }}>
+            <h3 className={`flex items-center gap-2 font-heading font-bold text-brand-navy uppercase tracking-wide mb-3 ${compact ? 'text-sm' : 'text-base'}`}>
+              <span className={`flex-shrink-0 bg-brand-orange flex items-center justify-center ${compact ? 'w-6 h-6' : 'w-7 h-7'}`}>
                 <Icon className={compact ? 'w-3.5 h-3.5 text-white' : 'w-4 h-4 text-white'} />
               </span>
               {panel.title}
             </h3>
 
-            <div className={`space-y-2.5 font-body text-[#1B2A4A]/75 leading-relaxed ${compact ? 'text-[13px]' : 'text-sm'}`}>
+            <div className={`space-y-2.5 font-body text-brand-navy/75 leading-relaxed ${compact ? 'text-[13px]' : 'text-sm'}`}>
               {panel.paragraphs?.map(p => <p key={p}>{p}</p>)}
 
               {panel.items && (
                 <ul className="space-y-2">
                   {panel.items.map(line => (
                     <li key={line} className="flex gap-2">
-                      <Check className="w-4 h-4 text-[#E8622A] flex-shrink-0 mt-0.5" />
+                      <Check className="w-4 h-4 text-brand-orange flex-shrink-0 mt-0.5" />
                       <span>{line}</span>
                     </li>
                   ))}
                 </ul>
               )}
 
-              {panel.footnote && <p className="text-[#1B2A4A]/55">{panel.footnote}</p>}
+              {panel.footnote && <p className="text-brand-navy/55">{panel.footnote}</p>}
             </div>
           </section>
         );

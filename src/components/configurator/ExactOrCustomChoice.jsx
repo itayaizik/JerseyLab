@@ -23,13 +23,13 @@ export default function ExactOrCustomChoice({ shirt, value, onChange }) {
         return (
           <button key={opt.id} type="button" onClick={() => onChange(opt.id)}
             className={`flex items-start gap-3 p-3.5 border-2 transition-all duration-200 text-right ${
-              isSelected ? 'border-[#1B2A4A] bg-[#1B2A4A] text-white' : 'border-[#1B2A4A]/30 bg-white text-[#1B2A4A] hover:border-[#1B2A4A] hover:bg-[#F2ECD9]'
+              isSelected ? 'border-brand-navy bg-brand-navy text-white' : 'border-brand-navy/30 bg-white text-brand-navy hover:border-brand-navy hover:bg-brand-cream'
             }`}>
             <Icon className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-heading font-bold uppercase leading-tight">{opt.label}</p>
               <p className={`text-xs font-body mt-0.5 ${isSelected ? 'opacity-90' : 'opacity-70'}`}>{opt.desc}</p>
-              <p className={`text-[10px] font-body mt-1 font-bold ${isSelected ? 'text-white' : 'text-[#E8622A]'}`}>{opt.shipping}</p>
+              <p className={`text-[10px] font-body mt-1 font-bold ${isSelected ? 'text-white' : 'text-brand-orange'}`}>{opt.shipping}</p>
             </div>
           </button>
         );

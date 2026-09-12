@@ -104,19 +104,19 @@ export default function Collection() {
         }}
       />
 
-      <header className="mb-6 pb-5 border-b-2 border-[#1B2A4A]/15">
-        <nav className="text-xs font-body text-[#1B2A4A]/50 mb-2" aria-label="נתיב ניווט">
-          <Link to="/" className="hover:text-[#E8622A]">דף הבית</Link>
+      <header className="mb-6 pb-5 border-b-2 border-brand-navy/15">
+        <nav className="text-xs font-body text-brand-navy/50 mb-2" aria-label="נתיב ניווט">
+          <Link to="/" className="hover:text-brand-orange">דף הבית</Link>
           {' · '}
-          <Link to="/catalog" className="hover:text-[#E8622A]">קטלוג</Link>
+          <Link to="/catalog" className="hover:text-brand-orange">קטלוג</Link>
         </nav>
-        <h1 className="font-heading font-black text-3xl md:text-4xl text-[#1B2A4A] uppercase mb-3"
+        <h1 className="font-heading font-black text-3xl md:text-4xl text-brand-navy uppercase mb-3"
           style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>
           {collection.h1}
         </h1>
-        <p className="font-body text-sm text-[#1B2A4A]/70 leading-relaxed max-w-2xl">{collection.intro}</p>
+        <p className="font-body text-sm text-brand-navy/70 leading-relaxed max-w-2xl">{collection.intro}</p>
         {!loading && (
-          <p className="text-sm text-[#1B2A4A]/50 mt-2 font-body">{shirts.length} חולצות</p>
+          <p className="text-sm text-brand-navy/50 mt-2 font-body">{shirts.length} חולצות</p>
         )}
       </header>
 
@@ -132,12 +132,12 @@ export default function Collection() {
           ))}
         </div>
       ) : (
-        <div className="bg-[#1B2A4A] border-2 border-[#1B2A4A] p-6 text-center"
-          style={{ boxShadow: '4px 4px 0 #E8622A' }}>
+        <div className="bg-brand-navy border-2 border-brand-navy p-6 text-center"
+          style={{ boxShadow: '4px 4px 0 var(--brand-orange)' }}>
           <p className="font-heading font-bold text-white uppercase mb-1.5">אין כרגע מלאי בקטגוריה הזו</p>
           <p className="text-sm text-white/70 font-body mb-4">אבל אנחנו יכולים להשיג - שלח לנו בקשה ונבדוק.</p>
           <Link to="/request-shirt"
-            className="inline-flex items-center gap-2 bg-[#FFD95A] text-[#1B2A4A] px-5 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-white transition-colors">
+            className="inline-flex items-center gap-2 bg-brand-gold text-brand-navy px-5 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-white transition-colors">
             <PackageSearch className="w-4 h-4" />
             בקש חולצה
           </Link>
@@ -146,12 +146,12 @@ export default function Collection() {
 
       {/* Internal links between collections: they give crawlers a path from any
           one landing page to the rest, instead of each sitting isolated. */}
-      <nav className="mt-10 pt-6 border-t-2 border-[#1B2A4A]/15" aria-label="קטגוריות נוספות">
-        <h2 className="font-heading font-bold text-sm text-[#1B2A4A] uppercase tracking-wide mb-3">קטגוריות נוספות</h2>
+      <nav className="mt-10 pt-6 border-t-2 border-brand-navy/15" aria-label="קטגוריות נוספות">
+        <h2 className="font-heading font-bold text-sm text-brand-navy uppercase tracking-wide mb-3">קטגוריות נוספות</h2>
         <div className="flex flex-wrap gap-2">
           {others.map(c => (
             <Link key={c.slug} to={`/collections/${c.slug}`}
-              className="flex items-center min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 border-[#1B2A4A]/30 text-[#1B2A4A] bg-white hover:border-[#1B2A4A] hover:bg-[#F2ECD9] transition-colors">
+              className="flex items-center min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 border-brand-navy/30 text-brand-navy bg-white hover:border-brand-navy hover:bg-brand-cream transition-colors">
               {c.name}
             </Link>
           ))}

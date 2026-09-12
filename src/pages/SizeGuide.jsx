@@ -45,9 +45,9 @@ const kidsRows = [
 function MeasureTable({ rows, sizes }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm border-2 border-[#1B2A4A]">
+      <table className="w-full text-sm border-2 border-brand-navy">
         <thead>
-          <tr className="bg-[#1B2A4A] text-white">
+          <tr className="bg-brand-navy text-white">
             <th className="px-3 py-3 text-right font-heading uppercase tracking-wide text-xs">מידה</th>
             {sizes.map(s => (
               <th key={s} className="px-3 py-3 text-center font-heading uppercase tracking-wide text-xs">{s}</th>
@@ -56,10 +56,10 @@ function MeasureTable({ rows, sizes }) {
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={row.measure} className={i % 2 === 0 ? 'bg-white' : 'bg-[#F2ECD9]'}>
-              <td className="px-3 py-3 font-bold text-[#E8622A] border-b border-[#1B2A4A]/10">{row.measure}</td>
+            <tr key={row.measure} className={i % 2 === 0 ? 'bg-white' : 'bg-brand-cream'}>
+              <td className="px-3 py-3 font-bold text-brand-orange border-b border-brand-navy/10">{row.measure}</td>
               {sizes.map(s => (
-                <td key={s} className="px-3 py-3 font-mono text-center text-[#1B2A4A] border-b border-[#1B2A4A]/10">{row[s]}</td>
+                <td key={s} className="px-3 py-3 font-mono text-center text-brand-navy border-b border-brand-navy/10">{row[s]}</td>
               ))}
             </tr>
           ))}
@@ -81,9 +81,9 @@ function KidsTable({ data }) {
   ];
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm border-2 border-[#1B2A4A]">
+      <table className="w-full text-sm border-2 border-brand-navy">
         <thead>
-          <tr className="bg-[#1B2A4A] text-white">
+          <tr className="bg-brand-navy text-white">
             {cols.map(c => (
               <th key={c.key} className="px-3 py-3 text-center font-heading uppercase tracking-wide text-xs">{c.label}</th>
             ))}
@@ -91,9 +91,9 @@ function KidsTable({ data }) {
         </thead>
         <tbody>
           {data.map((row, i) => (
-            <tr key={row.size} className={i % 2 === 0 ? 'bg-white' : 'bg-[#F2ECD9]'}>
+            <tr key={row.size} className={i % 2 === 0 ? 'bg-white' : 'bg-brand-cream'}>
               {cols.map((c, ci) => (
-                <td key={c.key} className={`px-3 py-3 font-mono text-center border-b border-[#1B2A4A]/10 ${ci === 0 ? 'font-bold text-[#E8622A]' : 'text-[#1B2A4A]'}`}>
+                <td key={c.key} className={`px-3 py-3 font-mono text-center border-b border-brand-navy/10 ${ci === 0 ? 'font-bold text-brand-orange' : 'text-brand-navy'}`}>
                   {row[c.key]}
                 </td>
               ))}
@@ -129,32 +129,32 @@ export default function SizeGuide() {
 
       {/* Header */}
       <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-[#E8622A]"
-          style={{ border: '2px solid #1B2A4A', boxShadow: '4px 4px 0 #1B2A4A' }}>
+        <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-brand-orange"
+          style={{ border: '2px solid var(--brand-navy)', boxShadow: '4px 4px 0 var(--brand-navy)' }}>
           <Ruler className="w-8 h-8 text-white" />
         </div>
         <div className="inline-block mb-3">
-          <div className="bg-[#FFD95A]/60 px-4 py-1 text-xs font-heading tracking-widest text-[#1B2A4A] uppercase"
+          <div className="bg-brand-gold/60 px-4 py-1 text-xs font-heading tracking-widest text-brand-navy uppercase"
             style={{ transform: 'rotate(-1deg)' }}>
             מדריך רכישה
           </div>
         </div>
-        <h1 className="font-heading font-black text-4xl text-[#1B2A4A] uppercase mb-2" style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>מדריך מידות</h1>
-        <p className="text-[#1B2A4A]/60 font-body text-sm">בחר את המידה המושלמת לפי הטבלה</p>
+        <h1 className="font-heading font-black text-4xl text-brand-navy uppercase mb-2" style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>מדריך מידות</h1>
+        <p className="text-brand-navy/60 font-body text-sm">בחר את המידה המושלמת לפי הטבלה</p>
       </div>
 
       {/* Tabs */}
-      <div className="flex mb-6 border-2 border-[#1B2A4A]" style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
+      <div className="flex mb-6 border-2 border-brand-navy" style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}>
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`flex-1 py-3 text-xs sm:text-sm font-heading font-bold uppercase tracking-wide transition-all duration-200 hover:-translate-y-0.5 ${tab === t.key ? 'bg-[#1B2A4A] text-white' : 'bg-white text-[#1B2A4A] hover:bg-[#F2ECD9]'}`}>
+            className={`flex-1 py-3 text-xs sm:text-sm font-heading font-bold uppercase tracking-wide transition-all duration-200 hover:-translate-y-0.5 ${tab === t.key ? 'bg-brand-navy text-white' : 'bg-white text-brand-navy hover:bg-brand-cream'}`}>
             {t.label}
           </button>
         ))}
       </div>
 
       {/* Table */}
-      <div className="mb-8" style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
+      <div className="mb-8" style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}>
         {tab === 'fan' && <MeasureTable rows={fanRows} sizes={adultSizes} />}
         {tab === 'player' && <MeasureTable rows={playerRows} sizes={adultSizes} />}
         {tab === 'women' && <MeasureTable rows={womenRows} sizes={womenSizes} />}
@@ -162,15 +162,15 @@ export default function SizeGuide() {
       </div>
 
       {/* How to measure */}
-      <div className="bg-white p-6" style={{ border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #E8622A' }}>
+      <div className="bg-white p-6" style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-orange)' }}>
         <div className="flex items-center gap-2 mb-4">
-          <Info className="w-5 h-5 text-[#E8622A]" />
-          <h3 className="font-heading font-bold text-sm text-[#1B2A4A] uppercase tracking-wide">איך מודדים נכון?</h3>
+          <Info className="w-5 h-5 text-brand-orange" />
+          <h3 className="font-heading font-bold text-sm text-brand-navy uppercase tracking-wide">איך מודדים נכון?</h3>
         </div>
         <ul className="space-y-3">
           {tips.map((tip, i) => (
-            <li key={i} className="flex items-start gap-3 text-sm font-body text-[#1B2A4A]/80">
-              <span className="flex-shrink-0 w-5 h-5 bg-[#E8622A] text-white text-xs font-mono font-bold flex items-center justify-center mt-0.5">
+            <li key={i} className="flex items-start gap-3 text-sm font-body text-brand-navy/80">
+              <span className="flex-shrink-0 w-5 h-5 bg-brand-orange text-white text-xs font-mono font-bold flex items-center justify-center mt-0.5">
                 {i + 1}
               </span>
               {tip}
@@ -180,10 +180,10 @@ export default function SizeGuide() {
       </div>
 
       {/* Contact CTA */}
-      <div className="mt-8 text-center bg-[#1B2A4A] py-6 px-4" style={{ border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #E8622A' }}>
+      <div className="mt-8 text-center bg-brand-navy py-6 px-4" style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-orange)' }}>
         <p className="text-white/80 text-sm font-body mb-3">לא בטוח באיזו מידה לבחור?</p>
         <a href="/contact"
-          className="inline-block bg-[#E8622A] text-white font-heading font-bold text-sm px-6 py-2.5 uppercase tracking-wider hover:bg-[#D0551F] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
+          className="inline-block bg-brand-orange text-white font-heading font-bold text-sm px-6 py-2.5 uppercase tracking-wider hover:bg-brand-orange-dark hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
           style={{ boxShadow: '2px 2px 0 rgba(255,255,255,0.2)', textShadow: '1px 1px 3px rgba(0,0,0,0.2)' }}>
           צור קשר
         </a>

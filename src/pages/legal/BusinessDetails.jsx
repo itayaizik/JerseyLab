@@ -40,11 +40,11 @@ export default function BusinessDetails() {
         </dl>
         <div className="flex flex-wrap gap-2 mt-4">
           <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center min-h-[44px] px-4 bg-[#1B2A4A] text-white font-heading font-bold text-sm uppercase tracking-wide hover:bg-[#E8622A] transition-colors">
+            className="inline-flex items-center min-h-[44px] px-4 bg-brand-navy text-white font-heading font-bold text-sm uppercase tracking-wide hover:bg-brand-orange transition-colors">
             וואטסאפ
           </a>
           <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center min-h-[44px] px-4 border-2 border-[#1B2A4A] text-[#1B2A4A] font-heading font-bold text-sm uppercase tracking-wide hover:bg-[#F2ECD9] transition-colors">
+            className="inline-flex items-center min-h-[44px] px-4 border-2 border-brand-navy text-brand-navy font-heading font-bold text-sm uppercase tracking-wide hover:bg-brand-cream transition-colors">
             אינסטגרם
           </a>
         </div>

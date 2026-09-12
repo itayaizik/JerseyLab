@@ -97,7 +97,7 @@ export default function ManageChatProofs() {
 
       {/* Privacy is the shop's call, but it is worth saying once, here, where
           the screenshots are actually chosen. */}
-      <div className="border-2 border-[#E8622A]/50 bg-[#E8622A]/10 p-4 mb-6">
+      <div className="border-2 border-brand-orange/50 bg-brand-orange/10 p-4 mb-6">
         <p className="text-sm text-chalk font-body leading-relaxed">
           <strong>לפני שמעלים:</strong> טשטש שם מלא, מספר טלפון ותמונת פרופיל של הלקוח.
           צילום שיחה הוא מידע אישי שלו, לא שלך, וברגע שהוא באתר הוא פומבי לגמרי.

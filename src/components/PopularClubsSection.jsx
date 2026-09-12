@@ -48,9 +48,9 @@ export default function PopularClubsSection({ title }) {
   const loopedClubs = [...displayClubs, ...displayClubs];
 
   return (
-    <section className="py-10" style={{ background: '#F2ECD9' }}>
+    <section className="py-10" style={{ background: 'var(--brand-cream)' }}>
       <div className="max-w-7xl mx-auto px-6">
-        <h2 className="font-heading font-bold text-xl text-[#1B2A4A] uppercase tracking-wide mb-6 text-center border-b-2 border-[#E8622A] pb-1 inline-block w-full">
+        <h2 className="font-heading font-bold text-xl text-brand-navy uppercase tracking-wide mb-6 text-center border-b-2 border-brand-orange pb-1 inline-block w-full">
           {title || 'קבוצות פופולריות'}
         </h2>
 
@@ -58,10 +58,10 @@ export default function PopularClubsSection({ title }) {
           <button
             onClick={() => scroll(-1)}
             aria-label="גלול ימינה"
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-[#1B2A4A] bg-white hover:bg-[#F2ECD9] transition-colors"
-            style={{ boxShadow: '2px 2px 0 #1B2A4A' }}
+            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors"
+            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}
           >
-            <ChevronRight className="w-4 h-4 text-[#1B2A4A]" />
+            <ChevronRight className="w-4 h-4 text-brand-navy" />
           </button>
 
           <div ref={scrollRef} className="flex gap-3 overflow-x-auto scroll-smooth pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -69,8 +69,8 @@ export default function PopularClubsSection({ title }) {
               <Link
                 key={`${club.id || club.name}-${i}`}
                 to={club.href || club.logo_url || '#'}
-                className="flex-shrink-0 flex flex-col items-center gap-2 bg-white border-2 border-[#1B2A4A] p-4 hover:border-[#E8622A] hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
-                style={{ width: 110, boxShadow: '2px 2px 0 #1B2A4A' }}
+                className="flex-shrink-0 flex flex-col items-center gap-2 bg-white border-2 border-brand-navy p-4 hover:border-brand-orange hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
+                style={{ width: 110, boxShadow: '2px 2px 0 var(--brand-navy)' }}
               >
                 {(club.logo_url) && (
                   <img
@@ -81,7 +81,7 @@ export default function PopularClubsSection({ title }) {
                     onError={e => { e.target.style.display = 'none'; }}
                   />
                 )}
-                <span className="text-xs font-heading font-bold text-[#1B2A4A] text-center leading-tight">{club.name}</span>
+                <span className="text-xs font-heading font-bold text-brand-navy text-center leading-tight">{club.name}</span>
               </Link>
             ))}
           </div>
@@ -89,10 +89,10 @@ export default function PopularClubsSection({ title }) {
           <button
             onClick={() => scroll(1)}
             aria-label="גלול שמאלה"
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-[#1B2A4A] bg-white hover:bg-[#F2ECD9] transition-colors"
-            style={{ boxShadow: '2px 2px 0 #1B2A4A' }}
+            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors"
+            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}
           >
-            <ChevronLeft className="w-4 h-4 text-[#1B2A4A]" />
+            <ChevronLeft className="w-4 h-4 text-brand-navy" />
           </button>
         </div>
       </div>

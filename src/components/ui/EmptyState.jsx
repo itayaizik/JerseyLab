@@ -34,18 +34,18 @@ export default function EmptyState({
   return (
     <div
       className={`text-center border-2 ${
-        dark ? 'bg-[#1B2A4A] border-[#1B2A4A]' : 'bg-white border-[#1B2A4A]'
+        dark ? 'bg-brand-navy border-brand-navy' : 'bg-white border-brand-navy'
       } ${compact ? 'px-5 py-8' : 'px-6 py-12'} ${className}`}
-      style={{ boxShadow: dark ? '4px 4px 0 #E8622A' : '4px 4px 0 #1B2A4A' }}
+      style={{ boxShadow: dark ? '4px 4px 0 var(--brand-orange)' : '4px 4px 0 var(--brand-navy)' }}
     >
       {Icon && (
         <div
           className={`inline-flex items-center justify-center mb-4 ${compact ? 'w-12 h-12' : 'w-14 h-14'} ${
-            dark ? 'bg-[#E8622A]' : 'bg-[#F2ECD9] border-2 border-[#1B2A4A]'
+            dark ? 'bg-brand-orange' : 'bg-brand-cream border-2 border-brand-navy'
           }`}
         >
           <Icon
-            className={`${compact ? 'w-6 h-6' : 'w-7 h-7'} ${dark ? 'text-white' : 'text-[#1B2A4A]'}`}
+            className={`${compact ? 'w-6 h-6' : 'w-7 h-7'} ${dark ? 'text-white' : 'text-brand-navy'}`}
             strokeWidth={1.75}
             aria-hidden="true"
           />
@@ -54,7 +54,7 @@ export default function EmptyState({
 
       <h3
         className={`font-heading font-black uppercase ${compact ? 'text-base' : 'text-xl'} ${
-          dark ? 'text-white' : 'text-[#1B2A4A]'
+          dark ? 'text-white' : 'text-brand-navy'
         } mb-2`}
       >
         {title}
@@ -63,7 +63,7 @@ export default function EmptyState({
       {description && (
         <p
           className={`font-body text-sm max-w-sm mx-auto leading-relaxed ${
-            dark ? 'text-white/70' : 'text-[#1B2A4A]/60'
+            dark ? 'text-white/70' : 'text-brand-navy/60'
           }`}
         >
           {description}
@@ -87,8 +87,8 @@ export default function EmptyState({
               to={secondaryTo}
               className={`inline-flex items-center justify-center min-h-[44px] px-5 font-heading font-bold text-sm uppercase tracking-wide border-2 transition-colors ${
                 dark
-                  ? 'border-white/30 text-white hover:bg-white hover:text-[#1B2A4A]'
-                  : 'border-[#1B2A4A]/30 text-[#1B2A4A] hover:border-[#1B2A4A] hover:bg-[#F2ECD9]'
+                  ? 'border-white/30 text-white hover:bg-white hover:text-brand-navy'
+                  : 'border-brand-navy/30 text-brand-navy hover:border-brand-navy hover:bg-brand-cream'
               }`}
             >
               {secondaryLabel}
@@ -102,10 +102,10 @@ export default function EmptyState({
 
 function primaryClass(dark) {
   return `inline-flex items-center justify-center gap-2 min-h-[44px] px-6 font-heading font-bold text-sm uppercase tracking-wide transition-colors ${
-    dark ? 'bg-[#FFD95A] text-[#1B2A4A] hover:bg-white' : 'bg-[#E8622A] text-white hover:bg-[#D0551F]'
+    dark ? 'bg-brand-gold text-brand-navy hover:bg-white' : 'bg-brand-orange text-white hover:bg-brand-orange-dark'
   }`;
 }
 
 function primaryShadow(dark) {
-  return { boxShadow: dark ? '3px 3px 0 rgba(0,0,0,0.25)' : '3px 3px 0 #1B2A4A' };
+  return { boxShadow: dark ? '3px 3px 0 rgba(0,0,0,0.25)' : '3px 3px 0 var(--brand-navy)' };
 }

@@ -15,7 +15,7 @@ export default function InstagramSection({ title, instagramHandle = 'Jerseylabil
   if (!loading && posts.length === 0) return null;
 
   return (
-    <section className="bg-[#F2ECD9] py-12">
+    <section className="bg-brand-cream py-12">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-8">
@@ -23,7 +23,7 @@ export default function InstagramSection({ title, instagramHandle = 'Jerseylabil
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045)' }}>
               <Instagram className="w-4 h-4 text-white" />
             </div>
-            <h2 className="font-heading font-bold text-xl text-[#1B2A4A] uppercase tracking-wide">
+            <h2 className="font-heading font-bold text-xl text-brand-navy uppercase tracking-wide">
               {title || 'עקבו אותנו באינסטגרם'}
             </h2>
           </div>
@@ -31,7 +31,7 @@ export default function InstagramSection({ title, instagramHandle = 'Jerseylabil
             href={`https://instagram.com/${instagramHandle}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-[#E8622A] font-body font-medium hover:underline"
+            className="text-sm text-brand-orange font-body font-medium hover:underline"
           >
             @{instagramHandle}
           </a>
@@ -50,7 +50,7 @@ export default function InstagramSection({ title, instagramHandle = 'Jerseylabil
                   target="_blank"
                   rel="noopener noreferrer"
                   className="relative aspect-square overflow-hidden bg-white group"
-                  style={{ border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #1B2A4A' }}
+                  style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-navy)' }}
                 >
                   <img
                     src={post.image_url}
@@ -59,11 +59,11 @@ export default function InstagramSection({ title, instagramHandle = 'Jerseylabil
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
                   {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-[#1B2A4A]/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center p-3 text-center">
+                  <div className="absolute inset-0 bg-brand-navy/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center p-3 text-center">
                     {post.caption && (
                       <p className="text-white text-[10px] md:text-xs font-body line-clamp-3 mb-2 leading-snug">{post.caption}</p>
                     )}
-                    <ExternalLink className="w-4 h-4 text-[#E8622A]" />
+                    <ExternalLink className="w-4 h-4 text-brand-orange" />
                   </div>
                   {/* Instagram icon badge */}
                   <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-0">
@@ -79,8 +79,8 @@ export default function InstagramSection({ title, instagramHandle = 'Jerseylabil
             href={`https://instagram.com/${instagramHandle}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-[#1B2A4A] text-white px-6 py-3 text-sm font-heading font-bold uppercase tracking-wider hover:bg-[#2a3f6b] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
-            style={{ boxShadow: '3px 3px 0 #E8622A' }}
+            className="inline-flex items-center gap-2 bg-brand-navy text-white px-6 py-3 text-sm font-heading font-bold uppercase tracking-wider hover:bg-brand-navy-light hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
+            style={{ boxShadow: '3px 3px 0 var(--brand-orange)' }}
           >
             <Instagram className="w-4 h-4" />
             עקבו אותנו

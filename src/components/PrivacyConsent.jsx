@@ -20,15 +20,15 @@ export default function PrivacyConsent({ checked, onChange, error, id = 'privacy
           onChange={e => onChange(e.target.checked)}
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : undefined}
-          className="mt-0.5 w-4 h-4 flex-shrink-0 accent-[#E8622A]"
+          className="mt-0.5 w-4 h-4 flex-shrink-0 accent-brand-orange"
         />
-        <span className="text-xs font-body text-[#1B2A4A]/75 leading-relaxed">
+        <span className="text-xs font-body text-brand-navy/75 leading-relaxed">
           קראתי ואני מאשר/ת את{' '}
-          <Link to="/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-[#E8622A] font-bold hover:underline">
+          <Link to="/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-brand-orange font-bold hover:underline">
             מדיניות הפרטיות
           </Link>
           {' '}ואת{' '}
-          <Link to="/legal/terms" target="_blank" rel="noopener noreferrer" className="text-[#E8622A] font-bold hover:underline">
+          <Link to="/legal/terms" target="_blank" rel="noopener noreferrer" className="text-brand-orange font-bold hover:underline">
             תנאי השימוש
           </Link>
           , והשימוש בפרטיי ליצירת קשר בנוגע לפנייה זו.

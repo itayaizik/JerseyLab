@@ -48,13 +48,13 @@ export default function CategoryCardsSection({ title }) {
   const loopedCats = [...displayCats, ...displayCats];
 
   return (
-    <section className="py-10" style={{ background: '#E8DFC8' }}>
+    <section className="py-10" style={{ background: 'var(--brand-cream-dark)' }}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between mb-6">
-          <Link to="/catalog" className="text-xs font-heading font-bold text-[#E8622A] uppercase tracking-wide border-b border-[#E8622A] hover:opacity-70">
+          <Link to="/catalog" className="text-xs font-heading font-bold text-brand-orange uppercase tracking-wide border-b border-brand-orange hover:opacity-70">
             ← כל המוצרים
           </Link>
-          <h2 className="font-heading font-bold text-xl text-[#1B2A4A] uppercase tracking-wide">
+          <h2 className="font-heading font-bold text-xl text-brand-navy uppercase tracking-wide">
             {title || 'קנה לפי קטגוריה'}
           </h2>
         </div>
@@ -63,10 +63,10 @@ export default function CategoryCardsSection({ title }) {
           <button
             onClick={() => scroll(-1)}
             aria-label="גלול ימינה"
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-[#1B2A4A] bg-white hover:bg-[#F2ECD9] transition-colors"
-            style={{ boxShadow: '2px 2px 0 #1B2A4A' }}
+            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors"
+            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}
           >
-            <ChevronRight className="w-4 h-4 text-[#1B2A4A]" />
+            <ChevronRight className="w-4 h-4 text-brand-navy" />
           </button>
 
           <div ref={scrollRef} className="flex gap-3 overflow-x-auto scroll-smooth pb-1 flex-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -75,7 +75,7 @@ export default function CategoryCardsSection({ title }) {
                 key={`${cat.id || cat.label}-${i}`}
                 to={cat.href || '#'}
                 className="flex-shrink-0 relative overflow-hidden group hover:-translate-y-1 hover:shadow-xl transition-all duration-200"
-                style={{ width: 160, height: 220, border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #1B2A4A' }}
+                style={{ width: 160, height: 220, border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-navy)' }}
               >
                 {cat.image_url && (
                   <img
@@ -85,7 +85,7 @@ export default function CategoryCardsSection({ title }) {
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1B2A4A]/90 via-[#1B2A4A]/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/90 via-brand-navy/30 to-transparent" />
                 <div className="absolute bottom-0 inset-x-0 p-3 text-right">
                   <p className="font-heading font-black text-white text-base leading-tight">{cat.label}</p>
                   {cat.subtitle && <p className="font-body text-white/70 text-xs mt-0.5">{cat.subtitle}</p>}
@@ -97,10 +97,10 @@ export default function CategoryCardsSection({ title }) {
           <button
             onClick={() => scroll(1)}
             aria-label="גלול שמאלה"
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-[#1B2A4A] bg-white hover:bg-[#F2ECD9] transition-colors"
-            style={{ boxShadow: '2px 2px 0 #1B2A4A' }}
+            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors"
+            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}
           >
-            <ChevronLeft className="w-4 h-4 text-[#1B2A4A]" />
+            <ChevronLeft className="w-4 h-4 text-brand-navy" />
           </button>
         </div>
       </div>

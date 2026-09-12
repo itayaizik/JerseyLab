@@ -17,9 +17,9 @@ export function hasLocalStockForSize(shirt, size) {
 
 export function getShippingInfo(shirt, size) {
   if (hasLocalStockForSize(shirt, size)) {
-    return { type: 'local', label: 'מלאי בארץ', eta: 'הגעה עד שבוע או איסוף עצמי מקריית אונו', color: '#1B2A4A', Icon: Truck };
+    return { type: 'local', label: 'מלאי בארץ', eta: 'הגעה עד שבוע או איסוף עצמי מקריית אונו', color: 'var(--brand-navy)', Icon: Truck };
   }
-  return { type: 'fast', label: 'משלוח מהיר', eta: 'הגעה עד 3 שבועות', color: '#E8622A', Icon: Zap };
+  return { type: 'fast', label: 'משלוח מהיר', eta: 'הגעה עד 3 שבועות', color: 'var(--brand-orange)', Icon: Zap };
 }
 
 export default function ShippingBadge({ shirt, size, compact }) {
@@ -36,7 +36,7 @@ export default function ShippingBadge({ shirt, size, compact }) {
   }
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{ background: color, color: 'white', border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #1B2A4A' }}>
+    <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{ background: color, color: 'white', border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-navy)' }}>
       <div className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
         <Icon className="w-4 h-4" />
       </div>

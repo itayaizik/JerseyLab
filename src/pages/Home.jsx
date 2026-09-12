@@ -199,16 +199,16 @@ export default function Home() {
 
     {loadError ? (
       <div className="max-w-lg mx-auto px-6 py-24 text-center">
-        <p className="font-heading font-black text-2xl text-[#1B2A4A] uppercase mb-2">לא הצלחנו לטעון את הדף</p>
-        <p className="text-[#1B2A4A]/60 font-body text-sm mb-6">בדוק את החיבור לאינטרנט ונסה שוב</p>
-        <button onClick={() => window.location.reload()} className="px-6 py-3 bg-[#E8622A] text-white font-heading font-bold text-sm uppercase hover:bg-[#D0551F] transition-colors" style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
+        <p className="font-heading font-black text-2xl text-brand-navy uppercase mb-2">לא הצלחנו לטעון את הדף</p>
+        <p className="text-brand-navy/60 font-body text-sm mb-6">בדוק את החיבור לאינטרנט ונסה שוב</p>
+        <button onClick={() => window.location.reload()} className="px-6 py-3 bg-brand-orange text-white font-heading font-bold text-sm uppercase hover:bg-brand-orange-dark transition-colors" style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}>
           נסה שוב
         </button>
       </div>
     ) : (
       <>
       {/* ===== HERO ===== */}
-      <section className="relative overflow-hidden" style={{ background: '#E8DFC8', minHeight: 340 }}>
+      <section className="relative overflow-hidden" style={{ background: 'var(--brand-cream-dark)', minHeight: 340 }}>
         {/* grid pattern overlay */}
         <div className="absolute inset-0 opacity-20" style={{
           backgroundImage: 'linear-gradient(rgba(27,42,74,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(27,42,74,0.15) 1px, transparent 1px)',
@@ -223,19 +223,19 @@ export default function Home() {
                   existed already but nothing read them, so editing them changed
                   nothing. A "|" in the title splits it across two lines, with
                   the second line in orange. */}
-              <h1 className="font-heading font-bold text-4xl md:text-5xl text-[#1B2A4A] leading-tight mb-4 uppercase">
+              <h1 className="font-heading font-bold text-4xl md:text-5xl text-brand-navy leading-tight mb-4 uppercase">
                 {(siteSettings.homepage_hero_title || DEFAULT_HERO_TITLE)
                   .split('|')
                   .map((line, i, all) => (
                     <React.Fragment key={i}>
                       {i === all.length - 1 && all.length > 1
-                        ? <span className="text-[#E8622A]">{line.trim()}</span>
+                        ? <span className="text-brand-orange">{line.trim()}</span>
                         : line.trim()}
                       {i < all.length - 1 && <br />}
                     </React.Fragment>
                   ))}
               </h1>
-              <p className="font-body text-[#1B2A4A]/70 text-base mb-6">
+              <p className="font-body text-brand-navy/70 text-base mb-6">
                 {siteSettings.homepage_hero_subtitle || DEFAULT_HERO_SUBTITLE}
               </p>
 
@@ -243,7 +243,7 @@ export default function Home() {
                   hint what is worth typing, so the quick filters carry the
                   browsing intent and the box handles the specific one. */}
               <form onSubmit={handleSearch} className="mb-3 max-w-md">
-                <div className="flex border-2 border-[#1B2A4A] bg-white" style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
+                <div className="flex border-2 border-brand-navy bg-white" style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}>
                   <input
                     type="text"
                     value={searchTerm}
@@ -252,9 +252,9 @@ export default function Home() {
                     aria-label="חיפוש חולצות"
                     maxLength={100}
                     autoComplete="off"
-                    className="flex-1 bg-transparent px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none text-[#1B2A4A] font-body" />
+                    className="flex-1 bg-transparent px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none text-brand-navy font-body" />
 
-                  <button type="submit" aria-label="חיפוש" className="px-5 bg-[#1B2A4A] text-white font-heading font-bold text-sm">
+                  <button type="submit" aria-label="חיפוש" className="px-5 bg-brand-navy text-white font-heading font-bold text-sm">
                     <Search className="w-4 h-4" />
                   </button>
                 </div>
@@ -263,7 +263,7 @@ export default function Home() {
               <nav aria-label="קיצורי דרך לקטלוג" className="flex flex-wrap gap-2 mb-6 max-w-md">
                 {STOCKED_SHORTCUTS.map(c => (
                   <Link key={c.href} to={c.href}
-                    className="inline-flex items-center gap-1.5 bg-white border-2 border-[#1B2A4A] px-3 py-1.5 text-xs font-heading font-bold text-[#1B2A4A] uppercase hover:bg-[#1B2A4A] hover:text-white transition-colors">
+                    className="inline-flex items-center gap-1.5 bg-white border-2 border-brand-navy px-3 py-1.5 text-xs font-heading font-bold text-brand-navy uppercase hover:bg-brand-navy hover:text-white transition-colors">
                     <span aria-hidden="true">{c.emoji}</span>
                     {c.label}
                   </Link>
@@ -273,8 +273,8 @@ export default function Home() {
               {/* One CTA. The cart button that used to sit here duplicated the
                   navbar's - same action, same badge, both on screen at once. */}
               <Link to="/catalog"
-                className="inline-block bg-[#E8622A] text-white font-heading font-bold px-8 py-3 uppercase tracking-wider text-sm hover:bg-[#D0551F] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
-                style={{ boxShadow: '3px 3px 0 #1B2A4A', textShadow: '1px 1px 4px rgba(0,0,0,0.25)' }}>
+                className="inline-block bg-brand-orange text-white font-heading font-bold px-8 py-3 uppercase tracking-wider text-sm hover:bg-brand-orange-dark hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
+                style={{ boxShadow: '3px 3px 0 var(--brand-navy)', textShadow: '1px 1px 4px rgba(0,0,0,0.25)' }}>
                 מצא חולצות
               </Link>
             </div>
@@ -306,10 +306,10 @@ export default function Home() {
                     zIndex: i + 1,
                   }}
                 >
-                  <div className="relative w-full aspect-square bg-[#F2ECD9] overflow-hidden">
+                  <div className="relative w-full aspect-square bg-brand-cream overflow-hidden">
                     <ProductImage src={shirt.main_image} alt={shirt.name} eager={i < 2} className="w-full h-full object-cover" />
                   </div>
-                  <p dir="rtl" className="absolute bottom-1.5 inset-x-2 text-[10px] leading-tight text-[#1B2A4A]/70 font-body text-center truncate">
+                  <p dir="rtl" className="absolute bottom-1.5 inset-x-2 text-[10px] leading-tight text-brand-navy/70 font-body text-center truncate">
                     {shirt.name}
                   </p>
                 </Link>
@@ -320,7 +320,7 @@ export default function Home() {
       </section>
 
       {/* Orange tear divider */}
-      <div className="w-full h-5 bg-[#E8622A]" style={{
+      <div className="w-full h-5 bg-brand-orange" style={{
         clipPath: 'polygon(0 0,2% 60%,5% 10%,8% 80%,11% 20%,14% 70%,17% 10%,20% 65%,23% 20%,26% 75%,29% 15%,32% 60%,35% 10%,38% 70%,41% 20%,44% 65%,47% 10%,50% 60%,53% 20%,56% 70%,59% 15%,62% 65%,65% 10%,68% 70%,71% 20%,74% 60%,77% 15%,80% 70%,83% 20%,86% 65%,89% 10%,92% 60%,95% 15%,98% 65%,100% 0,100% 100%,0 100%)'
       }} />
 
@@ -330,7 +330,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* New Arrivals */}
           <div>
-            <h2 className="font-heading font-bold text-lg text-[#1B2A4A] uppercase tracking-wide mb-3 border-b-2 border-[#E8622A] pb-1 inline-block">✨ חדשים באתר</h2>
+            <h2 className="font-heading font-bold text-lg text-brand-navy uppercase tracking-wide mb-3 border-b-2 border-brand-orange pb-1 inline-block">✨ חדשים באתר</h2>
             <div className="grid grid-cols-2 gap-3 mt-0">
               {loading ?
               Array.from({ length: 4 }).map((_, i) => <ShirtCardSkeleton key={i} />) :
@@ -340,14 +340,14 @@ export default function Home() {
             </div>
             {newShirts.length > 4 &&
             <div className="text-center mt-4">
-                <Link to="/catalog?new=true" className="inline-block px-6 py-2 text-xs font-heading font-bold text-[#1B2A4A] uppercase tracking-wider border-2 border-[#1B2A4A] bg-white hover:bg-[#F2ECD9] transition-colors" style={{ boxShadow: '2px 2px 0 #E8622A' }}>הצג הכל ←</Link>
+                <Link to="/catalog?new=true" className="inline-block px-6 py-2 text-xs font-heading font-bold text-brand-navy uppercase tracking-wider border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors" style={{ boxShadow: '2px 2px 0 var(--brand-orange)' }}>הצג הכל ←</Link>
               </div>
             }
           </div>
 
           {/* Best Sellers */}
           <div>
-            <h2 className="font-heading font-bold text-lg text-[#1B2A4A] uppercase tracking-wide mb-3 border-b-2 border-[#E8622A] pb-1 inline-block">🔥 הנמכרים ביותר</h2>
+            <h2 className="font-heading font-bold text-lg text-brand-navy uppercase tracking-wide mb-3 border-b-2 border-brand-orange pb-1 inline-block">🔥 הנמכרים ביותר</h2>
             <div className="grid grid-cols-2 gap-3 mt-0">
               {loading ?
               Array.from({ length: 4 }).map((_, i) => <ShirtCardSkeleton key={i} />) :
@@ -356,7 +356,7 @@ export default function Home() {
               )}
             </div>
             <div className="text-center mt-4">
-              <Link to="/catalog?best=true" className="inline-block px-6 py-2 text-xs font-heading font-bold text-[#1B2A4A] uppercase tracking-wider border-2 border-[#1B2A4A] bg-white hover:bg-[#F2ECD9] transition-colors" style={{ boxShadow: '2px 2px 0 #E8622A' }}>הצג הכל ←</Link>
+              <Link to="/catalog?best=true" className="inline-block px-6 py-2 text-xs font-heading font-bold text-brand-navy uppercase tracking-wider border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors" style={{ boxShadow: '2px 2px 0 var(--brand-orange)' }}>הצג הכל ←</Link>
             </div>
           </div>
         </div>
@@ -368,10 +368,10 @@ export default function Home() {
         <section className="max-w-7xl mx-auto px-6 py-10">
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-1">
-              <Zap className="w-5 h-5 text-[#E8622A]" />
-              <h2 className="font-heading font-black text-xl text-[#1B2A4A] uppercase tracking-wide">זמין למשלוח מהיר</h2>
+              <Zap className="w-5 h-5 text-brand-orange" />
+              <h2 className="font-heading font-black text-xl text-brand-navy uppercase tracking-wide">זמין למשלוח מהיר</h2>
             </div>
-            <p className="text-sm text-[#1B2A4A]/60 font-body">חולצות שקיימות במלאי בארץ ויכולות להגיע מהר יותר</p>
+            <p className="text-sm text-brand-navy/60 font-body">חולצות שקיימות במלאי בארץ ויכולות להגיע מהר יותר</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {fastShippingShirts.map((s) => (
@@ -379,7 +379,7 @@ export default function Home() {
             ))}
           </div>
           <div className="text-center mt-4">
-            <Link to="/catalog?fast=true" className="inline-block px-6 py-2 text-xs font-heading font-bold text-[#1B2A4A] uppercase tracking-wider border-2 border-[#1B2A4A] bg-white hover:bg-[#F2ECD9] transition-colors" style={{ boxShadow: '2px 2px 0 #E8622A' }}>הצג הכל ←</Link>
+            <Link to="/catalog?fast=true" className="inline-block px-6 py-2 text-xs font-heading font-bold text-brand-navy uppercase tracking-wider border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors" style={{ boxShadow: '2px 2px 0 var(--brand-orange)' }}>הצג הכל ←</Link>
           </div>
         </section>
       )}
@@ -404,10 +404,10 @@ export default function Home() {
       <CategoryCardsSection title={siteSettings.category_cards_title} />
 
       {/* ===== WHY US + ABOUT ===== */}
-      <div className="w-full h-5 bg-[#1B2A4A]" style={{
+      <div className="w-full h-5 bg-brand-navy" style={{
         clipPath: 'polygon(0 100%,2% 40%,5% 90%,8% 20%,11% 80%,14% 30%,17% 90%,20% 35%,23% 80%,26% 25%,29% 85%,32% 40%,35% 90%,38% 30%,41% 80%,44% 35%,47% 90%,50% 40%,53% 80%,56% 30%,59% 85%,62% 35%,65% 90%,68% 30%,71% 80%,74% 40%,77% 85%,80% 30%,83% 80%,86% 35%,89% 90%,92% 40%,95% 85%,98% 35%,100% 100%,100% 0,0 0)'
       }} />
-      <div className="bg-[#F2ECD9] py-12">
+      <div className="bg-brand-cream py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Why Us */}
@@ -416,9 +416,9 @@ export default function Home() {
                 {whyUsCards.map((c, i) => {
                   const Icon = c.icon;
                   return (
-                    <div key={i} className="bg-white p-4 hover:-translate-y-1 hover:shadow-lg transition-all duration-200 cursor-default" style={{ border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #E8622A' }}>
-                      <Icon className="w-5 h-5 text-[#E8622A] mb-2" />
-                      <h3 className="font-heading font-bold text-sm text-[#1B2A4A] mb-1 uppercase">{c.title}</h3>
+                    <div key={i} className="bg-white p-4 hover:-translate-y-1 hover:shadow-lg transition-all duration-200 cursor-default" style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-orange)' }}>
+                      <Icon className="w-5 h-5 text-brand-orange mb-2" />
+                      <h3 className="font-heading font-bold text-sm text-brand-navy mb-1 uppercase">{c.title}</h3>
                       <p className="text-xs text-gray-500 font-body leading-relaxed">{c.desc}</p>
                     </div>);
 
@@ -428,12 +428,12 @@ export default function Home() {
 
             {/* About */}
             <div>
-              <div className="mt-5 bg-white p-6" style={{ border: '2px solid #1B2A4A', boxShadow: '4px 4px 0 #E8622A' }}>
+              <div className="mt-5 bg-white p-6" style={{ border: '2px solid var(--brand-navy)', boxShadow: '4px 4px 0 var(--brand-orange)' }}>
                 {/* Pushpin */}
                 <div className="flex justify-center mb-3">
-                  <div className="w-4 h-4 rounded-full bg-[#E8622A] border-2 border-[#1B2A4A]" />
+                  <div className="w-4 h-4 rounded-full bg-brand-orange border-2 border-brand-navy" />
                 </div>
-                <p className="font-body text-[#1B2A4A]/80 text-sm leading-loose whitespace-pre-line">
+                <p className="font-body text-brand-navy/80 text-sm leading-loose whitespace-pre-line">
                   {siteSettings.about_us_text || DEFAULT_ABOUT}
                 </p>
               </div>
@@ -450,24 +450,24 @@ export default function Home() {
 
       {/* ===== REVIEWS ===== */}
       {reviews.length > 0 &&
-      <section className="bg-[#E8DFC8] py-12">
+      <section className="bg-brand-cream-dark py-12">
           <div className="max-w-7xl mx-auto px-6">
     
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
               {reviews.map((r, idx) =>
             <div key={r.id} className="bg-white p-5 hover:shadow-xl transition-all duration-200 hover:z-10 relative"
             style={{
-              border: '2px solid #1B2A4A',
-              boxShadow: '3px 3px 0 #1B2A4A',
+              border: '2px solid var(--brand-navy)',
+              boxShadow: '3px 3px 0 var(--brand-navy)',
               transform: idx % 3 === 0 ? 'rotate(-1deg)' : idx % 3 === 1 ? 'rotate(0.5deg)' : 'rotate(-0.5deg)'
             }}>
                   <div className="flex gap-0.5 mb-2">
                     {[1, 2, 3, 4, 5].map((s) =>
-                <Star key={s} className={`w-3 h-3 ${s <= r.rating ? 'fill-[#E8622A] text-[#E8622A]' : 'text-gray-200'}`} />
+                <Star key={s} className={`w-3 h-3 ${s <= r.rating ? 'fill-brand-orange text-brand-orange' : 'text-gray-200'}`} />
                 )}
                   </div>
-                  <p className="text-sm text-[#1B2A4A] font-body leading-relaxed mb-3">"{r.comment}"</p>
-                  <p className="text-xs text-[#E8622A] font-heading uppercase tracking-wide">{r.name}</p>
+                  <p className="text-sm text-brand-navy font-body leading-relaxed mb-3">"{r.comment}"</p>
+                  <p className="text-xs text-brand-orange font-heading uppercase tracking-wide">{r.name}</p>
                 </div>
             )}
             </div>
@@ -477,22 +477,22 @@ export default function Home() {
 
       {/* ===== FAQ ===== */}
       {faqs.length > 0 &&
-      <section className="bg-[#F2ECD9] py-12">
+      <section className="bg-brand-cream py-12">
           <div className="max-w-3xl mx-auto px-6">
 
             <div className="space-y-2 mt-6">
               {faqs.map((f, i) =>
-            <div key={f.id} className="bg-white" style={{ border: '2px solid #1B2A4A' }}>
+            <div key={f.id} className="bg-white" style={{ border: '2px solid var(--brand-navy)' }}>
                   <button
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 aria-expanded={openFaq === i}
-                className="w-full flex items-center justify-between px-5 py-4 text-right font-body font-semibold text-sm text-[#1B2A4A] hover:bg-[#F2ECD9] transition-colors">
+                className="w-full flex items-center justify-between px-5 py-4 text-right font-body font-semibold text-sm text-brand-navy hover:bg-brand-cream transition-colors">
                 
                     {f.question}
-                    <ChevronDown className={`w-4 h-4 text-[#E8622A] transition-transform flex-shrink-0 ${openFaq === i ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 text-brand-orange transition-transform flex-shrink-0 ${openFaq === i ? 'rotate-180' : ''}`} />
                   </button>
                   {openFaq === i &&
-              <div className="px-5 pb-4 text-sm text-gray-600 border-t border-[#1B2A4A]/10 pt-3 font-body">
+              <div className="px-5 pb-4 text-sm text-gray-600 border-t border-brand-navy/10 pt-3 font-body">
                       {f.answer}
                     </div>
               }
@@ -509,13 +509,13 @@ export default function Home() {
       <InstagramSection title={siteSettings.instagram_section_title} instagramHandle={siteSettings.instagram_handle || 'Jerseylabil'} />
 
       {/* ===== CONTACT ===== */}
-      <section className="bg-[#1B2A4A] py-14">
+      <section className="bg-brand-navy py-14">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="font-heading font-bold text-2xl text-white uppercase mb-2">רוצה לדבר איתנו?</h2>
           <p className="text-white/80 text-sm font-body mb-8">אפשר לפנות אלינו בכל עניין</p>
           <div className="flex flex-wrap justify-center gap-4">
             <a href={siteSettings.whatsapp_link || '#'} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-[#E8622A] text-white px-7 py-3 text-sm font-bold font-heading uppercase hover:bg-[#D0551F] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
+            className="flex items-center gap-2 bg-brand-orange text-white px-7 py-3 text-sm font-bold font-heading uppercase hover:bg-brand-orange-dark hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
             style={{ boxShadow: '3px 3px 0 rgba(255,255,255,0.2)', textShadow: '1px 1px 3px rgba(0,0,0,0.2)' }}>
               <MessageCircle className="w-4 h-4" />
               WhatsApp

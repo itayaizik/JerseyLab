@@ -12,9 +12,9 @@ import EmptyState from '@/components/ui/EmptyState';
 const STATUS_STEPS = ['נשלחה', 'יצרנו קשר', 'הושלמה'];
 const STATUS_STEP = { new: 0, contacted: 1, closed: 2 };
 const STATUS_STYLE = {
-  new: 'bg-[#E8622A] text-white',
-  contacted: 'bg-[#FFD95A] text-[#1B2A4A]',
-  closed: 'bg-white text-[#1B2A4A]',
+  new: 'bg-brand-orange text-white',
+  contacted: 'bg-brand-gold text-brand-navy',
+  closed: 'bg-white text-brand-navy',
 };
 
 // Short, readable handle for an order - what a customer quotes to us in chat.
@@ -78,9 +78,9 @@ export default function Profile() {
     return (
       <div className="flex items-center justify-center min-h-screen px-4">
         <div className="text-center">
-          <p className="font-heading font-bold text-xl text-[#1B2A4A] mb-2 uppercase">לא הצלחנו לטעון את הפרופיל</p>
-          <p className="text-sm text-[#1B2A4A]/50 font-body mb-4">בדוק את החיבור לאינטרנט ונסה שוב</p>
-          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-[#E8622A] text-white text-sm font-bold font-heading uppercase hover:bg-[#D0551F] transition-colors">נסה שוב</button>
+          <p className="font-heading font-bold text-xl text-brand-navy mb-2 uppercase">לא הצלחנו לטעון את הפרופיל</p>
+          <p className="text-sm text-brand-navy/50 font-body mb-4">בדוק את החיבור לאינטרנט ונסה שוב</p>
+          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-brand-orange text-white text-sm font-bold font-heading uppercase hover:bg-brand-orange-dark transition-colors">נסה שוב</button>
         </div>
       </div>
     );
@@ -100,24 +100,24 @@ export default function Profile() {
   const newRequests = requests.filter(r => r.status === 'new').length;
 
   return (
-    <div className="bg-[#F2ECD9] min-h-screen">
+    <div className="bg-brand-cream min-h-screen">
       {/* Hero */}
-      <section style={{ background: '#E8DFC8' }} className="border-b-2 border-[#1B2A4A]">
+      <section style={{ background: 'var(--brand-cream-dark)' }} className="border-b-2 border-brand-navy">
         <div className="max-w-5xl mx-auto px-6 py-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-turf to-pitch flex items-center justify-center font-heading font-black text-2xl text-chalk border-2 border-[#1B2A4A]">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-turf to-pitch flex items-center justify-center font-heading font-black text-2xl text-chalk border-2 border-brand-navy">
                 {user?.full_name?.[0]?.toUpperCase() || '?'}
               </div>
               <div>
-                <h1 className="font-heading font-black text-2xl text-[#1B2A4A]">{user?.full_name || 'משתמש'}</h1>
+                <h1 className="font-heading font-black text-2xl text-brand-navy">{user?.full_name || 'משתמש'}</h1>
                 <p className="text-sm text-varnish font-body">{user?.email}</p>
               </div>
             </div>
             <button 
               onClick={handleLogout} 
-              className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-[#1B2A4A] text-[#1B2A4A] font-heading font-bold text-sm hover:bg-[#F2ECD9] hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
-              style={{ boxShadow: '2px 2px 0 #1B2A4A' }}
+              className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-brand-navy text-brand-navy font-heading font-bold text-sm hover:bg-brand-cream hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+              style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}
             >
               <LogOut className="w-4 h-4" />
               התנתקות
@@ -131,8 +131,8 @@ export default function Profile() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link 
             to="/wishlist" 
-            className="bg-white border-2 border-[#1B2A4A] p-5 hover:border-turf hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
-            style={{ boxShadow: '3px 3px 0 #1B2A4A' }}
+            className="bg-white border-2 border-brand-navy p-5 hover:border-turf hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
+            style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}
           >
             <div className="flex items-start justify-between">
               <div>
@@ -145,18 +145,18 @@ export default function Profile() {
 
           <Link
             to="#requests"
-            className="bg-white border-2 border-[#1B2A4A] p-5 hover:border-turf hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
-            style={{ boxShadow: '3px 3px 0 #1B2A4A' }}
+            className="bg-white border-2 border-brand-navy p-5 hover:border-turf hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
+            style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}
           >
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-varnish text-xs font-heading uppercase tracking-wide mb-2">בקשות התעניינות</p>
-                <p className="font-heading font-black text-3xl text-[#1B2A4A]">{requests.length}</p>
+                <p className="font-heading font-black text-3xl text-brand-navy">{requests.length}</p>
               </div>
-              <MessageCircle className="w-6 h-6 text-[#1B2A4A] group-hover:scale-110 transition-transform" />
+              <MessageCircle className="w-6 h-6 text-brand-navy group-hover:scale-110 transition-transform" />
             </div>
             {newRequests > 0 && (
-              <div className="mt-3 inline-block bg-[#E8622A] text-white text-xs px-2 py-1 font-bold rounded-full">
+              <div className="mt-3 inline-block bg-brand-orange text-white text-xs px-2 py-1 font-bold rounded-full">
                 {newRequests} חדשה
               </div>
             )}
@@ -164,13 +164,13 @@ export default function Profile() {
 
           <Link 
             to="/catalog" 
-            className="bg-white border-2 border-[#1B2A4A] p-5 hover:border-turf hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
-            style={{ boxShadow: '3px 3px 0 #1B2A4A' }}
+            className="bg-white border-2 border-brand-navy p-5 hover:border-turf hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
+            style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}
           >
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-varnish text-xs font-heading uppercase tracking-wide mb-2">מחפש עוד?</p>
-                <p className="font-heading font-bold text-sm text-[#1B2A4A]">גלה חולצות</p>
+                <p className="font-heading font-bold text-sm text-brand-navy">גלה חולצות</p>
               </div>
               <Package className="w-6 h-6 text-turf group-hover:scale-110 transition-transform" />
             </div>
@@ -181,7 +181,7 @@ export default function Profile() {
       {/* Requests Section */}
       <div className="max-w-5xl mx-auto px-6 pb-12" id="requests">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-heading font-black text-2xl text-[#1B2A4A] uppercase tracking-wide">הבקשות שלי</h2>
+          <h2 className="font-heading font-black text-2xl text-brand-navy uppercase tracking-wide">הבקשות שלי</h2>
           {requestGroups.length > 0 && (
             <span className="text-xs font-heading text-varnish uppercase">סה"כ {requestGroups.length}</span>
           )}
@@ -201,39 +201,39 @@ export default function Profile() {
               return (
               <div
                 key={first.order_id || first.id}
-                className="bg-white border-2 border-[#1B2A4A]"
-                style={{ boxShadow: '4px 4px 0 #1B2A4A' }}
+                className="bg-white border-2 border-brand-navy"
+                style={{ boxShadow: '4px 4px 0 var(--brand-navy)' }}
               >
                 {/* Order header - the reference number is what a customer
                     actually needs when they message us about this order. */}
-                <div className="flex items-center justify-between gap-3 px-4 py-3 bg-[#1B2A4A]">
+                <div className="flex items-center justify-between gap-3 px-4 py-3 bg-brand-navy">
                   <div className="min-w-0">
-                    <p className="font-mono text-xs text-[#FFD95A] font-bold tracking-wider">{ref}</p>
+                    <p className="font-mono text-xs text-brand-gold font-bold tracking-wider">{ref}</p>
                     <p className="text-[11px] text-white/60 font-body mt-0.5">
                       {formatDate(first.created_date, 'ללא תאריך')}
                       {group.length > 1 && ` · ${group.length} פריטים`}
                     </p>
                   </div>
-                  <span className={`${STATUS_STYLE[first.status] || 'bg-white text-[#1B2A4A]'} text-[11px] px-2.5 py-1 font-heading font-bold uppercase tracking-wide flex-shrink-0`}>
+                  <span className={`${STATUS_STYLE[first.status] || 'bg-white text-brand-navy'} text-[11px] px-2.5 py-1 font-heading font-bold uppercase tracking-wide flex-shrink-0`}>
                     {statusLabels[first.status] || first.status}
                   </span>
                 </div>
 
                 {/* Where the order stands. Without this the status word alone
                     left people unsure whether anything happens next. */}
-                <div className="flex items-center gap-1.5 px-4 py-3 border-b-2 border-[#1B2A4A]/10">
+                <div className="flex items-center gap-1.5 px-4 py-3 border-b-2 border-brand-navy/10">
                   {STATUS_STEPS.map((label, i) => (
                     <React.Fragment key={label}>
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <span className={`w-4 h-4 flex-shrink-0 flex items-center justify-center font-mono text-[9px] font-bold ${i <= step ? 'bg-[#E8622A] text-white' : 'bg-[#1B2A4A]/10 text-[#1B2A4A]/40'}`}>
+                        <span className={`w-4 h-4 flex-shrink-0 flex items-center justify-center font-mono text-[9px] font-bold ${i <= step ? 'bg-brand-orange text-white' : 'bg-brand-navy/10 text-brand-navy/40'}`}>
                           {i < step ? '✓' : i + 1}
                         </span>
-                        <span className={`text-[10px] font-heading uppercase tracking-wide truncate ${i <= step ? 'text-[#1B2A4A]' : 'text-[#1B2A4A]/35'}`}>
+                        <span className={`text-[10px] font-heading uppercase tracking-wide truncate ${i <= step ? 'text-brand-navy' : 'text-brand-navy/35'}`}>
                           {label}
                         </span>
                       </div>
                       {i < STATUS_STEPS.length - 1 && (
-                        <span className={`flex-1 h-0.5 ${i < step ? 'bg-[#E8622A]' : 'bg-[#1B2A4A]/10'}`} />
+                        <span className={`flex-1 h-0.5 ${i < step ? 'bg-brand-orange' : 'bg-brand-navy/10'}`} />
                       )}
                     </React.Fragment>
                   ))}
@@ -247,31 +247,31 @@ export default function Profile() {
                     const Thumb = shirt ? Link : 'div';
                     const thumbProps = shirt ? { to: `/shirt/${r.shirt_id}` } : {};
                     return (
-                      <div key={r.id} className="flex gap-3 items-start pb-3 border-b border-[#1B2A4A]/10 last:border-b-0 last:pb-0">
-                        <Thumb {...thumbProps} className="w-16 h-16 flex-shrink-0 bg-[#F2ECD9] border-2 border-[#1B2A4A] overflow-hidden">
+                      <div key={r.id} className="flex gap-3 items-start pb-3 border-b border-brand-navy/10 last:border-b-0 last:pb-0">
+                        <Thumb {...thumbProps} className="w-16 h-16 flex-shrink-0 bg-brand-cream border-2 border-brand-navy overflow-hidden">
                           <ProductImage src={shirt?.main_image} alt="" className="w-full h-full object-cover" />
                         </Thumb>
                         <div className="flex-1 min-w-0">
                           <Thumb {...thumbProps}
-                            className={`font-heading font-black text-sm text-[#1B2A4A] uppercase line-clamp-2 ${shirt ? 'hover:text-[#E8622A] transition-colors' : ''}`}
+                            className={`font-heading font-black text-sm text-brand-navy uppercase line-clamp-2 ${shirt ? 'hover:text-brand-orange transition-colors' : ''}`}
                           >
                             {r.shirt_name || 'חולצה'}
                           </Thumb>
                           <div className="flex flex-wrap gap-1.5 mt-1.5">
                             {r.wanted_size && (
-                              <span className="text-[11px] font-mono font-bold text-[#1B2A4A] bg-[#F2ECD9] border border-[#1B2A4A]/20 px-1.5 py-0.5">
+                              <span className="text-[11px] font-mono font-bold text-brand-navy bg-brand-cream border border-brand-navy/20 px-1.5 py-0.5">
                                 {r.wanted_size}
                               </span>
                             )}
                             {r.message?.includes('גרסת שחקן') && (
-                              <span className="text-[11px] font-body font-bold text-[#E8622A] bg-[#E8622A]/10 border border-[#E8622A]/30 px-1.5 py-0.5">
+                              <span className="text-[11px] font-body font-bold text-brand-orange bg-brand-orange/10 border border-brand-orange/30 px-1.5 py-0.5">
                                 גרסת שחקן
                               </span>
                             )}
                           </div>
                         </div>
                         {shirt && (
-                          <span className="font-mono text-sm font-bold text-[#1B2A4A] flex-shrink-0">
+                          <span className="font-mono text-sm font-bold text-brand-navy flex-shrink-0">
                             ₪{shirt.sale_price || shirt.price}
                           </span>
                         )}
@@ -281,21 +281,21 @@ export default function Profile() {
                 </div>
 
                 {first.message && !first.message.includes('סל קניות') && (
-                  <div className="mx-4 mb-4 bg-[#F2ECD9] border-r-2 border-[#E8622A] p-3">
-                    <p className="text-[10px] text-[#1B2A4A]/50 uppercase font-heading tracking-wider mb-1">הערה שצירפת</p>
-                    <p className="text-sm text-[#1B2A4A] font-body">{first.message}</p>
+                  <div className="mx-4 mb-4 bg-brand-cream border-r-2 border-brand-orange p-3">
+                    <p className="text-[10px] text-brand-navy/50 uppercase font-heading tracking-wider mb-1">הערה שצירפת</p>
+                    <p className="text-sm text-brand-navy font-body">{first.message}</p>
                   </div>
                 )}
 
                 {/* Nothing is paid on the site, so the only real next action is
                     to talk to us - make it one tap, with the order already
                     named in the message. */}
-                <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t-2 border-[#1B2A4A]/10 bg-[#F2ECD9]/60">
-                  <p className="text-[11px] text-[#1B2A4A]/60 font-body">
+                <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t-2 border-brand-navy/10 bg-brand-cream/60">
+                  <p className="text-[11px] text-brand-navy/60 font-body">
                     {first.status === 'closed' ? 'ההזמנה הושלמה.' : `נחזור אליך ב${channel === 'instagram' ? 'אינסטגרם' : 'וואטסאפ'}.`}
                   </p>
                   <a href={askUrl} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 bg-[#1B2A4A] text-white px-3 py-2 text-xs font-heading font-bold uppercase tracking-wide hover:bg-[#E8622A] transition-colors">
+                    className="inline-flex items-center gap-1.5 bg-brand-navy text-white px-3 py-2 text-xs font-heading font-bold uppercase tracking-wide hover:bg-brand-orange transition-colors">
                     <MessageCircle className="w-3.5 h-3.5" />
                     שאל על ההזמנה
                   </a>

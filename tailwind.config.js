@@ -12,11 +12,39 @@ module.exports = {
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
+
+  			// The shop's palette. Every customer-facing colour is defined once,
+  			// here, and nowhere else. Change a value and the whole shop follows.
+  			//
+  			// These used to be written as bare hex values in class names -
+  			// `bg-[#1B2A4A]` and so on, 1,092 times across 63 files - which meant
+  			// a change of shade was a sweep through the codebase and a near
+  			// certainty of missing some. The values are unchanged; only the way
+  			// they are referenced is.
+  			//
+  			// The matching CSS variables in index.css carry the same values for
+  			// inline styles, which cannot use a class name.
+  			brand: {
+  				navy: '#1B2A4A',          // headings, body text, borders, the navbar
+  				'navy-light': '#2A3F6B',  // raised surfaces on navy
+  				'navy-dark': '#0F1D38',   // pressed states, the footer
+  				orange: '#E8622A',        // the accent: links, prices, active states
+  				'orange-dark': '#D0551F', // hover on orange
+  				cream: '#F2ECD9',         // the page ground
+  				'cream-dark': '#E8DFC8',  // alternating sections, card insets
+  				gold: '#FFD95A',          // highlights and badges
+  			},
+
+  			// The admin area's own darker palette. Deliberately not the shop's:
+  			// it is a dense internal tool, not the storefront, and it was already
+  			// referenced by name rather than by hex.
   			pitch: '#0C0D0E',
   			chalk: '#F9FAF7',
-  			turf: '#E8622A',
   			varnish: '#8E8E8E',
   			redcard: '#FF3B30',
+  			// Same value as brand.orange. Kept because 266 admin class names use
+  			// it; the shop should use brand-orange.
+  			turf: '#E8622A',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'

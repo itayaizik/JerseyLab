@@ -17,7 +17,7 @@ function StarRating({ rating, onSelect, interactive = false }) {
           onMouseLeave={() => interactive && setHovered(0)}
           className={interactive ? 'cursor-pointer' : 'cursor-default'}
         >
-          <Star className={`w-5 h-5 ${(hovered || rating) >= s ? 'fill-[#E8622A] text-[#E8622A]' : 'text-gray-300'}`} />
+          <Star className={`w-5 h-5 ${(hovered || rating) >= s ? 'fill-brand-orange text-brand-orange' : 'text-gray-300'}`} />
         </button>
       ))}
     </div>
@@ -97,13 +97,13 @@ export default function ShirtReviews({ shirtId, user }) {
   if (loading) return null;
 
   return (
-    <div className="mt-12 border-t-2 border-[#1B2A4A] pt-10">
+    <div className="mt-12 border-t-2 border-brand-navy pt-10">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-heading font-black text-xl text-[#1B2A4A] uppercase">ביקורות לקוחות</h2>
+        <h2 className="font-heading font-black text-xl text-brand-navy uppercase">ביקורות לקוחות</h2>
         {avgRating && (
-          <div className="flex items-center gap-2 bg-[#1B2A4A] text-white px-3 py-1.5">
-            <span className="font-mono font-bold text-lg text-[#E8622A]">{avgRating}</span>
+          <div className="flex items-center gap-2 bg-brand-navy text-white px-3 py-1.5">
+            <span className="font-mono font-bold text-lg text-brand-orange">{avgRating}</span>
             <StarRating rating={Math.round(avgRating)} />
             <span className="text-xs text-gray-300">({reviews.length})</span>
           </div>
@@ -122,15 +122,15 @@ export default function ShirtReviews({ shirtId, user }) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
           {reviews.map((r) => (
-            <div key={r.id} className="bg-white p-4" style={{ border: '2px solid #1B2A4A' }}>
+            <div key={r.id} className="bg-white p-4" style={{ border: '2px solid var(--brand-navy)' }}>
               <div className="flex items-center justify-between mb-2">
-                <span className="font-heading font-bold text-sm text-[#1B2A4A] uppercase">{r.is_anonymous ? 'אנונימי' : r.reviewer_name}</span>
+                <span className="font-heading font-bold text-sm text-brand-navy uppercase">{r.is_anonymous ? 'אנונימי' : r.reviewer_name}</span>
                 <StarRating rating={r.rating} />
               </div>
               <p className="text-sm text-gray-600 font-body leading-relaxed">{r.comment}</p>
               {r.image_url && (
                 <button type="button" onClick={() => setLightboxImage(r.image_url)} className="mt-3 block">
-                  <img src={r.image_url} alt="" className="w-40 h-40 object-cover border-2 border-[#1B2A4A] hover:opacity-90 transition-opacity cursor-zoom-in" />
+                  <img src={r.image_url} alt="" className="w-40 h-40 object-cover border-2 border-brand-navy hover:opacity-90 transition-opacity cursor-zoom-in" />
                 </button>
               )}
             </div>
@@ -140,23 +140,23 @@ export default function ShirtReviews({ shirtId, user }) {
 
       {/* Write review - only for verified buyers */}
       {!user ? (
-        <div className="bg-[#F2ECD9] p-4 flex items-center gap-3" style={{ border: '2px solid #1B2A4A' }}>
-          <Lock className="w-4 h-4 text-[#1B2A4A] flex-shrink-0" />
+        <div className="bg-brand-cream p-4 flex items-center gap-3" style={{ border: '2px solid var(--brand-navy)' }}>
+          <Lock className="w-4 h-4 text-brand-navy flex-shrink-0" />
           <p className="text-sm font-body text-gray-600">יש להתחבר כדי לכתוב ביקורת</p>
         </div>
       ) : !canReview ? (
-        <div className="bg-[#F2ECD9] p-4 flex items-center gap-3" style={{ border: '2px solid #1B2A4A' }}>
-          <Lock className="w-4 h-4 text-[#1B2A4A] flex-shrink-0" />
+        <div className="bg-brand-cream p-4 flex items-center gap-3" style={{ border: '2px solid var(--brand-navy)' }}>
+          <Lock className="w-4 h-4 text-brand-navy flex-shrink-0" />
           <p className="text-sm font-body text-gray-600">רק לקוחות שרכשו את החולצה יכולים לכתוב ביקורת</p>
         </div>
       ) : submitted ? (
-        <div className="bg-[#F2ECD9] p-4 flex items-center gap-3" style={{ border: '2px solid #1B2A4A' }}>
-          <Check className="w-4 h-4 text-[#E8622A]" />
-          <p className="text-sm font-body font-bold text-[#1B2A4A]">תודה! הביקורת תפורסם לאחר אישור.</p>
+        <div className="bg-brand-cream p-4 flex items-center gap-3" style={{ border: '2px solid var(--brand-navy)' }}>
+          <Check className="w-4 h-4 text-brand-orange" />
+          <p className="text-sm font-body font-bold text-brand-navy">תודה! הביקורת תפורסם לאחר אישור.</p>
         </div>
       ) : (
-        <div className="bg-[#F2ECD9] p-5" style={{ border: '2px solid #1B2A4A' }}>
-          <h3 className="font-heading font-bold text-base text-[#1B2A4A] uppercase mb-4">כתוב ביקורת</h3>
+        <div className="bg-brand-cream p-5" style={{ border: '2px solid var(--brand-navy)' }}>
+          <h3 className="font-heading font-bold text-base text-brand-navy uppercase mb-4">כתוב ביקורת</h3>
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label className="text-sm font-medium font-body block mb-1">דירוג *</label>
@@ -166,21 +166,21 @@ export default function ShirtReviews({ shirtId, user }) {
             <div>
               <label className="text-sm font-medium font-body block mb-1">ביקורת *</label>
               <textarea value={form.comment} onChange={e => { setForm(p => ({ ...p, comment: e.target.value })); setErrors(p => ({ ...p, comment: undefined })); }} maxLength={1000}
-                rows={3} className={`w-full border-2 px-3 py-2 text-sm bg-white focus:outline-none resize-none font-body ${errors.comment ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
+                rows={3} className={`w-full border-2 px-3 py-2 text-sm bg-white focus:outline-none resize-none font-body ${errors.comment ? 'border-red-500' : 'border-brand-navy'}`} />
               {errors.comment && <p className="text-red-500 text-xs mt-1">{errors.comment}</p>}
             </div>
             <div>
               <label className="text-sm font-medium font-body block mb-1">תמונה (אופציונלי)</label>
               {imagePreview ? (
                 <div className="relative w-20 h-20">
-                  <img src={imagePreview} alt="" className="w-20 h-20 object-cover border-2 border-[#1B2A4A]" />
+                  <img src={imagePreview} alt="" className="w-20 h-20 object-cover border-2 border-brand-navy" />
                   <button type="button" onClick={() => { setImage(null); setImagePreview(''); }}
-                    className="absolute -top-2 -left-2 bg-[#1B2A4A] text-white rounded-full p-0.5">
+                    className="absolute -top-2 -left-2 bg-brand-navy text-white rounded-full p-0.5">
                     <X className="w-3 h-3" />
                   </button>
                 </div>
               ) : (
-                <label className="flex items-center gap-2 w-fit border-2 border-dashed border-[#1B2A4A]/40 px-3 py-2 text-sm text-gray-600 cursor-pointer hover:border-[#1B2A4A] transition-colors font-body">
+                <label className="flex items-center gap-2 w-fit border-2 border-dashed border-brand-navy/40 px-3 py-2 text-sm text-gray-600 cursor-pointer hover:border-brand-navy transition-colors font-body">
                   <ImagePlus className="w-4 h-4" />
                   הוסף תמונה
                   <input type="file" accept="image/*" className="hidden" onChange={(e) => {
@@ -197,8 +197,8 @@ export default function ShirtReviews({ shirtId, user }) {
               פרסם כאנונימי (השם שלי לא יוצג)
             </label>
             <button type="submit" disabled={submitting}
-              className="bg-[#E8622A] text-white px-5 py-2 font-heading font-bold text-sm uppercase hover:bg-[#D0551F] transition-colors disabled:opacity-50 flex items-center gap-2"
-              style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
+              className="bg-brand-orange text-white px-5 py-2 font-heading font-bold text-sm uppercase hover:bg-brand-orange-dark transition-colors disabled:opacity-50 flex items-center gap-2"
+              style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
               {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
               {submitting ? 'שולח...' : 'שלח ביקורת'}
             </button>

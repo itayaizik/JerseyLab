@@ -13,9 +13,9 @@ export default function TrustBar() {
       {items.map((it) => {
         const Icon = it.icon;
         return (
-          <div key={it.label} className="flex flex-col items-center text-center gap-1 bg-[#F2ECD9] py-2.5 px-1" style={{ border: '1px solid #1B2A4A' }}>
-            <Icon className="w-4 h-4 text-[#E8622A]" />
-            <span className="text-[10px] font-heading font-bold text-[#1B2A4A] uppercase leading-tight">{it.label}</span>
+          <div key={it.label} className="flex flex-col items-center text-center gap-1 bg-brand-cream py-2.5 px-1" style={{ border: '1px solid var(--brand-navy)' }}>
+            <Icon className="w-4 h-4 text-brand-orange" />
+            <span className="text-[10px] font-heading font-bold text-brand-navy uppercase leading-tight">{it.label}</span>
           </div>
         );
       })}

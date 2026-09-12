@@ -10,9 +10,9 @@ import { formatDate } from '@/lib/dates';
 // customer asked to be reached on.
 
 const STATUSES = {
-  new: { label: 'חדשה', className: 'bg-[#E8622A] text-white' },
-  answered: { label: 'נענתה', className: 'bg-[#FFD95A] text-[#1B2A4A]' },
-  closed: { label: 'סגורה', className: 'bg-gray-200 text-[#1B2A4A]' },
+  new: { label: 'חדשה', className: 'bg-brand-orange text-white' },
+  answered: { label: 'נענתה', className: 'bg-brand-gold text-brand-navy' },
+  closed: { label: 'סגורה', className: 'bg-gray-200 text-brand-navy' },
 };
 
 export default function ManageShirtRequests() {
@@ -65,7 +65,7 @@ export default function ManageShirtRequests() {
         {[['all', 'הכל'], ['new', 'חדשות'], ['answered', 'נענו'], ['closed', 'סגורות']].map(([value, label]) => (
           <button key={value} onClick={() => setFilter(value)}
             className={`px-3 py-1.5 text-xs font-heading font-bold uppercase tracking-wide border-2 transition-colors ${
-              filter === value ? 'bg-[#E8622A] text-white border-[#E8622A]' : 'border-white/20 text-white/70 hover:border-white/50'
+              filter === value ? 'bg-brand-orange text-white border-brand-orange' : 'border-white/20 text-white/70 hover:border-white/50'
             }`}>
             {label}
           </button>
@@ -92,7 +92,7 @@ export default function ManageShirtRequests() {
                       identifying a kit often needs the detail. */}
                   {r.image_url ? (
                     <button type="button" onClick={() => setLightbox(r.image_url)}
-                      className="w-24 h-24 flex-shrink-0 border-2 border-white/20 overflow-hidden hover:border-[#E8622A] transition-colors">
+                      className="w-24 h-24 flex-shrink-0 border-2 border-white/20 overflow-hidden hover:border-brand-orange transition-colors">
                       <img src={r.image_url} alt="" className="w-full h-full object-cover" />
                     </button>
                   ) : (
@@ -158,7 +158,7 @@ export default function ManageShirtRequests() {
                           className={`px-2.5 py-1 text-[11px] font-heading font-bold uppercase border transition-colors ${
                             r.status === value
                               ? 'border-white/10 text-white/25 cursor-default'
-                              : 'border-white/25 text-white/70 hover:border-[#E8622A] hover:text-[#E8622A]'
+                              : 'border-white/25 text-white/70 hover:border-brand-orange hover:text-brand-orange'
                           }`}>
                           {meta.label}
                         </button>

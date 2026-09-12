@@ -36,19 +36,19 @@ const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 // side, so nudge customers who want it moving quickly to reach out directly.
 function FastHandlingNote() {
   return (
-    <div className="bg-[#F2ECD9] border-r-4 border-[#E8622A] p-3">
-      <p className="text-xs font-heading font-bold text-[#1B2A4A] uppercase mb-1.5">רוצה טיפול מהיר יותר?</p>
-      <p className="text-xs text-[#1B2A4A]/70 font-body mb-2 leading-relaxed">
+    <div className="bg-brand-cream border-r-4 border-brand-orange p-3">
+      <p className="text-xs font-heading font-bold text-brand-navy uppercase mb-1.5">רוצה טיפול מהיר יותר?</p>
+      <p className="text-xs text-brand-navy/70 font-body mb-2 leading-relaxed">
         מוזמנים לשלוח לנו הודעה ישירות - נענה ונסגור את ההזמנה מהר יותר.
       </p>
       <div className="flex flex-wrap gap-2">
         <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 bg-white border-2 border-[#1B2A4A] px-2.5 py-1.5 text-xs font-body text-[#1B2A4A] hover:bg-[#1B2A4A] hover:text-white transition-colors">
+          className="inline-flex items-center gap-1.5 bg-white border-2 border-brand-navy px-2.5 py-1.5 text-xs font-body text-brand-navy hover:bg-brand-navy hover:text-white transition-colors">
           <MessageCircle className="w-3.5 h-3.5" />
           <span dir="ltr">{SHOP_PHONE}</span>
         </a>
         <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 bg-white border-2 border-[#1B2A4A] px-2.5 py-1.5 text-xs font-body text-[#1B2A4A] hover:bg-[#1B2A4A] hover:text-white transition-colors">
+          className="inline-flex items-center gap-1.5 bg-white border-2 border-brand-navy px-2.5 py-1.5 text-xs font-body text-brand-navy hover:bg-brand-navy hover:text-white transition-colors">
           <Instagram className="w-3.5 h-3.5" />
           <span dir="ltr">@{INSTAGRAM_HANDLE}</span>
         </a>
@@ -195,10 +195,10 @@ export function CartModal({ open, onClose, user }) {
         <DialogContent className="max-w-md text-right">
           <div className="py-6">
             <div className="text-center">
-              <div className="w-16 h-16 bg-[#E8622A] flex items-center justify-center mx-auto mb-4" style={{ border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #1B2A4A' }}>
+              <div className="w-16 h-16 bg-brand-orange flex items-center justify-center mx-auto mb-4" style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-navy)' }}>
                 <Check className="w-8 h-8 text-white" />
               </div>
-              <h3 className="font-heading font-bold text-xl mb-2 text-[#1B2A4A] uppercase">ההזמנה התקבלה!</h3>
+              <h3 className="font-heading font-bold text-xl mb-2 text-brand-navy uppercase">ההזמנה התקבלה!</h3>
               <p className="text-gray-500 text-sm font-body mb-1">
                 נחזור אליך ב{submittedChannelLabel} בהקדם עם כל הפרטים.
               </p>
@@ -217,7 +217,7 @@ export function CartModal({ open, onClose, user }) {
             <FastHandlingNote />
 
             <div className="text-center">
-              <button onClick={onClose} className="mt-5 bg-[#1B2A4A] text-white px-6 py-2.5 text-sm font-bold font-heading uppercase hover:bg-[#2a3f6b] transition-colors">
+              <button onClick={onClose} className="mt-5 bg-brand-navy text-white px-6 py-2.5 text-sm font-bold font-heading uppercase hover:bg-brand-navy-light transition-colors">
                 סגור
               </button>
             </div>
@@ -230,12 +230,12 @@ export function CartModal({ open, onClose, user }) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg text-right max-h-[85vh] overflow-y-auto">
-        <DialogTitle className="font-heading text-lg uppercase text-[#1B2A4A] flex items-center gap-2 sr-only">
-          <ShoppingCart className="w-5 h-5 text-[#E8622A]" />
+        <DialogTitle className="font-heading text-lg uppercase text-brand-navy flex items-center gap-2 sr-only">
+          <ShoppingCart className="w-5 h-5 text-brand-orange" />
           הסל שלי ({cart.length} פריטים)
         </DialogTitle>
-        <div className="font-heading text-lg uppercase text-[#1B2A4A] flex items-center gap-2 mb-4">
-          <ShoppingCart className="w-5 h-5 text-[#E8622A]" />
+        <div className="font-heading text-lg uppercase text-brand-navy flex items-center gap-2 mb-4">
+          <ShoppingCart className="w-5 h-5 text-brand-orange" />
           הסל שלי {cart.length > 0 && `(${cart.length} פריטים)`}
         </div>
 
@@ -258,38 +258,38 @@ export function CartModal({ open, onClose, user }) {
               {cart.map((item, idx) => {
                 const itemTotal = cartItemTotal(item);
                 return (
-                  <div key={idx} className="bg-[#F2ECD9] p-3 flex gap-3 items-start border-2 border-[#1B2A4A]" style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
-                    <div className="w-16 h-16 flex-shrink-0 bg-white border-2 border-[#1B2A4A] relative overflow-hidden">
+                  <div key={idx} className="bg-brand-cream p-3 flex gap-3 items-start border-2 border-brand-navy" style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
+                    <div className="w-16 h-16 flex-shrink-0 bg-white border-2 border-brand-navy relative overflow-hidden">
                       <ProductImage src={item.image} alt="" className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-heading font-bold text-sm text-[#1B2A4A] uppercase truncate">{item.shirtName}</p>
+                      <p className="font-heading font-bold text-sm text-brand-navy uppercase truncate">{item.shirtName}</p>
                       <p className="text-xs text-gray-500 font-body">מידה: {item.size}</p>
                       {/* Items that price themselves (the mystery box) describe
                           their own add-ons rather than the fixed ones below. */}
                       {item.extras?.map(x => (
-                        <p key={x.label} className="text-xs text-[#E8622A] font-bold font-body">{x.label} (+₪{x.price})</p>
+                        <p key={x.label} className="text-xs text-brand-orange font-bold font-body">{x.label} (+₪{x.price})</p>
                       ))}
                       {/* Unpriced preferences (mystery box exclusions, notes).
                           Shown so the customer can check them before sending. */}
                       {item.details?.map(d => (
-                        <p key={d.label} className="text-xs text-[#1B2A4A]/60 font-body">
+                        <p key={d.label} className="text-xs text-brand-navy/60 font-body">
                           <span className="font-bold">{d.label}:</span> {d.value}
                         </p>
                       ))}
-                      {item.playerVersion && <p className="text-xs text-[#1B2A4A] font-bold font-body">גרסת שחקן (+₪20)</p>}
+                      {item.playerVersion && <p className="text-xs text-brand-navy font-bold font-body">גרסת שחקן (+₪20)</p>}
                       {item.deliveryNote ? (
-                        <p className="text-xs text-[#E8622A] font-bold font-body">{item.deliveryNote}</p>
+                        <p className="text-xs text-brand-orange font-bold font-body">{item.deliveryNote}</p>
                       ) : item.isExactStockItem ? (
                         <p className="text-xs text-green-700 font-bold font-body">מלאי בארץ - עד שבוע / איסוף מקריית אונו</p>
                       ) : (
-                        <p className="text-xs text-[#E8622A] font-bold font-body">משלוח מהיר - עד 3 שבועות</p>
+                        <p className="text-xs text-brand-orange font-bold font-body">משלוח מהיר - עד 3 שבועות</p>
                       )}
-                      {item.addName && <p className="text-xs text-[#E8622A] font-body">הדפסת שם: {item.customName} (+₪15)</p>}
-                      <p className="font-mono font-bold text-[#1B2A4A] text-sm mt-1">₪{itemTotal}</p>
+                      {item.addName && <p className="text-xs text-brand-orange font-body">הדפסת שם: {item.customName} (+₪15)</p>}
+                      <p className="font-mono font-bold text-brand-navy text-sm mt-1">₪{itemTotal}</p>
                     </div>
                     <button type="button" onClick={() => removeItem(idx)} aria-label="הסר פריט מהסל"
-                      className="w-7 h-7 flex-shrink-0 flex items-center justify-center bg-white border-2 border-[#1B2A4A] text-[#1B2A4A] hover:bg-red-500 hover:border-red-500 hover:text-white transition-colors">
+                      className="w-7 h-7 flex-shrink-0 flex items-center justify-center bg-white border-2 border-brand-navy text-brand-navy hover:bg-red-500 hover:border-red-500 hover:text-white transition-colors">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -297,31 +297,31 @@ export function CartModal({ open, onClose, user }) {
               })}
             </div>
 
-            <div className="flex justify-between items-center py-2 border-t-2 border-[#1B2A4A]">
-              <span className="font-heading font-bold text-[#1B2A4A] uppercase">סה"כ</span>
-              <span className="font-mono font-bold text-xl text-[#E8622A]">₪{total}</span>
+            <div className="flex justify-between items-center py-2 border-t-2 border-brand-navy">
+              <span className="font-heading font-bold text-brand-navy uppercase">סה"כ</span>
+              <span className="font-mono font-bold text-xl text-brand-orange">₪{total}</span>
             </div>
 
             <HowItWorksNotice />
 
             <div className="space-y-3 pt-2">
-              <p className="text-sm font-heading font-bold text-[#1B2A4A] uppercase">פרטי יצירת קשר</p>
+              <p className="text-sm font-heading font-bold text-brand-navy uppercase">פרטי יצירת קשר</p>
               <div>
                 <label htmlFor="cart-name" className="text-sm font-medium block mb-1 font-body">שם מלא *</label>
                 <input id="cart-name" value={contactForm.full_name} onChange={e => setField('full_name', e.target.value)} maxLength={100} autoComplete="name"
-                  className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.full_name ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
+                  className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.full_name ? 'border-red-500' : 'border-brand-navy'}`} />
                 {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name}</p>}
               </div>
               <div>
                 <label htmlFor="cart-phone" className="text-sm font-medium block mb-1 font-body">טלפון *</label>
                 <input id="cart-phone" value={contactForm.phone} onChange={e => setField('phone', e.target.value)} type="tel" dir="ltr" maxLength={20} autoComplete="tel"
-                  className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.phone ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
+                  className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.phone ? 'border-red-500' : 'border-brand-navy'}`} />
                 {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
               </div>
               <div>
                 <label htmlFor="cart-email" className="text-sm font-medium block mb-1 font-body">אימייל *</label>
                 <input id="cart-email" value={contactForm.email} onChange={e => setField('email', e.target.value)} type="email" dir="ltr" maxLength={254} autoComplete="email"
-                  className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.email ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
+                  className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.email ? 'border-red-500' : 'border-brand-navy'}`} />
                 {errors.email ? <p className="text-red-500 text-xs mt-1">{errors.email}</p>
                   : <p className="text-[11px] text-gray-500 mt-1 font-body">לשם נשלח אישור ההזמנה.</p>}
               </div>
@@ -339,7 +339,7 @@ export function CartModal({ open, onClose, user }) {
                 <div>
                   <label htmlFor="cart-ig" className="text-sm font-medium block mb-1 font-body">שם המשתמש שלך באינסטגרם *</label>
                   <input id="cart-ig" value={contactForm.instagram_handle} onChange={e => setField('instagram_handle', e.target.value)} dir="ltr" maxLength={60} placeholder="@username"
-                    className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.instagram_handle ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
+                    className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.instagram_handle ? 'border-red-500' : 'border-brand-navy'}`} />
                   {errors.instagram_handle && <p className="text-red-500 text-xs mt-1">{errors.instagram_handle}</p>}
                 </div>
               )}
@@ -349,12 +349,12 @@ export function CartModal({ open, onClose, user }) {
 
             <div>
               <label className={`flex items-start gap-2.5 p-3 border-2 cursor-pointer transition-colors ${
-                errors.acknowledged ? 'border-red-500 bg-red-50' : 'border-[#1B2A4A] bg-[#F2ECD9] hover:bg-[#E8DFC8]'
+                errors.acknowledged ? 'border-red-500 bg-red-50' : 'border-brand-navy bg-brand-cream hover:bg-brand-cream-dark'
               }`}>
                 <input type="checkbox" checked={acknowledged}
                   onChange={e => { setAcknowledged(e.target.checked); setErrors(p => ({ ...p, acknowledged: undefined })); }}
-                  className="mt-0.5 w-4 h-4 flex-shrink-0 accent-[#E8622A]" />
-                <span className="text-xs font-body text-[#1B2A4A] leading-relaxed">
+                  className="mt-0.5 w-4 h-4 flex-shrink-0 accent-brand-orange" />
+                <span className="text-xs font-body text-brand-navy leading-relaxed">
                   קראתי והבנתי - <span className="font-bold">התשלום לא מתבצע באתר</span>, אלא מולכם ישירות אחרי שתחזרו אליי.
                 </span>
               </label>
@@ -365,8 +365,8 @@ export function CartModal({ open, onClose, user }) {
               <div className="p-2.5 bg-red-50 border-2 border-red-300 text-red-700 text-xs font-body">{cartError}</div>
             )}
             <button type="submit" disabled={submitting}
-              className="w-full bg-[#E8622A] text-white py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-[#D0551F] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-              style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
+              className="w-full bg-brand-orange text-white py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-brand-orange-dark transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}>
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShoppingCart className="w-4 h-4" />}
               {submitting ? 'שולח...' : `שלח בקשה (₪${total})`}
             </button>
@@ -469,16 +469,16 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent className="max-w-md text-right">
           <div className="text-center py-8">
-            <div className="w-16 h-16 bg-[#E8622A] flex items-center justify-center mx-auto mb-4" style={{ border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #1B2A4A' }}>
+            <div className="w-16 h-16 bg-brand-orange flex items-center justify-center mx-auto mb-4" style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-navy)' }}>
               <Check className="w-8 h-8 text-white" />
             </div>
-            <h3 className="font-heading font-bold text-xl mb-2 text-[#1B2A4A] uppercase">נוסף לסל!</h3>
+            <h3 className="font-heading font-bold text-xl mb-2 text-brand-navy uppercase">נוסף לסל!</h3>
             <p className="text-gray-500 text-sm font-body mb-6">רוצה להמשיך לקנות עוד, או לעבור לסל ולסיים את ההזמנה?</p>
             <div className="flex gap-2">
-              <button onClick={handleContinueShopping} className="flex-1 border-2 border-[#1B2A4A] text-[#1B2A4A] px-4 py-2.5 text-sm font-bold font-heading uppercase hover:bg-[#F2ECD9] transition-colors">
+              <button onClick={handleContinueShopping} className="flex-1 border-2 border-brand-navy text-brand-navy px-4 py-2.5 text-sm font-bold font-heading uppercase hover:bg-brand-cream transition-colors">
                 המשך לקנות
               </button>
-              <button onClick={handleGoToCart} className="flex-1 bg-[#1B2A4A] text-white px-4 py-2.5 text-sm font-bold font-heading uppercase hover:bg-[#2a3f6b] transition-colors">
+              <button onClick={handleGoToCart} className="flex-1 bg-brand-navy text-white px-4 py-2.5 text-sm font-bold font-heading uppercase hover:bg-brand-navy-light transition-colors">
                 עבור לסל
               </button>
             </div>
@@ -494,10 +494,10 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
         <DialogTitle className="sr-only">אני מעוניין - {shirt.name}</DialogTitle>
 
         <div className="flex gap-3 items-start mb-1">
-          {shirt.main_image && <img src={shirt.main_image} alt="" className="w-14 h-14 object-cover border-2 border-[#1B2A4A] flex-shrink-0" />}
+          {shirt.main_image && <img src={shirt.main_image} alt="" className="w-14 h-14 object-cover border-2 border-brand-navy flex-shrink-0" />}
           <div className="flex-1 min-w-0">
-            <p className="font-heading font-bold text-sm text-[#1B2A4A] uppercase leading-tight truncate">{shirt.name}</p>
-            <p className="font-mono font-bold text-[#E8622A] text-sm mt-0.5">₪{basePrice}</p>
+            <p className="font-heading font-bold text-sm text-brand-navy uppercase leading-tight truncate">{shirt.name}</p>
+            <p className="font-mono font-bold text-brand-orange text-sm mt-0.5">₪{basePrice}</p>
           </div>
         </div>
 
@@ -506,7 +506,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
         <AnimatePresence mode="wait">
           {step === 'size' && (
             <motion.div key="size" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">בוא נמצא את החולצה בשבילך</h3>
+              <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">בוא נמצא את החולצה בשבילך</h3>
               <p className="text-sm text-gray-500 font-body mb-4">איזו מידה אתה מחפש?</p>
               <SizeSelector shirt={shirt} value={selectedSize} onChange={(s) => { setSelectedSize(s); setBuyMode(''); }} />
               {errors.size && <p className="text-red-500 text-xs mt-2">{errors.size}</p>}
@@ -514,7 +514,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
           )}
           {step === 'exactOrCustom' && (
             <motion.div key="exactOrCustom" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">יש לנו את זו במלאי בארץ!</h3>
+              <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">יש לנו את זו במלאי בארץ!</h3>
               <p className="text-sm text-gray-500 font-body mb-4">רוצה לקנות בדיוק את הפריט שקיים, או להזמין גרסה משלך?</p>
               <ExactOrCustomChoice shirt={shirt} value={buyMode} onChange={setBuyMode} />
               {errors.buyMode && <p className="text-red-500 text-xs mt-2">{errors.buyMode}</p>}
@@ -522,9 +522,9 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
           )}
           {step === 'shirtType' && (
             <motion.div key="shirtType" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">איזה סוג חולצה?</h3>
-              <div className="flex items-start gap-1.5 mb-3 text-xs text-[#1B2A4A]/70 font-body bg-[#F2ECD9] p-2.5 border-r-2 border-[#E8622A]">
-                <Sparkles className="w-3.5 h-3.5 text-[#E8622A] flex-shrink-0 mt-0.5" />
+              <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">איזה סוג חולצה?</h3>
+              <div className="flex items-start gap-1.5 mb-3 text-xs text-brand-navy/70 font-body bg-brand-cream p-2.5 border-r-2 border-brand-orange">
+                <Sparkles className="w-3.5 h-3.5 text-brand-orange flex-shrink-0 mt-0.5" />
                 <span>{getShirtTypeTip()}</span>
               </div>
               <ShirtTypeChoice value={shirtType} onChange={setShirtType} />
@@ -533,9 +533,9 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
           )}
           {step === 'addName' && (
             <motion.div key="addName" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">רוצה שם ומספר על הגב?</h3>
-              <div className="flex items-start gap-1.5 mb-3 text-xs text-[#1B2A4A]/70 font-body bg-[#F2ECD9] p-2.5 border-r-2 border-[#E8622A]">
-                <Sparkles className="w-3.5 h-3.5 text-[#E8622A] flex-shrink-0 mt-0.5" />
+              <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">רוצה שם ומספר על הגב?</h3>
+              <div className="flex items-start gap-1.5 mb-3 text-xs text-brand-navy/70 font-body bg-brand-cream p-2.5 border-r-2 border-brand-orange">
+                <Sparkles className="w-3.5 h-3.5 text-brand-orange flex-shrink-0 mt-0.5" />
                 <span>{getPersonalizationTip(shirt)}</span>
               </div>
               <PersonalizationChoice value={addName} onChange={handleAddNameChange} />
@@ -544,7 +544,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
           )}
           {step === 'nameDetails' && (
             <motion.div key="nameDetails" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">איזה שם ומספר תרצה?</h3>
+              <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">איזה שם ומספר תרצה?</h3>
               <p className="text-sm text-gray-500 font-body mb-4">הקלד את השם והמספר להדפסה</p>
               <NameNumberInput customName={customName} customNumber={customNumber}
                 onChange={(field, val) => field === 'customName' ? setCustomName(val) : setCustomNumber(val)} />
@@ -553,7 +553,7 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
           )}
           {step === 'summary' && (
             <motion.div key="summary" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-1">הכול מוכן - נשאר רק לאשר</h3>
+              <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">הכול מוכן - נשאר רק לאשר</h3>
               <p className="text-sm text-gray-500 font-body mb-4">הנה הבחירה שלך:</p>
               {buyingExact ? (
                 <OrderSummary shirt={shirt} size={selectedSize}
@@ -570,20 +570,20 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
 
         <div className="flex gap-2 mt-5">
           {step !== 'size' && (
-            <button onClick={goBack} className="flex items-center gap-1 px-4 py-3 border-2 border-[#1B2A4A] text-[#1B2A4A] text-sm font-heading font-bold uppercase hover:bg-[#F2ECD9] transition-colors">
+            <button onClick={goBack} className="flex items-center gap-1 px-4 py-3 border-2 border-brand-navy text-brand-navy text-sm font-heading font-bold uppercase hover:bg-brand-cream transition-colors">
               <ChevronLeft className="w-4 h-4" /> חזור
             </button>
           )}
           {step !== 'summary' && (
             <button onClick={goNext} disabled={!canProceed}
-              className="flex-1 flex items-center justify-center gap-1.5 py-3 bg-[#1B2A4A] text-white text-sm font-heading font-bold uppercase hover:bg-[#2a3f6b] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              className="flex-1 flex items-center justify-center gap-1.5 py-3 bg-brand-navy text-white text-sm font-heading font-bold uppercase hover:bg-brand-navy-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
               המשך <ChevronRight className="w-4 h-4" />
             </button>
           )}
           {step === 'summary' && (
             <button onClick={handleAddToCart}
-              className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#E8622A] text-white text-sm font-heading font-bold uppercase hover:bg-[#D0551F] transition-colors"
-              style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
+              className="flex-1 flex items-center justify-center gap-2 py-3 bg-brand-orange text-white text-sm font-heading font-bold uppercase hover:bg-brand-orange-dark transition-colors"
+              style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}>
               <ShoppingCart className="w-4 h-4" /> הוסף לסל
             </button>
           )}

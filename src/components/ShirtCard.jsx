@@ -23,7 +23,7 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false 
   const displayedSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 
   return (
-    <div className="relative bg-white flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-200" style={{ boxShadow: '3px 3px 0px #1B2A4A', border: '2px solid #1B2A4A' }}>
+    <div className="relative bg-white flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-200" style={{ boxShadow: '3px 3px 0px var(--brand-navy)', border: '2px solid var(--brand-navy)' }}>
       {/* Status Badge */}
       <div className="absolute top-2 right-2 z-10">
         <StatusBadge status={shirt.status} />
@@ -33,16 +33,16 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false 
       {user && onToggleWishlist && (
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleWishlist(shirt.id); }}
-          className="absolute top-2 left-2 z-10 w-9 h-9 flex items-center justify-center bg-white border-2 border-[#1B2A4A] hover:bg-[#E8622A] hover:border-[#E8622A] hover:scale-110 active:bg-[#E8622A] active:border-[#E8622A] transition-all duration-200"
+          className="absolute top-2 left-2 z-10 w-9 h-9 flex items-center justify-center bg-white border-2 border-brand-navy hover:bg-brand-orange hover:border-brand-orange hover:scale-110 active:bg-brand-orange active:border-brand-orange transition-all duration-200"
           aria-label="הוסף למועדפים"
         >
-          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-[#E8622A] text-[#E8622A]' : 'text-[#1B2A4A]'}`} />
+          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-brand-orange text-brand-orange' : 'text-brand-navy'}`} />
         </button>
       )}
 
       <Link to={`/shirt/${shirt.id}`} className="flex-1">
         {/* Image */}
-        <div className="bg-[#F2ECD9] p-2 pb-0">
+        <div className="bg-brand-cream p-2 pb-0">
           <div className="aspect-square overflow-hidden bg-white relative">
             <ProductImage
               src={shirt.main_image}
@@ -62,13 +62,13 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false 
           </div>
 
           {/* Title - fixed 2-line height */}
-          <h3 className="font-heading font-bold text-xs md:text-sm text-[#1B2A4A] leading-tight line-clamp-2 uppercase tracking-wide min-h-[2.5rem]">{shirt.name}</h3>
+          <h3 className="font-heading font-bold text-xs md:text-sm text-brand-navy leading-tight line-clamp-2 uppercase tracking-wide min-h-[2.5rem]">{shirt.name}</h3>
 
           {/* Subtitle - fixed 1-line height (always rendered) */}
           <p className="text-[11px] text-gray-500 font-body truncate min-h-[1rem]">{shirt.club || shirt.national_team}{shirt.season ? ` • ${shirt.season}` : ''}</p>
 
           {/* Player - fixed 1-line height (always rendered) */}
-          <p className="text-[11px] text-[#E8622A] font-medium font-body truncate min-h-[1rem]">{shirt.player_name || '\u00A0'}</p>
+          <p className="text-[11px] text-brand-orange font-medium font-body truncate min-h-[1rem]">{shirt.player_name || '\u00A0'}</p>
 
           {/* Price + sizes - pushed to bottom */}
           <div className="mt-auto pt-1 space-y-1">
@@ -76,11 +76,11 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false 
               <div className="flex items-center gap-1.5">
                 {shirt.sale_price && shirt.sale_price < shirt.price ? (
                   <>
-                    <span className="font-mono font-bold text-[#E8622A] text-sm">₪{shirt.sale_price}</span>
+                    <span className="font-mono font-bold text-brand-orange text-sm">₪{shirt.sale_price}</span>
                     <span className="font-mono text-gray-400 line-through text-[10px]">₪{shirt.price}</span>
                   </>
                 ) : (
-                  <span className="font-mono font-bold text-[#1B2A4A] text-sm">₪{shirt.price}</span>
+                  <span className="font-mono font-bold text-brand-navy text-sm">₪{shirt.price}</span>
                 )}
               </div>
               <span className="text-[10px] text-gray-400 uppercase font-body hidden sm:inline">{conditionLabel[shirt.condition] || shirt.condition}</span>
@@ -88,7 +88,7 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false 
 
             <div className="flex gap-1 flex-wrap">
               {displayedSizes.map(size => (
-                <span key={size} className="text-[9px] px-1 py-0.5 border border-[#1B2A4A] text-[#1B2A4A] bg-white font-mono">
+                <span key={size} className="text-[9px] px-1 py-0.5 border border-brand-navy text-brand-navy bg-white font-mono">
                   {size}
                 </span>
               ))}
@@ -103,13 +103,13 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false 
         <div className="grid grid-cols-2 gap-0 transition-opacity duration-200">
           <Link
             to={`/shirt/${shirt.id}?interest=true`}
-            className="block bg-[#1B2A4A] text-white text-center py-3 text-xs font-bold font-heading uppercase tracking-wider hover:bg-[#2a3f6b] hover:brightness-110 active:bg-[#2a3f6b] transition-all duration-150"
+            className="block bg-brand-navy text-white text-center py-3 text-xs font-bold font-heading uppercase tracking-wider hover:bg-brand-navy-light hover:brightness-110 active:bg-brand-navy-light transition-all duration-150"
           >
             מעוניין
           </Link>
           <button
             onClick={(e) => { e.preventDefault(); setQuickAddOpen(true); }}
-            className="flex items-center justify-center gap-1 bg-[#E8622A] text-white py-3 text-xs font-bold font-heading uppercase tracking-wider hover:bg-[#D0551F] hover:brightness-110 active:bg-[#D0551F] transition-all duration-150"
+            className="flex items-center justify-center gap-1 bg-brand-orange text-white py-3 text-xs font-bold font-heading uppercase tracking-wider hover:bg-brand-orange-dark hover:brightness-110 active:bg-brand-orange-dark transition-all duration-150"
           >
             <ShoppingCart className="w-3.5 h-3.5" />
             לסל

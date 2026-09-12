@@ -17,7 +17,7 @@ export default function ChipsInput({ values = [], onChange, placeholder }) {
       {values.length > 0 && (
         <div className="flex gap-1.5 flex-wrap mb-2">
           {values.map(v => (
-            <span key={v} className="inline-flex items-center gap-1 bg-[#1B2A4A] text-white text-xs px-2 py-1 font-body">
+            <span key={v} className="inline-flex items-center gap-1 bg-brand-navy text-white text-xs px-2 py-1 font-body">
               {v}
               <button type="button" onClick={() => remove(v)} className="opacity-70 hover:opacity-100" aria-label="הסר">
                 <X className="w-3 h-3" />
@@ -30,9 +30,9 @@ export default function ChipsInput({ values = [], onChange, placeholder }) {
         <input value={text} onChange={e => setText(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(); } }}
           placeholder={placeholder}
-          className="flex-1 border-2 border-[#1B2A4A] px-3 py-2.5 text-sm bg-white focus:outline-none font-body" />
+          className="flex-1 border-2 border-brand-navy px-3 py-2.5 text-sm bg-white focus:outline-none font-body" />
         <button type="button" onClick={add}
-          className="px-3 border-2 border-[#1B2A4A] bg-[#F2ECD9] text-[#1B2A4A] hover:bg-[#1B2A4A] hover:text-white transition-colors"
+          className="px-3 border-2 border-brand-navy bg-brand-cream text-brand-navy hover:bg-brand-navy hover:text-white transition-colors"
           aria-label="הוסף">
           <Plus className="w-4 h-4" />
         </button>

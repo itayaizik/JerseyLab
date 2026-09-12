@@ -24,8 +24,8 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-[#1B2A4A] bg-[#1B2A4A] text-white",
-        success: "border-[#1B2A4A] bg-[#1B2A4A] text-white",
+        default: "border-brand-navy bg-brand-navy text-white",
+        success: "border-brand-navy bg-brand-navy text-white",
         error: "border-red-500 bg-red-500 text-white",
         destructive: "border-red-500 bg-red-500 text-white",
       },
@@ -41,13 +41,13 @@ const Toast = React.forwardRef(({ className, variant, open, ...props }, ref) => 
     ref={ref}
     data-state={open ? "open" : "closed"}
     className={cn(toastVariants({ variant }), "shadow-lg", className)}
-    style={{ boxShadow: "3px 3px 0 #E8622A" }}
+    style={{ boxShadow: "3px 3px 0 var(--brand-orange)" }}
     role="status"
     aria-live="polite"
     aria-atomic="true"
     {...props}
   >
-    <span className="absolute top-0 bottom-0 right-0 w-1.5 bg-[#E8622A]" aria-hidden="true" />
+    <span className="absolute top-0 bottom-0 right-0 w-1.5 bg-brand-orange" aria-hidden="true" />
     {props.children}
   </div>
 ));

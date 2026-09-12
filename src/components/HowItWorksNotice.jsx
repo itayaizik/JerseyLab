@@ -17,14 +17,14 @@ export default function HowItWorksNotice({ variant = 'compact' }) {
   const compact = variant === 'compact';
 
   return (
-    <div className="bg-[#1B2A4A] p-4" style={{ border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #E8622A' }}>
+    <div className="bg-brand-navy p-4" style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-orange)' }}>
       <div className="flex items-center gap-2 mb-2">
-        <Info className="w-4 h-4 text-[#E8622A] flex-shrink-0" />
+        <Info className="w-4 h-4 text-brand-orange flex-shrink-0" />
         <p className="font-heading font-bold text-sm text-white uppercase tracking-wide">איך ההזמנה עובדת?</p>
       </div>
 
       <p className={`font-body leading-relaxed text-white/80 ${compact ? 'text-xs' : 'text-sm'}`}>
-        <span className="text-[#FFD95A] font-bold">באתר לא מתבצע תשלום.</span>{' '}
+        <span className="text-brand-gold font-bold">באתר לא מתבצע תשלום.</span>{' '}
         שליחת ההזמנה היא בקשה בלבד - נחזור אליך בוואטסאפ או באינסטגרם כדי לאשר את כל הפרטים,
         והתשלום מתבצע מולנו ישירות רק אחרי שסיכמנו.
       </p>
@@ -34,12 +34,12 @@ export default function HowItWorksNotice({ variant = 'compact' }) {
           const Icon = step.icon;
           return (
             <li key={step.title} className="flex gap-2.5 items-start">
-              <span className="flex-shrink-0 w-5 h-5 bg-[#E8622A] text-white font-mono font-bold text-[10px] flex items-center justify-center mt-0.5">
+              <span className="flex-shrink-0 w-5 h-5 bg-brand-orange text-white font-mono font-bold text-[10px] flex items-center justify-center mt-0.5">
                 {i + 1}
               </span>
               <div className="min-w-0">
                 <p className={`font-heading font-bold text-white uppercase leading-tight flex items-center gap-1.5 ${compact ? 'text-xs' : 'text-sm'}`}>
-                  <Icon className="w-3.5 h-3.5 text-[#E8622A] flex-shrink-0" />
+                  <Icon className="w-3.5 h-3.5 text-brand-orange flex-shrink-0" />
                   {step.title}
                 </p>
                 <p className={`font-body text-white/70 leading-relaxed ${compact ? 'text-[11px]' : 'text-xs'}`}>
@@ -56,12 +56,12 @@ export default function HowItWorksNotice({ variant = 'compact' }) {
           <p className="text-xs text-white/70 font-body mb-2">רוצה לסגור הזמנה עכשיו? כתוב לנו ישירות:</p>
           <div className="flex flex-wrap gap-2">
             <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 text-xs font-body font-bold text-[#1B2A4A] hover:bg-[#E8622A] hover:text-white transition-colors">
+              className="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 text-xs font-body font-bold text-brand-navy hover:bg-brand-orange hover:text-white transition-colors">
               <MessageCircle className="w-3.5 h-3.5" />
               <span dir="ltr">{SHOP_PHONE}</span>
             </a>
             <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 text-xs font-body font-bold text-[#1B2A4A] hover:bg-[#E8622A] hover:text-white transition-colors">
+              className="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 text-xs font-body font-bold text-brand-navy hover:bg-brand-orange hover:text-white transition-colors">
               <span dir="ltr">@{INSTAGRAM_HANDLE}</span>
             </a>
           </div>

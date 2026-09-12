@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import GoogleIcon from '@/components/GoogleIcon';
 
-const inputCls = 'w-full border-2 border-[#1B2A4A] px-3 py-2.5 text-sm bg-white focus:outline-none font-body';
+const inputCls = 'w-full border-2 border-brand-navy px-3 py-2.5 text-sm bg-white focus:outline-none font-body';
 
 function Field({ label, required, error, children }) {
   return (
     <div>
-      <label className="text-xs font-heading font-bold text-[#1B2A4A]/60 uppercase block mb-1">
-        {label}{required && <span className="text-[#E8622A]"> *</span>}
+      <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1">
+        {label}{required && <span className="text-brand-orange"> *</span>}
       </label>
       {children}
       {error && <p className="text-red-500 text-xs mt-1 font-body">{error}</p>}
@@ -48,18 +48,18 @@ export default function BasicInfoStep({ data, onChange, onContinue, onGoogle }) 
       <button
         type="button"
         onClick={onGoogle}
-        className="w-full flex items-center justify-center gap-2 border-2 border-[#1B2A4A] bg-white text-[#1B2A4A] h-12 text-sm font-heading font-bold uppercase hover:bg-[#F2ECD9] transition-colors mb-4"
+        className="w-full flex items-center justify-center gap-2 border-2 border-brand-navy bg-white text-brand-navy h-12 text-sm font-heading font-bold uppercase hover:bg-brand-cream transition-colors mb-4"
       >
         <GoogleIcon className="w-5 h-5" /> המשך עם Google
       </button>
 
       <div className="relative flex items-center my-4">
-        <div className="flex-1 h-px bg-[#1B2A4A]/15" />
-        <span className="px-3 text-xs text-[#1B2A4A]/40 font-body">או</span>
-        <div className="flex-1 h-px bg-[#1B2A4A]/15" />
+        <div className="flex-1 h-px bg-brand-navy/15" />
+        <span className="px-3 text-xs text-brand-navy/40 font-body">או</span>
+        <div className="flex-1 h-px bg-brand-navy/15" />
       </div>
 
-      <h3 className="font-heading font-bold text-lg text-[#1B2A4A] mb-3">פרטים בסיסיים</h3>
+      <h3 className="font-heading font-bold text-lg text-brand-navy mb-3">פרטים בסיסיים</h3>
 
       <div className="space-y-3">
         <Field label="שם מלא" required error={show('full_name')}>
@@ -119,8 +119,8 @@ export default function BasicInfoStep({ data, onChange, onContinue, onGoogle }) 
         type="button"
         onClick={onContinue}
         disabled={!isValid}
-        className="w-full flex items-center justify-center gap-1.5 bg-[#1B2A4A] text-white h-12 mt-5 font-heading font-bold uppercase hover:bg-[#2a3f6b] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{ boxShadow: '3px 3px 0 #E8622A' }}
+        className="w-full flex items-center justify-center gap-1.5 bg-brand-navy text-white h-12 mt-5 font-heading font-bold uppercase hover:bg-brand-navy-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ boxShadow: '3px 3px 0 var(--brand-orange)' }}
       >
         המשך <ChevronRight className="w-4 h-4" />
       </button>

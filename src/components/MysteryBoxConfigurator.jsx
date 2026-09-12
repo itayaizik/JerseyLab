@@ -28,6 +28,11 @@ const TYPE_ICONS = { regular: Shirt, retro: Sparkles, mundial: Gift };
 
 // Swatches rather than a text field: picking from a list is one tap, and it
 // keeps the answers consistent enough for us to actually act on them.
+//
+// These stay literal hex values on purpose, and are the one exception the brand
+// token check allows. They describe the colour of a shirt, not the colour of the
+// site. 'כתום' being the same orange as the brand accent is a coincidence, and
+// if the brand accent is ever changed, the orange shirt must stay orange.
 const COLORS = [
   { label: 'אדום', hex: '#D32F2F' },
   { label: 'כחול', hex: '#1E4FA3' },
@@ -136,10 +141,10 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   const isLast = step === STEPS.length - 1;
 
   return (
-    <div className={`bg-white border-2 border-[#1B2A4A] ${className}`} style={{ boxShadow: '5px 5px 0 #1B2A4A' }}>
+    <div className={`bg-white border-2 border-brand-navy ${className}`} style={{ boxShadow: '5px 5px 0 var(--brand-navy)' }}>
 
-      <div className={`bg-[#1B2A4A] flex items-center gap-2 ${lg ? 'px-5 py-4' : 'px-4 py-3'}`}>
-        <Gift className={`text-[#FFD95A] flex-shrink-0 ${lg ? 'w-5 h-5' : 'w-4 h-4'}`} />
+      <div className={`bg-brand-navy flex items-center gap-2 ${lg ? 'px-5 py-4' : 'px-4 py-3'}`}>
+        <Gift className={`text-brand-gold flex-shrink-0 ${lg ? 'w-5 h-5' : 'w-4 h-4'}`} />
         <p className={`font-heading font-bold text-white uppercase tracking-wide ${lg ? 'text-lg' : 'text-sm'}`}>בנה את הבוקס</p>
         <span className="mr-auto font-mono text-xs text-white/50">{step + 1}/{STEPS.length}</span>
         {headerAction}
@@ -152,7 +157,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
             aria-label={`שלב ${i + 1}: ${s.title}`}
             aria-current={i === step ? 'step' : undefined}
             className={`h-1.5 flex-1 transition-colors ${
-              i === step ? 'bg-[#E8622A]' : i < step ? 'bg-[#1B2A4A]' : 'bg-[#1B2A4A]/15'
+              i === step ? 'bg-brand-orange' : i < step ? 'bg-brand-navy' : 'bg-brand-navy/15'
             }`} />
         ))}
       </div>
@@ -163,25 +168,25 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           const done = i < step;
 
           return (
-            <div key={s.id} className={`border-2 transition-colors ${open ? 'border-[#1B2A4A]' : 'border-[#1B2A4A]/15'}`}>
+            <div key={s.id} className={`border-2 transition-colors ${open ? 'border-brand-navy' : 'border-brand-navy/15'}`}>
               <button type="button" onClick={() => goTo(i)}
                 aria-expanded={open}
-                className={`w-full flex items-center gap-2.5 px-3 min-h-[48px] text-right transition-colors ${open ? 'bg-[#1B2A4A]' : 'hover:bg-[#F2ECD9]'}`}>
+                className={`w-full flex items-center gap-2.5 px-3 min-h-[48px] text-right transition-colors ${open ? 'bg-brand-navy' : 'hover:bg-brand-cream'}`}>
                 <span className={`w-6 h-6 flex-shrink-0 flex items-center justify-center font-mono text-[11px] font-bold ${
-                  open ? 'bg-[#FFD95A] text-[#1B2A4A]' : done ? 'bg-[#1B2A4A] text-white' : 'bg-[#1B2A4A]/10 text-[#1B2A4A]/50'
+                  open ? 'bg-brand-gold text-brand-navy' : done ? 'bg-brand-navy text-white' : 'bg-brand-navy/10 text-brand-navy/50'
                 }`}>
                   {done ? <Check className="w-3.5 h-3.5" /> : i + 1}
                 </span>
-                <span className={`font-heading font-bold text-sm uppercase ${open ? 'text-white' : 'text-[#1B2A4A]'}`}>
+                <span className={`font-heading font-bold text-sm uppercase ${open ? 'text-white' : 'text-brand-navy'}`}>
                   {s.title}
                 </span>
                 {!s.required && !open && (
-                  <span className="text-[10px] font-body text-[#1B2A4A]/40 border border-[#1B2A4A]/20 px-1.5">לא חובה</span>
+                  <span className="text-[10px] font-body text-brand-navy/40 border border-brand-navy/20 px-1.5">לא חובה</span>
                 )}
                 {!open && (
-                  <span className="mr-auto flex items-center gap-1.5 text-xs font-body text-[#1B2A4A]/60 truncate">
+                  <span className="mr-auto flex items-center gap-1.5 text-xs font-body text-brand-navy/60 truncate">
                     {summaryOf(s.id)}
-                    <Pencil className="w-3 h-3 flex-shrink-0 text-[#E8622A]" />
+                    <Pencil className="w-3 h-3 flex-shrink-0 text-brand-orange" />
                   </span>
                 )}
               </button>
@@ -197,19 +202,19 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                           <button key={box.id} type="button"
                             onClick={() => { setType(box.id); setStep(1); }}
                             aria-pressed={active}
-                            className={`w-full text-right border-2 transition-colors ${lg ? 'p-4' : 'p-3'} ${active ? 'bg-[#1B2A4A] border-[#1B2A4A]' : 'bg-white border-[#1B2A4A]/25 hover:border-[#1B2A4A]'}`}
-                            style={active && lg ? { boxShadow: '3px 3px 0 #E8622A' } : undefined}>
+                            className={`w-full text-right border-2 transition-colors ${lg ? 'p-4' : 'p-3'} ${active ? 'bg-brand-navy border-brand-navy' : 'bg-white border-brand-navy/25 hover:border-brand-navy'}`}
+                            style={active && lg ? { boxShadow: '3px 3px 0 var(--brand-orange)' } : undefined}>
                             <span className="flex items-center gap-2">
-                              <Icon className={`flex-shrink-0 ${lg ? 'w-5 h-5' : 'w-4 h-4'} ${active ? 'text-[#FFD95A]' : 'text-[#E8622A]'}`} />
-                              <span className={`font-heading font-black uppercase ${lg ? 'text-lg' : 'text-base'} ${active ? 'text-white' : 'text-[#1B2A4A]'}`}>
+                              <Icon className={`flex-shrink-0 ${lg ? 'w-5 h-5' : 'w-4 h-4'} ${active ? 'text-brand-gold' : 'text-brand-orange'}`} />
+                              <span className={`font-heading font-black uppercase ${lg ? 'text-lg' : 'text-base'} ${active ? 'text-white' : 'text-brand-navy'}`}>
                                 {box.label}
                               </span>
-                              {active && <Check className="w-4 h-4 text-[#FFD95A] flex-shrink-0 mr-auto" />}
+                              {active && <Check className="w-4 h-4 text-brand-gold flex-shrink-0 mr-auto" />}
                             </span>
-                            <span className={`block font-mono font-black mt-1 ${lg ? 'text-2xl' : 'text-base'} ${active ? 'text-[#FFD95A]' : 'text-[#E8622A]'}`}>
+                            <span className={`block font-mono font-black mt-1 ${lg ? 'text-2xl' : 'text-base'} ${active ? 'text-brand-gold' : 'text-brand-orange'}`}>
                               ₪{box.price}
                             </span>
-                            <span className={`block text-xs font-body mt-1.5 leading-relaxed ${active ? 'text-white/70' : 'text-[#1B2A4A]/55'}`}>
+                            <span className={`block text-xs font-body mt-1.5 leading-relaxed ${active ? 'text-white/70' : 'text-brand-navy/55'}`}>
                               {box.blurb}
                             </span>
                           </button>
@@ -225,12 +230,12 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                           <button key={v} type="button"
                             onClick={() => { setSize(v); setError(''); setStep(2); }}
                             aria-pressed={size === v}
-                            className={`border-2 font-mono font-bold transition-colors ${lg ? 'min-h-[52px] text-base' : 'min-h-[44px] text-sm'} ${size === v ? 'bg-[#E8622A] text-white border-[#E8622A]' : 'bg-white text-[#1B2A4A] border-[#1B2A4A]/30 hover:border-[#1B2A4A]'}`}>
+                            className={`border-2 font-mono font-bold transition-colors ${lg ? 'min-h-[52px] text-base' : 'min-h-[44px] text-sm'} ${size === v ? 'bg-brand-orange text-white border-brand-orange' : 'bg-white text-brand-navy border-brand-navy/30 hover:border-brand-navy'}`}>
                             {v}
                           </button>
                         ))}
                       </div>
-                      <Link to="/size-guide" className="inline-block mt-2.5 text-xs font-body text-[#1B2A4A]/55 underline hover:text-[#E8622A]">
+                      <Link to="/size-guide" className="inline-block mt-2.5 text-xs font-body text-brand-navy/55 underline hover:text-brand-orange">
                         לא בטוח? מדריך המידות
                       </Link>
                     </>
@@ -249,21 +254,21 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
                   {s.id === 'exclude' && (
                     <>
-                      <p className="text-xs font-body text-[#1B2A4A]/55 mb-3 leading-relaxed">
+                      <p className="text-xs font-body text-brand-navy/55 mb-3 leading-relaxed">
                         ההפתעה נשארת הפתעה, אבל אנחנו נמנע ממה שתסמן כאן.
                       </p>
 
-                      <label htmlFor={fid('clubs')} className="flex items-center gap-1.5 text-xs font-heading font-bold text-[#1B2A4A] uppercase tracking-wide mb-1.5">
-                        <Ban className="w-3.5 h-3.5 text-[#E8622A]" />
+                      <label htmlFor={fid('clubs')} className="flex items-center gap-1.5 text-xs font-heading font-bold text-brand-navy uppercase tracking-wide mb-1.5">
+                        <Ban className="w-3.5 h-3.5 text-brand-orange" />
                         קבוצות שלא תרצה לקבל
                       </label>
                       <input id={fid('clubs')} value={excludeClubs} maxLength={200}
                         onChange={e => setExcludeClubs(e.target.value)}
                         placeholder="למשל: ברצלונה, מכבי תל אביב"
-                        className="w-full border-2 border-[#1B2A4A]/30 focus:border-[#1B2A4A] px-3 py-2.5 text-sm bg-white focus:outline-none font-body" />
+                        className="w-full border-2 border-brand-navy/30 focus:border-brand-navy px-3 py-2.5 text-sm bg-white focus:outline-none font-body" />
 
-                      <p className="flex items-center gap-1.5 text-xs font-heading font-bold text-[#1B2A4A] uppercase tracking-wide mt-4 mb-2">
-                        <Ban className="w-3.5 h-3.5 text-[#E8622A]" />
+                      <p className="flex items-center gap-1.5 text-xs font-heading font-bold text-brand-navy uppercase tracking-wide mt-4 mb-2">
+                        <Ban className="w-3.5 h-3.5 text-brand-orange" />
                         צבעים שלא תרצה לקבל
                       </p>
                       <div className="flex flex-wrap gap-1.5">
@@ -272,44 +277,44 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                           return (
                             <button key={c.label} type="button" onClick={() => toggleColor(c.label)}
                               aria-pressed={off}
-                              className={`flex items-center gap-1.5 min-h-[44px] pr-2.5 pl-3 border-2 text-xs font-body transition-colors ${off ? 'bg-[#1B2A4A] border-[#1B2A4A] text-white line-through' : 'bg-white border-[#1B2A4A]/25 text-[#1B2A4A] hover:border-[#1B2A4A]'}`}>
-                              <span className="w-3.5 h-3.5 flex-shrink-0 border border-[#1B2A4A]/40" style={{ background: c.hex }} />
+                              className={`flex items-center gap-1.5 min-h-[44px] pr-2.5 pl-3 border-2 text-xs font-body transition-colors ${off ? 'bg-brand-navy border-brand-navy text-white line-through' : 'bg-white border-brand-navy/25 text-brand-navy hover:border-brand-navy'}`}>
+                              <span className="w-3.5 h-3.5 flex-shrink-0 border border-brand-navy/40" style={{ background: c.hex }} />
                               {c.label}
                             </button>
                           );
                         })}
                       </div>
                       {excludeColors.length > 0 && (
-                        <p className="text-xs font-body text-[#1B2A4A]/60 mt-2">
-                          לא נשלח: <strong className="text-[#1B2A4A]">{excludeColors.join(', ')}</strong>
+                        <p className="text-xs font-body text-brand-navy/60 mt-2">
+                          לא נשלח: <strong className="text-brand-navy">{excludeColors.join(', ')}</strong>
                         </p>
                       )}
 
-                      <label htmlFor={fid('notes')} className="flex items-center gap-1.5 text-xs font-heading font-bold text-[#1B2A4A] uppercase tracking-wide mt-4 mb-1.5">
-                        <MessageSquare className="w-3.5 h-3.5 text-[#E8622A]" />
+                      <label htmlFor={fid('notes')} className="flex items-center gap-1.5 text-xs font-heading font-bold text-brand-navy uppercase tracking-wide mt-4 mb-1.5">
+                        <MessageSquare className="w-3.5 h-3.5 text-brand-orange" />
                         הערות
                       </label>
                       <textarea id={fid('notes')} value={notes} maxLength={500} rows={3}
                         onChange={e => setNotes(e.target.value)}
                         placeholder="ליגה שאתה מעדיף, שחקן שתשמח לקבל, מתנה למישהו. כל דבר שיעזור לנו לבחור."
-                        className="w-full border-2 border-[#1B2A4A]/30 focus:border-[#1B2A4A] px-3 py-2.5 text-sm bg-white focus:outline-none font-body resize-none" />
-                      <p className="text-[11px] text-[#1B2A4A]/40 font-mono mt-1">{notes.length}/500</p>
+                        className="w-full border-2 border-brand-navy/30 focus:border-brand-navy px-3 py-2.5 text-sm bg-white focus:outline-none font-body resize-none" />
+                      <p className="text-[11px] text-brand-navy/40 font-mono mt-1">{notes.length}/500</p>
                     </>
                   )}
 
                   {/* Step navigation. The last step has no "next" — the order
                       button below is the next thing to press. */}
                   {!isLast && (
-                    <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[#1B2A4A]/10">
+                    <div className="flex items-center gap-2 mt-4 pt-3 border-t border-brand-navy/10">
                       {step > 0 && (
                         <button type="button" onClick={() => goTo(step - 1)}
-                          className="inline-flex items-center gap-1 min-h-[44px] px-3 text-xs font-heading font-bold uppercase text-[#1B2A4A]/60 hover:text-[#1B2A4A] transition-colors">
+                          className="inline-flex items-center gap-1 min-h-[44px] px-3 text-xs font-heading font-bold uppercase text-brand-navy/60 hover:text-brand-navy transition-colors">
                           <ChevronRight className="w-4 h-4" />
                           חזרה
                         </button>
                       )}
                       <button type="button" onClick={goNext}
-                        className="mr-auto inline-flex items-center gap-1.5 min-h-[44px] bg-[#1B2A4A] text-white px-5 text-xs font-heading font-bold uppercase tracking-wide hover:bg-[#E8622A] transition-colors">
+                        className="mr-auto inline-flex items-center gap-1.5 min-h-[44px] bg-brand-navy text-white px-5 text-xs font-heading font-bold uppercase tracking-wide hover:bg-brand-orange transition-colors">
                         {STEPS[step].required ? 'המשך' : 'דלג'}
                         <ChevronLeft className="w-4 h-4" />
                       </button>
@@ -323,7 +328,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
       </div>
 
       {/* Total */}
-      <div className={`border-t-2 border-[#1B2A4A] bg-[#F2ECD9]/60 ${lg ? 'p-5' : 'p-4'}`}>
+      <div className={`border-t-2 border-brand-navy bg-brand-cream/60 ${lg ? 'p-5' : 'p-4'}`}>
         <div className="space-y-1.5 mb-3 text-sm font-body">
           <Row label={`מיסטרי בוקס ${selected.label}`} value={selected.price} />
           {addName && <Row label="שם ומספר מאחורה" value={NAME_PRICE} />}
@@ -331,22 +336,22 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           {size && <Row label="מידה" text={size} />}
         </div>
 
-        <div className="flex items-center justify-between py-2.5 border-t-2 border-[#1B2A4A]">
-          <span className={`font-heading font-bold text-[#1B2A4A] uppercase ${lg ? 'text-lg' : ''}`}>סה"כ</span>
-          <span className={`font-mono font-black text-[#E8622A] ${lg ? 'text-4xl' : 'text-2xl'}`}>₪{total}</span>
+        <div className="flex items-center justify-between py-2.5 border-t-2 border-brand-navy">
+          <span className={`font-heading font-bold text-brand-navy uppercase ${lg ? 'text-lg' : ''}`}>סה"כ</span>
+          <span className={`font-mono font-black text-brand-orange ${lg ? 'text-4xl' : 'text-2xl'}`}>₪{total}</span>
         </div>
 
         {error && <p role="alert" className="text-red-600 text-sm font-body mt-1 mb-2">{error}</p>}
 
         <button type="button" onClick={handleAdd}
           className={`mt-2 w-full flex items-center justify-center gap-2 font-heading font-bold uppercase tracking-wider transition-colors ${lg ? 'py-4 text-base' : 'py-3.5 text-sm'} ${
-            size ? 'bg-[#E8622A] text-white hover:bg-[#D0551F]' : 'bg-[#1B2A4A]/15 text-[#1B2A4A]/45 cursor-not-allowed'
+            size ? 'bg-brand-orange text-white hover:bg-brand-orange-dark' : 'bg-brand-navy/15 text-brand-navy/45 cursor-not-allowed'
           }`}
-          style={size ? { boxShadow: '3px 3px 0 #1B2A4A' } : undefined}>
+          style={size ? { boxShadow: '3px 3px 0 var(--brand-navy)' } : undefined}>
           <ShoppingCart className={lg ? 'w-5 h-5' : 'w-4 h-4'} />
           {size ? 'הוסף לסל' : 'בחר מידה כדי להמשיך'}
         </button>
-        <p className="text-[11px] text-center text-[#1B2A4A]/50 font-body mt-2">
+        <p className="text-[11px] text-center text-brand-navy/50 font-body mt-2">
           בלי תשלום באתר, שליחת בקשה בלבד.
         </p>
       </div>
@@ -356,15 +361,15 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
 function Extra({ checked, onChange, label, price, hint }) {
   return (
-    <label className={`flex items-start gap-3 p-3 border-2 cursor-pointer transition-colors ${checked ? 'border-[#E8622A] bg-[#E8622A]/5' : 'border-[#1B2A4A]/20 hover:border-[#1B2A4A]/50'}`}>
+    <label className={`flex items-start gap-3 p-3 border-2 cursor-pointer transition-colors ${checked ? 'border-brand-orange bg-brand-orange/5' : 'border-brand-navy/20 hover:border-brand-navy/50'}`}>
       <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)}
-        className="mt-0.5 w-4 h-4 flex-shrink-0 accent-[#E8622A]" />
+        className="mt-0.5 w-4 h-4 flex-shrink-0 accent-brand-orange" />
       <span className="flex-1 min-w-0">
         <span className="flex items-center justify-between gap-2">
-          <span className="font-body font-bold text-sm text-[#1B2A4A]">{label}</span>
-          <span className="font-mono font-bold text-sm text-[#E8622A] flex-shrink-0">+₪{price}</span>
+          <span className="font-body font-bold text-sm text-brand-navy">{label}</span>
+          <span className="font-mono font-bold text-sm text-brand-orange flex-shrink-0">+₪{price}</span>
         </span>
-        <span className="block text-xs font-body text-[#1B2A4A]/55 mt-0.5">{hint}</span>
+        <span className="block text-xs font-body text-brand-navy/55 mt-0.5">{hint}</span>
       </span>
     </label>
   );
@@ -372,9 +377,9 @@ function Extra({ checked, onChange, label, price, hint }) {
 
 function Row({ label, value, text }) {
   return (
-    <div className="flex items-center justify-between text-[#1B2A4A]/75">
+    <div className="flex items-center justify-between text-brand-navy/75">
       <span>{label}</span>
-      <span className="font-mono font-bold text-[#1B2A4A]">{text ?? `₪${value}`}</span>
+      <span className="font-mono font-bold text-brand-navy">{text ?? `₪${value}`}</span>
     </div>
   );
 }

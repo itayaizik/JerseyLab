@@ -30,7 +30,7 @@ export default function PromoBanner({ title, subtitle, buttonText, buttonLink, i
     <section className="max-w-7xl mx-auto px-6 py-8">
       <div
         className="relative overflow-hidden flex items-center min-h-[180px] md:min-h-[220px] group"
-        style={{ border: '3px solid #1B2A4A', boxShadow: '5px 5px 0 #E8622A' }}
+        style={{ border: '3px solid var(--brand-navy)', boxShadow: '5px 5px 0 var(--brand-orange)' }}
       >
         {/* Background image with fade transition */}
         {images.length > 0 && (
@@ -47,19 +47,19 @@ export default function PromoBanner({ title, subtitle, buttonText, buttonLink, i
           style={{
             background: images.length > 0
               ? 'linear-gradient(90deg, rgba(27,42,74,0.92) 50%, rgba(27,42,74,0.3) 100%)'
-              : 'linear-gradient(135deg, #1B2A4A 0%, #2d4070 100%)',
+              : 'linear-gradient(135deg, var(--brand-navy) 0%, #2d4070 100%)',
           }}
         />
 
         {/* Diagonal stripe accent */}
         <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: 'repeating-linear-gradient(45deg, #E8622A 0px, #E8622A 2px, transparent 2px, transparent 20px)'
+          backgroundImage: 'repeating-linear-gradient(45deg, var(--brand-orange) 0px, var(--brand-orange) 2px, transparent 2px, transparent 20px)'
         }} />
 
         {/* Content */}
         <div className="relative z-10 px-8 py-6 flex-1">
           {/* Label */}
-          <div className="inline-flex items-center gap-1.5 bg-[#E8622A] text-white px-3 py-1 text-xs font-heading font-bold uppercase tracking-widest mb-3">
+          <div className="inline-flex items-center gap-1.5 bg-brand-orange text-white px-3 py-1 text-xs font-heading font-bold uppercase tracking-widest mb-3">
             <Zap className="w-3 h-3" />
             מבצע מיוחד
           </div>
@@ -73,7 +73,7 @@ export default function PromoBanner({ title, subtitle, buttonText, buttonLink, i
 
           <Link
             to={buttonLink || '/catalog?sale=true'}
-            className="inline-block bg-[#E8622A] text-white font-heading font-black text-sm px-6 py-3 uppercase tracking-wide hover:bg-[#D0551F] transition-colors"
+            className="inline-block bg-brand-orange text-white font-heading font-black text-sm px-6 py-3 uppercase tracking-wide hover:bg-brand-orange-dark transition-colors"
             style={{ boxShadow: '3px 3px 0 rgba(255,255,255,0.3)' }}
           >
             {buttonText || 'לחולצות הסייל ←'}
@@ -82,7 +82,7 @@ export default function PromoBanner({ title, subtitle, buttonText, buttonLink, i
 
         {/* Right decorative element (desktop only) */}
         <div className="hidden md:flex flex-col items-center justify-center pr-12 relative z-10 gap-2">
-          <div className="font-mono font-black text-[#E8622A] text-6xl leading-none drop-shadow-lg">
+          <div className="font-mono font-black text-brand-orange text-6xl leading-none drop-shadow-lg">
             %
           </div>
           <div className="font-heading text-white/65 text-xs uppercase tracking-widest">SALE</div>
@@ -93,14 +93,14 @@ export default function PromoBanner({ title, subtitle, buttonText, buttonLink, i
           <>
             <button
               onClick={handleNext}
-              className="absolute top-1/2 -translate-y-1/2 right-4 z-20 w-10 h-10 flex items-center justify-center bg-[#E8622A]/80 text-white hover:bg-[#E8622A] transition-colors rounded-full"
+              className="absolute top-1/2 -translate-y-1/2 right-4 z-20 w-10 h-10 flex items-center justify-center bg-brand-orange/80 text-white hover:bg-brand-orange transition-colors rounded-full"
               aria-label="הבא"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
             <button
               onClick={handlePrev}
-              className="absolute top-1/2 -translate-y-1/2 left-4 z-20 w-10 h-10 flex items-center justify-center bg-[#E8622A]/80 text-white hover:bg-[#E8622A] transition-colors rounded-full"
+              className="absolute top-1/2 -translate-y-1/2 left-4 z-20 w-10 h-10 flex items-center justify-center bg-brand-orange/80 text-white hover:bg-brand-orange transition-colors rounded-full"
               aria-label="הקודם"
             >
               <ChevronLeft className="w-5 h-5" />

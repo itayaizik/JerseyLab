@@ -228,10 +228,10 @@ export default function ManageShirts() {
                     <div className="flex flex-wrap gap-1">
                       {s.local_stock_sizes && Object.entries(s.local_stock_sizes).filter(([, q]) => Number(q) > 0).length > 0 ? (
                         Object.entries(s.local_stock_sizes).filter(([, q]) => Number(q) > 0).map(([size, q]) => (
-                          <span key={size} className="text-[10px] px-1.5 py-0.5 bg-[#1B2A4A] text-white font-heading uppercase">{size}: {q}</span>
+                          <span key={size} className="text-[10px] px-1.5 py-0.5 bg-brand-navy text-white font-heading uppercase">{size}: {q}</span>
                         ))
                       ) : (
-                        <span className="text-[10px] px-1.5 py-0.5 bg-[#E8622A] text-white font-heading uppercase">משלוח מהיר</span>
+                        <span className="text-[10px] px-1.5 py-0.5 bg-brand-orange text-white font-heading uppercase">משלוח מהיר</span>
                       )}
                     </div>
                   </td>

@@ -102,12 +102,12 @@ export default function Contact() {
   if (submitted) {
     return (
       <div className="max-w-lg mx-auto px-4 py-20 text-center">
-        <div className="w-16 h-16 bg-[#E8622A] flex items-center justify-center mx-auto mb-5"
-          style={{ border: '2px solid #1B2A4A', boxShadow: '4px 4px 0 #1B2A4A' }}>
+        <div className="w-16 h-16 bg-brand-orange flex items-center justify-center mx-auto mb-5"
+          style={{ border: '2px solid var(--brand-navy)', boxShadow: '4px 4px 0 var(--brand-navy)' }}>
           <Check className="w-8 h-8 text-white" />
         </div>
-        <h2 className="font-heading font-black text-2xl text-[#1B2A4A] uppercase mb-2">ההודעה נשלחה!</h2>
-        <p className="text-[#1B2A4A]/60 text-sm font-body">נחזור אליך בהקדם האפשרי.</p>
+        <h2 className="font-heading font-black text-2xl text-brand-navy uppercase mb-2">ההודעה נשלחה!</h2>
+        <p className="text-brand-navy/60 text-sm font-body">נחזור אליך בהקדם האפשרי.</p>
       </div>
     );
   }
@@ -119,40 +119,40 @@ export default function Contact() {
       {/* Header */}
       <div className="text-center mb-10">
         <div className="inline-block mb-3">
-          <div className="bg-[#FFD95A]/60 px-4 py-1 text-xs font-heading tracking-widest text-[#1B2A4A] uppercase"
+          <div className="bg-brand-gold/60 px-4 py-1 text-xs font-heading tracking-widest text-brand-navy uppercase"
             style={{ transform: 'rotate(-1deg)' }}>
             דברו איתנו
           </div>
         </div>
-        <h1 className="font-heading font-black text-4xl text-[#1B2A4A] uppercase mb-2" style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>צור קשר</h1>
-        <p className="text-[#1B2A4A]/60 font-body text-sm">שלח הודעה או פנה אלינו ישירות</p>
+        <h1 className="font-heading font-black text-4xl text-brand-navy uppercase mb-2" style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>צור קשר</h1>
+        <p className="text-brand-navy/60 font-body text-sm">שלח הודעה או פנה אלינו ישירות</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
         {/* Left - contact channels */}
         <div className="space-y-4">
-          <p className="font-heading font-bold text-xs uppercase tracking-widest text-[#1B2A4A]/50 mb-4">פנה אלינו ישירות</p>
+          <p className="font-heading font-bold text-xs uppercase tracking-widest text-brand-navy/50 mb-4">פנה אלינו ישירות</p>
 
           {contactLinks.map(link => (
             <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer"
-              className={`flex items-center gap-4 p-4 bg-white border-2 border-[#1B2A4A] ${link.border} hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 group`}
-              style={{ boxShadow: '3px 3px 0 #1B2A4A' }}>
+              className={`flex items-center gap-4 p-4 bg-white border-2 border-brand-navy ${link.border} hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 group`}
+              style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}>
               <div className={`w-11 h-11 ${link.bg} text-white flex items-center justify-center flex-shrink-0`}
-                style={{ border: '2px solid #1B2A4A' }}>
+                style={{ border: '2px solid var(--brand-navy)' }}>
                 {link.icon}
               </div>
               <div>
-                <p className="font-heading font-bold text-sm text-[#1B2A4A] uppercase">{link.label}</p>
-                <p className="text-xs text-[#1B2A4A]/60 font-body">{link.sub}</p>
+                <p className="font-heading font-bold text-sm text-brand-navy uppercase">{link.label}</p>
+                <p className="text-xs text-brand-navy/60 font-body">{link.sub}</p>
               </div>
-              <span className="mr-auto text-[#E8622A] font-heading font-bold text-xs uppercase opacity-0 group-hover:opacity-100 transition-opacity">פנה ←</span>
+              <span className="mr-auto text-brand-orange font-heading font-bold text-xs uppercase opacity-0 group-hover:opacity-100 transition-opacity">פנה ←</span>
             </a>
           ))}
 
           {/* Info box */}
-          <div className="bg-[#1B2A4A] text-white p-5 mt-6" style={{ border: '2px solid #1B2A4A', boxShadow: '3px 3px 0 #E8622A' }}>
-            <p className="font-heading font-bold text-xs uppercase tracking-widest text-[#E8622A] mb-3">שעות פעילות</p>
+          <div className="bg-brand-navy text-white p-5 mt-6" style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-orange)' }}>
+            <p className="font-heading font-bold text-xs uppercase tracking-widest text-brand-orange mb-3">שעות פעילות</p>
             <p className="font-body text-sm text-white/80 leading-relaxed">
               ימים א׳–ה׳: 9:00–21:00<br />
               שישי: 9:00–14:00<br />
@@ -163,40 +163,40 @@ export default function Contact() {
 
         {/* Right - form */}
         <form onSubmit={handleSubmit} className="bg-white p-6 space-y-4"
-          style={{ border: '2px solid #1B2A4A', boxShadow: '4px 4px 0 #1B2A4A' }}>
-          <p className="font-heading font-bold text-xs uppercase tracking-widest text-[#1B2A4A]/50 mb-2">שלח הודעה</p>
+          style={{ border: '2px solid var(--brand-navy)', boxShadow: '4px 4px 0 var(--brand-navy)' }}>
+          <p className="font-heading font-bold text-xs uppercase tracking-widest text-brand-navy/50 mb-2">שלח הודעה</p>
 
           <div>
-            <label htmlFor="contact-name" className="text-xs font-heading font-bold text-[#1B2A4A] uppercase block mb-1">שם מלא *</label>
+            <label htmlFor="contact-name" className="text-xs font-heading font-bold text-brand-navy uppercase block mb-1">שם מלא *</label>
             <input id="contact-name" value={form.name} onChange={e => handleChange('name', e.target.value)} maxLength={100} autoComplete="name"
-              className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.name ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
+              className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.name ? 'border-red-500' : 'border-brand-navy'}`} />
             {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
           </div>
 
           <div>
-            <label htmlFor="contact-email" className="text-xs font-heading font-bold text-[#1B2A4A] uppercase block mb-1">אימייל *</label>
+            <label htmlFor="contact-email" className="text-xs font-heading font-bold text-brand-navy uppercase block mb-1">אימייל *</label>
             <input id="contact-email" value={form.email} onChange={e => handleChange('email', e.target.value)} type="email" dir="ltr" maxLength={254} autoComplete="email"
-              className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.email ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
+              className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none ${errors.email ? 'border-red-500' : 'border-brand-navy'}`} />
             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="contact-phone" className="text-xs font-heading font-bold text-[#1B2A4A] uppercase block mb-1">טלפון</label>
+              <label htmlFor="contact-phone" className="text-xs font-heading font-bold text-brand-navy uppercase block mb-1">טלפון</label>
               <input id="contact-phone" value={form.phone} onChange={e => handleChange('phone', e.target.value)} dir="ltr" maxLength={20} autoComplete="tel"
-                className="w-full border-2 border-[#1B2A4A] px-3 py-2.5 text-sm bg-white focus:outline-none" />
+                className="w-full border-2 border-brand-navy px-3 py-2.5 text-sm bg-white focus:outline-none" />
             </div>
             <div>
-              <label htmlFor="contact-subject" className="text-xs font-heading font-bold text-[#1B2A4A] uppercase block mb-1">נושא</label>
+              <label htmlFor="contact-subject" className="text-xs font-heading font-bold text-brand-navy uppercase block mb-1">נושא</label>
               <input id="contact-subject" value={form.subject} onChange={e => handleChange('subject', e.target.value)} maxLength={200}
-                className="w-full border-2 border-[#1B2A4A] px-3 py-2.5 text-sm bg-white focus:outline-none" />
+                className="w-full border-2 border-brand-navy px-3 py-2.5 text-sm bg-white focus:outline-none" />
             </div>
           </div>
 
           <div>
-            <label htmlFor="contact-message" className="text-xs font-heading font-bold text-[#1B2A4A] uppercase block mb-1">הודעה *</label>
+            <label htmlFor="contact-message" className="text-xs font-heading font-bold text-brand-navy uppercase block mb-1">הודעה *</label>
             <textarea id="contact-message" value={form.message} onChange={e => handleChange('message', e.target.value)} maxLength={2000}
-              rows={5} className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none resize-none font-body ${errors.message ? 'border-red-500' : 'border-[#1B2A4A]'}`} />
+              rows={5} className={`w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none resize-none font-body ${errors.message ? 'border-red-500' : 'border-brand-navy'}`} />
             {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
           </div>
 
@@ -211,8 +211,8 @@ export default function Contact() {
           <PrivacyConsent id="contact-privacy" checked={privacyOk} onChange={setPrivacyOk} error={errors.privacy} />
 
           <button type="submit" disabled={submitting}
-            className="w-full bg-[#E8622A] text-white py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-[#D0551F] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
-            style={{ boxShadow: '3px 3px 0 #1B2A4A', textShadow: '1px 1px 3px rgba(0,0,0,0.2)' }}>
+            className="w-full bg-brand-orange text-white py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-brand-orange-dark hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
+            style={{ boxShadow: '3px 3px 0 var(--brand-navy)', textShadow: '1px 1px 3px rgba(0,0,0,0.2)' }}>
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
             {submitting ? 'שולח...' : 'שלח הודעה'}
           </button>

@@ -190,7 +190,7 @@ export default function ShirtDetail() {
           onAction={() => window.location.reload()}
         />
         <div className="text-center -mt-2 mb-4">
-          <Link to="/catalog" className="text-sm text-[#1B2A4A]/60 hover:text-[#E8622A] font-body">חזור לקטלוג ←</Link>
+          <Link to="/catalog" className="text-sm text-brand-navy/60 hover:text-brand-orange font-body">חזור לקטלוג ←</Link>
         </div>
       </div>
     );
@@ -240,8 +240,8 @@ export default function ShirtDetail() {
                 tabIndex={0}
                 aria-label={zoomed ? 'הקטן תמונה' : 'הגדל תמונה'}
                 aria-pressed={zoomed}
-                className={`aspect-square bg-gray-50 overflow-hidden relative border-2 border-[#1B2A4A] ${zoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
-                style={{ boxShadow: '4px 4px 0 #E8622A' }}
+                className={`aspect-square bg-gray-50 overflow-hidden relative border-2 border-brand-navy ${zoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
+                style={{ boxShadow: '4px 4px 0 var(--brand-orange)' }}
                 onClick={() => { setZoomed(z => !z); setZoomOrigin('50% 50%'); }}
                 onMouseMove={(e) => {
                   if (!zoomed) return;
@@ -272,7 +272,7 @@ export default function ShirtDetail() {
                 ))}
                 {!showAllImages && allImages.length > 3 && (
                   <button onClick={() => setShowAllImages(true)}
-                    className="w-16 h-16 flex-shrink-0 border-2 border-[#1B2A4A] text-[#1B2A4A] text-xs font-heading font-bold hover:bg-[#F2ECD9]">
+                    className="w-16 h-16 flex-shrink-0 border-2 border-brand-navy text-brand-navy text-xs font-heading font-bold hover:bg-brand-cream">
                     +{allImages.length - 3}
                   </button>
                 )}
@@ -322,7 +322,7 @@ export default function ShirtDetail() {
                       const isSelected = selectedSize === size;
                       return (
                         <button key={size} type="button" onClick={() => setSelectedSize(selectedSize === size ? '' : size)}
-                          className={`flex flex-col items-center justify-center min-h-[2.75rem] px-3 py-1 border-2 text-sm font-mono transition-all ${isSelected ? (isLocal ? 'border-green-700 bg-green-600 text-white' : 'bg-[#1B2A4A] text-white border-[#1B2A4A]') : isLocal ? 'border-green-600 text-green-700 bg-green-50 hover:bg-green-100' : 'border-[#1B2A4A] text-[#1B2A4A] hover:bg-[#F2ECD9]'}`}>
+                          className={`flex flex-col items-center justify-center min-h-[2.75rem] px-3 py-1 border-2 text-sm font-mono transition-all ${isSelected ? (isLocal ? 'border-green-700 bg-green-600 text-white' : 'bg-brand-navy text-white border-brand-navy') : isLocal ? 'border-green-600 text-green-700 bg-green-50 hover:bg-green-100' : 'border-brand-navy text-brand-navy hover:bg-brand-cream'}`}>
                           <span>{size}</span>
                           {isLocal ? (
                             <span className="text-[8px] font-heading font-bold uppercase leading-none mt-0.5">מלאי בארץ</span>
@@ -345,7 +345,7 @@ export default function ShirtDetail() {
             {/* Shipping Info */}
             <div className="mb-6">
               <ShippingBadge shirt={shirt} size={selectedSize} />
-              <button onClick={() => setShippingInfoOpen(true)} className="flex items-center gap-1 text-xs text-[#E8622A] font-bold font-heading uppercase mt-2 hover:underline">
+              <button onClick={() => setShippingInfoOpen(true)} className="flex items-center gap-1 text-xs text-brand-orange font-bold font-heading uppercase mt-2 hover:underline">
                 <Info className="w-3.5 h-3.5" />
                 פרטים על משלוחים
               </button>
@@ -363,7 +363,7 @@ export default function ShirtDetail() {
             {shirt.tags && shirt.tags.length > 0 &&
             <div className="flex gap-1 flex-wrap mb-6">
                 {shirt.tags.map((t) =>
-              <Link key={t} to={`/catalog?q=${encodeURIComponent(t)}`} className="text-xs px-2 py-1 border-2 border-[#1B2A4A] text-[#1B2A4A] bg-transparent hover:bg-[#F2ECD9] transition-colors font-mono">
+              <Link key={t} to={`/catalog?q=${encodeURIComponent(t)}`} className="text-xs px-2 py-1 border-2 border-brand-navy text-brand-navy bg-transparent hover:bg-brand-cream transition-colors font-mono">
                     #{t}
                   </Link>
               )}
@@ -378,12 +378,12 @@ export default function ShirtDetail() {
               {shirt.status === 'available' && (
                 <>
                 <button onClick={() => setInterestOpen(true)}
-                  className="w-full py-4 font-heading font-black text-base bg-[#E8622A] text-white active:bg-[#D0551F] touch-manipulation"
-                  style={{ boxShadow: '3px 3px 0 #1B2A4A' }}
+                  className="w-full py-4 font-heading font-black text-base bg-brand-orange text-white active:bg-brand-orange-dark touch-manipulation"
+                  style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}
                   aria-label={`שלח בקשת התעניינות עבור ${shirt.name}`}>
                   אני מעוניין
                 </button>
-                <p className="text-center text-[11px] text-[#1B2A4A]/50 font-body">ללא התחייבות - נחזור אליך עם פרטי זמינות</p>
+                <p className="text-center text-[11px] text-brand-navy/50 font-body">ללא התחייבות - נחזור אליך עם פרטי זמינות</p>
                 </>
               )}
               <div className="flex gap-2">
@@ -431,12 +431,12 @@ export default function ShirtDetail() {
 
       {/* Sticky mobile CTA - keeps the primary action reachable while scrolling */}
       {shirt.status === 'available' && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t-2 border-[#1B2A4A] px-3 py-2 flex items-center gap-3" style={{ boxShadow: '0 -3px 0 #E8622A' }}>
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t-2 border-brand-navy px-3 py-2 flex items-center gap-3" style={{ boxShadow: '0 -3px 0 var(--brand-orange)' }}>
           <div className="flex-1 min-w-0">
-            <p className="font-heading font-bold text-xs text-[#1B2A4A] uppercase truncate">{shirt.name}</p>
-            <p className="font-mono font-bold text-sm text-[#E8622A]">{shirt.sale_price && shirt.sale_price < shirt.price ? `₪${shirt.sale_price}` : `₪${shirt.price}`}</p>
+            <p className="font-heading font-bold text-xs text-brand-navy uppercase truncate">{shirt.name}</p>
+            <p className="font-mono font-bold text-sm text-brand-orange">{shirt.sale_price && shirt.sale_price < shirt.price ? `₪${shirt.sale_price}` : `₪${shirt.price}`}</p>
           </div>
-          <button onClick={() => setInterestOpen(true)} className="bg-[#E8622A] text-white px-6 py-3 font-heading font-black text-sm uppercase touch-manipulation active:bg-[#D0551F]" style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
+          <button onClick={() => setInterestOpen(true)} className="bg-brand-orange text-white px-6 py-3 font-heading font-black text-sm uppercase touch-manipulation active:bg-brand-orange-dark" style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
             אני מעוניין
           </button>
         </div>

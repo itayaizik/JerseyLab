@@ -61,15 +61,15 @@ export default function PromoBar() {
   };
 
   return (
-    <div className="bg-[#E8622A] text-white">
+    <div className="bg-brand-orange text-white">
       <div className="max-w-7xl mx-auto px-4 lg:px-6 flex items-center gap-2 min-h-[36px] py-1.5">
-        <Megaphone className="w-3.5 h-3.5 flex-shrink-0 text-[#FFD95A]" aria-hidden="true" />
+        <Megaphone className="w-3.5 h-3.5 flex-shrink-0 text-brand-gold" aria-hidden="true" />
         <p className="flex-1 min-w-0 text-xs font-body text-center sm:text-right leading-snug">
           {promo.text}
           {promo.linkText && promo.linkHref && (
             <>
               {' '}
-              <Link to={promo.linkHref} className="font-bold underline underline-offset-2 hover:text-[#FFD95A] transition-colors">
+              <Link to={promo.linkHref} className="font-bold underline underline-offset-2 hover:text-brand-gold transition-colors">
                 {promo.linkText}
               </Link>
             </>
