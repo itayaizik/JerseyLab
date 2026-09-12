@@ -38,9 +38,9 @@ export default function Shipping() {
 
       <Section title="עלות משלוח">
         <dl>
-          <Fact label="דמי משלוח" value={s.price} />
-          <Fact label="משלוח חינם מעל" value={s.freeAbove} />
-          <Fact label="חברת השילוח" value={s.carrier} />
+          {s.price !== null && <Fact label="דמי משלוח" value={s.price} />}
+          {s.freeAbove !== null && <Fact label="משלוח חינם מעל" value={s.freeAbove} />}
+          {s.carrier !== null && <Fact label="חברת השילוח" value={s.carrier} />}
         </dl>
         <p>
           עלות המשלוח המדויקת תימסר לך בשיחה לפני אישור ההזמנה, ולפני כל תשלום.

@@ -55,12 +55,31 @@ export const BUSINESS = {
   },
 
   // Shown on the shipping policy. Change these and the page follows.
+  //
+  // Every value here is printed to the customer as written, so write them the
+  // way they should read on the page, units included: '25 ₪', not 25.
+  //
+  // A field set to null is one that does not apply to this shop, and its row is
+  // left off the page rather than shown as a gap. That is the difference the
+  // TODO convention cannot express on its own: TODO means "no answer yet", null
+  // means "the answer is no". A shop with no free-shipping tier needs the
+  // second, because promising to announce a threshold that will never exist is
+  // its own kind of wrong.
   shipping: {
     localStockDays: 'עד 7 ימי עסקים',
     specialOrderWeeks: 'עד 3 שבועות',
     pickupLocation: 'קריית אונו',
+
+    // Who actually delivers, e.g. 'דואר ישראל', 'שליח עד הבית'. null if it
+    // varies per order and is agreed in the conversation instead.
     carrier: 'TODO_SHIPPING_CARRIER',
+
+    // The delivery fee, e.g. '25 ₪'. Free delivery for everyone is a value
+    // here too: 'ללא עלות'.
     price: 'TODO_SHIPPING_PRICE',
+
+    // Order value above which delivery is free, e.g. '300 ₪'. null if there is
+    // no such tier.
     freeAbove: 'TODO_FREE_SHIPPING_THRESHOLD',
   },
 
