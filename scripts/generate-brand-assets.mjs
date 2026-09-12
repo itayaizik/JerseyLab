@@ -17,7 +17,7 @@
 // Run with: node scripts/generate-brand-assets.mjs
 
 import sharp from 'sharp';
-import { statSync, mkdirSync } from 'node:fs';
+import { statSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -53,6 +53,45 @@ await sharp(master('logo-square.png'))
   .png({ compressionLevel: 9, palette: true })
   .toFile(out('icon-maskable-512.png'));
 note(out('icon-maskable-512.png'));
+
+// --- favicon.ico ----------------------------------------------------------
+// Browsers ask for /favicon.ico by convention whether or not the page declares
+// <link rel="icon">, so without this every first visit takes a 404. An .ico is
+// only a container, and every browser in use reads PNG entries inside one, so
+// the 16 and 32 PNGs above go in as they are.
+{
+  const entries = await Promise.all([16, 32].map(async size => ({
+    size,
+    png: await sharp(master('logo-square.png'))
+      .resize(size, size, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png({ compressionLevel: 9 })
+      .toBuffer(),
+  })));
+
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0);             // reserved
+  header.writeUInt16LE(1, 2);             // type 1 = icon
+  header.writeUInt16LE(entries.length, 4);
+
+  let offset = 6 + entries.length * 16;
+  const dir = [];
+  for (const { size, png } of entries) {
+    const e = Buffer.alloc(16);
+    e.writeUInt8(size, 0);                // width, 0 would mean 256
+    e.writeUInt8(size, 1);                // height
+    e.writeUInt8(0, 2);                   // palette size, 0 = not paletted
+    e.writeUInt8(0, 3);                   // reserved
+    e.writeUInt16LE(1, 4);                // colour planes
+    e.writeUInt16LE(32, 6);               // bits per pixel
+    e.writeUInt32LE(png.length, 8);
+    e.writeUInt32LE(offset, 12);
+    dir.push(e);
+    offset += png.length;
+  }
+
+  writeFileSync(out('favicon.ico'), Buffer.concat([header, ...dir, ...entries.map(e => e.png)]));
+  note(out('favicon.ico'));
+}
 
 // --- share image ----------------------------------------------------------
 // Open Graph wants a landscape image; the master is square, so it is centred on

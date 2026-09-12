@@ -91,7 +91,6 @@ export default function Contact() {
         subject: form.subject,
         message: form.message.trim(),
       });
-      base44.analytics.track({ eventName: 'contact_submitted' });
       setSubmitted(true);
     } catch (err) {
       setSubmitError(friendlyError(err, 'שליחת ההודעה נכשלה. נסה שוב בעוד רגע.'));

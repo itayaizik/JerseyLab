@@ -54,8 +54,7 @@ export default function ShirtDetail() {
       setShirt(s);
       setLoading(false);
 
-      // Analytics + fire-and-forget view increment - never block the UI
-      base44.analytics.track({ eventName: 'product_view', properties: { shirt_id: s.id, club: s.club || s.national_team || '', status: s.status } });
+      // Fire-and-forget view increment - never block the UI
       base44.entities.Shirt.update(id, { views_count: (s.views_count || 0) + 1 }).catch(() => {});
 
       // Load related products in the background AFTER the shirt is visible

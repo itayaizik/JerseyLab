@@ -179,7 +179,6 @@ export function CartModal({ open, onClose, user }) {
         items: cart, total,
       });
 
-      base44.analytics.track({ eventName: 'cart_submitted', properties: { item_count: cart.length, total, contact_channel: channel } });
       setCart([]);
       setCartState([]);
       setSubmitted(true);
@@ -458,7 +457,6 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
       isExactStockItem: buyingExact,
     });
     setCart(cart);
-    base44.analytics.track({ eventName: 'interest_added_to_cart', properties: { shirt_id: shirt.id, size: selectedSize, buy_mode: sizeHasLocalStock ? buyMode : null } });
     base44.entities.Shirt.update(shirt.id, { interest_count: (shirt.interest_count || 0) + 1 }).catch(() => {});
     setAdded(true);
   };

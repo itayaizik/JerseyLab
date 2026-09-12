@@ -185,7 +185,6 @@ export default function Navbar() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      base44.analytics.track({ eventName: 'search_performed', properties: { source: 'navbar' } });
       base44.entities.SearchLog.create({ search_term: searchTerm.trim() }).catch(() => {});
       navigate(`/catalog?q=${encodeURIComponent(searchTerm.trim())}`);
       setSearchTerm('');
