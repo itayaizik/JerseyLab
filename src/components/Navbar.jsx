@@ -98,6 +98,26 @@ export default function Navbar() {
     return () => { observer.disconnect(); window.removeEventListener('resize', sync); };
   }, []);
 
+  // Once the page has scrolled, the header lifts off the edges and becomes a
+  // floating card. It reads as the bar detaching from the top of the window,
+  // which is the effect the shop had before the header was rebuilt as a stack.
+  //
+  // The float is applied to the whole fixed stack, promo strip and nav
+  // together, so the two stay one object. Crucially it is not applied to the
+  // spacer: the spacer reserves the header's height at rest, and at rest the
+  // float is off, so the two cannot fight. That separation is what stopped the
+  // fixed bar covering the top of every page in the first place.
+  const [floating, setFloating] = useState(false);
+  useEffect(() => {
+    // Someone who has asked their system for less motion should not get a bar
+    // that slides around under them.
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const onScroll = () => setFloating(window.scrollY > 16);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   useEffect(() => {
     setCartCount(getCart().length);
     const handler = () => setCartCount(getCart().length);
@@ -216,7 +236,20 @@ export default function Navbar() {
           promo strip appearing or being dismissed cannot leave a gap. */}
       <div aria-hidden="true" style={{ height: headerHeight }} />
 
-      <div ref={headerRef} className="fixed top-0 left-0 right-0 z-50">
+      <div
+        ref={headerRef}
+        className="fixed z-50"
+        style={{
+          top: floating ? 16 : 0,
+          left: floating ? 16 : 0,
+          right: floating ? 16 : 0,
+          borderRadius: floating ? 8 : 0,
+          // Keeps the promo strip's colour inside the rounded corners.
+          overflow: 'hidden',
+          boxShadow: floating ? '0 8px 32px rgba(0, 0, 0, 0.15)' : 'none',
+          transition: 'top 300ms ease, left 300ms ease, right 300ms ease, border-radius 300ms ease, box-shadow 300ms ease',
+        }}
+      >
         <PromoBar />
 
       <nav className="relative z-10 text-white" style={{
