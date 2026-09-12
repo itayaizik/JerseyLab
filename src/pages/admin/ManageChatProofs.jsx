@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MessageSquare, Trash2, Upload, Loader2, Eye, EyeOff, ArrowUp, ArrowDown } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { formatDate } from '@/lib/dates';
+import { uploadErrorMessage } from '@/lib/supabaseStorage';
 
 // Screenshots of real conversations with customers, shown on the site as
 // proof that people actually buy here and get answered.
@@ -49,7 +50,7 @@ export default function ManageChatProofs() {
       setCaption('');
       await load();
     } catch (err) {
-      setError('ההעלאה נכשלה. נסה שוב.');
+      setError(uploadErrorMessage(err));
     } finally {
       setUploading(false);
       e.target.value = '';

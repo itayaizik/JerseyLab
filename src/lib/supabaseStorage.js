@@ -31,6 +31,32 @@ async function compressImage(file) {
   }
 }
 
+// Turns a storage error into something the person looking at the screen can
+// act on.
+//
+// Every upload screen used to catch the error and show "ההעלאה נכשלה. נסה שוב",
+// which is true and useless: the three things that actually go wrong each need
+// a different response, and "try again" is the right answer to none of them.
+// Signing out is by far the most common, because an admin session expires long
+// before the next time anyone uploads anything.
+export function uploadErrorMessage(err) {
+  const raw = String(err?.message || err || '');
+
+  if (/row-level security|Unauthorized|AccessDenied|JWT|403/i.test(raw)) {
+    return 'אינך מחובר כמנהל, או שההתחברות פגה. התחבר מחדש ונסה שוב.';
+  }
+  if (/exceeded the maximum allowed size|Payload too large|413/i.test(raw)) {
+    return 'הקובץ גדול מדי. המקסימום הוא 10MB.';
+  }
+  if (/mime type|not supported/i.test(raw)) {
+    return 'סוג הקובץ אינו נתמך. אפשר להעלות תמונות בלבד (JPG, PNG, WEBP, HEIC).';
+  }
+  if (/Failed to fetch|NetworkError|network/i.test(raw)) {
+    return 'אין חיבור לשרת. בדוק את האינטרנט ונסה שוב.';
+  }
+  return raw ? `ההעלאה נכשלה: ${raw}` : 'ההעלאה נכשלה.';
+}
+
 // Same shape as base44.integrations.Core.UploadFile so the admin upload
 // call sites didn't need to change. `bucket` defaults to shirt-images but
 // callers (e.g. review photos) can target a different public bucket.
