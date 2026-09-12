@@ -26,7 +26,7 @@ export default function Privacy() {
         </p>
         <dl className="mt-2">
           <Fact label="שם העסק" value={BUSINESS.legalName} />
-          <Fact label="מספר עוסק" value={BUSINESS.registrationNumber} />
+          {BUSINESS.registered && <Fact label="מספר עוסק" value={BUSINESS.registrationNumber} />}
           <Fact label="כתובת" value={BUSINESS.address} />
           <Fact label="דוא״ל" value={BUSINESS.email} />
           <Fact label="טלפון" value={BUSINESS.phone} />

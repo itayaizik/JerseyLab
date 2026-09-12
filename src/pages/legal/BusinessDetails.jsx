@@ -15,15 +15,19 @@ export default function BusinessDetails() {
     <LegalPage
       title="פרטי העסק"
       path="/legal/business"
-      description="פרטי העסק המלאים של JerseyLab: שם, מספר עוסק, כתובת ודרכי יצירת קשר, כנדרש בחוק הגנת הצרכן."
+      description="פרטי העסק של JerseyLab: מי עומד מאחורי האתר, כתובת ודרכי יצירת קשר, כנדרש בחוק הגנת הצרכן."
       intro="הפרטים המלאים של מי שעומד מאחורי האתר, כנדרש בחוק הגנת הצרכן לעסקת מכר מרחוק."
     >
       <Section title="זהות העסק">
         <dl>
           <Fact label="שם מסחרי" value={BUSINESS.tradingName} />
           <Fact label="שם בעל העסק" value={BUSINESS.legalName} />
-          <Fact label="סוג רישום" value={BUSINESS.registrationType} />
-          <Fact label="מספר עוסק / ח.פ." value={BUSINESS.registrationNumber} />
+          {BUSINESS.registered && (
+            <>
+              <Fact label="סוג רישום" value={BUSINESS.registrationType} />
+              <Fact label="מספר עוסק / ח.פ." value={BUSINESS.registrationNumber} />
+            </>
+          )}
           <Fact label="כתובת" value={BUSINESS.address} />
         </dl>
       </Section>

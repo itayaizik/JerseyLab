@@ -21,6 +21,18 @@ export const BUSINESS = {
   // this is usually the owner's full name.
   legalName: 'TODO_LEGAL_NAME',
 
+  // Whether the shop is registered with the tax authority yet.
+  //
+  // Anyone trading as a business in Israel has to register; עוסק פטור is the
+  // free, online, below-threshold form of it. Until that happens there is no
+  // dealer number in existence, so the pages drop the row rather than printing
+  // "יעודכן בקרוב" against it: an omission reads as a detail not yet added, a
+  // placeholder reads as a number being withheld, and the second is worse.
+  //
+  // Flip this to true and fill the two fields below on the day the
+  // registration comes through. All six legal pages follow on their own.
+  registered: false,
+
   // ח.פ for a company, ע.מ for a licensed dealer, ת.ז for an exempt dealer.
   registrationType: 'TODO_REGISTRATION_TYPE',
   registrationNumber: 'TODO_REGISTRATION_NUMBER',
@@ -67,11 +79,17 @@ export function detail(value, fallback = 'יעודכן בקרוב') {
   return isPlaceholder(value) || !value ? fallback : value;
 }
 
+// Fields that only exist once the business is registered. Asking the owner to
+// fill these in while `registered` is false would be asking for a number that
+// does not exist, so the handover list leaves them out until it does.
+const REGISTRATION_FIELDS = ['registrationType', 'registrationNumber'];
+
 // Everything the owner still has to supply, for the handover list.
 export function missingBusinessDetails() {
   const missing = [];
   const walk = (obj, path = '') => {
     for (const [key, value] of Object.entries(obj)) {
+      if (!BUSINESS.registered && path === '' && REGISTRATION_FIELDS.includes(key)) continue;
       if (typeof value === 'string' && isPlaceholder(value)) missing.push(`${path}${key}`);
       else if (value && typeof value === 'object') walk(value, `${path}${key}.`);
     }
