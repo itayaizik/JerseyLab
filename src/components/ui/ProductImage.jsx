@@ -11,9 +11,9 @@ const FALLBACK = 'https://placehold.co/400x400/EDE8D9/9aa3b2?text=JerseyLab';
 // The saving is not marginal: a catalogue photo that is 110 KB at full size is
 // 36 KB at the width a card actually paints it.
 //
-// Images still hosted elsewhere - the club crests on Wikimedia, and the handful
-// of product shots belonging to other shops - are passed through untouched,
-// because rewriting a URL we do not control would only break it.
+// Anything not in our storage is passed through untouched. Nothing in the
+// catalogue is, as of the migration, but the check stays: a URL we do not
+// control is one we cannot ask to resize, and rewriting it would only break it.
 //
 // The rest of what this component does is about when images arrive rather than
 // how big they are:

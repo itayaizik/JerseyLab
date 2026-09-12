@@ -97,3 +97,52 @@ update storage.buckets
 --     retrosleague.com, static.wixstatic.com, www.mystershirt.com). Copying
 --     those onto our own storage is a decision about someone else's photographs
 --     and belongs to the owner, not to a migration script.
+
+-- 7 -------------------------------------------------------------------------
+-- Second image migration pass, later the same day, at the owner's explicit
+-- instruction after the trade-off was put to them twice.
+--
+-- The remaining 45 images were moved into our own storage: 26 club and league
+-- crests from Wikimedia, 14 product photos from usi-sports.com, and one each
+-- from retrosleague.com, static.wixstatic.com, www.mystershirt.com and Google's
+-- thumbnail cache.
+--
+-- Every image URL in the database now points at our own bucket: 210 of 210,
+-- one host. 121 MB across 178 catalogue images, 27 crests and 5 category cards.
+--
+-- Worth recording about the crests: Wikimedia returns HTTP 400 to requests that
+-- do not look like a browser, which made them appear dead to a plain curl while
+-- loading perfectly for every real visitor. They were never broken. Supabase's
+-- own servers fetched all 45 without a single failure.
+--
+-- The photographs taken from other shops are a matter for the owner rather than
+-- a technical one; the honest long-term answer for those fourteen is the shop's
+-- own photographs, since neither hotlinking nor copying is clean.
+
+-- 8 -------------------------------------------------------------------------
+-- SVG allowed on shirt-images only.
+--
+-- Four of the crests are SVG, and the MIME restriction added in section 4
+-- rejected them. SVG can carry script, so it stays blocked on request-images -
+-- which any anonymous visitor can write to - and on review-images. It is
+-- permitted on shirt-images alone, whose INSERT policy requires is_admin(), so
+-- the only person who can put an SVG there is the owner. An SVG referenced by
+-- <img src> cannot execute script in any case.
+
+update storage.buckets
+   set allowed_mime_types = array['image/jpeg','image/png','image/webp','image/gif','image/heic','image/heif','image/svg+xml']
+ where id = 'shirt-images';
+
+-- 9 -------------------------------------------------------------------------
+-- Auth password policy, set through the dashboard at the owner's request.
+--
+--   Minimum password length: 6 -> 8
+--   Password requirements:   none -> letters and digits
+--
+-- Deliberately not the "letters, digits and symbols" option Supabase marks as
+-- recommended: requiring symbols is the setting that makes people abandon a
+-- sign-up form, and this shop needs the registrations more than it needs the
+-- last increment of entropy.
+--
+-- Leaked-password protection (HaveIBeenPwned) remains off. It is not a toggle
+-- that was missed: it requires the Pro plan, and this project is on free.

@@ -401,30 +401,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.jerseylab.co/shirt/6a44552d1b206368537929ed</loc>
-    <lastmod>2026-07-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.jerseylab.co/shirt/6a44552d1152966510eb76a9</loc>
-    <lastmod>2026-07-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.jerseylab.co/shirt/6a44552b5b80b87eb70d30a4</loc>
-    <lastmod>2026-07-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.jerseylab.co/shirt/6a44552ad3e4a0bd317d36a4</loc>
-    <lastmod>2026-07-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://www.jerseylab.co/shirt/6a42ea92005950f7dc39e0a9</loc>
     <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
@@ -445,6 +421,30 @@
   <url>
     <loc>https://www.jerseylab.co/shirt/6a42f6e68b63209ced68459d</loc>
     <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/shirt/6a44552d1b206368537929ed</loc>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/shirt/6a44552d1152966510eb76a9</loc>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/shirt/6a44552b5b80b87eb70d30a4</loc>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/shirt/6a44552ad3e4a0bd317d36a4</loc>
+    <lastmod>2026-07-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
