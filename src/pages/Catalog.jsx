@@ -206,12 +206,20 @@ export default function Catalog() {
 
   const hasActiveFilters = Object.values(filters).some(v => v !== '');
 
-  // Detect active quick filter
-  const activeQuickFilter = quickFilters.findIndex(qf => {
+  // Which quick filter the current query string corresponds to.
+  //
+  // Held as the filter object rather than its position. It used to be an index
+  // found in `quickFilters`, the full list, while the chips are rendered from
+  // `stockedQuickFilters`, the subset that still has stock behind it. With four
+  // filters currently dropped for having none, every index after the first gap
+  // pointed at the wrong chip: choosing נבחרות lit up משלוח מהיר, and choosing
+  // משלוח מהיר lit nothing at all, because its index did not exist in the
+  // shorter list. Comparing the object itself cannot drift that way again.
+  const activeQuickFilter = stockedQuickFilters.find(qf => {
     const keys = Object.keys(qf.params);
     if (keys.length === 0) return !searchParams.get('new') && !searchParams.get('tag') && !searchParams.get('sale') && !searchParams.get('type') && !searchParams.get('sport') && !searchParams.get('gender') && !searchParams.get('fast') && !searchParams.get('q');
     return keys.every(k => searchParams.get(k) === qf.params[k]);
-  });
+  }) ?? null;
 
   const seoTitle = `${pageTitle()} - JerseyLab`;
   const seoDesc = `קטלוג חולצות כדורגל: ${pageTitle()}. חולצות של קבוצות, נבחרות ושחקנים במחירים טובים.`;
@@ -298,7 +306,8 @@ export default function Catalog() {
             const href = params ? `/catalog?${params}` : '/catalog';
             return (
               <Link key={i} to={href}
-                className={`flex-shrink-0 flex items-center min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 transition-colors whitespace-nowrap ${activeQuickFilter === i ? 'bg-brand-navy text-white border-brand-navy' : 'border-brand-navy/30 text-brand-navy bg-white hover:border-brand-navy hover:bg-brand-cream'}`}>
+                aria-current={activeQuickFilter === qf ? 'page' : undefined}
+                className={`flex-shrink-0 flex items-center min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 transition-colors whitespace-nowrap ${activeQuickFilter === qf ? 'bg-brand-navy text-white border-brand-navy' : 'border-brand-navy/30 text-brand-navy bg-white hover:border-brand-navy hover:bg-brand-cream'}`}>
                 {qf.label}
               </Link>
             );
