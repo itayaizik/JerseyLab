@@ -19,7 +19,7 @@ export const BUSINESS = {
 
   // The legal name the business is registered under. For an עוסק פטור/מורשה
   // this is usually the owner's full name.
-  legalName: 'TODO_LEGAL_NAME',
+  legalName: 'איתי איזיק',
 
   // Whether the shop is registered with the tax authority yet.
   //
@@ -39,19 +39,19 @@ export const BUSINESS = {
 
   // Required by the Consumer Protection Law for distance selling. A business
   // run from home may publish a postal box instead of a home address.
-  address: 'TODO_ADDRESS',
+  address: 'קריית אונו',
 
   phone: SHOP_PHONE,
   phoneE164: SHOP_PHONE_E164,
-  email: 'TODO_CONTACT_EMAIL',
+  email: 'itayaizik3@gmail.com',
   instagram: INSTAGRAM_HANDLE,
 
   // The accessibility regulations require a named person who can be reached
   // directly about accessibility problems.
   accessibilityCoordinator: {
-    name: 'TODO_ACCESSIBILITY_COORDINATOR_NAME',
+    name: 'איתי איזיק',
     phone: SHOP_PHONE,
-    email: 'TODO_ACCESSIBILITY_EMAIL',
+    email: 'itayaizik3@gmail.com',
   },
 
   // Shown on the shipping policy. Change these and the page follows.
@@ -72,15 +72,15 @@ export const BUSINESS = {
 
     // Who actually delivers, e.g. 'דואר ישראל', 'שליח עד הבית'. null if it
     // varies per order and is agreed in the conversation instead.
-    carrier: 'TODO_SHIPPING_CARRIER',
+    carrier: 'דואר ישראל',
 
     // The delivery fee, e.g. '25 ₪'. Free delivery for everyone is a value
     // here too: 'ללא עלות'.
-    price: 'TODO_SHIPPING_PRICE',
+    price: '25 ₪',
 
     // Order value above which delivery is free, e.g. '300 ₪'. null if there is
     // no such tier.
-    freeAbove: 'TODO_FREE_SHIPPING_THRESHOLD',
+    freeAbove: '250 ₪',
   },
 
   // Dates shown on the legal pages so a reader can tell how current they are.
