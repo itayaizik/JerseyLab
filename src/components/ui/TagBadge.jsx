@@ -3,7 +3,7 @@ import React from 'react';
 const tagStyles = {
   'נדיר': 'bg-amber-100 text-amber-800 border-amber-300',
   'רטרו': 'bg-orange-100 text-orange-800 border-orange-300',
-  'חדש': 'bg-turf/20 text-pitch border-turf',
+  'חדש': 'bg-brand-orange/20 text-brand-navy border-brand-orange',
   'סייל': 'bg-redcard/10 text-redcard border-redcard/30',
   'מלאי מוגבל': 'bg-red-600 text-white border-red-700 animate-pulse',
 };

@@ -222,12 +222,12 @@ export default function ShirtDetail() {
       <Seo title={seoTitle} description={seoDesc} image={shirt.main_image} type="product" canonicalPath={`/shirt/${shirt.id}`} jsonLd={productJsonLd} />
       <div className="max-w-7xl mx-auto px-4 pt-6 pb-24 lg:pb-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-varnish mb-6">
-          <Link to="/" className="hover:text-pitch">דף הבית</Link>
+        <div className="flex items-center gap-2 text-sm text-brand-navy/50 mb-6">
+          <Link to="/" className="hover:text-brand-orange">דף הבית</Link>
           <ChevronRight className="w-3 h-3 rotate-180" />
-          <Link to="/catalog" className="hover:text-pitch">קטלוג</Link>
+          <Link to="/catalog" className="hover:text-brand-orange">קטלוג</Link>
           <ChevronRight className="w-3 h-3 rotate-180" />
-          <span className="text-pitch">{shirt.name}</span>
+          <span className="text-brand-navy">{shirt.name}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
@@ -266,7 +266,7 @@ export default function ShirtDetail() {
               <div className="flex gap-2 mt-3 overflow-x-auto pb-1 items-center">
                 {visibleThumbs.map((img, i) => (
                   <button key={i} onClick={() => { setSelectedImage(i); setZoomed(false); }}
-                    className={`relative w-16 h-16 flex-shrink-0 border-2 overflow-hidden touch-manipulation ${i === selectedImage ? 'border-pitch' : 'border-gray-200'}`}>
+                    className={`relative w-16 h-16 flex-shrink-0 border-2 overflow-hidden touch-manipulation ${i === selectedImage ? 'border-brand-navy' : 'border-gray-200'}`}>
                     <ProductImage src={img} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
@@ -293,7 +293,7 @@ export default function ShirtDetail() {
 
             <h1 className="font-heading font-black text-2xl md:text-3xl mb-2">{shirt.name}</h1>
 
-            <div className="flex flex-wrap gap-3 text-sm text-varnish mb-4">
+            <div className="flex flex-wrap gap-3 text-sm text-brand-navy/60 mb-4">
               {shirt.club && <span>{shirt.club}</span>}
               {shirt.national_team && <span>{shirt.national_team}</span>}
               {shirt.league && <span>• {shirt.league}</span>}
@@ -306,9 +306,9 @@ export default function ShirtDetail() {
               {shirt.sale_price && shirt.sale_price < shirt.price ?
               <>
                   <span className="font-mono font-bold text-3xl text-redcard">₪{shirt.sale_price}</span>
-                  <span className="font-mono text-xl text-varnish line-through">₪{shirt.price}</span>
+                  <span className="font-mono text-xl text-brand-navy/40 line-through">₪{shirt.price}</span>
                 </> :
-              <span className="font-mono font-bold text-3xl text-pitch">₪{shirt.price}</span>
+              <span className="font-mono font-bold text-3xl text-brand-navy">₪{shirt.price}</span>
               }
             </div>
 
@@ -355,7 +355,7 @@ export default function ShirtDetail() {
             {shirt.description &&
             <div className="mb-6">
                 <h3 className="font-heading font-bold text-sm mb-2">תיאור:</h3>
-                <p className="text-sm text-varnish leading-relaxed whitespace-pre-wrap">{shirt.description}</p>
+                <p className="text-sm text-brand-navy/70 leading-relaxed whitespace-pre-wrap">{shirt.description}</p>
               </div>
             }
 
@@ -388,19 +388,19 @@ export default function ShirtDetail() {
               )}
               <div className="flex gap-2">
                 <button onClick={toggleWishlist}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 border-2 text-sm font-bold touch-manipulation transition-colors ${isWishlisted ? 'border-redcard text-redcard bg-red-50' : 'border-pitch text-pitch'}`}>
+                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 border-2 text-sm font-bold touch-manipulation transition-colors ${isWishlisted ? 'border-redcard text-redcard bg-red-50' : 'border-brand-navy text-brand-navy'}`}>
                   <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-redcard' : ''}`} />
                   <span className="hidden sm:inline">{isWishlisted ? 'במועדפים' : 'הוסף למועדפים'}</span>
                   <span className="sm:hidden">{isWishlisted ? 'במועדפים' : 'מועדפים'}</span>
                 </button>
                 <button onClick={handleCopy}
                   aria-label={copied ? 'קישור הועתן' : 'העתק קישור לחולצה'}
-                  className="flex items-center justify-center px-4 py-3.5 border-2 border-pitch text-pitch touch-manipulation">
+                  className="flex items-center justify-center px-4 py-3.5 border-2 border-brand-navy text-brand-navy touch-manipulation">
                   {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
                 </button>
                 <a href={`https://wa.me/?text=${encodeURIComponent(shirt.name + ' ' + shareUrl)}`} target="_blank" rel="noopener noreferrer"
                   aria-label="שתף את החולצה בוואטסאפ"
-                  className="flex items-center justify-center px-4 py-3.5 border-2 border-pitch text-pitch touch-manipulation">
+                  className="flex items-center justify-center px-4 py-3.5 border-2 border-brand-navy text-brand-navy touch-manipulation">
                   <Share2 className="w-4 h-4" />
                 </a>
               </div>

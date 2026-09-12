@@ -68,13 +68,13 @@ const AuthenticatedApp = () => {
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-pitch">
+      <div className="fixed inset-0 flex items-center justify-center bg-brand-cream">
         <div className="text-center">
           <div className="font-heading font-black text-3xl mb-4">
-            <span className="text-turf">JERSEY</span>
-            <span className="text-chalk">LAB</span>
+            <span className="text-brand-orange">JERSEY</span>
+            <span className="text-brand-navy">LAB</span>
           </div>
-          <div className="w-8 h-8 border-4 border-varnish border-t-turf rounded-full animate-spin mx-auto"></div>
+          <div className="w-8 h-8 border-4 border-brand-navy/20 border-t-brand-orange rounded-full animate-spin mx-auto"></div>
         </div>
       </div>
     );
@@ -87,7 +87,7 @@ const AuthenticatedApp = () => {
   }
 
   return (
-    <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center"><div className="w-8 h-8 border-4 border-varnish border-t-turf rounded-full animate-spin"></div></div>}>
+    <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center"><div className="w-8 h-8 border-4 border-brand-navy/20 border-t-brand-orange rounded-full animate-spin"></div></div>}>
     <Routes>
       {/* Auth Routes */}
       <Route path="/login" element={<Login />} />

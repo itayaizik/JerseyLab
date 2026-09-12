@@ -1,10 +1,10 @@
 import React from 'react';
 
 const statusConfig = {
-  available: { label: 'זמין', bg: 'bg-turf', text: 'text-white' },
-  reserved: { label: 'שמור', bg: 'bg-amber-400', text: 'text-pitch' },
+  available: { label: 'זמין', bg: 'bg-brand-orange', text: 'text-white' },
+  reserved: { label: 'שמור', bg: 'bg-amber-400', text: 'text-brand-navy' },
   sold: { label: 'נמכר', bg: 'bg-redcard', text: 'text-white' },
-  hidden: { label: 'מוסתר', bg: 'bg-varnish', text: 'text-white' },
+  hidden: { label: 'מוסתר', bg: 'bg-brand-navy/50', text: 'text-white' },
 };
 
 export default function StatusBadge({ status, className = '' }) {

@@ -90,8 +90,8 @@ export default function Profile() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-varnish border-t-turf rounded-full animate-spin mx-auto mb-3"></div>
-          <p className="text-varnish text-sm">טוען...</p>
+          <div className="w-10 h-10 border-4 border-brand-navy/20 border-t-brand-orange rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-brand-navy/60 text-sm">טוען...</p>
         </div>
       </div>
     );
@@ -106,12 +106,12 @@ export default function Profile() {
         <div className="max-w-5xl mx-auto px-6 py-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-turf to-pitch flex items-center justify-center font-heading font-black text-2xl text-chalk border-2 border-brand-navy">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-orange to-brand-navy flex items-center justify-center font-heading font-black text-2xl text-white border-2 border-brand-navy">
                 {user?.full_name?.[0]?.toUpperCase() || '?'}
               </div>
               <div>
                 <h1 className="font-heading font-black text-2xl text-brand-navy">{user?.full_name || 'משתמש'}</h1>
-                <p className="text-sm text-varnish font-body">{user?.email}</p>
+                <p className="text-sm text-brand-navy/60 font-body">{user?.email}</p>
               </div>
             </div>
             <button 
@@ -136,7 +136,7 @@ export default function Profile() {
           >
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-varnish text-xs font-heading uppercase tracking-wide mb-2">מועדפים</p>
+                <p className="text-brand-navy/60 text-xs font-heading uppercase tracking-wide mb-2">מועדפים</p>
                 <p className="font-heading font-black text-3xl text-turf">{wishlistCount}</p>
               </div>
               <Heart className="w-6 h-6 text-redcard group-hover:scale-110 transition-transform" />
@@ -150,7 +150,7 @@ export default function Profile() {
           >
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-varnish text-xs font-heading uppercase tracking-wide mb-2">בקשות התעניינות</p>
+                <p className="text-brand-navy/60 text-xs font-heading uppercase tracking-wide mb-2">בקשות התעניינות</p>
                 <p className="font-heading font-black text-3xl text-brand-navy">{requests.length}</p>
               </div>
               <MessageCircle className="w-6 h-6 text-brand-navy group-hover:scale-110 transition-transform" />
@@ -169,7 +169,7 @@ export default function Profile() {
           >
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-varnish text-xs font-heading uppercase tracking-wide mb-2">מחפש עוד?</p>
+                <p className="text-brand-navy/60 text-xs font-heading uppercase tracking-wide mb-2">מחפש עוד?</p>
                 <p className="font-heading font-bold text-sm text-brand-navy">גלה חולצות</p>
               </div>
               <Package className="w-6 h-6 text-turf group-hover:scale-110 transition-transform" />
@@ -183,7 +183,7 @@ export default function Profile() {
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-heading font-black text-2xl text-brand-navy uppercase tracking-wide">הבקשות שלי</h2>
           {requestGroups.length > 0 && (
-            <span className="text-xs font-heading text-varnish uppercase">סה"כ {requestGroups.length}</span>
+            <span className="text-xs font-heading text-brand-navy/60 uppercase">סה"כ {requestGroups.length}</span>
           )}
         </div>
 
