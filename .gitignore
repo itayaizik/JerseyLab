@@ -33,3 +33,6 @@ base44/.app.jsonc
 
 # Visual Studio local IDE state
 .vs/
+
+# Local drop folder for files handed over by hand
+uploads/
