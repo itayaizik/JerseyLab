@@ -252,7 +252,7 @@ export default function ManageShirts() {
                       <button onClick={() => handleDuplicate(s)} className="p-1.5 hover:text-turf transition-colors" title="שכפל">
                         <Copy className="w-3.5 h-3.5" />
                       </button>
-                      <a href={`/shirt/${s.id}`} target="_blank" rel="noreferrer" className="p-1.5 hover:text-turf transition-colors" title="צפה">
+                      <a href={`/shirt/${s.id}`} target="_blank" rel="noopener noreferrer" rel="noreferrer" className="p-1.5 hover:text-turf transition-colors" title="צפה">
                         <Eye className="w-3.5 h-3.5" />
                       </a>
                       <AlertDialog>

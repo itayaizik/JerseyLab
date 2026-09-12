@@ -6,6 +6,7 @@ import { notifyNewEnquiry } from '@/lib/adminNotify';
 import Seo from '@/components/Seo';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
 import PrivacyConsent from '@/components/PrivacyConsent';
+import Honeypot, { isBot } from '@/components/ui/Honeypot';
 
 const InstagramIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -20,6 +21,7 @@ export default function Contact() {
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState('');
   const [privacyOk, setPrivacyOk] = useState(false);
+  const [trap, setTrap] = useState('');
   const [whatsappLink, setWhatsappLink] = useState('');
 
   useEffect(() => {
@@ -68,6 +70,9 @@ export default function Contact() {
     if (!form.message.trim()) errs.message = 'שדה חובה';
     if (form.message.length > 2000) errs.message = 'הודעה ארוכה מדי (מקסימום 2000 תווים)';
     if (!privacyOk) errs.privacy = 'יש לאשר את מדיניות הפרטיות';
+    // Silently accepted and dropped: telling a bot it was detected only helps
+    // whoever wrote it.
+    if (isBot(trap)) { setSubmitted(true); return; }
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setSubmitting(true);
     setSubmitError('');
@@ -201,6 +206,8 @@ export default function Contact() {
               {submitError}
             </div>
           )}
+
+          <Honeypot value={trap} onChange={setTrap} />
 
           <PrivacyConsent id="contact-privacy" checked={privacyOk} onChange={setPrivacyOk} error={errors.privacy} />
 

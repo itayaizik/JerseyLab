@@ -9,6 +9,7 @@ import { friendlyError } from '@/lib/errorMessages';
 import { notifyShirtRequest } from '@/lib/adminNotify';
 import { SIZE_ORDER } from '@/lib/sizes';
 import PrivacyConsent from '@/components/PrivacyConsent';
+import Honeypot, { isBot } from '@/components/ui/Honeypot';
 
 // "I want a shirt you don't stock." The catalogue can never hold every kit
 // ever made, so this is the way in for everything it doesn't: the customer
@@ -31,6 +32,7 @@ export default function RequestShirt() {
     shirt_description: '', club: '', season: '', wanted_size: '', notes: '',
   });
   const [privacyOk, setPrivacyOk] = useState(false);
+  const [trap, setTrap] = useState('');
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [errors, setErrors] = useState({});
@@ -114,6 +116,7 @@ export default function RequestShirt() {
       errs.shirt_description = 'תאר את החולצה או צרף תמונה';
     }
     if (!privacyOk) errs.privacy = 'יש לאשר את מדיניות הפרטיות';
+    if (isBot(trap)) { setSubmitted(true); return; }
     if (Object.keys(errs).length) { setErrors(errs); return; }
 
     setSubmitting(true);
@@ -314,6 +317,8 @@ export default function RequestShirt() {
           </Section>
 
           <HowItWorksNotice />
+
+          <Honeypot value={trap} onChange={setTrap} />
 
           <PrivacyConsent id="rs-privacy" checked={privacyOk} onChange={setPrivacyOk} error={errors.privacy} />
 

@@ -271,7 +271,7 @@ export default function Catalog() {
         <nav className="flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide" aria-label="קטגוריות">
           {COLLECTIONS.map(c => (
             <Link key={c.slug} to={`/collections/${c.slug}`}
-              className="flex-shrink-0 flex items-center min-h-[36px] px-3 text-xs font-body text-[#1B2A4A] bg-white border-2 border-[#1B2A4A]/25 whitespace-nowrap hover:border-[#1B2A4A] hover:bg-[#F2ECD9] transition-colors">
+              className="flex-shrink-0 flex items-center min-h-[44px] px-3 text-xs font-body text-[#1B2A4A] bg-white border-2 border-[#1B2A4A]/25 whitespace-nowrap hover:border-[#1B2A4A] hover:bg-[#F2ECD9] transition-colors">
               {c.name}
             </Link>
           ))}
@@ -281,14 +281,14 @@ export default function Catalog() {
             of its own, not one more way to slice the catalogue. */}
         <div className="flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide">
           <Link to="/mystery-box"
-            className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-heading font-bold uppercase tracking-wide border-2 border-[#1B2A4A] bg-[#FFD95A] text-[#1B2A4A] whitespace-nowrap hover:bg-[#1B2A4A] hover:text-[#FFD95A] transition-colors"
+            className="flex-shrink-0 flex items-center gap-1.5 min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 border-[#1B2A4A] bg-[#FFD95A] text-[#1B2A4A] whitespace-nowrap hover:bg-[#1B2A4A] hover:text-[#FFD95A] transition-colors"
             style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
             <Gift className="w-3.5 h-3.5" />
             מיסטרי בוקס
             <span className="font-mono opacity-70">₪70</span>
           </Link>
           <Link to="/request-shirt"
-            className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-heading font-bold uppercase tracking-wide border-2 border-[#1B2A4A] bg-white text-[#1B2A4A] whitespace-nowrap hover:bg-[#1B2A4A] hover:text-white transition-colors"
+            className="flex-shrink-0 flex items-center gap-1.5 min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 border-[#1B2A4A] bg-white text-[#1B2A4A] whitespace-nowrap hover:bg-[#1B2A4A] hover:text-white transition-colors"
             style={{ boxShadow: '2px 2px 0 #1B2A4A' }}>
             <PackageSearch className="w-3.5 h-3.5" />
             בקש חולצה
@@ -298,7 +298,7 @@ export default function Catalog() {
             const href = params ? `/catalog?${params}` : '/catalog';
             return (
               <Link key={i} to={href}
-                className={`flex-shrink-0 px-3 py-1.5 text-xs font-heading font-bold uppercase tracking-wide border-2 transition-colors whitespace-nowrap ${activeQuickFilter === i ? 'bg-[#1B2A4A] text-white border-[#1B2A4A]' : 'border-[#1B2A4A]/30 text-[#1B2A4A] bg-white hover:border-[#1B2A4A] hover:bg-[#F2ECD9]'}`}>
+                className={`flex-shrink-0 flex items-center min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 transition-colors whitespace-nowrap ${activeQuickFilter === i ? 'bg-[#1B2A4A] text-white border-[#1B2A4A]' : 'border-[#1B2A4A]/30 text-[#1B2A4A] bg-white hover:border-[#1B2A4A] hover:bg-[#F2ECD9]'}`}>
                 {qf.label}
               </Link>
             );

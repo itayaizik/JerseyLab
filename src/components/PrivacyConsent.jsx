@@ -24,11 +24,11 @@ export default function PrivacyConsent({ checked, onChange, error, id = 'privacy
         />
         <span className="text-xs font-body text-[#1B2A4A]/75 leading-relaxed">
           קראתי ואני מאשר/ת את{' '}
-          <Link to="/legal/privacy" target="_blank" className="text-[#E8622A] font-bold hover:underline">
+          <Link to="/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-[#E8622A] font-bold hover:underline">
             מדיניות הפרטיות
           </Link>
           {' '}ואת{' '}
-          <Link to="/legal/terms" target="_blank" className="text-[#E8622A] font-bold hover:underline">
+          <Link to="/legal/terms" target="_blank" rel="noopener noreferrer" className="text-[#E8622A] font-bold hover:underline">
             תנאי השימוש
           </Link>
           , והשימוש בפרטיי ליצירת קשר בנוגע לפנייה זו.
