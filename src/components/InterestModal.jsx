@@ -381,9 +381,21 @@ export default function InterestModal({ shirt, open, onClose, user, initialSize,
   const [step, setStep] = useState('size');
   const [selectedSize, setSelectedSize] = useState('');
 
+  // Open on the first question that has not already been answered.
+  //
+  // The modal used to always start on the size step, including when the
+  // customer had just picked a size on the product page and pressed the button
+  // underneath it. Being asked the same question twice in a row reads as the
+  // first answer not having registered, which is the last thing you want at the
+  // moment someone has decided to buy. The size step is still reachable with
+  // Back if they want to change it.
   useEffect(() => {
-    if (open) setSelectedSize(initialSize || '');
-  }, [open, initialSize]);
+    if (!open) return;
+    const size = initialSize || '';
+    setSelectedSize(size);
+    if (!size) { setStep('size'); return; }
+    setStep(hasLocalStockForSize(shirt, size) ? 'exactOrCustom' : 'shirtType');
+  }, [open, initialSize, shirt]);
   const [shirtType, setShirtType] = useState('');
   const [addName, setAddName] = useState('');
   const [customName, setCustomName] = useState('');

@@ -343,34 +343,6 @@ export default function ShirtDetail() {
               </div>
             }
 
-            {/* Shipping Info */}
-            <div className="mb-6">
-              <ShippingBadge shirt={shirt} size={selectedSize} />
-              <button onClick={() => setShippingInfoOpen(true)} className="flex items-center gap-1 text-xs text-brand-orange font-bold font-heading uppercase mt-2 hover:underline">
-                <Info className="w-3.5 h-3.5" />
-                פרטים על משלוחים
-              </button>
-            </div>
-
-            {/* Description */}
-            {shirt.description &&
-            <div className="mb-6">
-                <h3 className="font-heading font-bold text-sm mb-2">תיאור:</h3>
-                <p className="text-sm text-brand-navy/70 leading-relaxed whitespace-pre-wrap">{shirt.description}</p>
-              </div>
-            }
-
-            {/* Tags */}
-            {shirt.tags && shirt.tags.length > 0 &&
-            <div className="flex gap-1 flex-wrap mb-6">
-                {shirt.tags.map((t) =>
-              <Link key={t} to={`/catalog?q=${encodeURIComponent(t)}`} className="text-xs px-2 py-1 border-2 border-brand-navy text-brand-navy bg-transparent hover:bg-brand-cream transition-colors font-mono">
-                    #{t}
-                  </Link>
-              )}
-              </div>
-            }
-
             {/* Trust signals - reassure right before the CTA */}
             <TrustBar />
 
@@ -406,6 +378,38 @@ export default function ShirtDetail() {
                 </a>
               </div>
             </div>
+            {/* Description */}
+            {shirt.description &&
+            <div className="mb-6">
+                <h3 className="font-heading font-bold text-sm mb-2">תיאור:</h3>
+                <p className="text-sm text-brand-navy/70 leading-relaxed whitespace-pre-wrap">{shirt.description}</p>
+              </div>
+            }
+
+            {/* Tags */}
+            {shirt.tags && shirt.tags.length > 0 &&
+            <div className="flex gap-1 flex-wrap mb-6">
+                {shirt.tags.map((t) =>
+              <Link key={t} to={`/catalog?q=${encodeURIComponent(t)}`} className="text-xs px-2 py-1 border-2 border-brand-navy text-brand-navy bg-transparent hover:bg-brand-cream transition-colors font-mono">
+                    #{t}
+                  </Link>
+              )}
+              </div>
+            }
+
+            {/* Shipping and delivery.
+                Moved below the call to action: this block is orange and full
+                width, which made it read as the order button, and customers
+                were pressing it expecting to buy. The real button now sits
+                directly under the size chips, where the decision is made. */}
+            <div className="mb-6">
+              <ShippingBadge shirt={shirt} size={selectedSize} />
+              <button onClick={() => setShippingInfoOpen(true)} className="flex items-center gap-1 text-xs text-brand-orange font-bold font-heading uppercase mt-2 hover:underline">
+                <Info className="w-3.5 h-3.5" />
+                פרטים על משלוחים
+              </button>
+            </div>
+
           </div>
         </div>
 
