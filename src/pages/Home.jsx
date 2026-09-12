@@ -141,7 +141,7 @@ export default function Home() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      base44.entities.SearchLog.create({ search_term: searchTerm.trim() }).catch(() => {});
+      // Logged on the catalogue page, where the number of results is known.
       navigate(`/catalog?q=${encodeURIComponent(searchTerm.trim())}`);
     }
   };

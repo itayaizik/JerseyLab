@@ -9,9 +9,46 @@ import EmptyState from '@/components/ui/EmptyState';
 import Seo from '@/components/Seo';
 import { toast } from '@/components/ui/use-toast';
 import { shirtSizes, sortSizes } from '@/lib/sizes';
+import { searchShirts, formatEra, toDisplay } from '@/lib/search';
 import { COLLECTIONS } from '@/lib/collections';
 import { withStock } from '@/lib/catalogFacets';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
+
+// Says how a search was read, so results that do not literally contain the
+// words typed do not look like a mistake. Someone who typed "מסי" and gets a
+// page of Barcelona and Argentina shirts needs to be told why.
+function SearchExplanation({ info }) {
+  const notes = [];
+  if (info.player) {
+    notes.push(
+      <p key="player">
+        {info.eraFallback
+          ? <>לא מצאנו חולצה מהעונות ש<strong className="text-brand-navy">{info.player.label}</strong> שיחק בהן, אז אלה חולצות של הקבוצות שלו מתקופות אחרות.</>
+          : <>חולצות מהקבוצות ומהעונות של <strong className="text-brand-navy">{info.player.label}</strong>:</>}
+        {' '}
+        <span className="text-brand-navy/60">{info.player.teams.map(t => `${t.team} ${formatEra(t)}`).join(' · ')}</span>
+      </p>
+    );
+  }
+  if (info.corrections.length) {
+    notes.push(
+      <p key="fix">
+        מציג תוצאות עבור{' '}
+        {info.corrections.map((c, i) => (
+          <span key={c.from}>{i > 0 && ', '}<strong className="text-brand-navy">{toDisplay(c.to)}</strong></span>
+        ))}
+        {' '}(חיפשת: {info.corrections.map(c => toDisplay(c.from)).join(', ')})
+      </p>
+    );
+  }
+  if (info.relaxed) notes.push(<p key="relaxed">אין חולצה שמתאימה לכל המילים שחיפשת, אז אלה הקרובות ביותר.</p>);
+  if (!notes.length) return null;
+  return (
+    <div className="mt-3 max-w-2xl space-y-1 border-s-4 border-brand-orange bg-white/60 px-3 py-2 text-sm font-body text-brand-navy/75">
+      {notes}
+    </div>
+  );
+}
 
 const quickFilters = [
   { label: 'הכל', params: {} },
@@ -36,6 +73,8 @@ export default function Catalog() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [allShirtsRaw, setAllShirtsRaw] = useState([]);
+  const [searchInfo, setSearchInfo] = useState(null);
+  const loggedQueryRef = useRef(null);
   const [shirts, setShirts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
@@ -98,7 +137,7 @@ export default function Catalog() {
   useEffect(() => {
     let result = [...allShirtsRaw];
 
-    const q = searchParams.get('q')?.toLowerCase();
+    const q = searchParams.get('q');
     const gender = searchParams.get('gender');
     const sport = searchParams.get('sport');
     const sale = searchParams.get('sale');
@@ -109,16 +148,10 @@ export default function Catalog() {
     const best = searchParams.get('best');
     const league = searchParams.get('league');
 
-    if (q) result = result.filter(s =>
-      s.name?.toLowerCase().includes(q) ||
-      s.club?.toLowerCase().includes(q) ||
-      s.national_team?.toLowerCase().includes(q) ||
-      s.player_name?.toLowerCase().includes(q) ||
-      s.league?.toLowerCase().includes(q) ||
-      s.season?.toLowerCase().includes(q) ||
-      s.description?.toLowerCase().includes(q) ||
-      (Array.isArray(s.tags) && s.tags.some(t => t.toLowerCase().includes(q)))
-    );
+    // Search narrows and ranks; every filter below only narrows, so the
+    // best-match-first order survives them. See lib/search for what it handles.
+    const searchResult = q ? searchShirts(result, q) : null;
+    if (searchResult) result = searchResult.results;
     if (gender) result = result.filter(s => s.gender_category === gender);
     if (sport) result = result.filter(s => s.sport_category === sport);
     if (sale === 'true') result = result.filter(s => s.sale_price && s.sale_price < s.price);
@@ -140,6 +173,16 @@ export default function Catalog() {
 
     setShirts(result);
     setVisibleCount(PAGE_SIZE);
+    setSearchInfo(searchResult);
+
+    // Logged here rather than when a search form is submitted: this is the one
+    // place that knows how many shirts the search found, and it means a search
+    // counts once whether it started in the navbar, on the home page or here.
+    if (!q) loggedQueryRef.current = null;
+    else if (allShirtsRaw.length && loggedQueryRef.current !== q) {
+      loggedQueryRef.current = q;
+      base44.entities.SearchLog.create({ search_term: q.trim(), results_count: searchResult.results.length }).catch(() => {});
+    }
   }, [searchParams, filters, allShirtsRaw]);
 
   const { leagues, nationalTeams, allSizes } = useMemo(() => {
@@ -151,7 +194,7 @@ export default function Catalog() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchTerm.trim()) base44.entities.SearchLog.create({ search_term: searchTerm.trim() });
+    // Logged by the results effect, together with how many shirts it found.
     navigate(`/catalog?q=${encodeURIComponent(searchTerm)}`);
   };
 
@@ -248,6 +291,7 @@ export default function Catalog() {
             {!loading && !loadError && (
               <p className="text-sm text-brand-navy/50 mt-1 font-body">{shirts.length} חולצות נמצאו</p>
             )}
+            {!loading && !loadError && searchInfo && <SearchExplanation info={searchInfo} />}
           </div>
 
           {/* Search + filter buttons */}

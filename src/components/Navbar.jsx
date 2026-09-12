@@ -5,6 +5,8 @@ import { CartModal } from '@/components/InterestModal';
 import { base44 } from '@/api/base44Client';
 import { getCart } from '@/lib/cart';
 import PromoBar from '@/components/PromoBar';
+import ProductImage from '@/components/ui/ProductImage';
+import { searchShirts } from '@/lib/search';
 import { withStock } from '@/lib/catalogFacets';
 
 const categories = [
@@ -76,6 +78,7 @@ export default function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [suggestions, setSuggestions] = useState([]);
+  const [suggestionPlayer, setSuggestionPlayer] = useState(null);
   const allShirtsRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -184,19 +187,16 @@ export default function Navbar() {
     const timer = setTimeout(async () => {
       if (!allShirtsRef.current) {
         try {
-          allShirtsRef.current = await base44.entities.Shirt.filter({ status: 'available' }, '-created_date', 100);
+          // 500, not 100: the catalogue has 178 shirts, and with a cap of 100
+          // the oldest 78 could never appear as a suggestion whatever was typed.
+          allShirtsRef.current = await base44.entities.Shirt.filter({ status: 'available' }, '-created_date', 500);
         } catch { allShirtsRef.current = []; }
       }
-      const matches = allShirtsRef.current
-        .filter(s =>
-          s.name?.toLowerCase().includes(term) ||
-          s.club?.toLowerCase().includes(term) ||
-          s.player_name?.toLowerCase().includes(term) ||
-          s.national_team?.toLowerCase().includes(term) ||
-          s.league?.toLowerCase().includes(term)
-        )
-        .slice(0, 5);
-      setSuggestions(matches);
+      // The same search the catalogue runs, so what the dropdown suggests and
+      // what pressing Enter shows can never disagree.
+      const { results, player } = searchShirts(allShirtsRef.current, term);
+      setSuggestions(results.slice(0, 5));
+      setSuggestionPlayer(player);
     }, 300);
 
     return () => clearTimeout(timer);
@@ -205,7 +205,7 @@ export default function Navbar() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      base44.entities.SearchLog.create({ search_term: searchTerm.trim() }).catch(() => {});
+      // Logged on the catalogue page, where the number of results is known.
       navigate(`/catalog?q=${encodeURIComponent(searchTerm.trim())}`);
       setSearchTerm('');
       setSuggestions([]);
@@ -472,13 +472,20 @@ export default function Navbar() {
               {/* Autocomplete dropdown */}
               {suggestions.length > 0 && (
                 <div className="bg-brand-navy-dark border-2 border-brand-orange mt-2 max-h-64 overflow-y-auto" style={{ boxShadow: '4px 4px 0 rgba(15,29,56,0.6)' }}>
+                  {suggestionPlayer && (
+                    <p className="px-3 pt-2 pb-1 text-[11px] text-brand-orange font-body">חולצות מהתקופה של {suggestionPlayer.label}</p>
+                  )}
                   {suggestions.map(s => (
                     <button key={s.id} type="button" onClick={() => selectSuggestion(s.id)}
                       className="w-full flex items-center gap-3 px-3 py-2 text-right hover:bg-brand-orange/10 transition-colors">
-                      {s.main_image && <img src={s.main_image} alt="" className="w-10 h-10 object-cover flex-shrink-0" />}
+                      {s.main_image && (
+                        <div className="relative w-10 h-10 flex-shrink-0 overflow-hidden">
+                          <ProductImage src={s.main_image} alt="" sizes="40px" className="w-full h-full object-cover" />
+                        </div>
+                      )}
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-white font-body truncate">{s.name}</p>
-                        <p className="text-xs text-white/50 truncate">{s.club || s.national_team}{s.player_name ? ` • ${s.player_name}` : ''}</p>
+                        <p className="text-xs text-white/50 truncate">{[s.club || s.national_team, s.season].filter(Boolean).join(' · ')}</p>
                       </div>
                       <span className="text-xs text-brand-orange font-mono flex-shrink-0">₪{s.sale_price || s.price}</span>
                     </button>

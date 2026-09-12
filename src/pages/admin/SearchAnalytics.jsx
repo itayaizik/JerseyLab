@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, TrendingUp, BarChart2 } from 'lucide-react';
+import { Search, TrendingUp, BarChart2, AlertCircle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { formatDateTime, dateSortValue, parseDate } from '@/lib/dates';
 
@@ -33,6 +33,20 @@ export default function SearchAnalytics() {
     .sort(([, a], [, b]) => b - a);
 
   const top = sorted.slice(0, 30);
+
+  // Searches that found nothing - the most useful list on this page. Each one
+  // is either a name the search does not know yet or a shirt worth stocking.
+  // Only searches logged since the result count was recorded are measured.
+  const measured = filtered.filter(l => l.results_count != null);
+  const zeroCounts = {};
+  measured.filter(l => l.results_count === 0).forEach(l => {
+    const term = l.search_term?.trim().toLowerCase();
+    if (term) zeroCounts[term] = (zeroCounts[term] || 0) + 1;
+  });
+  const zeroTop = Object.entries(zeroCounts).sort(([, a], [, b]) => b - a).slice(0, 30);
+  const zeroRate = measured.length
+    ? Math.round((measured.filter(l => l.results_count === 0).length / measured.length) * 100)
+    : null;
 
   // Daily breakdown for last 14 days
   const dailyCounts = {};
@@ -73,7 +87,7 @@ export default function SearchAnalytics() {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-white/5 border border-white/10 p-4">
           <p className="text-xs text-varnish font-heading uppercase mb-1">סה"כ חיפושים</p>
           <p className="font-mono font-bold text-2xl text-chalk">{filtered.length}</p>
@@ -85,6 +99,10 @@ export default function SearchAnalytics() {
         <div className="bg-white/5 border border-white/10 p-4">
           <p className="text-xs text-varnish font-heading uppercase mb-1">הכי מבוקש</p>
           <p className="font-mono font-bold text-lg text-turf truncate">{top[0]?.[0] || '-'}</p>
+        </div>
+        <div className="bg-white/5 border border-white/10 p-4">
+          <p className="text-xs text-varnish font-heading uppercase mb-1">בלי תוצאות</p>
+          <p className={`font-mono font-bold text-2xl ${zeroRate ? 'text-redcard' : 'text-chalk'}`}>{zeroRate == null ? '-' : `${zeroRate}%`}</p>
         </div>
       </div>
 
@@ -131,6 +149,29 @@ export default function SearchAnalytics() {
         </div>
       </div>
 
+      {/* Searched and found nothing */}
+      <div className="mt-6 bg-white/5 border border-white/10 p-5">
+        <h2 className="font-heading font-bold text-sm text-chalk uppercase mb-2 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-redcard" /> חיפשו ולא מצאו
+        </h2>
+        <p className="text-xs text-varnish mb-4 max-w-2xl">
+          כל שורה כאן היא לקוח שחיפש ויצא בידיים ריקות. אם זה שם של קבוצה או שחקן שיש באתר, חסר לחיפוש כינוי. אם אין, אולי שווה להביא את החולצה.
+        </p>
+        {measured.length === 0 ? (
+          <p className="text-varnish text-sm">עוד לא נמדדו חיפושים בתקופה הזו. הספירה התחילה ב-12 בספטמבר 2026.</p>
+        ) : zeroTop.length === 0 ? (
+          <p className="text-varnish text-sm">כל החיפושים בתקופה הזו מצאו משהו.</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {zeroTop.map(([term, count]) => (
+              <span key={term} className="text-xs bg-redcard/10 border border-redcard/30 text-chalk px-2 py-1">
+                {term} <span className="font-mono text-redcard">{count}</span>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Full log */}
       <div className="mt-6 bg-white/5 border border-white/10 p-5">
         <h2 className="font-heading font-bold text-sm text-chalk uppercase mb-4 flex items-center gap-2">
@@ -140,7 +181,12 @@ export default function SearchAnalytics() {
           {filtered.slice(0, 100).map(l => (
             <div key={l.id} className="flex items-center justify-between text-sm py-1 border-b border-white/5">
               <span className="text-chalk font-body">{l.search_term}</span>
-              <span className="text-varnish text-xs font-mono">{formatDateTime(l.created_date)}</span>
+              <span className="flex items-center gap-3">
+                {l.results_count != null && (
+                  <span className={`text-xs font-mono ${l.results_count === 0 ? 'text-redcard' : 'text-varnish'}`}>{l.results_count} תוצאות</span>
+                )}
+                <span className="text-varnish text-xs font-mono">{formatDateTime(l.created_date)}</span>
+              </span>
             </div>
           ))}
           {filtered.length === 0 && <p className="text-varnish text-sm">אין חיפושים בתקופה זו</p>}

@@ -1,10 +1,55 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Search, Edit, Trash2, Eye, Copy, Plus, Save, Loader2, AlertCircle, Check, ChevronUp, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ShirtEditForm from '@/components/admin/ShirtEditForm';
 import { hasLocalStock } from '@/components/ShippingBadge';
+import ProductImage from '@/components/ui/ProductImage';
+import { searchShirts } from '@/lib/search';
+import { shirtSizes, isSizeAvailable } from '@/lib/sizes';
+import { dateSortValue } from '@/lib/dates';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+
+// Quick filters: the questions the owner actually asks of the catalogue, one
+// tap each. They combine - מלאי בארץ + רטרו is every retro shirt in stock - and
+// each shows how many shirts it would leave, so a dead end is visible before
+// pressing it. The last group is a checklist: when it reads all zeros, nothing
+// in the catalogue is missing a picture, a description or its sizes.
+const QUICK_FILTERS = [
+  { group: 'מלאי', items: [
+    { id: 'local', label: 'מלאי בארץ', test: s => hasLocalStock(s) },
+    { id: 'special', label: 'הזמנה מיוחדת בלבד', test: s => !hasLocalStock(s) },
+    { id: 'soldout', label: 'יש מידה שאזלה', test: s => shirtSizes(s).some(size => !isSizeAvailable(s, size)) },
+  ] },
+  { group: 'סוג', items: [
+    { id: 'club', label: 'מועדונים', test: s => !!s.club && !s.national_team },
+    { id: 'national', label: 'נבחרות', test: s => !!s.national_team },
+    { id: 'retro', label: 'רטרו', test: s => !!s.is_retro },
+    { id: 'new', label: 'חדש', test: s => !!s.is_new },
+  ] },
+  { group: 'בדף הבית', items: [
+    { id: 'featured', label: 'מומלץ', test: s => !!s.featured },
+    { id: 'best', label: 'רב מכר', test: s => !!s.best_seller },
+    { id: 'sale', label: 'במבצע', test: s => !!s.sale_price && Number(s.sale_price) < Number(s.price) },
+  ] },
+  { group: 'חסר משהו', items: [
+    { id: 'noImage', label: 'בלי תמונה', test: s => !s.main_image },
+    { id: 'noDesc', label: 'בלי תיאור', test: s => !s.description },
+    { id: 'noSizes', label: 'בלי מידות', test: s => shirtSizes(s).length === 0 },
+  ] },
+];
+const QUICK_BY_ID = Object.fromEntries(QUICK_FILTERS.flatMap(g => g.items).map(i => [i.id, i]));
+const applyQuick = (list, ids) => ids.reduce((acc, id) => (QUICK_BY_ID[id] ? acc.filter(QUICK_BY_ID[id].test) : acc), list);
+
+const priceOf = s => Number(s.sale_price && Number(s.sale_price) < Number(s.price) ? s.sale_price : s.price) || 0;
+const SORTS = {
+  updated: (a, b) => (dateSortValue(b.updated_date) || 0) - (dateSortValue(a.updated_date) || 0),
+  name: (a, b) => (a.name || '').localeCompare(b.name || '', 'he'),
+  priceAsc: (a, b) => priceOf(a) - priceOf(b),
+  priceDesc: (a, b) => priceOf(b) - priceOf(a),
+  views: (a, b) => (b.views_count || 0) - (a.views_count || 0),
+  interest: (a, b) => (b.interest_count || 0) - (a.interest_count || 0),
+};
 
 function shirtToDraft(s) {
   return {
@@ -42,8 +87,23 @@ function buildPayload(d) {
 export default function ManageShirts() {
   const [shirts, setShirts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  // Filters are kept in the URL, so a filtered view survives a refresh, the
+  // back button, and opening a shirt in a new tab and coming back to the list.
+  const [params, setParams] = useSearchParams();
+  const search = params.get('q') || '';
+  const statusFilter = params.get('status') || '';
+  const leagueFilter = params.get('league') || '';
+  const sortBy = params.get('sort') || '';
+  const activeQuick = (params.get('f') || '').split(',').filter(id => QUICK_BY_ID[id]);
+  const setParam = (key, value) => setParams(prev => {
+    const next = new URLSearchParams(prev);
+    if (value) next.set(key, value); else next.delete(key);
+    return next;
+  }, { replace: true });
+  const setSearch = (v) => setParam('q', v);
+  const setStatusFilter = (v) => setParam('status', v);
+  const toggleQuick = (id) => setParam('f', (activeQuick.includes(id) ? activeQuick.filter(x => x !== id) : [...activeQuick, id]).join(','));
+  const clearAllFilters = () => setParams(new URLSearchParams(), { replace: true });
   const [drafts, setDrafts] = useState({});   // id -> draft (unsaved edits in memory)
   const [dirty, setDirty] = useState({});     // id -> true
   const [expandedId, setExpandedId] = useState(null);
@@ -70,12 +130,23 @@ export default function ManageShirts() {
     return () => window.removeEventListener('beforeunload', handler);
   }, [dirtyCount]);
 
-  const filtered = shirts.filter(s => {
-    const matchSearch = !search || s.name?.toLowerCase().includes(search.toLowerCase()) ||
-      s.club?.toLowerCase().includes(search.toLowerCase()) || s.player_name?.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = !statusFilter || s.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
+  // Search ranks, every filter after it only narrows, and an explicit sort is
+  // the only thing allowed to reorder - so with no sort chosen, a search keeps
+  // its best-match-first order. It is the storefront's search, typos and
+  // player names included, so the owner finds shirts the way customers do.
+  const searched = search ? searchShirts(shirts, search) : null;
+  const base = (searched ? searched.results : shirts)
+    .filter(s => !statusFilter || s.status === statusFilter)
+    .filter(s => !leagueFilter || s.league === leagueFilter);
+  const narrowed = applyQuick(base, activeQuick);
+  const filtered = SORTS[sortBy] ? [...narrowed].sort(SORTS[sortBy]) : narrowed;
+  const quickCount = (id) => applyQuick(base, [...activeQuick.filter(x => x !== id), id]).length;
+  const leagueOptions = useMemo(() => {
+    const counts = {};
+    for (const s of shirts) if (s.league) counts[s.league] = (counts[s.league] || 0) + 1;
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  }, [shirts]);
+  const anyFilter = !!(search || statusFilter || leagueFilter || sortBy || activeQuick.length);
 
   const handleDelete = async (id) => {
     await base44.entities.Shirt.delete(id);
@@ -161,10 +232,10 @@ export default function ManageShirts() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-3 mb-6">
+      <div className="flex flex-col md:flex-row gap-3 mb-3">
         <div className="relative flex-1">
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-varnish pointer-events-none" />
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="חפש חולצה לפי שם, קבוצה או שחקן..."
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="שם, קבוצה, עונה או שחקן - גם עם שגיאות כתיב"
             className="w-full bg-white/5 border border-white/10 pr-10 pl-9 py-2.5 text-sm text-chalk placeholder:text-white/30 rounded focus:border-turf focus:ring-1 focus:ring-turf/40 focus:outline-none transition-colors" />
           {search && (
             <button onClick={() => setSearch('')} aria-label="נקה חיפוש" className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-white/40 hover:text-chalk hover:bg-white/10 rounded transition-colors">
@@ -180,9 +251,55 @@ export default function ManageShirts() {
           <option value="sold">נמכר</option>
           <option value="hidden">מוסתר</option>
         </select>
+        <select value={leagueFilter} onChange={e => setParam('league', e.target.value)} aria-label="ליגה"
+          className="bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:outline-none">
+          <option value="">כל הליגות</option>
+          {leagueOptions.map(([league, n]) => <option key={league} value={league}>{league} ({n})</option>)}
+        </select>
+        <select value={sortBy} onChange={e => setParam('sort', e.target.value)} aria-label="מיון"
+          className="bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:outline-none">
+          <option value="">{search ? 'לפי התאמה' : 'חדש ביותר'}</option>
+          <option value="updated">עודכן לאחרונה</option>
+          <option value="name">לפי שם</option>
+          <option value="priceAsc">מחיר: נמוך לגבוה</option>
+          <option value="priceDesc">מחיר: גבוה לנמוך</option>
+          <option value="views">הכי נצפות</option>
+          <option value="interest">הכי הרבה התעניינות</option>
+        </select>
       </div>
 
-      <p className="text-xs text-varnish mb-4">{filtered.length} חולצות</p>
+      {/* Quick filters */}
+      <div className="mb-4 space-y-2">
+        {QUICK_FILTERS.map(g => (
+          <div key={g.group} className="flex flex-wrap items-center gap-1.5">
+            <span className="text-[11px] text-varnish w-20 flex-shrink-0">{g.group}</span>
+            {g.items.map(item => {
+              const on = activeQuick.includes(item.id);
+              const n = quickCount(item.id);
+              return (
+                <button key={item.id} type="button" onClick={() => toggleQuick(item.id)}
+                  disabled={!on && n === 0} aria-pressed={on}
+                  className={`px-2.5 py-1 text-xs font-heading font-bold border transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${on ? 'bg-turf text-pitch border-turf' : 'bg-white/5 text-chalk border-white/10 hover:border-turf'}`}>
+                  {item.label} <span className={`font-mono ${on ? 'text-pitch/70' : 'text-varnish'}`}>{n}</span>
+                </button>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <p className="text-xs text-varnish">
+          {filtered.length} מתוך {shirts.length} חולצות
+          {searched?.player && <> · מהקבוצות והעונות של {searched.player.label}</>}
+          {searched?.corrections?.length > 0 && <> · חיפש גם: {searched.corrections.map(c => c.to).join(', ')}</>}
+        </p>
+        {anyFilter && (
+          <button type="button" onClick={clearAllFilters} className="text-xs text-turf hover:underline flex items-center gap-1">
+            <X className="w-3 h-3" /> נקה הכל
+          </button>
+        )}
+      </div>
 
       {saveResult && (
         <div className="mb-4 p-3 rounded border text-sm" style={{ background: saveResult.failed.length ? 'rgba(255,180,0,0.1)' : 'rgba(34,197,94,0.1)', borderColor: saveResult.failed.length ? 'rgba(255,180,0,0.3)' : 'rgba(34,197,94,0.3)' }}>
@@ -212,8 +329,10 @@ export default function ManageShirts() {
               <React.Fragment key={s.id}>
                 <tr className={`border-b border-white/5 hover:bg-white/5 ${expandedId === s.id ? 'bg-white/5' : ''}`}>
                   <td className="py-2 px-2">
-                    <div className="w-12 h-12 bg-white/5 overflow-hidden">
-                      {s.main_image ? <img src={s.main_image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-varnish text-xs">-</div>}
+                    {/* Resized, like the storefront: this list paints up to 178 of
+                        these at 48px, and it was fetching every full-size photo. */}
+                    <div className="relative w-12 h-12 bg-white/5 overflow-hidden">
+                      {s.main_image ? <ProductImage src={s.main_image} alt="" sizes="48px" className="w-full h-full object-cover" /> :<div className="w-full h-full flex items-center justify-center text-varnish text-xs">-</div>}
                     </div>
                   </td>
                   <td className="py-2 px-2">
@@ -252,7 +371,7 @@ export default function ManageShirts() {
                       <button onClick={() => handleDuplicate(s)} className="p-1.5 hover:text-turf transition-colors" title="שכפל">
                         <Copy className="w-3.5 h-3.5" />
                       </button>
-                      <a href={`/shirt/${s.id}`} target="_blank" rel="noopener noreferrer" rel="noreferrer" className="p-1.5 hover:text-turf transition-colors" title="צפה">
+                      <a href={`/shirt/${s.id}`} target="_blank" rel="noopener noreferrer" className="p-1.5 hover:text-turf transition-colors" title="צפה">
                         <Eye className="w-3.5 h-3.5" />
                       </a>
                       <AlertDialog>

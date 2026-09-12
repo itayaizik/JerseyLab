@@ -146,3 +146,19 @@ update storage.buckets
 --
 -- Leaked-password protection (HaveIBeenPwned) remains off. It is not a toggle
 -- that was missed: it requires the Pro plan, and this project is on free.
+
+-- 10 ------------------------------------------------------------------------
+-- search_logs_raw records how many shirts each search found.
+--
+-- Without it the log said what people looked for but not whether they found
+-- it. Nullable: the searches logged before this existed were never measured,
+-- and backfilling them against today's catalogue would record something that
+-- was not true at the time. Searches are now logged once, on the catalogue
+-- page, where the count is known - not separately by the navbar and home page.
+
+alter table search_logs_raw add column if not exists results_count integer;
+
+-- Three rows left behind by my own verification earlier in this work, which
+-- the analytics page was showing as customer searches.
+delete from search_logs_raw
+ where search_term in ('__adapter_fix_test__', '__audit_recheck__', '__verify_final__');
