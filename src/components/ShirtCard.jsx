@@ -6,6 +6,7 @@ import TagBadge from '@/components/ui/TagBadge';
 import QuickAddModal from '@/components/QuickAddModal';
 import ShippingBadge, { hasLocalStock } from '@/components/ShippingBadge';
 import ProductImage from '@/components/ui/ProductImage';
+import { shirtSizes, isSizeAvailable } from '@/lib/sizes';
 
 function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false }) {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
@@ -18,9 +19,12 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false 
   if (shirt.limited_stock) displayTags.push('מלאי מוגבל');
   if (shirt.sale_price && shirt.sale_price < shirt.price) displayTags.push('סייל');
 
-  // Display all available sizes (infinite inventory). Labels use the canonical
-  // spelling from lib/sizes so a card never says XXL where the rest of the site says 2XL.
-  const displayedSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+  // The sizes this shirt actually comes in and can be ordered in right now.
+  // This used to be a fixed XS-3XL row on every card, so an Israeli league
+  // shirt that does not come in XS still advertised it, and a shirt with no
+  // sizes at all showed seven. Labels come from lib/sizes, so a card never says
+  // XXL where the rest of the site says 2XL.
+  const displayedSizes = shirtSizes(shirt).filter(size => isSizeAvailable(shirt, size));
 
   return (
     <div className="relative bg-white flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-200" style={{ boxShadow: '3px 3px 0px var(--brand-navy)', border: '2px solid var(--brand-navy)' }}>
@@ -92,7 +96,8 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false 
                   {size}
                 </span>
               ))}
-              <span className="text-[9px] text-gray-400 font-mono">+4</span>
+              {/* A literal "+4" used to follow this row on every card. It
+                  counted nothing. */}
             </div>
           </div>
         </div>

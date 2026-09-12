@@ -162,3 +162,40 @@ alter table search_logs_raw add column if not exists results_count integer;
 -- the analytics page was showing as customer searches.
 delete from search_logs_raw
  where search_term in ('__adapter_fix_test__', '__audit_recheck__', '__verify_final__');
+
+-- 11 ------------------------------------------------------------------------
+-- 13 September 2026, at the owner's instruction: sizes for the shirts that had
+-- none, and no XS on any Israeli league shirt.
+--
+-- Ten shirts had an empty size map, all current-season kits from big clubs, and
+-- the product page hides its size block entirely when there are no sizes. Nine
+-- got XS-3XL; the one Israeli league shirt among them got S-3XL. Their
+-- descriptions gained the same "זמינה במידות" sentence every other shirt has.
+--
+-- All sixteen Israeli league shirts lost XS from their sizes, their local stock
+-- and the size list in their description. Shirts outside that league keep XS.
+--
+-- The rows as they were are kept in backups.shirts_sizes_20260913 - a schema
+-- PostgREST does not expose, so the copy is never readable through the API.
+
+create schema if not exists backups;
+
+update shirts_raw
+   set sizes = '{"XS":1,"S":1,"M":1,"L":1,"XL":1,"2XL":1,"3XL":1}',
+       description = case when description like '%זמינה במידות%' then description
+                          else replace(description, 'ההזמנה מיוחדת', 'זמינה במידות XS, S, M, L, XL, 2XL, 3XL. ההזמנה מיוחדת') end
+ where coalesce(nullif(trim(sizes), ''), '{}') in ('{}', 'null', '[]')
+   and coalesce(league, '') <> 'ליגת העל';
+
+update shirts_raw
+   set sizes = '{"S":1,"M":1,"L":1,"XL":1,"2XL":1,"3XL":1}',
+       description = case when description like '%זמינה במידות%' then description
+                          else replace(description, 'ההזמנה מיוחדת', 'זמינה במידות S, M, L, XL, 2XL, 3XL. ההזמנה מיוחדת') end
+ where coalesce(nullif(trim(sizes), ''), '{}') in ('{}', 'null', '[]')
+   and league = 'ליגת העל';
+
+update shirts_raw
+   set sizes = case when sizes like '{%' then (sizes::jsonb - 'XS')::text else sizes end,
+       local_stock_sizes = case when local_stock_sizes like '{%' then (local_stock_sizes::jsonb - 'XS')::text else local_stock_sizes end,
+       description = regexp_replace(regexp_replace(description, 'XS,\s*', '', 'g'), ',\s*XS(?=[.,])', '', 'g')
+ where league = 'ליגת העל';
