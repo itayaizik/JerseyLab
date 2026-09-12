@@ -20,6 +20,12 @@ const STATIC_ROUTES = [
   { path: '/faq', changefreq: 'monthly', priority: '0.6' },
   { path: '/contact', changefreq: 'monthly', priority: '0.6' },
   { path: '/size-guide', changefreq: 'monthly', priority: '0.5' },
+  { path: '/legal/terms', changefreq: 'yearly', priority: '0.3' },
+  { path: '/legal/privacy', changefreq: 'yearly', priority: '0.3' },
+  { path: '/legal/cookies', changefreq: 'yearly', priority: '0.3' },
+  { path: '/legal/shipping', changefreq: 'yearly', priority: '0.4' },
+  { path: '/legal/accessibility', changefreq: 'yearly', priority: '0.3' },
+  { path: '/legal/business', changefreq: 'yearly', priority: '0.3' },
 ];
 
 // `lastmod` has to be a valid date or Google ignores the tag; the many rows

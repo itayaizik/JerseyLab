@@ -8,6 +8,7 @@ import HowItWorksNotice from '@/components/HowItWorksNotice';
 import { friendlyError } from '@/lib/errorMessages';
 import { notifyShirtRequest } from '@/lib/adminNotify';
 import { SIZE_ORDER } from '@/lib/sizes';
+import PrivacyConsent from '@/components/PrivacyConsent';
 
 // "I want a shirt you don't stock." The catalogue can never hold every kit
 // ever made, so this is the way in for everything it doesn't: the customer
@@ -29,6 +30,7 @@ export default function RequestShirt() {
     full_name: '', phone: '', email: '', contact_channel: '', instagram_handle: '',
     shirt_description: '', club: '', season: '', wanted_size: '', notes: '',
   });
+  const [privacyOk, setPrivacyOk] = useState(false);
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [errors, setErrors] = useState({});
@@ -111,6 +113,7 @@ export default function RequestShirt() {
     if (!form.shirt_description.trim() && !image) {
       errs.shirt_description = 'תאר את החולצה או צרף תמונה';
     }
+    if (!privacyOk) errs.privacy = 'יש לאשר את מדיניות הפרטיות';
     if (Object.keys(errs).length) { setErrors(errs); return; }
 
     setSubmitting(true);
@@ -312,7 +315,9 @@ export default function RequestShirt() {
 
           <HowItWorksNotice />
 
-          {submitError && <p className="text-red-600 text-sm font-body">{submitError}</p>}
+          <PrivacyConsent id="rs-privacy" checked={privacyOk} onChange={setPrivacyOk} error={errors.privacy} />
+
+          {submitError && <p role="alert" className="text-red-600 text-sm font-body">{submitError}</p>}
 
           <button type="submit" disabled={submitting}
             className="w-full flex items-center justify-center gap-2 bg-[#E8622A] text-white py-4 font-heading font-bold text-base uppercase tracking-wider hover:bg-[#D0551F] disabled:opacity-60 transition-colors"

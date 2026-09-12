@@ -27,6 +27,15 @@ import ShirtDetail from '@/pages/ShirtDetail';
 const MysteryBox = lazy(() => import('@/pages/MysteryBox'));
 const RequestShirt = lazy(() => import('@/pages/RequestShirt'));
 const Collection = lazy(() => import('@/pages/Collection'));
+
+// Legal pages. Required by Israeli consumer, privacy and accessibility law;
+// linked from the footer of every page.
+const LegalTerms = lazy(() => import('@/pages/legal/Terms'));
+const LegalPrivacy = lazy(() => import('@/pages/legal/Privacy'));
+const LegalCookies = lazy(() => import('@/pages/legal/Cookies'));
+const LegalShipping = lazy(() => import('@/pages/legal/Shipping'));
+const LegalAccessibility = lazy(() => import('@/pages/legal/Accessibility'));
+const LegalBusiness = lazy(() => import('@/pages/legal/BusinessDetails'));
 const FAQPage = lazy(() => import('@/pages/FAQPage'));
 const Contact = lazy(() => import('@/pages/Contact'));
 const SizeGuide = lazy(() => import('@/pages/SizeGuide'));
@@ -94,6 +103,12 @@ const AuthenticatedApp = () => {
         <Route path="/mystery-box" element={<MysteryBox />} />
         <Route path="/request-shirt" element={<RequestShirt />} />
         <Route path="/collections/:slug" element={<Collection />} />
+        <Route path="/legal/terms" element={<LegalTerms />} />
+        <Route path="/legal/privacy" element={<LegalPrivacy />} />
+        <Route path="/legal/cookies" element={<LegalCookies />} />
+        <Route path="/legal/shipping" element={<LegalShipping />} />
+        <Route path="/legal/accessibility" element={<LegalAccessibility />} />
+        <Route path="/legal/business" element={<LegalBusiness />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/size-guide" element={<SizeGuide />} />

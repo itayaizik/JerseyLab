@@ -260,48 +260,57 @@ export default function Navbar() {
                   {!catOpen && <NavTip>קטלוג</NavTip>}
                 </button>
                 {catOpen && (
-                  <div role="menu" aria-label="קטגוריות בקטלוג"
-                    className="absolute top-full right-0 mt-2 w-[336px] bg-[#0f1d38] border-2 border-[#E8622A] z-40"
-                    style={{ boxShadow: '5px 5px 0 rgba(15,29,56,0.55)' }}>
-                    <p className="px-3 pt-3 pb-2 text-[10px] text-white/40 font-heading uppercase tracking-[0.2em]">
-                      עיין לפי קטגוריה
+                  <div role="menu" aria-label="קטלוג"
+                    className="absolute top-full right-0 mt-2 w-[340px] bg-white border-2 border-[#1B2A4A] z-40 overflow-hidden"
+                    style={{ boxShadow: '6px 6px 0 rgba(27,42,74,0.35)' }}>
+
+                    {/* Most people who open this want the whole catalogue, not
+                        a category — the old menu made them pick one first, so
+                        they were landing in "חדשים" when they meant "everything".
+                        The full catalogue is now the first and largest thing. */}
+                    <Link to="/catalog" role="menuitem" onClick={() => setCatOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3.5 bg-[#1B2A4A] text-white hover:bg-[#E8622A] transition-colors">
+                      <LayoutGrid className="w-5 h-5 flex-shrink-0 text-[#FFD95A]" />
+                      <span className="min-w-0">
+                        <span className="block font-heading font-bold text-sm uppercase tracking-wide">כל החולצות</span>
+                        <span className="block text-xs font-body text-white/65">הקטלוג המלא, עם סינון לפי מידה ומחיר</span>
+                      </span>
+                      <ArrowLeft className="w-4 h-4 flex-shrink-0 mr-auto" />
+                    </Link>
+
+                    <p className="px-4 pt-3.5 pb-2 text-[10px] text-[#1B2A4A]/45 font-heading uppercase tracking-[0.2em]">
+                      או קפצו ישר לקטגוריה
                     </p>
 
-                    {/* Two columns: eight categories as one scannable block
-                        rather than a tall list the eye has to walk down. */}
-                    <div className="grid grid-cols-2 gap-1 px-2 pb-2">
+                    <div className="grid grid-cols-2 gap-px bg-[#1B2A4A]/10 border-y border-[#1B2A4A]/10">
                       {stockedCategories.map(c => {
                         const active = currentUrl === c.href;
                         return (
                           <Link key={c.href} to={c.href} role="menuitem" onClick={() => setCatOpen(false)}
-                            className={`group/cat flex items-center gap-2 px-2.5 py-2.5 text-sm font-body transition-colors ${active ? 'bg-[#E8622A] text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
-                            <c.icon className={`w-4 h-4 flex-shrink-0 transition-colors ${active ? 'text-white' : 'text-[#E8622A]'}`} />
+                            className={`flex items-center gap-2 px-3 min-h-[44px] text-sm font-body transition-colors ${active ? 'bg-[#E8622A] text-white' : 'bg-white text-[#1B2A4A] hover:bg-[#F2ECD9]'}`}>
+                            <c.icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-white' : 'text-[#E8622A]'}`} />
                             <span className="truncate">{c.label}</span>
                           </Link>
                         );
                       })}
                     </div>
 
-                    {/* Its own strip above the catalog link - a mystery box is
-                        not a filter over the catalogue, it is a product. */}
-                    <Link to="/mystery-box" role="menuitem" onClick={() => setCatOpen(false)}
-                      className={`flex items-center gap-2 mx-2 mb-2 px-2.5 py-2.5 text-sm font-body border-2 transition-colors ${currentUrl === '/mystery-box' ? 'bg-[#FFD95A] text-[#1B2A4A] border-[#FFD95A]' : 'text-[#FFD95A] border-[#FFD95A]/40 hover:bg-[#FFD95A] hover:text-[#1B2A4A]'}`}>
-                      <Gift className="w-4 h-4 flex-shrink-0" />
-                      <span className="font-bold">מיסטרי בוקס</span>
-                      <span className="mr-auto font-mono text-xs opacity-80">מ-₪70</span>
-                    </Link>
+                    {/* Neither of these is a slice of the catalogue, so they sit
+                        apart from the categories rather than among them. */}
+                    <div className="p-2 space-y-1.5 bg-[#F2ECD9]/50">
+                      <Link to="/mystery-box" role="menuitem" onClick={() => setCatOpen(false)}
+                        className={`flex items-center gap-2 px-3 min-h-[44px] text-sm font-body border-2 transition-colors ${currentUrl === '/mystery-box' ? 'bg-[#1B2A4A] text-[#FFD95A] border-[#1B2A4A]' : 'bg-white text-[#1B2A4A] border-[#1B2A4A]/25 hover:border-[#1B2A4A]'}`}>
+                        <Gift className="w-4 h-4 flex-shrink-0 text-[#E8622A]" />
+                        <span className="font-bold">מיסטרי בוקס</span>
+                        <span className="mr-auto font-mono text-xs opacity-70">מ-₪70</span>
+                      </Link>
 
-                    <Link to="/request-shirt" role="menuitem" onClick={() => setCatOpen(false)}
-                      className={`flex items-center gap-2 mx-2 mb-2 px-2.5 py-2.5 text-sm font-body border-2 transition-colors ${currentUrl === '/request-shirt' ? 'bg-white text-[#1B2A4A] border-white' : 'text-white/80 border-white/25 hover:bg-white hover:text-[#1B2A4A]'}`}>
-                      <PackageSearch className="w-4 h-4 flex-shrink-0" />
-                      <span className="font-bold">לא מצאת? בקש חולצה</span>
-                    </Link>
-
-                    <Link to="/catalog" role="menuitem" onClick={() => setCatOpen(false)}
-                      className={`flex items-center justify-between gap-2 px-3 py-2.5 text-xs font-heading font-bold uppercase tracking-wider border-t-2 transition-colors ${currentUrl === '/catalog' ? 'bg-[#E8622A] text-white border-[#E8622A]' : 'text-[#E8622A] border-[#E8622A]/30 hover:bg-[#E8622A] hover:text-white'}`}>
-                      כל הקטלוג
-                      <ArrowLeft className="w-3.5 h-3.5" />
-                    </Link>
+                      <Link to="/request-shirt" role="menuitem" onClick={() => setCatOpen(false)}
+                        className={`flex items-center gap-2 px-3 min-h-[44px] text-sm font-body border-2 transition-colors ${currentUrl === '/request-shirt' ? 'bg-[#1B2A4A] text-white border-[#1B2A4A]' : 'bg-white text-[#1B2A4A] border-[#1B2A4A]/25 hover:border-[#1B2A4A]'}`}>
+                        <PackageSearch className="w-4 h-4 flex-shrink-0 text-[#E8622A]" />
+                        <span className="font-bold">לא מצאתם? בקשו חולצה</span>
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>
