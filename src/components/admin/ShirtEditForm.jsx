@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Upload, Loader2, Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { sizeQty, setSizeQty } from '@/lib/sizes';
+import { sizeQty, setSizeQty, sizeAliases, normalizeSize } from '@/lib/sizes';
 
-const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+// '2XL', not 'XXL': the canonical spelling, so the label the owner sees matches
+// the key that gets written. The legacy 'XXL' is still read, via sizeAliases.
+const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 // Canonical spellings - see lib/sizes. Reads tolerate the legacy 'XXL' key,
 // writes always land on '2XL', so stock can no longer be filed under a spelling
 // the storefront then fails to find.
@@ -25,7 +27,18 @@ export default function ShirtEditForm({ draft, onChange }) {
   const [extraUrlInput, setExtraUrlInput] = useState('');
 
   const setForm = (field, value) => onChange({ ...draft, form: { ...draft.form, [field]: value } });
-  const setSizes = (size, qty) => onChange({ ...draft, sizes: { ...draft.sizes, [size]: Math.max(0, parseInt(qty) || 0) } });
+  // Three states, not a quantity: 1 orderable, 0 sold out but still shown,
+  // absent means the shirt does not come in that size at all.
+  //
+  // Alias spellings are cleared on the way in, so a row that arrived from
+  // Base44 carrying 'XXL' does not end up holding both that and '2XL' for the
+  // same size - 17 shirts in production were in exactly that state.
+  const setSizes = (size, value) => {
+    const next = { ...draft.sizes };
+    for (const key of sizeAliases(size)) delete next[key];
+    if (value !== '') next[normalizeSize(size)] = Number(value) === 0 ? 0 : 1;
+    onChange({ ...draft, sizes: next });
+  };
   const setLocal = (size, qty) => onChange({ ...draft, localStockSizes: setSizeQty(draft.localStockSizes, size, qty) });
   const setMain = (url) => onChange({ ...draft, mainImageUrl: url });
   const addExtra = (url) => onChange({ ...draft, extraImageUrls: [...draft.extraImageUrls, url] });
@@ -90,16 +103,39 @@ export default function ShirtEditForm({ draft, onChange }) {
         <div><label className="text-sm text-varnish block mb-1">מצב</label><select value={draft.form.condition} onChange={e => setForm('condition', e.target.value)} className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none"><option value="new">חדש</option><option value="like_new">כמו חדש</option><option value="used">משומש</option></select></div>
       </div>
 
-      {/* Sizes */}
+      {/* Sizes.
+          A special order has no stock to count - the shirt is brought in per
+          order - so this used to ask for a quantity that meant nothing. The
+          data shows it: almost every size held 100 or 1, and both meant "yes".
+          Three states, no typing. "אזל" keeps the size on the product page with
+          a line through it rather than removing it, so a customer can see the
+          shirt comes in their size and is worth asking about later. */}
       <div className="border border-white/10 bg-white/5 p-4">
-        <h3 className="font-heading font-bold text-sm text-turf mb-3">מידות</h3>
+        <h3 className="font-heading font-bold text-sm text-turf mb-1">מידות להזמנה</h3>
+        <p className="text-[11px] text-varnish mb-3">
+          הזמנה מיוחדת היא ללא הגבלת כמות. סמן רק אם מידה לא זמינה כרגע.
+        </p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {currentSizeOptions.map(size => (
-            <div key={size} className="flex items-center gap-2">
-              <span className="text-sm text-chalk font-mono w-12">{size}</span>
-              <input type="number" min="0" value={draft.sizes[size] || ''} onChange={e => setSizes(size, e.target.value)} dir="ltr" placeholder="0" className="w-full bg-white/5 border border-white/10 px-2 py-1.5 text-sm text-chalk focus:border-turf focus:outline-none" />
-            </div>
-          ))}
+          {currentSizeOptions.map(size => {
+            const raw = draft.sizes[size];
+            const state = raw === undefined || raw === '' ? 'off' : Number(raw) === 0 ? 'out' : 'on';
+            const btn = (label, value, active, activeClass) => (
+              <button type="button" onClick={() => setSizes(size, value)}
+                className={`flex-1 px-1.5 py-1 text-[11px] font-heading font-bold transition-colors ${active ? activeClass : 'bg-white/5 text-varnish hover:text-chalk'}`}>
+                {label}
+              </button>
+            );
+            return (
+              <div key={size} className="border border-white/10">
+                <div className="text-center text-sm text-chalk font-mono py-1 border-b border-white/10">{size}</div>
+                <div className="flex">
+                  {btn('זמין', 1, state === 'on', 'bg-turf text-pitch')}
+                  {btn('אזל', 0, state === 'out', 'bg-redcard text-white')}
+                  {btn('אין', '', state === 'off', 'bg-varnish/30 text-chalk')}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 

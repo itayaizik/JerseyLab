@@ -14,7 +14,7 @@ import Seo from '@/components/Seo';
 import EmptyState from '@/components/ui/EmptyState';
 import TrustBar from '@/components/TrustBar';
 import { toast } from '@/components/ui/use-toast';
-import { shirtSizes } from '@/lib/sizes';
+import { shirtSizes, isSizeAvailable } from '@/lib/sizes';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
 
 const conditionLabels = { new: 'חדש', like_new: 'כמו חדש', used: 'משומש' };
@@ -319,13 +319,18 @@ export default function ShirtDetail() {
                 <h3 className="font-heading font-bold text-sm mb-2">מידות זמינות:</h3>
                 <div className="flex gap-2 flex-wrap">
                   {sortedSizes.map(size => {
-                      const isLocal = hasLocalStockForSize(shirt, size);
+                      const available = isSizeAvailable(shirt, size);
+                      const isLocal = available && hasLocalStockForSize(shirt, size);
                       const isSelected = selectedSize === size;
                       return (
-                        <button key={size} type="button" onClick={() => setSelectedSize(selectedSize === size ? '' : size)}
-                          className={`flex flex-col items-center justify-center min-h-[2.75rem] px-3 py-1 border-2 text-sm font-mono transition-all ${isSelected ? (isLocal ? 'border-green-700 bg-green-600 text-white' : 'bg-brand-navy text-white border-brand-navy') : isLocal ? 'border-green-600 text-green-700 bg-green-50 hover:bg-green-100' : 'border-brand-navy text-brand-navy hover:bg-brand-cream'}`}>
+                        <button key={size} type="button" disabled={!available}
+                          aria-label={available ? size : `${size} - אזל`}
+                          onClick={() => setSelectedSize(selectedSize === size ? '' : size)}
+                          className={`flex flex-col items-center justify-center min-h-[2.75rem] px-3 py-1 border-2 text-sm font-mono transition-all ${!available ? 'border-brand-navy/25 text-brand-navy/35 line-through cursor-not-allowed' : isSelected ? (isLocal ? 'border-green-700 bg-green-600 text-white' : 'bg-brand-navy text-white border-brand-navy') : isLocal ? 'border-green-600 text-green-700 bg-green-50 hover:bg-green-100' : 'border-brand-navy text-brand-navy hover:bg-brand-cream'}`}>
                           <span>{size}</span>
-                          {isLocal ? (
+                          {!available ? (
+                            <span className="text-[8px] font-heading font-bold uppercase leading-none mt-0.5 no-underline">אזל</span>
+                          ) : isLocal ? (
                             <span className="text-[8px] font-heading font-bold uppercase leading-none mt-0.5">מלאי בארץ</span>
                           ) : (
                             <span className="text-[8px] leading-none mt-0.5 opacity-0">מלאי</span>

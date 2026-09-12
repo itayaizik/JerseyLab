@@ -60,3 +60,24 @@ export function shirtSizes(shirt) {
   const raw = shirt?.sizes && typeof shirt.sizes === 'object' ? Object.keys(shirt.sizes) : [];
   return sortSizes([...new Set(raw.map(normalizeSize))]);
 }
+
+// Whether a size can actually be ordered.
+//
+// A special order has no stock to count - the shirt is brought in per order -
+// so the number stored against a size never meant a quantity. In practice the
+// data says as much: of 1,191 size entries, 980 hold 100, 206 hold 1, and four
+// hold 98 or 99. They all mean "yes".
+//
+// So the number carries one bit. Present and above zero: orderable. Present and
+// zero: offered, but not right now - shown struck through rather than removed,
+// because a size that silently disappears looks like a shirt that was never
+// made in it, and the customer has no way to tell the difference or to know it
+// is worth asking later. Absent entirely: not a size this shirt comes in.
+export function isSizeAvailable(shirt, size) {
+  const map = shirt?.sizes;
+  if (!map || typeof map !== 'object') return true;
+  for (const key of sizeAliases(size)) {
+    if (key in map) return Number(map[key]) !== 0;
+  }
+  return true;
+}
