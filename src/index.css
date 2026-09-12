@@ -101,6 +101,28 @@
   }
 }
 
+/* The floating header's rounded corners.
+ *
+ * Applied to the bars inside the header rather than by clipping the header,
+ * because the header also contains the catalogue panel, the account menu and
+ * the icon tooltips, all of which hang below the bar and would be cut off.
+ *
+ * first-child and last-child rather than naming the two bars, so it stays
+ * correct whether or not the promo strip is showing: with it, the strip takes
+ * the top corners and the nav the bottom; without it, the nav is both and takes
+ * all four. */
+.header-floating > :first-child {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+.header-floating > :last-child {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+.header-floating > * {
+  transition: border-radius 300ms ease;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

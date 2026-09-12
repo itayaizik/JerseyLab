@@ -28,10 +28,26 @@ const FALLBACK = 'https://placehold.co/400x400/EDE8D9/9aa3b2?text=JerseyLab';
 const STORAGE_OBJECT = '/storage/v1/object/public/';
 const STORAGE_RENDER = '/storage/v1/render/image/public/';
 
-// The widths worth generating. Cards paint at roughly 150-300 CSS px and the
-// product page hero at up to ~600, so these cover 1x and 2x for both without
-// making the browser choose between near-identical files.
-const WIDTHS = [200, 400, 600, 900];
+// The widths worth generating: thumbnails at 64px through to the product page
+// hero on a high-density screen, which needs far more than a card does.
+const WIDTHS = [160, 320, 480, 640, 900, 1280, 1600];
+
+// What the image measures on screen, per place it is used.
+//
+// This is not decoration. `sizes` is how the browser decides which candidate to
+// download, and every caller was using the card figure because it was the
+// default: the large product image was being told it was 300px wide, so the
+// browser fetched a 400px file and stretched it across a box twice that,
+// through a zoom that goes to 150% on top. That is the softness, not the
+// compression. Thumbnails had the opposite problem, fetching a card-sized file
+// to paint 64 pixels.
+export const IMAGE_SIZES = {
+  card: '(min-width: 1024px) 300px, (min-width: 640px) 45vw, 50vw',
+  // Deliberately generous: the hero can be zoomed to 150%, and the browser will
+  // not fetch a larger file when it is, so the headroom has to be there first.
+  hero: '(min-width: 1024px) 700px, 100vw',
+  thumb: '64px',
+};
 
 function isOurStorage(url) {
   return typeof url === 'string' && url.includes(STORAGE_OBJECT) && url.includes('.supabase.co');
@@ -45,10 +61,12 @@ function isOurStorage(url) {
 // fits the picture inside the requested box and keeps its proportions, for
 // square and non-square sources alike.
 //
-// `quality=75` is the point where the difference stops being visible on a
-// photograph while the file is still much smaller.
+// Quality 82 rather than 75. On a plain photograph the two are hard to tell
+// apart, but these are shirts: crests, sponsor lettering and fabric texture are
+// exactly the detail that low quality smears first, and 75 was visibly soft on
+// them. The extra weight is small next to serving the right dimensions.
 function atWidth(url, width) {
-  return `${url.replace(STORAGE_OBJECT, STORAGE_RENDER)}?width=${width}&resize=contain&quality=75`;
+  return `${url.replace(STORAGE_OBJECT, STORAGE_RENDER)}?width=${width}&resize=contain&quality=82`;
 }
 
 export default function ProductImage({
@@ -62,7 +80,7 @@ export default function ProductImage({
   // What the image measures on screen, for the browser to pick a source with.
   // Only meaningful alongside a srcset, which is why it is ignored for images
   // we cannot resize.
-  sizes = '(min-width: 1024px) 300px, (min-width: 640px) 45vw, 50vw',
+  sizes = IMAGE_SIZES.card,
 }) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
@@ -82,7 +100,7 @@ export default function ProductImage({
         <div className="absolute inset-0 skeleton" aria-hidden="true" style={{ aspectRatio: ratio }} />
       )}
       <img
-        src={resizable ? atWidth(resolved, 600) : resolved}
+        src={resizable ? atWidth(resolved, 640) : resolved}
         srcSet={srcSet}
         sizes={srcSet ? sizes : undefined}
         alt={alt}

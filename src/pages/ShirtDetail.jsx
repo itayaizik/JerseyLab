@@ -9,7 +9,7 @@ import ShirtCard from '@/components/ShirtCard';
 import ShirtReviews from '@/components/ShirtReviews';
 import ShippingBadge, { hasLocalStock, hasLocalStockForSize } from '@/components/ShippingBadge';
 import ShippingInfoModal from '@/components/ShippingInfoModal';
-import ProductImage from '@/components/ui/ProductImage';
+import ProductImage, { IMAGE_SIZES } from '@/components/ui/ProductImage';
 import Seo from '@/components/Seo';
 import EmptyState from '@/components/ui/EmptyState';
 import TrustBar from '@/components/TrustBar';
@@ -254,6 +254,7 @@ export default function ShirtDetail() {
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoomed(z => !z); } }}>
                 <ProductImage
                   eager
+                  sizes={IMAGE_SIZES.hero}
                   src={allImages[selectedImage]}
                   alt={shirt.name}
                   className={`w-full h-full object-cover transition-transform duration-300 ${zoomed ? 'scale-150' : ''}`}
@@ -267,7 +268,7 @@ export default function ShirtDetail() {
                 {visibleThumbs.map((img, i) => (
                   <button key={i} onClick={() => { setSelectedImage(i); setZoomed(false); }}
                     className={`relative w-16 h-16 flex-shrink-0 border-2 overflow-hidden touch-manipulation ${i === selectedImage ? 'border-brand-navy' : 'border-gray-200'}`}>
-                    <ProductImage src={img} alt="" className="w-full h-full object-cover" />
+                    <ProductImage src={img} alt="" sizes={IMAGE_SIZES.thumb} className="w-full h-full object-cover" />
                   </button>
                 ))}
                 {!showAllImages && allImages.length > 3 && (

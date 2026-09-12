@@ -236,18 +236,21 @@ export default function Navbar() {
           promo strip appearing or being dismissed cannot leave a gap. */}
       <div aria-hidden="true" style={{ height: headerHeight }} />
 
+      {/* The rounded corners are given to the two bars themselves, through the
+          header-floating class, rather than by clipping this container.
+          `overflow: hidden` here would round the corners correctly and also cut
+          off everything that hangs below the bar: the catalogue panel, the
+          account menu and every icon tooltip. The search box was the only one
+          that survived, because it grows the header instead of overflowing it. */}
       <div
         ref={headerRef}
-        className="fixed z-50"
+        className={`fixed z-50 ${floating ? 'header-floating' : ''}`}
         style={{
           top: floating ? 16 : 0,
           left: floating ? 16 : 0,
           right: floating ? 16 : 0,
-          borderRadius: floating ? 8 : 0,
-          // Keeps the promo strip's colour inside the rounded corners.
-          overflow: 'hidden',
           boxShadow: floating ? '0 8px 32px rgba(0, 0, 0, 0.15)' : 'none',
-          transition: 'top 300ms ease, left 300ms ease, right 300ms ease, border-radius 300ms ease, box-shadow 300ms ease',
+          transition: 'top 300ms ease, left 300ms ease, right 300ms ease, box-shadow 300ms ease',
         }}
       >
         <PromoBar />
