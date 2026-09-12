@@ -38,18 +38,28 @@ export default function ChatProofsSection({ title }) {
             {title || 'לקוחות מספרים'}
           </h2>
         </div>
+        {/* Says where they came from rather than insisting they are genuine.
+            Protesting that screenshots are real invites the opposite thought;
+            naming the source is a fact the reader can check for themselves. */}
         <p className="font-body text-sm text-brand-navy/60 mb-6 max-w-2xl">
-          שיחות אמיתיות עם לקוחות. לחצו על צילום כדי להגדיל.
+          צילומי מסך מהוואטסאפ. לחצו כדי לקרוא.
         </p>
 
+        {/* A screenshot of a conversation is a picture of text, so the card has
+            to be wide enough to read some of it. At the old 210px the message
+            text came out around 8px and the card sold nothing - it was a
+            thumbnail of a status bar. The crop is centred rather than anchored
+            to the top for the same reason: the top of a WhatsApp screenshot is
+            the battery icon and a scribbled-out name, and the messages are
+            below it. */}
         <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
           {proofs.map(proof => (
-            <figure key={proof.id} className="flex-shrink-0 w-[210px]">
+            <figure key={proof.id} className="flex-shrink-0 w-[300px] sm:w-[360px]">
               <button type="button" onClick={() => setLightbox(proof)}
                 className="block w-full bg-white border-2 border-brand-navy p-2 hover:-translate-y-1 transition-transform cursor-zoom-in"
                 style={{ boxShadow: '4px 4px 0 var(--brand-navy)' }}>
                 <img src={proof.image_url} alt={proof.caption || 'שיחה עם לקוח'} loading="lazy"
-                  className="w-full h-[280px] object-cover object-top" />
+                  className="w-full h-[420px] object-cover object-center" />
               </button>
               {proof.caption && (
                 <figcaption className="mt-2 text-xs font-body text-brand-navy/70 leading-snug">
