@@ -233,7 +233,7 @@ export default function Navbar() {
                 buttons out past the container padding to 3px from the edge. */}
             <Link to="/" className="flex-shrink-0 flex items-center lg:mr-6" aria-label="JerseyLab - דף הבית">
               <img
-                src="https://media.base44.com/images/public/6a42e762005950f7dc39df84/f2c515307_image-removebg-preview2.png"
+                src="/logo-navbar.png"
                 alt="JerseyLab - ONE PASSION. ONE LAB."
                 className="h-12 lg:h-16 w-auto object-contain"
                 style={{ mixBlendMode: 'screen', filter: 'saturate(2)' }}

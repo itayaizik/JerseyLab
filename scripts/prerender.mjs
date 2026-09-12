@@ -22,7 +22,7 @@ import { COLLECTIONS, collectionShirts } from '../src/lib/collections.js';
 
 const DIST = resolve(ROOT, 'dist');
 const TEMPLATE_PATH = resolve(DIST, 'index.html');
-const DEFAULT_IMAGE = 'https://media.base44.com/images/public/6a42e762005950f7dc39df84/de8c45ac1_ChatGPTImageJul31202602_56_05AM.png';
+const DEFAULT_IMAGE = 'https://www.jerseylab.co/og-image.jpg';
 
 if (!existsSync(TEMPLATE_PATH)) {
   console.error('[prerender] dist/index.html not found - run `vite build` first.');

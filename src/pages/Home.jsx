@@ -179,7 +179,7 @@ export default function Home() {
             "@type": "Organization",
             name: "JerseyLab",
             url: SITE_ORIGIN,
-            logo: { "@type": "ImageObject", url: "https://media.base44.com/images/public/6a42e762005950f7dc39df84/de8c45ac1_ChatGPTImageJul31202602_56_05AM.png", width: 512, height: 512 },
+            logo: { "@type": "ImageObject", url: "https://www.jerseylab.co/icon-512.png", width: 512, height: 512 },
             description: "ארכיון בלעדי של חולצות כדורגל נדירות לאספנים ואוהדים.",
             sameAs: ["https://instagram.com/Jerseylabil"]
           },
