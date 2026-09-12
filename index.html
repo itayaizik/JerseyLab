@@ -33,14 +33,13 @@
     <meta name="twitter:image" content="https://www.jerseylab.co/og-image.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://media.base44.com">
-    <!-- Product images are spread across these hosts; see ProductImage.jsx. -->
-    <link rel="preconnect" href="https://i.ibb.co" crossorigin>
-    <link rel="preconnect" href="https://i.postimg.cc" crossorigin>
-    <link rel="dns-prefetch" href="https://i.ibb.co">
-    <link rel="dns-prefetch" href="https://i.postimg.cc">
+    <!-- Product images now come from our own Supabase storage, so this is the
+         one host worth opening a connection to early. The hints for base44,
+         ibb and postimg are gone with the images that were on them. -->
+    <link rel="preconnect" href="https://cnskcshxvdymabvlghqc.supabase.co" crossorigin>
+    <!-- Club crests, and the handful of product shots not yet re-hosted. -->
+    <link rel="dns-prefetch" href="https://upload.wikimedia.org">
     <link rel="dns-prefetch" href="https://usi-sports.com">
-    <link rel="dns-prefetch" href="https://media.base44.com">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Assistant:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   </head>
   <body>
