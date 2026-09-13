@@ -12,6 +12,7 @@ import TrustBar from '@/components/TrustBar';
 import { hasLocalStock, hasLocalStockForSize } from '@/components/ShippingBadge';
 import { itemsForSize, stockPrint } from '@/lib/localStock';
 import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL } from '@/lib/cart';
+import { allowsPlayerVersion, allowsPatches } from '@/lib/shirtOptions';
 import { BUSINESS, isPlaceholder } from '@/lib/business';
 
 // Everything needed to buy the shirt, in one card beside the photos: size,
@@ -85,9 +86,17 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
   const buyingExact = needsStockChoice && buyMode === 'exact';
   const stockItem = buyingExact ? stockItems.find(item => item.id === stockItemId) || null : null;
 
+  // Israeli league shirts have no player version or patches, retro shirts no
+  // player version. Checked again here, not only by hiding the choice, so a
+  // choice made before switching shirts cannot slip into the price or the cart.
+  const playerAllowed = allowsPlayerVersion(shirt);
+  const patchesAllowed = allowsPatches(shirt);
+  const wantsPlayer = playerAllowed && shirtType === 'player';
+  const wantsPatches = patchesAllowed && patches;
+
   const extras = buyingExact
     ? (stockItem?.player_version ? EXTRA_PRICES.player : 0) + (stockPrint(stockItem) ? EXTRA_PRICES.name : 0)
-    : (shirtType === 'player' ? EXTRA_PRICES.player : 0) + (printing ? EXTRA_PRICES.name : 0) + (patches ? EXTRA_PRICES.patches : 0);
+    : (wantsPlayer ? EXTRA_PRICES.player : 0) + (printing ? EXTRA_PRICES.name : 0) + (wantsPatches ? EXTRA_PRICES.patches : 0);
   const total = basePrice + extras;
 
   const freeAbove = BUSINESS.shipping?.freeAbove;
@@ -123,9 +132,9 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
       size, basePrice,
       addName: buyingExact ? !!stockPrint(stockItem) : printing,
       customName: buyingExact ? stockPrint(stockItem) : (printing ? `${customName} ${customNumber}`.trim() : ''),
-      playerVersion: buyingExact ? !!stockItem?.player_version : shirtType === 'player',
+      playerVersion: buyingExact ? !!stockItem?.player_version : wantsPlayer,
       // A shirt already in stock is finished as it is.
-      patches: buyingExact ? false : patches,
+      patches: buyingExact ? false : wantsPatches,
       localStockSizes: shirt.local_stock_sizes || {},
       isExactStockItem: buyingExact,
       // Which physical shirt, so the order says which of two size S shirts
@@ -191,7 +200,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
         className={`rounded-sm transition-shadow duration-500 ${highlight ? 'shadow-[0_0_0_6px_var(--brand-orange-soft)]' : ''}`}
         title={size ? <>מידה: <span dir="ltr" className="font-normal text-brand-navy/60">{size}</span></> : 'מידה'}
         aside={(
-          <button type="button" onClick={() => onOpenSizeGuide?.(shirtType === 'player' && !buyingExact ? 'player' : null)} className="shop-link text-sm">
+          <button type="button" onClick={() => onOpenSizeGuide?.(wantsPlayer && !buyingExact ? 'player' : null)} className="shop-link text-sm">
             מדריך מידות
           </button>
         )}
@@ -220,6 +229,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
 
       {!buyingExact && (
         <>
+          {playerAllowed && (
           <Section id="version-heading" title="גרסה">
             <div role="group" aria-labelledby="version-heading" className="flex flex-wrap gap-2">
               {SHIRT_TYPE_OPTIONS.map(opt => (
@@ -233,6 +243,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
             </div>
             <p className="mt-2.5 text-[13px] text-brand-navy/55">{SHIRT_TYPE_OPTIONS.find(o => o.id === shirtType)?.desc}</p>
           </Section>
+          )}
 
           <Section id="print-heading" title="שם ומספר" sectionRef={printRef}>
             <div role="group" aria-labelledby="print-heading" className="flex flex-wrap gap-2">
@@ -261,6 +272,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
             )}
           </Section>
 
+          {patchesAllowed && (
           <Section id="patches-heading" title={PATCHES_LABEL}>
             <div role="group" aria-labelledby="patches-heading" className="flex flex-wrap gap-2">
               <button type="button" aria-pressed={!patches} onClick={() => setPatches(false)}
@@ -275,6 +287,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
             </div>
             <p className="mt-2.5 text-[13px] text-brand-navy/55">{`ה${PATCHES_LABEL} של הליגה או הטורניר, לפי החולצה.`}</p>
           </Section>
+          )}
         </>
       )}
 

@@ -13,6 +13,7 @@ import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurato
 import { hasLocalStockForSize } from '@/components/ShippingBadge';
 import { itemsForSize, stockPrint } from '@/lib/localStock';
 import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL } from '@/lib/cart';
+import { allowsPlayerVersion, allowsPatches } from '@/lib/shirtOptions';
 
 // Adding a shirt straight from a product card, one question at a time. The
 // product page asks the same questions all at once; this is the short path for
@@ -53,17 +54,24 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   const buyingExact = sizeHasLocalStock && buyMode === 'exact';
   const stockItem = buyingExact ? sizeStockItems.find(item => item.id === stockItemId) || null : null;
 
+  // Israeli league shirts: no player version, no patches. Retro: no player
+  // version. The version step is skipped entirely when there is only one.
+  const playerAllowed = allowsPlayerVersion(shirt);
+  const patchesAllowed = allowsPatches(shirt);
+  const wantsPlayer = playerAllowed && shirtType === 'player';
+  const wantsPatches = patchesAllowed && patches;
+
   const flow = [
     'size',
     ...(sizeHasLocalStock ? ['exactOrCustom'] : []),
-    ...(buyingExact ? [] : ['shirtType', 'addName', ...(addName === 'yes' ? ['nameDetails'] : [])]),
+    ...(buyingExact ? [] : [...(playerAllowed ? ['shirtType'] : []), 'addName', ...(addName === 'yes' ? ['nameDetails'] : [])]),
     'summary',
   ];
   const currentIndex = flow.indexOf(step);
   const stepLabels = [
     'מידה',
     ...(sizeHasLocalStock ? ['בחירה'] : []),
-    ...(buyingExact ? [] : ['גרסה', 'הדפסה', ...(addName === 'yes' ? ['שם ומספר'] : [])]),
+    ...(buyingExact ? [] : [...(playerAllowed ? ['גרסה'] : []), 'הדפסה', ...(addName === 'yes' ? ['שם ומספר'] : [])]),
     'סיכום',
   ];
 
@@ -98,8 +106,8 @@ export default function QuickAddModal({ shirt, open, onClose }) {
       size: selectedSize, basePrice,
       addName: buyingExact ? !!stockPrint(stockItem) : addName === 'yes',
       customName: buyingExact ? stockPrint(stockItem) : (addName === 'yes' ? `${customName} ${customNumber}`.trim() : ''),
-      playerVersion: buyingExact ? !!stockItem?.player_version : shirtType === 'player',
-      patches: buyingExact ? false : patches,
+      playerVersion: buyingExact ? !!stockItem?.player_version : wantsPlayer,
+      patches: buyingExact ? false : wantsPatches,
       localStockSizes: shirt.local_stock_sizes || {},
       isExactStockItem: buyingExact,
       stockItemId: buyingExact ? stockItem?.id || '' : '',
@@ -177,18 +185,20 @@ export default function QuickAddModal({ shirt, open, onClose }) {
                 <>
                   {/* Patches are asked here rather than as a step of their own:
                       a yes-or-no for ₪5 does not deserve another screen. */}
-                  <label className="mb-3 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-brand-line p-4 transition hover:border-brand-navy/30">
-                    <span>
-                      <span className="block text-[15px] font-semibold text-brand-navy">{`${PATCHES_LABEL} של הליגה`}</span>
-                      <span className="block text-[13px] text-brand-navy/55">לפי החולצה</span>
-                    </span>
-                    <span className="flex items-center gap-3">
-                      <span className="text-sm font-semibold tabular-nums text-brand-navy">+₪{EXTRA_PRICES.patches}</span>
-                      <input type="checkbox" checked={patches} onChange={e => setPatches(e.target.checked)} className="h-5 w-5 accent-brand-orange" />
-                    </span>
-                  </label>
-                  <OrderSummary shirt={shirt} size={selectedSize} shirtType={shirtType} addName={addName}
-                    customName={customName} customNumber={customNumber} basePrice={basePrice} patches={patches} />
+                  {patchesAllowed && (
+                    <label className="mb-3 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-brand-line p-4 transition hover:border-brand-navy/30">
+                      <span>
+                        <span className="block text-[15px] font-semibold text-brand-navy">{`${PATCHES_LABEL} של הליגה`}</span>
+                        <span className="block text-[13px] text-brand-navy/55">לפי החולצה</span>
+                      </span>
+                      <span className="flex items-center gap-3">
+                        <span className="text-sm font-semibold tabular-nums text-brand-navy">+₪{EXTRA_PRICES.patches}</span>
+                        <input type="checkbox" checked={patches} onChange={e => setPatches(e.target.checked)} className="h-5 w-5 accent-brand-orange" />
+                      </span>
+                    </label>
+                  )}
+                  <OrderSummary shirt={shirt} size={selectedSize} shirtType={wantsPlayer ? 'player' : 'regular'} addName={addName}
+                    customName={customName} customNumber={customNumber} basePrice={basePrice} patches={wantsPatches} />
                 </>
               )}
             </motion.div>
