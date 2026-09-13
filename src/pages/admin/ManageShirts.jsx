@@ -9,6 +9,7 @@ import { searchShirts } from '@/lib/search';
 import { shirtSizes, isSizeAvailable } from '@/lib/sizes';
 import { dateSortValue } from '@/lib/dates';
 import { stockItems, stockPayload } from '@/lib/localStock';
+import { buildSearchQuery } from '@/lib/supplierText';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 // Quick filters: the questions the owner actually asks of the catalogue, one
@@ -108,7 +109,18 @@ export default function ManageShirts() {
   const [expandedId, setExpandedId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [saveResult, setSaveResult] = useState(null);
+  const [copiedQueryId, setCopiedQueryId] = useState(null);
   const navigate = useNavigate();
+
+  // The English phrase for a shirt, copied for pasting into a Google search
+  // while filling in photos.
+  const copyQuery = async (id, query) => {
+    try {
+      await navigator.clipboard.writeText(query);
+      setCopiedQueryId(id);
+      setTimeout(() => setCopiedQueryId(k => (k === id ? null : k)), 1500);
+    } catch { /* clipboard unavailable - the phrase is still on screen to select */ }
+  };
 
   useEffect(() => { loadShirts(); }, []);
 
@@ -339,6 +351,24 @@ export default function ManageShirts() {
                       {dirty[s.id] ? '● ' : ''}{s.name}
                     </button>
                     {s.player_name && <p className="text-xs text-varnish">{s.player_name}</p>}
+                    {(() => {
+                      const query = buildSearchQuery(s);
+                      return (
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                          <button type="button" onClick={() => copyQuery(s.id, query)} dir="ltr"
+                            title="העתקת הטקסט באנגלית לחיפוש בגוגל"
+                            className="inline-flex items-center gap-1 border border-white/15 px-1.5 py-0.5 text-[11px] text-varnish hover:border-turf hover:text-chalk transition-colors">
+                            {copiedQueryId === s.id ? <Check className="w-3 h-3 text-turf" /> : <Copy className="w-3 h-3" />}
+                            {copiedQueryId === s.id ? 'Copied!' : query}
+                          </button>
+                          <a href={`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`} target="_blank" rel="noopener noreferrer"
+                            title="חיפוש תמונות בגוגל"
+                            className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] text-turf hover:underline">
+                            <Search className="w-3 h-3" /> Google
+                          </a>
+                        </div>
+                      );
+                    })()}
                   </td>
                   <td className="py-2 px-2 hidden md:table-cell text-varnish">{s.club || s.national_team || '-'}</td>
                   <td className="py-2 px-2 font-mono">₪{s.sale_price && s.sale_price < s.price ? s.sale_price : s.price}</td>

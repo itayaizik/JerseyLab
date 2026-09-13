@@ -56,6 +56,8 @@ const TEAM_NAMES_EN = {
   'צרפת': 'France',
   'קולומביה': 'Colombia',
   'קרואטיה': 'Croatia',
+  'מרוקו': 'Morocco',
+  'קנדה': 'Canada',
 };
 
 function translateTeamName(name) {
@@ -89,6 +91,22 @@ function parseCustomization(message) {
   // apostrophe, in case one was typed by hand.
   const patches = /פאצ['׳]ים/.test(message);
   return { playerVersion, customText, patches };
+}
+
+// An English search phrase for finding a shirt's photo on Google:
+// "Real Madrid 2026/27 Home Jersey", "Argentina 1986 Home Retro Jersey".
+// The season comes from its own field, or from the year in the name for rows
+// that never had one filled in.
+export function buildSearchQuery(shirt) {
+  const teamHe = (shirt?.club || shirt?.national_team || '').trim();
+  const team = teamHe ? translateTeamName(teamHe) : '';
+  // A name with no kit word is "Special" in the supplier text, but most of those
+  // are home shirts whose name simply leaves it out, and "Special" would send a
+  // search after a special edition. It is only kept when the name says so.
+  const detected = detectKitType(shirt?.name || '');
+  const kit = detected === 'Special' && !String(shirt?.name || '').includes('מיוחדת') ? '' : detected;
+  const season = (shirt?.season || '').trim() || (String(shirt?.name || '').match(/\d{4}(?:\/\d{2,4})?/) || [''])[0];
+  return [team, season, kit, shirt?.is_retro ? 'Retro' : '', 'Jersey'].filter(Boolean).join(' ');
 }
 
 // Builds one line of supplier-facing order text, fully in English:
