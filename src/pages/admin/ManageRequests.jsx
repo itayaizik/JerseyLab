@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Phone, Mail, ExternalLink, Plus, X, Package, Trash2, Copy, Check } from 'lucide-react';
+import { MessageCircle, Phone, Mail, ExternalLink, Plus, X, Package, Trash2, Copy, Check, Image as ImageIcon } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { buildSupplierLine } from '@/lib/supplierText';
 import { formatDate, dateSortValue } from '@/lib/dates';
@@ -13,6 +13,7 @@ export default function ManageRequests() {
   const [expandedId, setExpandedId] = useState(null);
   const [addItemState, setAddItemState] = useState({}); // { [groupKey]: { shirtId, note, saving } }
   const [copiedId, setCopiedId] = useState(null);
+  const [copiedImageId, setCopiedImageId] = useState(null);
 
   useEffect(() => {
     async function load() {
@@ -46,6 +47,43 @@ export default function ManageRequests() {
     await navigator.clipboard.writeText(lines.join('\n'));
     setCopiedId(groupKey);
     setTimeout(() => setCopiedId(k => (k === groupKey ? null : k)), 1500);
+  };
+
+  // Copies one shirt's photo, to paste into the chat with the supplier after
+  // the text. A clipboard holds one image at a time, so it is one button per
+  // shirt rather than one for the whole order.
+  //
+  // The ClipboardItem is created inside the click with the PNG as a promise:
+  // Safari refuses a clipboard write that starts after an await. Chrome only
+  // takes PNG, so JPEG and WebP photos are redrawn as PNG first. Where the
+  // browser cannot copy images at all, the photo opens so it can be saved or
+  // shared from there.
+  const handleCopyImage = (requestId, imageUrl) => {
+    const toPng = async () => {
+      const response = await fetch(imageUrl, { mode: 'cors' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const bitmap = await createImageBitmap(await response.blob());
+      const canvas = document.createElement('canvas');
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      canvas.getContext('2d').drawImage(bitmap, 0, 0);
+      return new Promise((resolve, reject) =>
+        canvas.toBlob(blob => (blob ? resolve(blob) : reject(new Error('png failed'))), 'image/png'));
+    };
+
+    const markCopied = () => {
+      setCopiedImageId(requestId);
+      setTimeout(() => setCopiedImageId(k => (k === requestId ? null : k)), 1500);
+    };
+
+    try {
+      if (!window.ClipboardItem || !navigator.clipboard?.write) throw new Error('no image clipboard');
+      navigator.clipboard.write([new ClipboardItem({ 'image/png': toPng() })])
+        .then(markCopied)
+        .catch(() => window.open(imageUrl, '_blank', 'noopener'));
+    } catch {
+      window.open(imageUrl, '_blank', 'noopener');
+    }
   };
 
   const handleMarkShirtSold = async (shirtId) => {
@@ -139,10 +177,21 @@ export default function ManageRequests() {
                       const reqShirt = shirts.find(s => s.id === r.shirt_id);
                       return (
                         <div key={r.id} className={items.length > 1 ? 'border-r-2 border-turf/30 pr-2' : ''}>
-                          <p className="text-sm text-varnish">
-                            חולצה: <Link to={`/shirt/${r.shirt_id}`} className="text-turf hover:underline">{r.shirt_name || 'צפה'}</Link>
-                            {r.wanted_size && <> • מידה: {r.wanted_size}</>}
-                          </p>
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                            <p className="text-sm text-varnish">
+                              חולצה: <Link to={`/shirt/${r.shirt_id}`} className="text-turf hover:underline">{r.shirt_name || 'צפה'}</Link>
+                              {r.wanted_size && <> • מידה: {r.wanted_size}</>}
+                            </p>
+                            {reqShirt?.main_image && (
+                              <button
+                                onClick={() => handleCopyImage(r.id, reqShirt.main_image)}
+                                className="flex items-center gap-1 text-xs text-turf hover:text-chalk border border-turf/40 hover:border-turf px-2 py-1 transition-colors"
+                              >
+                                {copiedImageId === r.id ? <Check className="w-3 h-3" /> : <ImageIcon className="w-3 h-3" />}
+                                {copiedImageId === r.id ? 'התמונה הועתקה!' : 'העתקת תמונה'}
+                              </button>
+                            )}
+                          </div>
                           {reqShirt && reqShirt.status === 'available' && (
                             <button
                               onClick={() => handleMarkShirtSold(reqShirt.id)}
