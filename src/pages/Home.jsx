@@ -44,6 +44,7 @@ export default function Home() {
   const [reviews, setReviews] = useState([]);
   const [faqs, setFaqs] = useState([]);
   const [siteSettings, setSiteSettings] = useState({});
+  const [settingsReady, setSettingsReady] = useState(false);
   const [user, setUser] = useState(null);
   const [wishlistIds, setWishlistIds] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,13 +55,24 @@ export default function Home() {
   useEffect(() => {
     async function load() {
       setLoadError(false);
-      let allShirts, revs, faqList, settingsData;
+      // Settings are handed over the moment they arrive rather than with the
+      // 200 shirts: the banner at the top is drawn from them.
+      const settingsLoaded = base44.entities.SiteSetting.list('-created_date', 100)
+        .then(data => {
+          const settingsObj = {};
+          data.forEach(d => { settingsObj[d.key] = d.value; });
+          setSiteSettings(settingsObj);
+        })
+        .catch(() => {})
+        .finally(() => setSettingsReady(true));
+
+      let allShirts, revs, faqList;
       try {
-        [allShirts, revs, faqList, settingsData] = await Promise.all([
+        [allShirts, revs, faqList] = await Promise.all([
           base44.entities.Shirt.filter({ status: 'available' }, '-created_date', 200),
           base44.entities.Review.filter({ approved: true }, '-created_date', 6),
           base44.entities.FAQ.filter({ active: true }, 'sort_order', 5),
-          base44.entities.SiteSetting.list('-created_date', 100),
+          settingsLoaded,
         ]);
       } catch {
         setLoadError(true);
@@ -74,9 +86,6 @@ export default function Home() {
       setFastShippingShirts(allShirts.filter(hasLocalStock).slice(0, 12));
       setReviews(revs);
       setFaqs(faqList);
-      const settingsObj = {};
-      settingsData.forEach(d => { settingsObj[d.key] = d.value; });
-      setSiteSettings(settingsObj);
       setLoading(false);
 
       // User/wishlist loads after content is visible - does not block the first paint.
@@ -161,7 +170,7 @@ export default function Home() {
       ) : (
         <>
           {/* ===== HERO ===== */}
-          <HomeHero settings={siteSettings} />
+          <HomeHero settings={siteSettings} ready={settingsReady} />
 
           {/* ===== PICKS ===== */}
           {(loading || tabs.length > 0) && (

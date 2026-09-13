@@ -40,6 +40,14 @@
     <!-- Heebo is the one family for the shop, loaded as a single variable font.
          Space Mono stays for the admin area's figures. -->
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300..900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Inline so it applies before any stylesheet arrives. The prerendered copy
+         of the page inside #root is for crawlers and screen readers; visitors
+         see the logo until the app replaces both. See scripts/prerender.mjs. -->
+    <style>
+      #prerendered-content { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+      #boot-splash { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #fff; }
+      #boot-splash img { height: 48px; width: auto; }
+    </style>
   </head>
   <body>
     <div id="root"></div>

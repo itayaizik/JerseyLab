@@ -107,7 +107,7 @@ export default function QuickAddModal({ shirt, open, onClose }) {
       addName: buyingExact ? !!stockPrint(stockItem) : addName === 'yes',
       customName: buyingExact ? stockPrint(stockItem) : (addName === 'yes' ? `${customName} ${customNumber}`.trim() : ''),
       playerVersion: buyingExact ? !!stockItem?.player_version : wantsPlayer,
-      patches: buyingExact ? false : wantsPatches,
+      patches: wantsPatches,
       localStockSizes: shirt.local_stock_sizes || {},
       isExactStockItem: buyingExact,
       stockItemId: buyingExact ? stockItem?.id || '' : '',
@@ -115,6 +115,22 @@ export default function QuickAddModal({ shirt, open, onClose }) {
     setAdded(true);
     setTimeout(() => { handleClose(); openCart(); }, 650);
   };
+
+  // Patches are asked on the summary rather than as a step of their own: a
+  // yes-or-no for ₪5 does not deserve another screen. Offered for a shirt from
+  // stock as well as one made up.
+  const patchesToggle = patchesAllowed && (
+    <label className="mb-3 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-brand-line p-4 transition hover:border-brand-navy/30">
+      <span>
+        <span className="block text-[15px] font-semibold text-brand-navy">{`${PATCHES_LABEL} של הליגה`}</span>
+        <span className="block text-[13px] text-brand-navy/55">לפי החולצה</span>
+      </span>
+      <span className="flex items-center gap-3">
+        <span className="text-sm font-semibold tabular-nums text-brand-navy">+₪{EXTRA_PRICES.patches}</span>
+        <input type="checkbox" checked={patches} onChange={e => setPatches(e.target.checked)} className="h-5 w-5 accent-brand-orange" />
+      </span>
+    </label>
+  );
 
   if (!shirt) return null;
 
@@ -177,26 +193,17 @@ export default function QuickAddModal({ shirt, open, onClose }) {
             <motion.div key="summary" {...stepMotion}>
               <h3 className="mb-4 text-lg font-semibold text-brand-navy">הכל מוכן</h3>
               {buyingExact ? (
-                <OrderSummary shirt={shirt} size={selectedSize}
-                  shirtType={stockItem?.player_version ? 'player' : 'regular'}
-                  addName={stockPrint(stockItem) ? 'yes' : 'no'}
-                  customName={stockItem?.name || ''} customNumber={stockItem?.number || ''} basePrice={basePrice} />
+                <>
+                  {patchesToggle}
+                  <OrderSummary shirt={shirt} size={selectedSize}
+                    shirtType={stockItem?.player_version ? 'player' : 'regular'}
+                    addName={stockPrint(stockItem) ? 'yes' : 'no'}
+                    customName={stockItem?.name || ''} customNumber={stockItem?.number || ''} basePrice={basePrice}
+                    patches={wantsPatches} />
+                </>
               ) : (
                 <>
-                  {/* Patches are asked here rather than as a step of their own:
-                      a yes-or-no for ₪5 does not deserve another screen. */}
-                  {patchesAllowed && (
-                    <label className="mb-3 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-brand-line p-4 transition hover:border-brand-navy/30">
-                      <span>
-                        <span className="block text-[15px] font-semibold text-brand-navy">{`${PATCHES_LABEL} של הליגה`}</span>
-                        <span className="block text-[13px] text-brand-navy/55">לפי החולצה</span>
-                      </span>
-                      <span className="flex items-center gap-3">
-                        <span className="text-sm font-semibold tabular-nums text-brand-navy">+₪{EXTRA_PRICES.patches}</span>
-                        <input type="checkbox" checked={patches} onChange={e => setPatches(e.target.checked)} className="h-5 w-5 accent-brand-orange" />
-                      </span>
-                    </label>
-                  )}
+                  {patchesToggle}
                   <OrderSummary shirt={shirt} size={selectedSize} shirtType={wantsPlayer ? 'player' : 'regular'} addName={addName}
                     customName={customName} customNumber={customNumber} basePrice={basePrice} patches={wantsPatches} />
                 </>

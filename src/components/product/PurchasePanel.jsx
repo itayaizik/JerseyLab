@@ -95,7 +95,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
   const wantsPatches = patchesAllowed && patches;
 
   const extras = buyingExact
-    ? (stockItem?.player_version ? EXTRA_PRICES.player : 0) + (stockPrint(stockItem) ? EXTRA_PRICES.name : 0)
+    ? (stockItem?.player_version ? EXTRA_PRICES.player : 0) + (stockPrint(stockItem) ? EXTRA_PRICES.name : 0) + (wantsPatches ? EXTRA_PRICES.patches : 0)
     : (wantsPlayer ? EXTRA_PRICES.player : 0) + (printing ? EXTRA_PRICES.name : 0) + (wantsPatches ? EXTRA_PRICES.patches : 0);
   const total = basePrice + extras;
 
@@ -133,8 +133,8 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
       addName: buyingExact ? !!stockPrint(stockItem) : printing,
       customName: buyingExact ? stockPrint(stockItem) : (printing ? `${customName} ${customNumber}`.trim() : ''),
       playerVersion: buyingExact ? !!stockItem?.player_version : wantsPlayer,
-      // A shirt already in stock is finished as it is.
-      patches: buyingExact ? false : wantsPatches,
+      // Patches can go on a shirt already in stock as well.
+      patches: wantsPatches,
       localStockSizes: shirt.local_stock_sizes || {},
       isExactStockItem: buyingExact,
       // Which physical shirt, so the order says which of two size S shirts
@@ -272,7 +272,12 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
             )}
           </Section>
 
-          {patchesAllowed && (
+        </>
+      )}
+
+      {/* Outside the made-to-order choices: patches can be added to a shirt
+          already in stock too. */}
+      {patchesAllowed && (
           <Section id="patches-heading" title={PATCHES_LABEL}>
             <div role="group" aria-labelledby="patches-heading" className="flex flex-wrap gap-2">
               <button type="button" aria-pressed={!patches} onClick={() => setPatches(false)}
@@ -287,8 +292,6 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
             </div>
             <p className="mt-2.5 text-[13px] text-brand-navy/55">{`ה${PATCHES_LABEL} של הליגה או הטורניר, לפי החולצה.`}</p>
           </Section>
-          )}
-        </>
       )}
 
       <div ref={ctaRef} className="mt-6 border-t border-brand-line pt-6">

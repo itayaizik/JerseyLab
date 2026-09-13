@@ -172,12 +172,19 @@ function withJsonLd(html, data) {
 }
 
 // React clears #root when it mounts, so this is crawler-facing content that
-// costs visitors nothing. It is real markup, not hidden text - the same facts
-// the rendered page shows.
+// costs visitors nothing. It is real markup - the same facts the rendered page
+// shows.
+//
+// Until React mounts, though, a visitor used to see it: a bare heading, a
+// paragraph and a row of blue links, for the second before the shop appeared.
+// A style in index.html now keeps it off screen (still in the page for
+// crawlers and screen readers) and shows the logo instead, the same loading
+// screen the app puts up next, so the handover is invisible.
 function withBody(html, inner) {
   return html.replace(
     '<div id="root"></div>',
-    `<div id="root"><div id="prerendered-content">${inner}</div></div>`,
+    `<div id="root"><div id="boot-splash" aria-hidden="true"><img src="/logo-navbar-dark.png" alt="" width="391" height="128" /></div>` +
+      `<div id="prerendered-content">${inner}</div></div>`,
   );
 }
 
