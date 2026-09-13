@@ -1,26 +1,19 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
-  Gift, Check, ShoppingCart, Shirt, Sparkles, Ban, MessageSquare,
+  Gift, Check, ShoppingBag, Shirt, Sparkles, Ban, MessageSquare,
   ChevronLeft, ChevronRight, Pencil,
 } from 'lucide-react';
-import { addToCart } from '@/lib/cart';
-import { toast } from '@/components/ui/use-toast';
+import { addToCart, openCart } from '@/lib/cart';
 import { BOX_TYPES, SIZES, NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 
 // Building a mystery box, one question at a time.
 //
-// It used to be four blocks stacked on one screen, which asked a visitor to
-// take in style, size, extras and exclusions all at once before answering any
-// of them. This asks one question per step, in the order a person actually
-// decides: what kind of shirt, then what size, then anything extra, then
-// anything to rule out.
-//
-// Two rules make the flow feel guided rather than restrictive:
-//   - Answered steps collapse into a one-line summary with an edit link, so
-//     what you already chose stays visible and changeable without going back.
-//   - Only the current step is expanded, and the total updates with each
-//     answer, so the price is never a surprise at the end.
+// It asks one question per step, in the order a person actually decides: what
+// kind of shirt, then what size, then anything extra, then anything to rule
+// out. Answered steps collapse into a one-line summary with an edit mark, so
+// what you already chose stays visible and changeable; the total updates with
+// each answer, so the price is never a surprise at the end.
 //
 // Steps 1 and 2 are required; 3 and 4 are optional and say so.
 
@@ -64,7 +57,6 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   const [excludeColors, setExcludeColors] = useState([]);
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const selected = BOX_TYPES.find(b => b.id === type);
   const total = selected.price + (addName ? NAME_PRICE : 0) + (patches ? PATCHES_PRICE : 0);
@@ -81,19 +73,19 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   const canLeave = (index) => (index === 1 ? !!size : true);
 
   const goNext = () => {
-    if (!canLeave(step)) { setError('בחר מידה כדי להמשיך'); return; }
+    if (!canLeave(step)) { setError('בחרו מידה כדי להמשיך'); return; }
     setError('');
     setStep(s => Math.min(s + 1, STEPS.length - 1));
   };
 
   const goTo = (index) => {
-    if (index > step && !canLeave(step)) { setError('בחר מידה כדי להמשיך'); return; }
+    if (index > step && !canLeave(step)) { setError('בחרו מידה כדי להמשיך'); return; }
     setError('');
     setStep(index);
   };
 
   const handleAdd = () => {
-    if (!size) { setError('בחר מידה'); setStep(1); return; }
+    if (!size) { setError('בחרו מידה'); setStep(1); return; }
     setError('');
 
     const extras = [];
@@ -118,8 +110,9 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
       deliveryNote: 'מיסטרי בוקס — נעדכן מה יצא לפני המשלוח',
     });
 
-    toast({ title: 'המיסטרי בוקס נוסף לסל', description: 'פתח את הסל כדי לשלוח את הבקשה.' });
-    navigate('/catalog');
+    // The cart drawer opens on the spot, so the customer sees the box went in
+    // and can send the request from there.
+    openCart();
   };
 
   // One-line recap of an answered step, shown when it is collapsed.
@@ -139,62 +132,61 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   };
 
   const isLast = step === STEPS.length - 1;
+  const pad = lg ? 'px-5 sm:px-8' : 'px-5';
 
   return (
-    <div className={`bg-white border-2 border-brand-navy ${className}`} style={{ boxShadow: '5px 5px 0 var(--brand-navy)' }}>
-
-      <div className={`bg-brand-navy flex items-center gap-2 ${lg ? 'px-5 py-4' : 'px-4 py-3'}`}>
-        <Gift className={`text-brand-gold flex-shrink-0 ${lg ? 'w-5 h-5' : 'w-4 h-4'}`} />
-        <p className={`font-heading font-bold text-white uppercase tracking-wide ${lg ? 'text-lg' : 'text-sm'}`}>בנה את הבוקס</p>
-        <span className="mr-auto font-mono text-xs text-white/50">{step + 1}/{STEPS.length}</span>
+    <div className={`shop-card overflow-hidden ${className}`}>
+      <div className={`flex items-center gap-3 pt-6 ${pad}`}>
+        <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-orange-soft text-brand-orange-ink">
+          <Gift className="h-5 w-5" aria-hidden="true" />
+        </span>
+        <p className={`font-semibold text-brand-navy ${lg ? 'text-xl' : 'text-lg'}`}>בניית הבוקס</p>
+        <span dir="ltr" className="ms-auto text-sm tabular-nums text-brand-navy/45">{step + 1}/{STEPS.length}</span>
         {headerAction}
       </div>
 
       {/* Progress. Answered steps stay reachable. */}
-      <div className="flex gap-1 px-4 pt-4" dir="ltr">
+      <div className={`flex gap-1.5 pt-4 ${pad}`} dir="ltr">
         {STEPS.map((s, i) => (
           <button key={s.id} type="button" onClick={() => goTo(i)}
             aria-label={`שלב ${i + 1}: ${s.title}`}
             aria-current={i === step ? 'step' : undefined}
-            className={`h-1.5 flex-1 transition-colors ${
-              i === step ? 'bg-brand-orange' : i < step ? 'bg-brand-navy' : 'bg-brand-navy/15'
+            className={`h-1.5 flex-1 rounded-full transition-colors ${
+              i === step ? 'bg-brand-orange' : i < step ? 'bg-brand-navy' : 'bg-brand-line'
             }`} />
         ))}
       </div>
 
-      <div className={lg ? 'p-5 space-y-3' : 'p-4 space-y-3'}>
+      <div className={`space-y-2.5 py-6 ${pad}`}>
         {STEPS.map((s, i) => {
           const open = i === step;
           const done = i < step;
 
           return (
-            <div key={s.id} className={`border-2 transition-colors ${open ? 'border-brand-navy' : 'border-brand-navy/15'}`}>
-              <button type="button" onClick={() => goTo(i)}
-                aria-expanded={open}
-                className={`w-full flex items-center gap-2.5 px-3 min-h-[48px] text-right transition-colors ${open ? 'bg-brand-navy' : 'hover:bg-brand-cream'}`}>
-                <span className={`w-6 h-6 flex-shrink-0 flex items-center justify-center font-mono text-[11px] font-bold ${
-                  open ? 'bg-brand-gold text-brand-navy' : done ? 'bg-brand-navy text-white' : 'bg-brand-navy/10 text-brand-navy/50'
+            <div key={s.id} className={`overflow-hidden rounded-2xl transition ${open ? 'ring-1 ring-brand-line' : ''}`}>
+              <button type="button" onClick={() => goTo(i)} aria-expanded={open}
+                className={`flex min-h-[3.5rem] w-full items-center gap-3 px-4 text-start transition ${open ? 'bg-white' : 'bg-brand-mist hover:bg-brand-mist-dark'}`}>
+                <span className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                  open ? 'bg-brand-orange text-white' : done ? 'bg-brand-navy text-white' : 'bg-white text-brand-navy/50'
                 }`}>
-                  {done ? <Check className="w-3.5 h-3.5" /> : i + 1}
+                  {done ? <Check className="h-3.5 w-3.5" /> : i + 1}
                 </span>
-                <span className={`font-heading font-bold text-sm uppercase ${open ? 'text-white' : 'text-brand-navy'}`}>
-                  {s.title}
-                </span>
+                <span className="text-[15px] font-semibold text-brand-navy">{s.title}</span>
                 {!s.required && !open && (
-                  <span className="text-[10px] font-body text-brand-navy/40 border border-brand-navy/20 px-1.5">לא חובה</span>
+                  <span className="rounded-full bg-white px-2 py-0.5 text-[11px] text-brand-navy/45">לא חובה</span>
                 )}
                 {!open && (
-                  <span className="mr-auto flex items-center gap-1.5 text-xs font-body text-brand-navy/60 truncate">
-                    {summaryOf(s.id)}
-                    <Pencil className="w-3 h-3 flex-shrink-0 text-brand-orange" />
+                  <span className="ms-auto flex min-w-0 items-center gap-1.5 text-[13px] text-brand-navy/60">
+                    <span className="truncate">{summaryOf(s.id)}</span>
+                    <Pencil className="h-3.5 w-3.5 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
                   </span>
                 )}
               </button>
 
               {open && (
-                <div className="p-3.5">
+                <div className="px-4 pb-4 pt-1">
                   {s.id === 'type' && (
-                    <div className={lg ? 'grid grid-cols-1 sm:grid-cols-3 gap-3' : 'space-y-2'}>
+                    <div className={lg ? 'grid grid-cols-1 gap-3 sm:grid-cols-3' : 'space-y-2.5'}>
                       {BOX_TYPES.map(box => {
                         const active = type === box.id;
                         const Icon = TYPE_ICONS[box.id];
@@ -202,21 +194,20 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                           <button key={box.id} type="button"
                             onClick={() => { setType(box.id); setStep(1); }}
                             aria-pressed={active}
-                            className={`w-full text-right border-2 transition-colors ${lg ? 'p-4' : 'p-3'} ${active ? 'bg-brand-navy border-brand-navy' : 'bg-white border-brand-navy/25 hover:border-brand-navy'}`}
-                            style={active && lg ? { boxShadow: '3px 3px 0 var(--brand-orange)' } : undefined}>
-                            <span className="flex items-center gap-2">
-                              <Icon className={`flex-shrink-0 ${lg ? 'w-5 h-5' : 'w-4 h-4'} ${active ? 'text-brand-gold' : 'text-brand-orange'}`} />
-                              <span className={`font-heading font-black uppercase ${lg ? 'text-lg' : 'text-base'} ${active ? 'text-white' : 'text-brand-navy'}`}>
-                                {box.label}
+                            className={`w-full rounded-2xl border text-start transition ${lg ? 'p-5' : 'p-4'} ${
+                              active
+                                ? 'border-brand-orange bg-brand-orange-soft ring-1 ring-inset ring-brand-orange'
+                                : 'border-brand-line bg-white hover:border-brand-navy/30'
+                            }`}>
+                            <span className="flex items-center gap-2.5">
+                              <span className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full ${active ? 'bg-white text-brand-orange-ink' : 'bg-brand-mist text-brand-navy'}`}>
+                                <Icon className="h-[1.1rem] w-[1.1rem]" aria-hidden="true" />
                               </span>
-                              {active && <Check className="w-4 h-4 text-brand-gold flex-shrink-0 mr-auto" />}
+                              <span className="text-base font-semibold text-brand-navy">{box.label}</span>
+                              {active && <Check className="ms-auto h-5 w-5 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />}
                             </span>
-                            <span className={`block font-mono font-black mt-1 ${lg ? 'text-2xl' : 'text-base'} ${active ? 'text-brand-gold' : 'text-brand-orange'}`}>
-                              ₪{box.price}
-                            </span>
-                            <span className={`block text-xs font-body mt-1.5 leading-relaxed ${active ? 'text-white/70' : 'text-brand-navy/55'}`}>
-                              {box.blurb}
-                            </span>
+                            <span className={`mt-3 block font-bold tabular-nums text-brand-navy ${lg ? 'text-2xl' : 'text-xl'}`}>₪{box.price}</span>
+                            <span className="mt-1 block text-[13px] leading-relaxed text-brand-navy/55">{box.blurb}</span>
                           </button>
                         );
                       })}
@@ -230,19 +221,17 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                           <button key={v} type="button"
                             onClick={() => { setSize(v); setError(''); setStep(2); }}
                             aria-pressed={size === v}
-                            className={`border-2 font-mono font-bold transition-colors ${lg ? 'min-h-[52px] text-base' : 'min-h-[44px] text-sm'} ${size === v ? 'bg-brand-orange text-white border-brand-orange' : 'bg-white text-brand-navy border-brand-navy/30 hover:border-brand-navy'}`}>
-                            {v}
+                            className={`shop-chip font-semibold tabular-nums ${lg ? 'min-h-[3rem] text-base' : ''} ${size === v ? 'shop-chip-active' : ''}`}>
+                            <span dir="ltr">{v}</span>
                           </button>
                         ))}
                       </div>
-                      <Link to="/size-guide" className="inline-block mt-2.5 text-xs font-body text-brand-navy/55 underline hover:text-brand-orange">
-                        לא בטוח? מדריך המידות
-                      </Link>
+                      <Link to="/size-guide" className="shop-link mt-3 text-sm">לא בטוחים? מדריך המידות</Link>
                     </>
                   )}
 
                   {s.id === 'extras' && (
-                    <div className={lg ? 'grid grid-cols-1 sm:grid-cols-2 gap-3' : 'space-y-2'}>
+                    <div className={lg ? 'grid grid-cols-1 gap-3 sm:grid-cols-2' : 'space-y-2.5'}>
                       {/* The name add-on has no text field on purpose: the shirt
                           is the surprise, so the print is too. */}
                       <Extra checked={addName} onChange={setAddName} label="שם ומספר מאחורה" price={NAME_PRICE}
@@ -254,69 +243,67 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
                   {s.id === 'exclude' && (
                     <>
-                      <p className="text-xs font-body text-brand-navy/55 mb-3 leading-relaxed">
-                        ההפתעה נשארת הפתעה, אבל אנחנו נמנע ממה שתסמן כאן.
+                      <p className="mb-4 text-[13px] leading-relaxed text-brand-navy/55">
+                        ההפתעה נשארת הפתעה, אבל אנחנו נמנע ממה שתסמנו כאן.
                       </p>
 
-                      <label htmlFor={fid('clubs')} className="flex items-center gap-1.5 text-xs font-heading font-bold text-brand-navy uppercase tracking-wide mb-1.5">
-                        <Ban className="w-3.5 h-3.5 text-brand-orange" />
-                        קבוצות שלא תרצה לקבל
+                      <label htmlFor={fid('clubs')} className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-brand-navy/70">
+                        <Ban className="h-4 w-4 text-brand-orange-ink" aria-hidden="true" />
+                        קבוצות שלא תרצו לקבל
                       </label>
                       <input id={fid('clubs')} value={excludeClubs} maxLength={200}
                         onChange={e => setExcludeClubs(e.target.value)}
                         placeholder="למשל: ברצלונה, מכבי תל אביב"
-                        className="w-full border-2 border-brand-navy/30 focus:border-brand-navy px-3 py-2.5 text-sm bg-white focus:outline-none font-body" />
+                        className="shop-field" />
 
-                      <p className="flex items-center gap-1.5 text-xs font-heading font-bold text-brand-navy uppercase tracking-wide mt-4 mb-2">
-                        <Ban className="w-3.5 h-3.5 text-brand-orange" />
-                        צבעים שלא תרצה לקבל
+                      <p className="mb-2 mt-5 flex items-center gap-1.5 text-sm font-medium text-brand-navy/70">
+                        <Ban className="h-4 w-4 text-brand-orange-ink" aria-hidden="true" />
+                        צבעים שלא תרצו לקבל
                       </p>
-                      <div className="flex flex-wrap gap-1.5">
+                      <div className="flex flex-wrap gap-2">
                         {COLORS.map(c => {
                           const off = excludeColors.includes(c.label);
                           return (
                             <button key={c.label} type="button" onClick={() => toggleColor(c.label)}
                               aria-pressed={off}
-                              className={`flex items-center gap-1.5 min-h-[44px] pr-2.5 pl-3 border-2 text-xs font-body transition-colors ${off ? 'bg-brand-navy border-brand-navy text-white line-through' : 'bg-white border-brand-navy/25 text-brand-navy hover:border-brand-navy'}`}>
-                              <span className="w-3.5 h-3.5 flex-shrink-0 border border-brand-navy/40" style={{ background: c.hex }} />
+                              className={`shop-chip px-3.5 ${off ? 'border-brand-navy bg-brand-navy text-white line-through hover:border-brand-navy hover:text-white' : ''}`}>
+                              <span className="h-4 w-4 flex-shrink-0 rounded-full ring-1 ring-brand-navy/20" style={{ background: c.hex }} aria-hidden="true" />
                               {c.label}
                             </button>
                           );
                         })}
                       </div>
                       {excludeColors.length > 0 && (
-                        <p className="text-xs font-body text-brand-navy/60 mt-2">
-                          לא נשלח: <strong className="text-brand-navy">{excludeColors.join(', ')}</strong>
+                        <p className="mt-2 text-[13px] text-brand-navy/60">
+                          לא נשלח: <strong className="font-semibold text-brand-navy">{excludeColors.join(', ')}</strong>
                         </p>
                       )}
 
-                      <label htmlFor={fid('notes')} className="flex items-center gap-1.5 text-xs font-heading font-bold text-brand-navy uppercase tracking-wide mt-4 mb-1.5">
-                        <MessageSquare className="w-3.5 h-3.5 text-brand-orange" />
+                      <label htmlFor={fid('notes')} className="mb-1.5 mt-5 flex items-center gap-1.5 text-sm font-medium text-brand-navy/70">
+                        <MessageSquare className="h-4 w-4 text-brand-orange-ink" aria-hidden="true" />
                         הערות
                       </label>
                       <textarea id={fid('notes')} value={notes} maxLength={500} rows={3}
                         onChange={e => setNotes(e.target.value)}
-                        placeholder="ליגה שאתה מעדיף, שחקן שתשמח לקבל, מתנה למישהו. כל דבר שיעזור לנו לבחור."
-                        className="w-full border-2 border-brand-navy/30 focus:border-brand-navy px-3 py-2.5 text-sm bg-white focus:outline-none font-body resize-none" />
-                      <p className="text-[11px] text-brand-navy/40 font-mono mt-1">{notes.length}/500</p>
+                        placeholder="ליגה שאתם מעדיפים, שחקן שתשמחו לקבל, מתנה למישהו. כל דבר שיעזור לנו לבחור."
+                        className="shop-field resize-none py-3" />
+                      <p dir="ltr" className="mt-1 text-right text-[11px] tabular-nums text-brand-navy/40">{notes.length}/500</p>
                     </>
                   )}
 
                   {/* Step navigation. The last step has no "next" — the order
                       button below is the next thing to press. */}
                   {!isLast && (
-                    <div className="flex items-center gap-2 mt-4 pt-3 border-t border-brand-navy/10">
+                    <div className="mt-5 flex items-center gap-2 border-t border-brand-line pt-4">
                       {step > 0 && (
-                        <button type="button" onClick={() => goTo(step - 1)}
-                          className="inline-flex items-center gap-1 min-h-[44px] px-3 text-xs font-heading font-bold uppercase text-brand-navy/60 hover:text-brand-navy transition-colors">
-                          <ChevronRight className="w-4 h-4" />
+                        <button type="button" onClick={() => goTo(step - 1)} className="shop-link px-2 text-sm">
+                          <ChevronRight className="h-4 w-4" aria-hidden="true" />
                           חזרה
                         </button>
                       )}
-                      <button type="button" onClick={goNext}
-                        className="mr-auto inline-flex items-center gap-1.5 min-h-[44px] bg-brand-navy text-white px-5 text-xs font-heading font-bold uppercase tracking-wide hover:bg-brand-orange transition-colors">
+                      <button type="button" onClick={goNext} className="shop-btn-dark ms-auto min-h-[2.75rem] px-5 text-sm">
                         {STEPS[step].required ? 'המשך' : 'דלג'}
-                        <ChevronLeft className="w-4 h-4" />
+                        <ChevronLeft className="h-4 w-4" aria-hidden="true" />
                       </button>
                     </div>
                   )}
@@ -328,30 +315,27 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
       </div>
 
       {/* Total */}
-      <div className={`border-t-2 border-brand-navy bg-brand-cream/60 ${lg ? 'p-5' : 'p-4'}`}>
-        <div className="space-y-1.5 mb-3 text-sm font-body">
+      <div className={`border-t border-brand-line bg-brand-mist/60 py-6 ${pad}`}>
+        <div className="space-y-1.5 text-sm">
           <Row label={`מיסטרי בוקס ${selected.label}`} value={selected.price} />
           {addName && <Row label="שם ומספר מאחורה" value={NAME_PRICE} />}
           {patches && <Row label="כל הפאצ'ים" value={PATCHES_PRICE} />}
           {size && <Row label="מידה" text={size} />}
         </div>
 
-        <div className="flex items-center justify-between py-2.5 border-t-2 border-brand-navy">
-          <span className={`font-heading font-bold text-brand-navy uppercase ${lg ? 'text-lg' : ''}`}>סה"כ</span>
-          <span className={`font-mono font-black text-brand-orange ${lg ? 'text-4xl' : 'text-2xl'}`}>₪{total}</span>
+        <div className="mt-3 flex items-baseline justify-between border-t border-brand-line pt-3">
+          <span className={`font-semibold text-brand-navy ${lg ? 'text-lg' : ''}`}>סה״כ</span>
+          <span className={`font-bold tabular-nums text-brand-navy ${lg ? 'text-3xl' : 'text-2xl'}`}>₪{total}</span>
         </div>
 
-        {error && <p role="alert" className="text-red-600 text-sm font-body mt-1 mb-2">{error}</p>}
+        {error && <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
 
         <button type="button" onClick={handleAdd}
-          className={`mt-2 w-full flex items-center justify-center gap-2 font-heading font-bold uppercase tracking-wider transition-colors ${lg ? 'py-4 text-base' : 'py-3.5 text-sm'} ${
-            size ? 'bg-brand-orange text-white hover:bg-brand-orange-dark' : 'bg-brand-navy/15 text-brand-navy/45 cursor-not-allowed'
-          }`}
-          style={size ? { boxShadow: '3px 3px 0 var(--brand-navy)' } : undefined}>
-          <ShoppingCart className={lg ? 'w-5 h-5' : 'w-4 h-4'} />
-          {size ? 'הוסף לסל' : 'בחר מידה כדי להמשיך'}
+          className={`shop-btn mt-4 w-full ${lg ? 'min-h-[3.75rem] text-base' : ''} ${size ? '' : 'opacity-60 shadow-none'}`}>
+          <ShoppingBag className={lg ? 'h-5 w-5' : 'h-4 w-4'} aria-hidden="true" />
+          {size ? 'הוספה לסל' : 'בחרו מידה כדי להמשיך'}
         </button>
-        <p className="text-[11px] text-center text-brand-navy/50 font-body mt-2">
+        <p className="mt-2 text-center text-xs text-brand-navy/50">
           בלי תשלום באתר, שליחת בקשה בלבד.
         </p>
       </div>
@@ -361,15 +345,17 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
 function Extra({ checked, onChange, label, price, hint }) {
   return (
-    <label className={`flex items-start gap-3 p-3 border-2 cursor-pointer transition-colors ${checked ? 'border-brand-orange bg-brand-orange/5' : 'border-brand-navy/20 hover:border-brand-navy/50'}`}>
+    <label className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition ${
+      checked ? 'border-brand-orange bg-brand-orange-soft ring-1 ring-inset ring-brand-orange' : 'border-brand-line bg-white hover:border-brand-navy/30'
+    }`}>
       <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)}
-        className="mt-0.5 w-4 h-4 flex-shrink-0 accent-brand-orange" />
-      <span className="flex-1 min-w-0">
+        className="mt-0.5 h-4 w-4 flex-shrink-0 accent-brand-orange" />
+      <span className="min-w-0 flex-1">
         <span className="flex items-center justify-between gap-2">
-          <span className="font-body font-bold text-sm text-brand-navy">{label}</span>
-          <span className="font-mono font-bold text-sm text-brand-orange flex-shrink-0">+₪{price}</span>
+          <span className="text-[15px] font-semibold text-brand-navy">{label}</span>
+          <span className="flex-shrink-0 text-sm font-semibold tabular-nums text-brand-orange-ink">+₪{price}</span>
         </span>
-        <span className="block text-xs font-body text-brand-navy/55 mt-0.5">{hint}</span>
+        <span className="mt-0.5 block text-[13px] text-brand-navy/55">{hint}</span>
       </span>
     </label>
   );
@@ -377,9 +363,9 @@ function Extra({ checked, onChange, label, price, hint }) {
 
 function Row({ label, value, text }) {
   return (
-    <div className="flex items-center justify-between text-brand-navy/75">
+    <div className="flex items-center justify-between text-brand-navy/70">
       <span>{label}</span>
-      <span className="font-mono font-bold text-brand-navy">{text ?? `₪${value}`}</span>
+      <span dir={text ? 'ltr' : undefined} className="font-semibold tabular-nums text-brand-navy">{text ?? `₪${value}`}</span>
     </div>
   );
 }

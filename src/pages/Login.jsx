@@ -20,7 +20,7 @@ export default function Login() {
       await base44.auth.loginViaEmailPassword(email, password);
       window.location.href = "/";
     } catch (err) {
-      setError(friendlyError(err, "אימייל או סיסמה שגויים. ודא את הפרטים ונסה שוב."));
+      setError(friendlyError(err, "אימייל או סיסמה שגויים. בדקו את הפרטים ונסו שוב."));
     } finally {
       setLoading(false);
     }
@@ -33,47 +33,37 @@ export default function Login() {
   return (
     <AuthLayout
       icon={LogIn}
-      title="ברוך השב"
-      subtitle="התחבר לחשבון שלך"
+      title="ברוכים השבים"
+      subtitle="התחברו לחשבון שלכם"
       footer={
         <>
-          אין לך חשבון?{" "}
-          <Link to="/register" className="text-brand-orange font-bold hover:underline">
-            הרשמה
-          </Link>
+          אין לכם חשבון?{" "}
+          <Link to="/register" className="shop-link">הרשמה</Link>
         </>
       }
     >
-      <button
-        onClick={handleGoogle}
-        className="w-full h-11 text-sm font-medium border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors flex items-center justify-center gap-2 mb-5 font-body"
-        style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}
-      >
-        <GoogleIcon className="w-5 h-5" />
+      <button type="button" onClick={handleGoogle} className="shop-btn-secondary w-full">
+        <GoogleIcon className="h-5 w-5" />
         המשך עם Google
       </button>
 
-      <div className="relative mb-5">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t-2 border-brand-navy/20" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-3 text-gray-400 font-heading">או</span>
-        </div>
+      <div className="my-6 flex items-center gap-3" aria-hidden="true">
+        <span className="h-px flex-1 bg-brand-line" />
+        <span className="text-sm text-brand-navy/40">או</span>
+        <span className="h-px flex-1 bg-brand-line" />
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border-2 border-red-300 text-red-700 text-sm font-body">
-          {error}
-        </div>
+        <div role="alert" className="mb-4 rounded-2xl bg-red-50 p-3 text-sm text-red-700">{error}</div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="text-sm font-medium block mb-1 font-body text-brand-navy">אימייל</label>
+          <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-brand-navy/70">אימייל</label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-navy/35" aria-hidden="true" />
             <input
+              id="login-email"
               type="email"
               autoComplete="email"
               autoFocus
@@ -81,41 +71,35 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               maxLength={254}
-              className="w-full pl-10 pr-3 h-11 border-2 border-brand-navy bg-white text-sm focus:outline-none focus:border-brand-orange transition-colors font-body"
+              className="shop-field pl-11"
               dir="ltr"
               required
             />
           </div>
         </div>
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <label className="text-sm font-medium font-body text-brand-navy">סיסמה</label>
-            <Link to="/forgot-password" className="text-xs text-brand-orange hover:underline font-body">
-              שכחת סיסמה?
-            </Link>
+          <div className="mb-1.5 flex items-center justify-between">
+            <label htmlFor="login-password" className="text-sm font-medium text-brand-navy/70">סיסמה</label>
+            <Link to="/forgot-password" className="shop-link text-[13px]">שכחתם סיסמה?</Link>
           </div>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-navy/35" aria-hidden="true" />
             <input
+              id="login-password"
               type="password"
               autoComplete="current-password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               maxLength={128}
-              className="w-full pl-10 pr-3 h-11 border-2 border-brand-navy bg-white text-sm focus:outline-none focus:border-brand-orange transition-colors font-body"
+              className="shop-field pl-11"
               dir="ltr"
               required
             />
           </div>
         </div>
-        <button
-          type="submit"
-          className="w-full h-11 bg-brand-orange text-white font-bold font-heading uppercase tracking-wide text-sm hover:bg-brand-orange-dark transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-          style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}
-          disabled={loading}
-        >
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogIn className="w-4 h-4" />}
+        <button type="submit" className="shop-btn w-full" disabled={loading}>
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
           {loading ? 'מתחבר...' : 'התחברות'}
         </button>
       </form>

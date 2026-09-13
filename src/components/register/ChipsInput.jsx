@@ -15,26 +15,25 @@ export default function ChipsInput({ values = [], onChange, placeholder }) {
   return (
     <div>
       {values.length > 0 && (
-        <div className="flex gap-1.5 flex-wrap mb-2">
+        <div className="mb-2.5 flex flex-wrap gap-2">
           {values.map(v => (
-            <span key={v} className="inline-flex items-center gap-1 bg-brand-navy text-white text-xs px-2 py-1 font-body">
+            <span key={v} className="inline-flex items-center gap-1.5 rounded-full bg-brand-navy py-1.5 pe-2 ps-3 text-[13px] text-white">
               {v}
-              <button type="button" onClick={() => remove(v)} className="opacity-70 hover:opacity-100" aria-label="הסר">
-                <X className="w-3 h-3" />
+              <button type="button" onClick={() => remove(v)} className="flex h-5 w-5 items-center justify-center rounded-full opacity-70 transition hover:bg-white/15 hover:opacity-100" aria-label={`הסרת ${v}`}>
+                <X className="h-3 w-3" />
               </button>
             </span>
           ))}
         </div>
       )}
-      <div className="flex gap-1.5">
+      <div className="flex gap-2">
         <input value={text} onChange={e => setText(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(); } }}
           placeholder={placeholder}
-          className="flex-1 border-2 border-brand-navy px-3 py-2.5 text-sm bg-white focus:outline-none font-body" />
-        <button type="button" onClick={add}
-          className="px-3 border-2 border-brand-navy bg-brand-cream text-brand-navy hover:bg-brand-navy hover:text-white transition-colors"
-          aria-label="הוסף">
-          <Plus className="w-4 h-4" />
+          className="shop-field flex-1" />
+        <button type="button" onClick={add} aria-label="הוספה"
+          className="flex h-[3.25rem] w-[3.25rem] flex-shrink-0 items-center justify-center rounded-2xl bg-brand-mist text-brand-navy transition hover:bg-brand-navy hover:text-white">
+          <Plus className="h-5 w-5" />
         </button>
       </div>
     </div>

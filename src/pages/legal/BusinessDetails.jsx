@@ -38,13 +38,11 @@ export default function BusinessDetails() {
           <Fact label="דוא״ל" value={BUSINESS.email} />
           <Fact label="אינסטגרם" value={`@${BUSINESS.instagram}`} />
         </dl>
-        <div className="flex flex-wrap gap-2 mt-4">
-          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center min-h-[44px] px-4 bg-brand-navy text-white font-heading font-bold text-sm uppercase tracking-wide hover:bg-brand-orange transition-colors">
+        <div className="mt-5 flex flex-wrap gap-2.5">
+          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="shop-btn-dark">
             וואטסאפ
           </a>
-          <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center min-h-[44px] px-4 border-2 border-brand-navy text-brand-navy font-heading font-bold text-sm uppercase tracking-wide hover:bg-brand-cream transition-colors">
+          <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="shop-btn-secondary">
             אינסטגרם
           </a>
         </div>

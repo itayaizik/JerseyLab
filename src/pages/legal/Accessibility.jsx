@@ -85,7 +85,7 @@ export default function Accessibility() {
           לאנשים עם מוגבלות במשרד המשפטים, דרך אתר{' '}
           <a href="https://www.gov.il/he/service/complaint_discrimination_inaccessibility_people_with_disabilities"
             target="_blank" rel="noopener noreferrer"
-            className="text-brand-orange font-bold hover:underline">
+            className="shop-link">
             gov.il
           </a>.
         </p>

@@ -1,29 +1,31 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+// The frame around the sign-in, registration and password pages: the logo, a
+// title, and one white card on a soft grey ground.
 export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }) {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4"
-      style={{ background: 'var(--brand-cream-dark)', backgroundImage: 'linear-gradient(rgba(27,42,74,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(27,42,74,0.08) 1px, transparent 1px)', backgroundSize: '28px 28px' }}>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-brand-mist to-white px-4 py-10">
       <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-block">
-            <div className="bg-brand-navy px-4 py-2 inline-block mb-3" style={{ boxShadow: '4px 4px 0 var(--brand-orange)' }}>
-              <div className="font-heading font-bold text-white text-2xl leading-tight tracking-widest">LAB<br/>JERSEY</div>
-            </div>
+        <div className="mb-8 text-center">
+          <Link to="/" aria-label="JerseyLab - דף הבית" className="inline-block rounded-lg">
+            <img src="/logo-navbar-dark.png" alt="JerseyLab" width="391" height="128" className="mx-auto h-12 w-auto" />
           </Link>
-          <h1 className="font-heading font-bold text-2xl text-brand-navy uppercase tracking-wide mt-3">{title}</h1>
-          {subtitle && <p className="text-gray-500 font-body mt-1 text-sm">{subtitle}</p>}
+          {Icon && (
+            <span className="mx-auto mt-6 flex h-14 w-14 items-center justify-center rounded-full bg-brand-orange-soft text-brand-orange-ink">
+              <Icon className="h-6 w-6" aria-hidden="true" />
+            </span>
+          )}
+          <h1 className="mt-5 text-3xl font-bold tracking-[-0.02em] text-brand-navy">{title}</h1>
+          {subtitle && <p className="mt-2 text-[15px] text-brand-navy/60">{subtitle}</p>}
         </div>
 
-        {/* Card */}
-        <div className="bg-white p-8" style={{ border: '2px solid var(--brand-navy)', boxShadow: '5px 5px 0 var(--brand-orange)' }}>
+        <div className="shop-card p-6 sm:p-8">
           {children}
         </div>
 
         {footer && (
-          <p className="text-center text-sm text-gray-600 mt-5 font-body">{footer}</p>
+          <p className="mt-6 text-center text-[15px] text-brand-navy/60">{footer}</p>
         )}
       </div>
     </div>

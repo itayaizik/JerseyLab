@@ -5,6 +5,31 @@ import { Lock, Loader2, AlertTriangle } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import { friendlyError } from "@/lib/errorMessages";
 
+function PasswordField({ id, label, value, onChange, autoFocus, disabled }) {
+  return (
+    <div>
+      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-brand-navy/70">{label}</label>
+      <div className="relative">
+        <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-navy/35" aria-hidden="true" />
+        <input
+          id={id}
+          type="password"
+          autoComplete="new-password"
+          autoFocus={autoFocus}
+          placeholder="••••••••"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          maxLength={128}
+          className="shop-field pl-11"
+          dir="ltr"
+          required
+          disabled={disabled}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function ResetPassword() {
   const [ready, setReady] = useState(false);
   const [hasRecoverySession, setHasRecoverySession] = useState(false);
@@ -47,7 +72,7 @@ export default function ResetPassword() {
       if (updateError) throw updateError;
       window.location.href = "/login";
     } catch (err) {
-      setError(friendlyError(err, "איפוס הסיסמה נכשל. הקישור עשוי להיות שגוי או פג תוקף - נסה שוב."));
+      setError(friendlyError(err, "איפוס הסיסמה נכשל. הקישור עשוי להיות שגוי או פג תוקף - נסו שוב."));
     } finally {
       setLoading(false);
     }
@@ -58,75 +83,27 @@ export default function ResetPassword() {
       <AuthLayout
         icon={AlertTriangle}
         title="קישור לא תקין"
-        subtitle="קישור האיפוס חסר או פג תוקף"
-        footer={
-          <Link to="/forgot-password" className="text-brand-orange font-bold hover:underline">בקש קישור חדש</Link>
-        }
+        subtitle="קישור האיפוס חסר או שפג תוקפו"
+        footer={<Link to="/forgot-password" className="shop-link">בקשת קישור חדש</Link>}
       >
-        <p className="text-sm text-brand-navy/70 text-center font-body leading-relaxed">
-          הקישור שבו השתמשת נראה חלקי או שפג תוקפו. בקש קישור איפוס סיסמה חדש.
+        <p className="text-center text-[15px] leading-relaxed text-brand-navy/70">
+          הקישור שבו השתמשתם נראה חלקי או שפג תוקפו. בקשו קישור איפוס סיסמה חדש.
         </p>
       </AuthLayout>
     );
   }
 
   return (
-    <AuthLayout
-      icon={Lock}
-      title="סיסמה חדשה"
-      subtitle="הזן את הסיסמה החדשה שלך"
-    >
+    <AuthLayout icon={Lock} title="סיסמה חדשה" subtitle="הזינו את הסיסמה החדשה שלכם">
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border-2 border-red-300 text-red-700 text-sm font-body">
-          {error}
-        </div>
+        <div role="alert" className="mb-4 rounded-2xl bg-red-50 p-3 text-sm text-red-700">{error}</div>
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="text-sm font-medium block mb-1 font-body text-brand-navy">סיסמה חדשה</label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="password"
-              autoComplete="new-password"
-              autoFocus
-              placeholder="••••••••"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              maxLength={128}
-              className="w-full pl-10 pr-3 h-11 border-2 border-brand-navy bg-white text-sm focus:outline-none focus:border-brand-orange transition-colors font-body"
-              dir="ltr"
-              required
-              disabled={!ready}
-            />
-          </div>
-        </div>
-        <div>
-          <label className="text-sm font-medium block mb-1 font-body text-brand-navy">אימות סיסמה</label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="password"
-              autoComplete="new-password"
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              maxLength={128}
-              className="w-full pl-10 pr-3 h-11 border-2 border-brand-navy bg-white text-sm focus:outline-none focus:border-brand-orange transition-colors font-body"
-              dir="ltr"
-              required
-              disabled={!ready}
-            />
-          </div>
-        </div>
-        <button
-          type="submit"
-          className="w-full h-11 bg-brand-orange text-white font-bold font-heading uppercase tracking-wide text-sm hover:bg-brand-orange-dark transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-          style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}
-          disabled={loading || !ready}
-        >
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
-          {loading ? 'מאפס...' : 'אפס סיסמה'}
+        <PasswordField id="reset-new" label="סיסמה חדשה" value={newPassword} onChange={setNewPassword} autoFocus disabled={!ready} />
+        <PasswordField id="reset-confirm" label="אימות סיסמה" value={confirmPassword} onChange={setConfirmPassword} disabled={!ready} />
+        <button type="submit" className="shop-btn w-full" disabled={loading || !ready}>
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
+          {loading ? 'מאפס...' : 'איפוס הסיסמה'}
         </button>
       </form>
     </AuthLayout>

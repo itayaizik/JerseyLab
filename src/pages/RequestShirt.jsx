@@ -10,6 +10,9 @@ import { notifyShirtRequest } from '@/lib/adminNotify';
 import { SIZE_ORDER } from '@/lib/sizes';
 import PrivacyConsent from '@/components/PrivacyConsent';
 import Honeypot, { isBot } from '@/components/ui/Honeypot';
+import CollectionHero from '@/components/catalog/CollectionHero';
+import Breadcrumb from '@/components/shop/Breadcrumb';
+import FormField, { fieldClass } from '@/components/shop/FormField';
 
 // "I want a shirt you don't stock." The catalogue can never hold every kit
 // ever made, so this is the way in for everything it doesn't: the customer
@@ -25,6 +28,20 @@ const CONTACT_KEY = 'jerseylab_contact';
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+function Section({ number, title, children }) {
+  return (
+    <section className="space-y-4">
+      <div className="flex items-center gap-2.5">
+        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-brand-navy text-xs font-bold text-white">
+          {number}
+        </span>
+        <h2 className="text-lg font-semibold text-brand-navy">{title}</h2>
+      </div>
+      {children}
+    </section>
+  );
+}
 
 export default function RequestShirt() {
   const [form, setForm] = useState({
@@ -106,14 +123,14 @@ export default function RequestShirt() {
     if (!form.phone.trim()) errs.phone = 'שדה חובה';
     if (!form.email.trim()) errs.email = 'שדה חובה';
     else if (!isValidEmail(form.email.trim())) errs.email = 'נא להזין כתובת אימייל תקינה';
-    if (!form.contact_channel) errs.contact_channel = 'בחר איך נחזור אליך';
+    if (!form.contact_channel) errs.contact_channel = 'בחרו איך נחזור אליכם';
     if (form.contact_channel === 'instagram' && !form.instagram_handle.trim()) {
       errs.instagram_handle = 'שדה חובה';
     }
     // A photo on its own is a valid request - plenty of people have the picture
     // but not the words - so a description is only required when there is none.
     if (!form.shirt_description.trim() && !image) {
-      errs.shirt_description = 'תאר את החולצה או צרף תמונה';
+      errs.shirt_description = 'תארו את החולצה או צרפו תמונה';
     }
     if (!privacyOk) errs.privacy = 'יש לאשר את מדיניות הפרטיות';
     if (isBot(trap)) { setSubmitted(true); return; }
@@ -158,7 +175,7 @@ export default function RequestShirt() {
 
       setSubmitted(true);
     } catch (err) {
-      setSubmitError(friendlyError(err, 'שליחת הבקשה נכשלה. נסה שוב בעוד רגע.'));
+      setSubmitError(friendlyError(err, 'שליחת הבקשה נכשלה. נסו שוב בעוד רגע.'));
     } finally {
       setSubmitting(false);
     }
@@ -166,133 +183,113 @@ export default function RequestShirt() {
 
   if (submitted) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-20 text-center">
-        <div className="w-16 h-16 bg-brand-orange flex items-center justify-center mx-auto mb-5"
-          style={{ border: '2px solid var(--brand-navy)', boxShadow: '4px 4px 0 var(--brand-navy)' }}>
-          <Check className="w-8 h-8 text-white" />
+      <div className="shop-container py-16">
+        <div className="mx-auto max-w-lg rounded-[2rem] bg-brand-mist px-6 py-14 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-card">
+            <Check className="h-8 w-8 text-emerald-600" aria-hidden="true" />
+          </div>
+          <h1 className="mt-5 text-2xl font-semibold text-brand-navy">הבקשה נשלחה</h1>
+          <p className="mx-auto mt-2 max-w-sm text-[15px] leading-relaxed text-brand-navy/60">
+            נבדוק אם אפשר להשיג את החולצה ונחזור אליכם
+            ב{form.contact_channel === 'instagram' ? 'אינסטגרם' : 'וואטסאפ'} עם תשובה ומחיר.
+          </p>
+          <Link to="/catalog" className="shop-btn mt-6">בינתיים, לחולצות</Link>
         </div>
-        <h2 className="font-heading font-black text-2xl text-brand-navy uppercase mb-2">הבקשה נשלחה!</h2>
-        <p className="text-brand-navy/60 text-sm font-body mb-6">
-          נבדוק אם אפשר להשיג את החולצה ונחזור אליך
-          ב{form.contact_channel === 'instagram' ? 'אינסטגרם' : 'וואטסאפ'} עם תשובה ומחיר.
-        </p>
-        <Link to="/catalog"
-          className="inline-block bg-brand-navy text-white px-6 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-brand-orange transition-colors"
-          style={{ boxShadow: '3px 3px 0 var(--brand-orange)' }}>
-          בינתיים - לקטלוג
-        </Link>
       </div>
     );
   }
 
   return (
-    <div className="bg-brand-cream min-h-screen">
+    <div>
       <Seo
         title="מחפשים חולצה שאין באתר? - JerseyLab"
         description="לא מצאתם את החולצה בקטלוג? שלחו לנו בקשה עם תמונה או תיאור, ונבדוק אם אפשר להשיג אותה ובאיזה מחיר."
         canonicalPath="/request-shirt"
       />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden border-b-2 border-brand-navy" style={{ background: 'var(--brand-navy)' }}>
-        <div className="absolute inset-0 opacity-[0.12]" style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)',
-          backgroundSize: '28px 28px'
-        }} />
-        <div className="relative max-w-2xl mx-auto px-4 py-9 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 mb-3 bg-brand-orange"
-            style={{ boxShadow: '4px 4px 0 var(--brand-gold)' }}>
-            <Search className="w-7 h-7 text-white" />
-          </div>
-          <h1 className="font-heading font-black text-3xl md:text-4xl text-white uppercase mb-2">
-            מחפשים חולצה שאין באתר?
-          </h1>
-          <p className="font-body text-white/75 text-sm md:text-base max-w-lg mx-auto">
-            הקטלוג הוא לא הכל. שלחו לנו תמונה או תיאור של החולצה שאתם מחפשים -
-            נבדוק אם אפשר להשיג אותה ונחזור אליכם עם תשובה ומחיר.
-          </p>
-        </div>
-      </section>
+      <CollectionHero
+        breadcrumb={<Breadcrumb trail={[{ label: 'בקשת חולצה' }]} />}
+        title="מחפשים חולצה שאין באתר?"
+        description="הקטלוג הוא לא הכל. שלחו לנו תמונה או תיאור של החולצה שאתם מחפשים, ונחזור אליכם עם תשובה ומחיר."
+      />
 
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <form onSubmit={handleSubmit} className="bg-white border-2 border-brand-navy p-5 space-y-6"
-          style={{ boxShadow: '5px 5px 0 var(--brand-navy)' }}>
-
+      <div className="shop-container">
+        <form onSubmit={handleSubmit} noValidate className="shop-card mx-auto mt-8 max-w-2xl space-y-8 p-6 sm:p-10">
           {/* ── What they are after ── */}
           <Section number={1} title="איזו חולצה?">
-            <Field label="תיאור החולצה" htmlFor="rs-desc" error={errors.shirt_description}>
+            <FormField id="rs-desc" label="תיאור החולצה" error={errors.shirt_description}>
               <textarea id="rs-desc" value={form.shirt_description} rows={3} maxLength={600}
                 onChange={e => setField('shirt_description', e.target.value)}
                 placeholder="למשל: חולצת בית של אינטר 2009/10, עם השם של מיליטו מאחורה"
-                className={inputClass(errors.shirt_description) + ' resize-none'} />
-            </Field>
+                className={`${fieldClass(errors.shirt_description)} resize-none py-3`} />
+            </FormField>
 
             <div className="grid grid-cols-2 gap-3">
-              <Field label="קבוצה / נבחרת" htmlFor="rs-club">
+              <FormField id="rs-club" label="קבוצה / נבחרת">
                 <input id="rs-club" value={form.club} maxLength={100}
                   onChange={e => setField('club', e.target.value)}
-                  placeholder="אינטר מילאן" className={inputClass()} />
-              </Field>
-              <Field label="עונה" htmlFor="rs-season">
+                  placeholder="אינטר מילאן" className={fieldClass()} />
+              </FormField>
+              <FormField id="rs-season" label="עונה">
                 <input id="rs-season" value={form.season} maxLength={40} dir="ltr"
                   onChange={e => setField('season', e.target.value)}
-                  placeholder="2009/10" className={inputClass()} />
-              </Field>
+                  placeholder="2009/10" className={`${fieldClass()} text-right`} />
+              </FormField>
             </div>
 
-            <Field label="מידה" htmlFor="rs-size">
+            <FormField id="rs-size" label="מידה">
               <select id="rs-size" value={form.wanted_size} onChange={e => setField('wanted_size', e.target.value)}
-                className={inputClass() + ' bg-white'}>
-                <option value="">עדיין לא יודע</option>
+                className={`${fieldClass()} cursor-pointer`}>
+                <option value="">עדיין לא יודעים</option>
                 {SIZE_ORDER.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
-            </Field>
+            </FormField>
 
             {/* The photo. Easily the most useful field on this form - a picture
                 identifies a kit far faster than any description of it. */}
             <div>
-              <p className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">
-                תמונה של החולצה
-              </p>
+              <p className="mb-1.5 text-sm font-medium text-brand-navy/70">תמונה של החולצה</p>
               {imagePreview ? (
                 <div className="relative inline-block">
-                  <img src={imagePreview} alt="התמונה שצירפת" className="w-32 h-32 object-cover border-2 border-brand-navy" />
-                  <button type="button" onClick={clearImage} aria-label="הסר תמונה"
-                    className="absolute -top-2 -left-2 w-7 h-7 flex items-center justify-center bg-white border-2 border-brand-navy text-brand-navy hover:bg-red-500 hover:border-red-500 hover:text-white transition-colors">
-                    <X className="w-3.5 h-3.5" />
+                  <img src={imagePreview} alt="התמונה שצירפתם" className="h-32 w-32 rounded-2xl object-cover" />
+                  <button type="button" onClick={clearImage} aria-label="הסרת התמונה"
+                    className="absolute -end-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-brand-navy shadow-card transition hover:bg-red-600 hover:text-white">
+                    <X className="h-4 w-4" />
                   </button>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-brand-navy/40 hover:border-brand-navy hover:bg-brand-cream/60 transition-colors py-6 cursor-pointer">
-                  <ImageIcon className="w-7 h-7 text-brand-navy/40" />
-                  <span className="text-sm font-body text-brand-navy/70 flex items-center gap-1.5">
-                    <Upload className="w-3.5 h-3.5" />
-                    צרף תמונה
+                <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-brand-line bg-brand-mist/50 py-8 transition hover:border-brand-navy/30 hover:bg-brand-mist">
+                  <ImageIcon className="h-8 w-8 text-brand-navy/35" aria-hidden="true" />
+                  <span className="flex items-center gap-1.5 text-[15px] font-medium text-brand-navy/75">
+                    <Upload className="h-4 w-4" aria-hidden="true" />
+                    צירוף תמונה
                   </span>
-                  <span className="text-[11px] font-body text-brand-navy/40">צילום מסך מאינסטגרם או מגוגל עובד מצוין</span>
+                  <span className="text-xs text-brand-navy/45">צילום מסך מאינסטגרם או מגוגל עובד מצוין</span>
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImagePick} className="hidden" />
                 </label>
               )}
-              {errors.image && <p className="text-red-500 text-xs mt-1">{errors.image}</p>}
+              {errors.image && <p className="mt-1 text-xs text-red-600">{errors.image}</p>}
             </div>
           </Section>
 
-          {/* ── How to reach them ── */}
-          <Section number={2} title="איך נחזור אליך?">
-            <Field label="שם מלא *" htmlFor="rs-name" error={errors.full_name}>
-              <input id="rs-name" value={form.full_name} maxLength={100} autoComplete="name"
-                onChange={e => setField('full_name', e.target.value)} className={inputClass(errors.full_name)} />
-            </Field>
+          <div className="h-px bg-brand-line" />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Field label="טלפון *" htmlFor="rs-phone" error={errors.phone}>
+          {/* ── How to reach them ── */}
+          <Section number={2} title="איך נחזור אליכם?">
+            <FormField id="rs-name" label="שם מלא" required error={errors.full_name}>
+              <input id="rs-name" value={form.full_name} maxLength={100} autoComplete="name"
+                onChange={e => setField('full_name', e.target.value)} className={fieldClass(errors.full_name)} />
+            </FormField>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <FormField id="rs-phone" label="טלפון" required error={errors.phone}>
                 <input id="rs-phone" value={form.phone} type="tel" dir="ltr" maxLength={20} autoComplete="tel"
-                  onChange={e => setField('phone', e.target.value)} className={inputClass(errors.phone)} />
-              </Field>
-              <Field label="אימייל *" htmlFor="rs-email" error={errors.email}>
+                  onChange={e => setField('phone', e.target.value)} className={`${fieldClass(errors.phone)} text-right`} />
+              </FormField>
+              <FormField id="rs-email" label="אימייל" required error={errors.email}>
                 <input id="rs-email" value={form.email} type="email" dir="ltr" maxLength={254} autoComplete="email"
-                  onChange={e => setField('email', e.target.value)} className={inputClass(errors.email)} />
-              </Field>
+                  onChange={e => setField('email', e.target.value)} className={`${fieldClass(errors.email)} text-right`} />
+              </FormField>
             </div>
 
             <ContactChannelChoice
@@ -302,18 +299,18 @@ export default function RequestShirt() {
             />
 
             {form.contact_channel === 'instagram' && (
-              <Field label="שם משתמש באינסטגרם *" htmlFor="rs-ig" error={errors.instagram_handle}>
+              <FormField id="rs-ig" label="שם משתמש באינסטגרם" required error={errors.instagram_handle}>
                 <input id="rs-ig" value={form.instagram_handle} dir="ltr" maxLength={60} placeholder="@username"
-                  onChange={e => setField('instagram_handle', e.target.value)} className={inputClass(errors.instagram_handle)} />
-              </Field>
+                  onChange={e => setField('instagram_handle', e.target.value)} className={`${fieldClass(errors.instagram_handle)} text-right`} />
+              </FormField>
             )}
 
-            <Field label="משהו נוסף שכדאי שנדע?" htmlFor="rs-notes">
+            <FormField id="rs-notes" label="משהו נוסף שכדאי שנדע?" optional>
               <textarea id="rs-notes" value={form.notes} rows={2} maxLength={500}
                 onChange={e => setField('notes', e.target.value)}
-                placeholder="תקציב, עד מתי אתה צריך אותה, גרסת שחקן או אוהד…"
-                className={inputClass() + ' resize-none'} />
-            </Field>
+                placeholder="תקציב, עד מתי אתם צריכים אותה, גרסת שחקן או אוהד…"
+                className={`${fieldClass()} resize-none py-3`} />
+            </FormField>
           </Section>
 
           <HowItWorksNotice />
@@ -322,51 +319,19 @@ export default function RequestShirt() {
 
           <PrivacyConsent id="rs-privacy" checked={privacyOk} onChange={setPrivacyOk} error={errors.privacy} />
 
-          {submitError && <p role="alert" className="text-red-600 text-sm font-body">{submitError}</p>}
+          {submitError && <p role="alert" className="rounded-2xl bg-red-50 p-3 text-sm text-red-700">{submitError}</p>}
 
-          <button type="submit" disabled={submitting}
-            className="w-full flex items-center justify-center gap-2 bg-brand-orange text-white py-4 font-heading font-bold text-base uppercase tracking-wider hover:bg-brand-orange-dark disabled:opacity-60 transition-colors"
-            style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}>
-            {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
-            {submitting ? 'שולח…' : 'שלח בקשה'}
-          </button>
-          <p className="text-[11px] text-center text-brand-navy/50 font-body">
-            בלי התחייבות ובלי תשלום - בקשה בלבד.
-          </p>
+          <div>
+            <button type="submit" disabled={submitting} className="shop-btn min-h-[3.75rem] w-full text-base">
+              {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
+              {submitting ? 'שולח…' : 'שליחת הבקשה'}
+            </button>
+            <p className="mt-2 text-center text-xs text-brand-navy/50">
+              בלי התחייבות ובלי תשלום, בקשה בלבד.
+            </p>
+          </div>
         </form>
       </div>
-    </div>
-  );
-}
-
-// Shared input styling. The error state only swaps the border colour, so it
-// lives here instead of being repeated on every field.
-function inputClass(error) {
-  return `w-full border-2 px-3 py-2.5 text-sm bg-white focus:outline-none font-body ${error ? 'border-red-500' : 'border-brand-navy'}`;
-}
-
-function Section({ number, title, children }) {
-  return (
-    <section className="space-y-3">
-      <div className="flex items-center gap-2">
-        <span className="w-6 h-6 flex-shrink-0 bg-brand-navy text-white font-mono font-bold text-xs flex items-center justify-center">
-          {number}
-        </span>
-        <h2 className="font-heading font-bold text-sm text-brand-navy uppercase tracking-wide">{title}</h2>
-      </div>
-      {children}
-    </section>
-  );
-}
-
-function Field({ label, htmlFor, error, children }) {
-  return (
-    <div>
-      <label htmlFor={htmlFor} className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">
-        {label}
-      </label>
-      {children}
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
   );
 }

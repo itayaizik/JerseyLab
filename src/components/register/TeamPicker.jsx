@@ -35,12 +35,13 @@ export default function TeamPicker({ values = [], onChange }) {
   return (
     <div>
       {values.length > 0 && (
-        <div className="flex gap-1.5 flex-wrap mb-3">
+        <div className="mb-3 flex flex-wrap gap-2">
           {values.map((t) => (
-            <span key={t} className="inline-flex items-center gap-1 bg-brand-navy text-white text-xs px-2.5 py-1.5 font-body">
+            <span key={t} className="inline-flex items-center gap-1.5 rounded-full bg-brand-navy py-1.5 pe-2 ps-3 text-[13px] text-white">
               {t}
-              <button type="button" onClick={() => onChange(values.filter((x) => x !== t))} className="opacity-70 hover:opacity-100" aria-label="הסר">
-                <X className="w-3 h-3" />
+              <button type="button" onClick={() => onChange(values.filter((x) => x !== t))}
+                className="flex h-5 w-5 items-center justify-center rounded-full opacity-70 transition hover:bg-white/15 hover:opacity-100" aria-label={`הסרת ${t}`}>
+                <X className="h-3 w-3" />
               </button>
             </span>
           ))}
@@ -48,41 +49,31 @@ export default function TeamPicker({ values = [], onChange }) {
       )}
 
       <div className="relative mb-3">
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-navy/40" />
+        <Search className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-navy/40" aria-hidden="true" />
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleEnter(); } }}
-          placeholder="חפש קבוצה…"
-          className="w-full border-2 border-brand-navy pr-9 pl-3 py-2.5 text-sm bg-white focus:outline-none font-body"
+          placeholder="חיפוש קבוצה…"
+          aria-label="חיפוש קבוצה"
+          className="shop-field pr-11"
         />
       </div>
 
-      <div className="flex gap-1.5 flex-wrap max-h-40 overflow-y-auto">
+      <div className="flex max-h-44 flex-wrap gap-2 overflow-y-auto">
         {filtered.map((t) => {
           const selected = values.includes(t);
           return (
-            <button
-              key={t}
-              type="button"
-              onClick={() => toggle(t)}
-              className={`px-3 py-1.5 border-2 text-xs font-heading font-bold transition-colors ${
-                selected
-                  ? 'bg-brand-navy text-white border-brand-navy'
-                  : 'border-brand-navy/30 text-brand-navy bg-white hover:border-brand-navy hover:bg-brand-cream'
-              }`}
-            >
+            <button key={t} type="button" onClick={() => toggle(t)} aria-pressed={selected}
+              className={`shop-chip min-h-[2.5rem] px-3.5 ${selected ? 'shop-chip-active' : ''}`}>
               {t}
             </button>
           );
         })}
         {query && !exactMatch && (
-          <button
-            type="button"
-            onClick={addCustom}
-            className="px-3 py-1.5 border-2 border-dashed border-brand-orange text-brand-orange text-xs font-heading font-bold hover:bg-brand-orange hover:text-white transition-colors flex items-center gap-1"
-          >
-            <Plus className="w-3 h-3" /> {query}
+          <button type="button" onClick={addCustom}
+            className="inline-flex min-h-[2.5rem] items-center gap-1 rounded-full border border-dashed border-brand-orange px-3.5 text-sm font-medium text-brand-orange-ink transition hover:bg-brand-orange-soft">
+            <Plus className="h-3.5 w-3.5" aria-hidden="true" /> {query}
           </button>
         )}
       </div>

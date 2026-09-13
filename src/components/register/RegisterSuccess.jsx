@@ -8,14 +8,13 @@ export default function RegisterSuccess({ onDone }) {
   }, [onDone]);
 
   return (
-    <div className="text-center py-6">
-      <div className="w-16 h-16 bg-brand-orange flex items-center justify-center mx-auto mb-4"
-        style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-navy)' }}>
-        <Check className="w-8 h-8 text-white" />
+    <div className="py-6 text-center" role="status">
+      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
+        <Check className="h-8 w-8 text-emerald-600" aria-hidden="true" />
       </div>
-      <h3 className="font-heading font-bold text-xl mb-2 text-brand-navy uppercase">הפרופיל שלך מוכן!</h3>
-      <p className="text-brand-navy/70 text-sm font-body mb-1">החשבון נוצר בהצלחה.</p>
-      <p className="text-brand-navy/40 text-xs font-body">המידע יעזור לנו להציג לך התאמות והמלצות רלוונטיות יותר. מעביר אותך לחנות…</p>
+      <h3 className="mb-2 text-xl font-semibold text-brand-navy">הפרופיל שלכם מוכן</h3>
+      <p className="mb-1 text-[15px] text-brand-navy/70">החשבון נוצר בהצלחה.</p>
+      <p className="text-xs text-brand-navy/45">המידע יעזור לנו להציג לכם התאמות והמלצות רלוונטיות. מעבירים אתכם לחנות…</p>
     </div>
   );
 }

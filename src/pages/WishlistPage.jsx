@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Heart, Trash2 } from 'lucide-react';
+import { Heart, Trash2, Info } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ShirtCard from '@/components/ShirtCard';
 import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
 import EmptyState from '@/components/ui/EmptyState';
+import Breadcrumb from '@/components/shop/Breadcrumb';
 import { toast } from '@/components/ui/use-toast';
 
 export default function WishlistPage() {
   const [shirts, setShirts] = useState([]);
-  const [wishlistIds, setWishlistIds] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -21,15 +21,13 @@ export default function WishlistPage() {
         const me = await base44.auth.me();
         setUser(me);
         const wl = await base44.entities.Wishlist.filter({ user_id: me.id });
-        setWishlistIds(wl.map(w => w.shirt_id));
         if (wl.length) {
-          const shirtPromises = wl.map(w => base44.entities.Shirt.get(w.shirt_id));
-          const results = await Promise.all(shirtPromises);
+          const results = await Promise.all(wl.map(w => base44.entities.Shirt.get(w.shirt_id)));
           setShirts(results.filter(Boolean));
         }
-      } catch (err) {
-        if (!navigator.onLine) { setError(true); }
-        else { navigate('/login'); }
+      } catch {
+        if (!navigator.onLine) setError(true);
+        else navigate('/login');
       }
       setLoading(false);
     }
@@ -40,7 +38,6 @@ export default function WishlistPage() {
     if (!window.confirm(`להסיר את כל ${shirts.length} החולצות מהמועדפים?`)) return;
     const items = await base44.entities.Wishlist.filter({ user_id: user.id });
     await Promise.all(items.map(i => base44.entities.Wishlist.delete(i.id).catch(() => {})));
-    setWishlistIds([]);
     setShirts([]);
     toast({ title: 'המועדפים נוקו' });
   };
@@ -48,43 +45,28 @@ export default function WishlistPage() {
   const toggleWishlist = async (shirtId) => {
     const items = await base44.entities.Wishlist.filter({ user_id: user.id, shirt_id: shirtId });
     if (items[0]) await base44.entities.Wishlist.delete(items[0].id);
-    setWishlistIds(p => p.filter(id => id !== shirtId));
     setShirts(p => p.filter(s => s.id !== shirtId));
-    toast({ title: 'הוסר ממועדפים' });
+    toast({ title: 'הוסרה מהמועדפים' });
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Same sticker header the other standalone pages use, so the wishlist
-          stops looking like a bare grid dropped onto the page. */}
-      <div className="flex flex-wrap items-end justify-between gap-4 mb-6 pb-5 border-b-2 border-brand-navy/15">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 flex-shrink-0 bg-brand-navy flex items-center justify-center"
-            style={{ boxShadow: '3px 3px 0 var(--brand-orange)' }}>
-            <Heart className="w-6 h-6 text-white fill-white" />
-          </div>
-          <div>
-            <h1 className="font-heading font-black text-2xl md:text-3xl text-brand-navy uppercase leading-none"
-              style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>
-              המועדפים שלי
-            </h1>
-            <p className="text-sm text-brand-navy/50 mt-1.5 font-body">
-              {loading ? 'טוען…' : shirts.length > 0 ? `${shirts.length} חולצות שמורות` : 'עדיין ריק'}
-            </p>
-          </div>
+    <div className="shop-container py-8 lg:py-12">
+      <Breadcrumb trail={[{ label: 'מועדפים' }]} />
+
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="shop-title">המועדפים שלי</h1>
+          <p className="mt-2 text-[15px] text-brand-navy/55">
+            {loading ? 'טוען…' : shirts.length > 0 ? `${shirts.length} חולצות שמורות` : 'עדיין ריק'}
+          </p>
         </div>
 
         {!loading && !error && shirts.length > 0 && (
           <div className="flex items-center gap-2">
-            <Link to="/catalog"
-              className="px-3 py-2 text-xs font-heading font-bold uppercase tracking-wide text-brand-navy bg-white border-2 border-brand-navy hover:bg-brand-cream transition-colors"
-              style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
-              המשך לחפש
-            </Link>
-            <button onClick={clearAll}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-heading font-bold uppercase tracking-wide text-brand-navy/60 hover:text-red-600 transition-colors">
-              <Trash2 className="w-3.5 h-3.5" />
-              נקה הכל
+            <Link to="/catalog" className="shop-btn-secondary">להמשיך לחפש</Link>
+            <button type="button" onClick={clearAll} className="inline-flex min-h-[3.25rem] items-center gap-1.5 rounded-2xl px-4 text-[15px] font-medium text-brand-navy/60 transition hover:bg-red-50 hover:text-red-600">
+              <Trash2 className="h-4 w-4" aria-hidden="true" />
+              ניקוי הכל
             </button>
           </div>
         )}
@@ -92,39 +74,45 @@ export default function WishlistPage() {
 
       {/* Nothing is bought on the site, so say what the heart actually does. */}
       {!loading && !error && shirts.length > 0 && (
-        <p className="mb-5 text-xs text-brand-navy/55 font-body bg-brand-gold/25 border-r-2 border-brand-gold px-3 py-2">
-          המועדפים נשמרים לחשבון שלך בלבד. כדי להזמין, היכנס לחולצה ושלח בקשה - ואנחנו נחזור אליך.
+        <p className="mt-6 flex items-start gap-2.5 rounded-2xl bg-brand-mist px-4 py-3 text-[13px] leading-relaxed text-brand-navy/65">
+          <Info className="mt-0.5 h-4 w-4 flex-shrink-0" aria-hidden="true" />
+          המועדפים נשמרים לחשבון שלכם בלבד. כדי להזמין, היכנסו לחולצה והוסיפו אותה לסל.
         </p>
       )}
-      {error ? (
-        <div className="text-center py-20 border-2 border-dashed border-brand-navy/20">
-          <p className="font-heading font-bold text-xl text-brand-navy/40 mb-2 uppercase">לא הצלחנו לטעון את המועדפים</p>
-          <p className="text-sm text-brand-navy/30 font-body mb-4">בדוק את החיבור לאינטרנט ונסה שוב</p>
-          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-brand-orange text-white text-sm font-bold font-heading uppercase hover:bg-brand-orange-dark transition-colors">
-            נסה שוב
-          </button>
-        </div>
-      ) : loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {Array.from({ length: 4 }).map((_, i) => <ShirtCardSkeleton key={i} />)}
-        </div>
-      ) : shirts.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {shirts.map(s => (
-            <ShirtCard key={s.id} shirt={s} user={user} isWishlisted={true} onToggleWishlist={toggleWishlist} />
-          ))}
-        </div>
-      ) : (
-        <EmptyState
-          icon={Heart}
-          title="אין חולצות במועדפים"
-          description="לחצו על הלב בחולצה שאהבתם והיא תישמר כאן, כדי לחזור אליה מתי שתרצו."
-          actionLabel="גלה חולצות"
-          actionTo="/catalog"
-          secondaryLabel="בקש חולצה שאין באתר"
-          secondaryTo="/request-shirt"
-        />
-      )}
+
+      <div className="mt-6">
+        {error ? (
+          <EmptyState
+            icon={Heart}
+            title="לא הצלחנו לטעון את המועדפים"
+            description="בדקו את החיבור לאינטרנט ונסו שוב."
+            actionLabel="לנסות שוב"
+            onAction={() => window.location.reload()}
+          />
+        ) : loading ? (
+          <ul className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-4" aria-busy="true">
+            {Array.from({ length: 4 }).map((_, i) => <li key={i}><ShirtCardSkeleton /></li>)}
+          </ul>
+        ) : shirts.length > 0 ? (
+          <ul className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-4">
+            {shirts.map(s => (
+              <li key={s.id}>
+                <ShirtCard shirt={s} user={user} isWishlisted onToggleWishlist={toggleWishlist} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <EmptyState
+            icon={Heart}
+            title="אין חולצות במועדפים"
+            description="לחצו על הלב בחולצה שאהבתם והיא תישמר כאן, כדי לחזור אליה מתי שתרצו."
+            actionLabel="לכל החולצות"
+            actionTo="/catalog"
+            secondaryLabel="בקשת חולצה שאין באתר"
+            secondaryTo="/request-shirt"
+          />
+        )}
+      </div>
     </div>
   );
 }

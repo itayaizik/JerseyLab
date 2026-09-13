@@ -18,13 +18,24 @@ const BUILDS = [
   { id: 'muscular', label: 'שרירי' },
 ];
 
-const inputCls = 'w-full border-2 border-brand-navy px-3 py-2.5 text-sm bg-white focus:outline-none font-mono';
-
 function rangeError(val, min, max, label, unit) {
   if (!val) return '';
   const n = Number(val);
   if (isNaN(n) || n < min || n > max) return `${label} צריך להיות בין ${min} ל־${max} ${unit}`;
   return '';
+}
+
+function ChipGroup({ label, options, value, onSelect, ltr = false }) {
+  return (
+    <div role="group" aria-label={label} className="flex flex-wrap gap-2">
+      {options.map(opt => (
+        <button key={opt.id} type="button" aria-pressed={value === opt.id} onClick={() => onSelect(opt.id)}
+          className={`shop-chip px-4 ${ltr ? 'min-w-[3.5rem] font-semibold tabular-nums' : ''} ${value === opt.id ? 'shop-chip-active' : ''}`}>
+          <span dir={ltr ? 'ltr' : undefined}>{opt.label}</span>
+        </button>
+      ))}
+    </div>
+  );
 }
 
 export default function FittingStep({ data, onChange, onContinue, onBack }) {
@@ -47,129 +58,67 @@ export default function FittingStep({ data, onChange, onContinue, onBack }) {
 
   return (
     <div>
-      <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">התאמת מידות</h3>
-      <p className="text-sm text-gray-500 font-body mb-4">נתאים לך חולצות לפי הרגלי הלבישה שלך</p>
+      <h3 className="text-lg font-semibold text-brand-navy">התאמת מידות</h3>
+      <p className="mb-5 mt-1 text-sm text-brand-navy/55">נתאים לכם חולצות לפי הרגלי הלבישה שלכם</p>
 
       {/* 1 - usual size (required, most important) */}
-      <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1">
-        איזו מידה אתה בדרך כלל לובש? <span className="text-brand-orange">*</span>
-      </label>
-      <p className="text-[11px] text-brand-navy/50 font-body mb-2">המידה שאתה בדרך כלל לובש היא נקודת ההתחלה החשובה ביותר להמלצה שלנו.</p>
-      <div className="flex gap-1.5 flex-wrap">
-        {SIZES.map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => onChange('usual_size', data.usual_size === s ? '' : s)}
-            className={`px-4 py-2 border-2 text-sm font-mono font-bold transition-colors ${
-              data.usual_size === s
-                ? 'bg-brand-navy text-white border-brand-navy'
-                : 'border-brand-navy/30 text-brand-navy bg-white hover:border-brand-navy'
-            }`}
-          >
-            {s}
-          </button>
-        ))}
-      </div>
+      <p className="mb-1 text-sm font-medium text-brand-navy/70">
+        איזו מידה אתם לובשים בדרך כלל? <span className="text-brand-orange-ink">*</span>
+      </p>
+      <p className="mb-2.5 text-xs text-brand-navy/50">המידה הרגילה שלכם היא נקודת ההתחלה החשובה ביותר להמלצה.</p>
+      <ChipGroup ltr label="מידה רגילה" options={SIZES.map(s => ({ id: s, label: s }))} value={data.usual_size}
+        onSelect={(s) => onChange('usual_size', data.usual_size === s ? '' : s)} />
 
       {/* 2 - fit preference */}
-      <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mt-4 mb-1.5">העדפת גזרה</label>
-      <div className="grid grid-cols-5 gap-1">
-        {FITS.map((f) => (
-          <button
-            key={f.id}
-            type="button"
-            onClick={() => onChange('fit_preference', f.id)}
-            className={`py-2 px-1 border-2 text-[10px] font-heading font-bold transition-colors leading-tight ${
-              data.fit_preference === f.id
-                ? 'bg-brand-navy text-white border-brand-navy'
-                : 'border-brand-navy/30 text-brand-navy bg-white hover:border-brand-navy'
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
+      <p className="mb-2.5 mt-5 text-sm font-medium text-brand-navy/70">העדפת גזרה</p>
+      <ChipGroup label="העדפת גזרה" options={FITS} value={data.fit_preference} onSelect={(id) => onChange('fit_preference', id)} />
 
       {/* 3 - body details (optional, for refinement) */}
-      <p className="text-xs font-heading font-bold text-brand-navy/60 uppercase mt-4 mb-1.5">פרטי גוף <span className="font-body normal-case text-[10px] text-brand-navy/40">(אופציונלי, לדיוק ההמלצה)</span></p>
+      <p className="mb-2.5 mt-5 text-sm font-medium text-brand-navy/70">
+        פרטי גוף <span className="font-normal text-brand-navy/40">(לא חובה, לדיוק ההמלצה)</span>
+      </p>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-[11px] font-heading font-bold text-brand-navy/50 uppercase block mb-1">גובה (ס"מ)</label>
-          <input
-            type="number"
-            dir="ltr"
-            value={data.height}
-            onChange={(e) => onChange('height', e.target.value)}
-            onBlur={() => touch('height')}
-            placeholder="180"
-            className={inputCls}
-          />
-          {touched.height && hErr && <p className="text-red-500 text-xs mt-1 font-body">{hErr}</p>}
+          <label htmlFor="fit-height" className="mb-1.5 block text-xs text-brand-navy/55">גובה (ס"מ)</label>
+          <input id="fit-height" type="number" dir="ltr" value={data.height}
+            onChange={(e) => onChange('height', e.target.value)} onBlur={() => touch('height')}
+            placeholder="180" className="shop-field text-right tabular-nums" />
+          {touched.height && hErr && <p className="mt-1 text-xs text-red-600">{hErr}</p>}
         </div>
         <div>
-          <label className="text-[11px] font-heading font-bold text-brand-navy/50 uppercase block mb-1">משקל (ק"ג)</label>
-          <input
-            type="number"
-            dir="ltr"
-            value={data.weight}
-            onChange={(e) => onChange('weight', e.target.value)}
-            onBlur={() => touch('weight')}
-            placeholder="75"
-            className={inputCls}
-          />
-          {touched.weight && wErr && <p className="text-red-500 text-xs mt-1 font-body">{wErr}</p>}
+          <label htmlFor="fit-weight" className="mb-1.5 block text-xs text-brand-navy/55">משקל (ק"ג)</label>
+          <input id="fit-weight" type="number" dir="ltr" value={data.weight}
+            onChange={(e) => onChange('weight', e.target.value)} onBlur={() => touch('weight')}
+            placeholder="75" className="shop-field text-right tabular-nums" />
+          {touched.weight && wErr && <p className="mt-1 text-xs text-red-600">{wErr}</p>}
         </div>
       </div>
 
-      <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mt-3 mb-1.5">מבנה גוף</label>
-      <div className="grid grid-cols-5 gap-1">
-        {BUILDS.map((b) => (
-          <button
-            key={b.id}
-            type="button"
-            onClick={() => onChange('body_build', data.body_build === b.id ? '' : b.id)}
-            className={`py-2 px-1 border-2 text-[11px] font-heading font-bold transition-colors leading-tight ${
-              data.body_build === b.id
-                ? 'bg-brand-navy text-white border-brand-navy'
-                : 'border-brand-navy/30 text-brand-navy bg-white hover:border-brand-navy'
-            }`}
-          >
-            {b.label}
-          </button>
-        ))}
-      </div>
+      <p className="mb-2.5 mt-5 text-sm font-medium text-brand-navy/70">מבנה גוף</p>
+      <ChipGroup label="מבנה גוף" options={BUILDS} value={data.body_build}
+        onSelect={(id) => onChange('body_build', data.body_build === id ? '' : id)} />
 
       {/* Live recommendation */}
       {rec && (
-        <div className="bg-brand-cream border-2 border-brand-navy p-3 mt-4" style={{ boxShadow: '2px 2px 0 var(--brand-orange)' }}>
-          <div className="flex items-start gap-2">
-            <Ruler className="w-4 h-4 text-brand-orange flex-shrink-0 mt-0.5" />
-            <p className="text-sm font-body text-brand-navy leading-relaxed">
-              {`לפי המידה שאתה בדרך כלל לובש${rec.fitUsed ? ' והגזרה שבחרת' : ''}, אנחנו ממליצים על `}
-              <strong className="font-heading font-black text-lg text-brand-orange">{rec.recommended}</strong>.
+        <div className="mt-5 rounded-2xl bg-brand-mist p-4" aria-live="polite">
+          <div className="flex items-start gap-2.5">
+            <Ruler className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
+            <p className="text-[15px] leading-relaxed text-brand-navy">
+              {`לפי המידה הרגילה שלכם${rec.fitUsed ? ' והגזרה שבחרתם' : ''}, אנחנו ממליצים על `}
+              <strong dir="ltr" className="text-lg font-bold text-brand-orange-ink">{rec.recommended}</strong>.
             </p>
           </div>
-          {rec.note && <p className="text-xs text-brand-navy/70 font-body mt-1.5 leading-relaxed pr-6">{rec.note}</p>}
-          <p className="text-[10px] text-brand-navy/40 font-body mt-1.5 pr-6">חולצות כדורגל עשויות להיות קטנות מבגדים רגילים; גרסת שחקן מתאימה צמוד יותר.</p>
+          {rec.note && <p className="mt-1.5 pr-6 text-xs leading-relaxed text-brand-navy/65">{rec.note}</p>}
+          <p className="mt-1.5 pr-6 text-[11px] text-brand-navy/45">חולצות כדורגל עשויות להיות קטנות מבגדים רגילים; גרסת שחקן צמודה יותר.</p>
         </div>
       )}
 
-      <div className="flex gap-2 mt-5">
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex items-center gap-1 px-4 py-3 border-2 border-brand-navy text-brand-navy text-sm font-heading font-bold uppercase hover:bg-brand-cream transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4" /> חזור
+      <div className="mt-6 flex gap-2">
+        <button type="button" onClick={onBack} className="shop-btn-secondary px-4">
+          <ChevronRight className="h-4 w-4" aria-hidden="true" /> חזרה
         </button>
-        <button
-          type="button"
-          onClick={onContinue}
-          disabled={!canContinue}
-          className="flex-1 flex items-center justify-center gap-1.5 bg-brand-navy text-white py-3 text-sm font-heading font-bold uppercase hover:bg-brand-navy-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          המשך <ChevronRight className="w-4 h-4" />
+        <button type="button" onClick={onContinue} disabled={!canContinue} className="shop-btn-dark flex-1">
+          המשך <ChevronLeft className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
     </div>

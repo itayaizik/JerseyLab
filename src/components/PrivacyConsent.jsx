@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 export default function PrivacyConsent({ checked, onChange, error, id = 'privacy-consent' }) {
   return (
     <div>
-      <label htmlFor={id} className="flex items-start gap-2.5 cursor-pointer">
+      <label htmlFor={id} className={`flex cursor-pointer items-start gap-3 rounded-2xl p-4 transition ${error ? 'bg-red-50 ring-1 ring-red-300' : 'bg-brand-mist'}`}>
         <input
           id={id}
           type="checkbox"
@@ -20,21 +20,21 @@ export default function PrivacyConsent({ checked, onChange, error, id = 'privacy
           onChange={e => onChange(e.target.checked)}
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : undefined}
-          className="mt-0.5 w-4 h-4 flex-shrink-0 accent-brand-orange"
+          className="mt-0.5 h-4 w-4 flex-shrink-0 accent-brand-orange"
         />
-        <span className="text-xs font-body text-brand-navy/75 leading-relaxed">
+        <span className="text-[13px] leading-relaxed text-brand-navy/75">
           קראתי ואני מאשר/ת את{' '}
-          <Link to="/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-brand-orange font-bold hover:underline">
+          <Link to="/legal/privacy" target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-orange-ink hover:underline">
             מדיניות הפרטיות
           </Link>
           {' '}ואת{' '}
-          <Link to="/legal/terms" target="_blank" rel="noopener noreferrer" className="text-brand-orange font-bold hover:underline">
+          <Link to="/legal/terms" target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-orange-ink hover:underline">
             תנאי השימוש
           </Link>
           , והשימוש בפרטיי ליצירת קשר בנוגע לפנייה זו.
         </span>
       </label>
-      {error && <p id={`${id}-error`} className="text-red-500 text-xs mt-1">{error}</p>}
+      {error && <p id={`${id}-error`} className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
   );
 }

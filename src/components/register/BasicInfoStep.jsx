@@ -1,20 +1,7 @@
 import React, { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import GoogleIcon from '@/components/GoogleIcon';
-
-const inputCls = 'w-full border-2 border-brand-navy px-3 py-2.5 text-sm bg-white focus:outline-none font-body';
-
-function Field({ label, required, error, children }) {
-  return (
-    <div>
-      <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1">
-        {label}{required && <span className="text-brand-orange"> *</span>}
-      </label>
-      {children}
-      {error && <p className="text-red-500 text-xs mt-1 font-body">{error}</p>}
-    </div>
-  );
-}
+import FormField, { fieldClass } from '@/components/shop/FormField';
 
 export default function BasicInfoStep({ data, onChange, onContinue, onGoogle }) {
   const [touched, setTouched] = useState({});
@@ -45,37 +32,35 @@ export default function BasicInfoStep({ data, onChange, onContinue, onGoogle }) 
 
   return (
     <div>
-      <button
-        type="button"
-        onClick={onGoogle}
-        className="w-full flex items-center justify-center gap-2 border-2 border-brand-navy bg-white text-brand-navy h-12 text-sm font-heading font-bold uppercase hover:bg-brand-cream transition-colors mb-4"
-      >
-        <GoogleIcon className="w-5 h-5" /> המשך עם Google
+      <button type="button" onClick={onGoogle} className="shop-btn-secondary w-full">
+        <GoogleIcon className="h-5 w-5" /> המשך עם Google
       </button>
 
-      <div className="relative flex items-center my-4">
-        <div className="flex-1 h-px bg-brand-navy/15" />
-        <span className="px-3 text-xs text-brand-navy/40 font-body">או</span>
-        <div className="flex-1 h-px bg-brand-navy/15" />
+      <div className="my-6 flex items-center gap-3" aria-hidden="true">
+        <span className="h-px flex-1 bg-brand-line" />
+        <span className="text-sm text-brand-navy/40">או</span>
+        <span className="h-px flex-1 bg-brand-line" />
       </div>
 
-      <h3 className="font-heading font-bold text-lg text-brand-navy mb-3">פרטים בסיסיים</h3>
+      <h3 className="mb-4 text-lg font-semibold text-brand-navy">פרטים בסיסיים</h3>
 
-      <div className="space-y-3">
-        <Field label="שם מלא" required error={show('full_name')}>
+      <div className="space-y-4">
+        <FormField id="reg-name" label="שם מלא" required error={show('full_name')}>
           <input
+            id="reg-name"
             value={data.full_name}
             onChange={(e) => onChange('full_name', e.target.value)}
             onBlur={() => touch('full_name')}
             placeholder="ישראל ישראלי"
             maxLength={100}
             autoComplete="name"
-            className={inputCls}
+            className={fieldClass(show('full_name'))}
             autoFocus
           />
-        </Field>
-        <Field label="אימייל" required error={show('email')}>
+        </FormField>
+        <FormField id="reg-email" label="אימייל" required error={show('email')}>
           <input
+            id="reg-email"
             type="email"
             dir="ltr"
             value={data.email}
@@ -84,11 +69,12 @@ export default function BasicInfoStep({ data, onChange, onContinue, onGoogle }) 
             placeholder="you@example.com"
             maxLength={254}
             autoComplete="email"
-            className={inputCls}
+            className={`${fieldClass(show('email'))} text-right`}
           />
-        </Field>
-        <Field label="סיסמה" required error={show('password')}>
+        </FormField>
+        <FormField id="reg-password" label="סיסמה" required error={show('password')} hint="לפחות 8 תווים">
           <input
+            id="reg-password"
             type="password"
             dir="ltr"
             value={data.password}
@@ -97,11 +83,12 @@ export default function BasicInfoStep({ data, onChange, onContinue, onGoogle }) 
             placeholder="••••••••"
             maxLength={128}
             autoComplete="new-password"
-            className={inputCls}
+            className={`${fieldClass(show('password'))} text-right`}
           />
-        </Field>
-        <Field label="אימות סיסמה" required error={show('confirmPassword')}>
+        </FormField>
+        <FormField id="reg-confirm" label="אימות סיסמה" required error={show('confirmPassword')}>
           <input
+            id="reg-confirm"
             type="password"
             dir="ltr"
             value={data.confirmPassword}
@@ -110,19 +97,13 @@ export default function BasicInfoStep({ data, onChange, onContinue, onGoogle }) 
             placeholder="••••••••"
             maxLength={128}
             autoComplete="new-password"
-            className={inputCls}
+            className={`${fieldClass(show('confirmPassword'))} text-right`}
           />
-        </Field>
+        </FormField>
       </div>
 
-      <button
-        type="button"
-        onClick={onContinue}
-        disabled={!isValid}
-        className="w-full flex items-center justify-center gap-1.5 bg-brand-navy text-white h-12 mt-5 font-heading font-bold uppercase hover:bg-brand-navy-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{ boxShadow: '3px 3px 0 var(--brand-orange)' }}
-      >
-        המשך <ChevronRight className="w-4 h-4" />
+      <button type="button" onClick={onContinue} disabled={!isValid} className="shop-btn-dark mt-6 w-full">
+        המשך <ChevronLeft className="h-4 w-4" aria-hidden="true" />
       </button>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeft, Loader2 } from 'lucide-react';
+import { ChevronRight, Loader2 } from 'lucide-react';
 import TeamPicker from './TeamPicker';
 import ChipsInput from './ChipsInput';
 
@@ -18,62 +18,44 @@ export default function PreferencesStep({ data, onChange, onFinish, onSkip, onBa
 
   return (
     <div>
-      <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">העדפות כדורגל</h3>
-      <p className="text-sm text-gray-500 font-body mb-4">נדייק עבורך חולצות שיתאימו לטעם שלך - הכול אופציונלי</p>
+      <h3 className="text-lg font-semibold text-brand-navy">העדפות כדורגל</h3>
+      <p className="mb-5 mt-1 text-sm text-brand-navy/55">נדייק עבורכם חולצות שמתאימות לטעם שלכם. הכל לא חובה.</p>
 
-      <div className="mb-4">
-        <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">קבוצות שאתה אוהב</label>
+      <div className="mb-5">
+        <p className="mb-2 text-sm font-medium text-brand-navy/70">קבוצות שאתם אוהבים</p>
         <TeamPicker values={data.favorite_teams} onChange={(v) => onChange('favorite_teams', v)} />
       </div>
 
-      <div className="mb-4">
-        <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">שחקנים שאתה אוהב</label>
-        <ChipsInput values={data.favorite_players} onChange={(v) => onChange('favorite_players', v)} placeholder="הקלד שחקן ולחץ Enter" />
+      <div className="mb-5">
+        <p className="mb-2 text-sm font-medium text-brand-navy/70">שחקנים שאתם אוהבים</p>
+        <ChipsInput values={data.favorite_players} onChange={(v) => onChange('favorite_players', v)} placeholder="הקלידו שחקן ולחצו Enter" />
       </div>
 
       <div>
-        <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">סגנון חולצות</label>
-        <div className="grid grid-cols-4 gap-1.5">
+        <p className="mb-2 text-sm font-medium text-brand-navy/70">סגנון חולצות</p>
+        <div role="group" aria-label="סגנון חולצות" className="flex flex-wrap gap-2">
           {STYLES.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => toggleStyle(s.id)}
-              className={`py-2.5 border-2 text-xs font-heading font-bold transition-colors ${
-                data.shirt_styles.includes(s.id)
-                  ? 'bg-brand-navy text-white border-brand-navy'
-                  : 'border-brand-navy/30 text-brand-navy bg-white hover:border-brand-navy'
-              }`}
-            >
+            <button key={s.id} type="button" onClick={() => toggleStyle(s.id)} aria-pressed={data.shirt_styles.includes(s.id)}
+              className={`shop-chip px-5 ${data.shirt_styles.includes(s.id) ? 'shop-chip-active' : ''}`}>
               {s.label}
             </button>
           ))}
         </div>
       </div>
 
-      {error && <p className="text-red-500 text-sm mt-4 font-body text-center">{error}</p>}
+      {error && <p role="alert" className="mt-4 text-center text-sm text-red-600">{error}</p>}
 
-      <div className="flex gap-2 mt-5">
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex items-center gap-1 px-4 py-3 border-2 border-brand-navy text-brand-navy text-sm font-heading font-bold uppercase hover:bg-brand-cream transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4" /> חזור
+      <div className="mt-6 flex gap-2">
+        <button type="button" onClick={onBack} className="shop-btn-secondary px-4">
+          <ChevronRight className="h-4 w-4" aria-hidden="true" /> חזרה
         </button>
-        <button
-          type="button"
-          onClick={onFinish}
-          disabled={loading}
-          className="flex-1 flex items-center justify-center gap-1.5 bg-brand-orange text-white py-3 text-sm font-heading font-bold uppercase hover:bg-brand-orange-dark transition-colors disabled:opacity-50"
-          style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}
-        >
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'סיום הרשמה'}
+        <button type="button" onClick={onFinish} disabled={loading} className="shop-btn flex-1">
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'סיום ההרשמה'}
         </button>
       </div>
-      <button type="button" onClick={onSkip} className="w-full text-center text-xs text-brand-navy/50 font-heading font-bold uppercase hover:text-brand-orange mt-3">
-        דלג
-      </button>
+      <div className="mt-3 text-center">
+        <button type="button" onClick={onSkip} className="shop-link text-sm">דילוג</button>
+      </div>
     </div>
   );
 }

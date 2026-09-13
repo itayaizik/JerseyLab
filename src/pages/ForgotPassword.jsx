@@ -25,31 +25,32 @@ export default function ForgotPassword() {
   return (
     <AuthLayout
       icon={Mail}
-      title="שכחת סיסמה?"
-      subtitle="נשלח לך קישור לאיפוס"
+      title="שכחתם סיסמה?"
+      subtitle="נשלח לכם קישור לאיפוס"
       footer={
         <>
-          נזכרת בסיסמה?{' '}
-          <Link to="/login" className="text-brand-orange font-bold hover:underline">התחבר</Link>
+          נזכרתם בסיסמה?{' '}
+          <Link to="/login" className="shop-link">התחברות</Link>
         </>
       }
     >
       {sent ? (
-        <div className="text-center py-4">
-          <div className="w-14 h-14 bg-brand-orange flex items-center justify-center mx-auto mb-4" style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-navy)' }}>
-            <Check className="w-7 h-7 text-white" />
+        <div className="py-4 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50">
+            <Check className="h-7 w-7 text-emerald-600" aria-hidden="true" />
           </div>
-          <p className="text-sm text-brand-navy font-body leading-relaxed">
-            אם קיים חשבון עם המייל הזה, קישור לאיפוס סיסמה יישלח אליך בקרוב.
+          <p className="text-[15px] leading-relaxed text-brand-navy/75">
+            אם קיים חשבון עם המייל הזה, קישור לאיפוס סיסמה יישלח אליכם בקרוב.
           </p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-sm font-medium block mb-1 font-body text-brand-navy">אימייל</label>
+            <label htmlFor="forgot-email" className="mb-1.5 block text-sm font-medium text-brand-navy/70">אימייל</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-navy/35" aria-hidden="true" />
               <input
+                id="forgot-email"
                 type="email"
                 autoComplete="email"
                 autoFocus
@@ -57,20 +58,15 @@ export default function ForgotPassword() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 maxLength={254}
-                className="w-full pl-10 pr-3 h-11 border-2 border-brand-navy bg-white text-sm focus:outline-none focus:border-brand-orange transition-colors font-body"
+                className="shop-field pl-11"
                 dir="ltr"
                 required
               />
             </div>
           </div>
-          <button
-            type="submit"
-            className="w-full h-11 bg-brand-orange text-white font-bold font-heading uppercase tracking-wide text-sm hover:bg-brand-orange-dark transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-            style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}
-            disabled={loading}
-          >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
-            {loading ? 'שולח...' : 'שלח קישור לאיפוס'}
+          <button type="submit" className="shop-btn w-full" disabled={loading}>
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
+            {loading ? 'שולח...' : 'שליחת קישור לאיפוס'}
           </button>
         </form>
       )}

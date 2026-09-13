@@ -3,8 +3,8 @@ import { Check, Ban, Package, Truck, ShieldCheck, HelpCircle } from 'lucide-reac
 
 // Everything a customer needs to know before buying a mystery box, written
 // once. The product page runs it down a column; the home page shows the first
-// three lines and opens the rest in a dialog. Two copies of this text would
-// have drifted apart the first time a price or a policy changed.
+// three lines. Two copies of this text would have drifted apart the first time
+// a price or a policy changed.
 
 export const MYSTERY_BOX_PANELS = [
   {
@@ -70,35 +70,33 @@ export const MYSTERY_BOX_HIGHLIGHTS = [
 
 export default function MysteryBoxInfo({ compact = false }) {
   return (
-    <div className={compact ? 'space-y-4' : 'space-y-5'}>
+    <div className={compact ? 'divide-y divide-brand-line' : 'grid gap-4 md:grid-cols-2'}>
       {MYSTERY_BOX_PANELS.map(panel => {
         const Icon = panel.icon;
         return (
-          <section key={panel.title}
-            className={compact ? 'border-b-2 border-brand-navy/10 pb-4 last:border-b-0 last:pb-0' : 'bg-white border-2 border-brand-navy p-5'}
-            style={compact ? undefined : { boxShadow: '3px 3px 0 var(--brand-navy)' }}>
-            <h3 className={`flex items-center gap-2 font-heading font-bold text-brand-navy uppercase tracking-wide mb-3 ${compact ? 'text-sm' : 'text-base'}`}>
-              <span className={`flex-shrink-0 bg-brand-orange flex items-center justify-center ${compact ? 'w-6 h-6' : 'w-7 h-7'}`}>
-                <Icon className={compact ? 'w-3.5 h-3.5 text-white' : 'w-4 h-4 text-white'} />
+          <section key={panel.title} className={compact ? 'py-5 first:pt-0 last:pb-0' : 'rounded-3xl bg-brand-mist p-6'}>
+            <h3 className={`flex items-center gap-2.5 font-semibold text-brand-navy ${compact ? 'text-[15px]' : 'text-base'}`}>
+              <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-orange-soft text-brand-orange-ink">
+                <Icon className="h-4 w-4" aria-hidden="true" />
               </span>
               {panel.title}
             </h3>
 
-            <div className={`space-y-2.5 font-body text-brand-navy/75 leading-relaxed ${compact ? 'text-[13px]' : 'text-sm'}`}>
+            <div className={`mt-3 space-y-2.5 leading-relaxed text-brand-navy/70 ${compact ? 'text-[13px]' : 'text-sm'}`}>
               {panel.paragraphs?.map(p => <p key={p}>{p}</p>)}
 
               {panel.items && (
                 <ul className="space-y-2">
                   {panel.items.map(line => (
                     <li key={line} className="flex gap-2">
-                      <Check className="w-4 h-4 text-brand-orange flex-shrink-0 mt-0.5" />
+                      <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
                       <span>{line}</span>
                     </li>
                   ))}
                 </ul>
               )}
 
-              {panel.footnote && <p className="text-brand-navy/55">{panel.footnote}</p>}
+              {panel.footnote && <p className="text-brand-navy/50">{panel.footnote}</p>}
             </div>
           </section>
         );

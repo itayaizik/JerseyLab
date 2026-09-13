@@ -1,32 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, HelpCircle } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
+import { HelpCircle } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import EmptyState from '@/components/ui/EmptyState';
 import Seo from '@/components/Seo';
 import HowItWorksNotice from '@/components/HowItWorksNotice';
+import CollectionHero from '@/components/catalog/CollectionHero';
+import Breadcrumb from '@/components/shop/Breadcrumb';
+import Disclosure from '@/components/shop/Disclosure';
 
 export default function FAQPage() {
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openId, setOpenId] = useState(null);
 
   useEffect(() => {
-    async function load() {
-      const data = await base44.entities.FAQ.filter({ active: true }, 'sort_order', 50);
-      setFaqs(data);
-      setLoading(false);
-    }
-    load();
+    (async () => {
+      try {
+        setFaqs(await base44.entities.FAQ.filter({ active: true }, 'sort_order', 50));
+      } catch { /* the how-it-works answer below still shows */ }
+      finally {
+        setLoading(false);
+      }
+    })();
   }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-4 border-brand-navy/20 border-t-brand-orange rounded-full animate-spin" />
-      </div>
-    );
-  }
 
   // Mirrors the HowItWorksNotice block so the no-payment-on-site answer is the
   // one search engines surface too; it is always present, unlike the DB rows.
@@ -53,86 +49,50 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
+    <div>
       <Seo title="שאלות ותשובות - JerseyLab" description="שאלות ותשובות נפוצות על רכישת חולצות כדורגל ב-JerseyLab: משלוחים, מידות, זמינות ופרטי הזמנה." canonicalPath="/faq" jsonLd={faqJsonLd} />
 
-      {/* Header */}
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-brand-navy"
-          style={{ border: '2px solid var(--brand-navy)', boxShadow: '4px 4px 0 var(--brand-orange)' }}>
-          <HelpCircle className="w-8 h-8 text-white" />
-        </div>
-        <div className="inline-block mb-3">
-          <div className="bg-brand-gold/60 px-4 py-1 text-xs font-heading tracking-widest text-brand-navy uppercase"
-            style={{ transform: 'rotate(-1deg)' }}>
-            יש לך שאלה?
+      <CollectionHero
+        breadcrumb={<Breadcrumb trail={[{ label: 'שאלות ותשובות' }]} />}
+        title="שאלות ותשובות"
+        description="כל מה שצריך לדעת לפני שמזמינים: משלוחים, מידות, זמינות ואיך ההזמנה עובדת."
+      />
+
+      <div className="shop-container">
+        <div className="mx-auto mt-8 max-w-3xl space-y-8">
+          {/* How ordering works - hard-coded rather than a DB row, because a
+              customer must never be able to reach this page without it. */}
+          <HowItWorksNotice variant="full" />
+
+          {loading ? (
+            <div className="space-y-2.5" aria-busy="true">
+              {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-[3.75rem] rounded-2xl skeleton" />)}
+            </div>
+          ) : faqs.length === 0 ? (
+            <EmptyState
+              compact
+              icon={HelpCircle}
+              title="אין שאלות ותשובות כרגע"
+              description="יש לכם שאלה? כתבו לנו ונשמח לעזור."
+            />
+          ) : (
+            <div className="space-y-2.5">
+              {faqs.map(f => (
+                <Disclosure key={f.id} title={f.question}>
+                  <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-brand-navy/75">{f.answer}</p>
+                </Disclosure>
+              ))}
+            </div>
+          )}
+
+          <div className="flex flex-col items-start justify-between gap-5 rounded-3xl bg-brand-navy p-7 text-white sm:flex-row sm:items-center sm:p-9">
+            <div>
+              <p className="text-xl font-semibold">לא מצאתם תשובה?</p>
+              <p className="mt-1.5 text-[15px] leading-relaxed text-white/70">כתבו לנו ונחזור אליכם מהר.</p>
+            </div>
+            <Link to="/contact" className="shop-btn flex-shrink-0">צרו קשר</Link>
           </div>
         </div>
-        <h1 className="font-heading font-black text-4xl text-brand-navy uppercase mb-2" style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>שאלות ותשובות</h1>
-        <p className="text-brand-navy/60 font-body text-sm">כל מה שצריך לדעת לפני שפונים אלינו</p>
-      </div>
-
-      {/* How ordering works - hard-coded rather than a DB row, because a
-          customer must never be able to reach this page without it. */}
-      <div className="mb-8">
-        <HowItWorksNotice variant="full" />
-      </div>
-
-      {/* FAQ List */}
-      {faqs.length === 0 ? (
-        <EmptyState
-          compact
-          icon={HelpCircle}
-          title="אין שאלות ותשובות כרגע"
-          description="יש לך שאלה? כתוב לנו למטה ונשמח לעזור."
-        />
-      ) : (
-        <div className="space-y-3">
-          {faqs.map((f, i) => {
-            const isOpen = openId === f.id;
-            return (
-              <div key={f.id}
-                className="bg-white border-2 border-brand-navy transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-                style={{ boxShadow: isOpen ? '4px 4px 0 var(--brand-orange)' : '3px 3px 0 var(--brand-navy)' }}>
-                <button
-                  onClick={() => setOpenId(isOpen ? null : f.id)}
-                  aria-expanded={isOpen}
-                  aria-controls={`faq-answer-${f.id}`}
-                  className="w-full flex items-center justify-between px-5 py-4 text-right gap-3 group">
-                  <div className="flex items-center gap-3">
-                    <span className="text-brand-orange font-mono font-bold text-xs flex-shrink-0">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <span className="font-heading font-bold text-sm text-brand-navy uppercase leading-snug text-right">
-                      {f.question}
-                    </span>
-                  </div>
-                  <ChevronDown
-                    className={`w-4 h-4 text-brand-orange flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {isOpen && (
-                  <div id={`faq-answer-${f.id}`} role="region" aria-label={`תשובה: ${f.question}`} className="px-5 pb-5 pt-0 border-t-2 border-brand-navy">
-                    <p className="text-sm text-brand-navy/70 leading-relaxed whitespace-pre-wrap font-body pt-4">
-                      {f.answer}
-                    </p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* CTA */}
-      <div className="mt-10 bg-brand-navy p-6 text-center"
-        style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-orange)' }}>
-        <p className="text-white/80 text-sm font-body mb-3">לא מצאת תשובה לשאלתך?</p>
-        <Link to="/contact"
-          className="inline-block bg-brand-orange text-white font-heading font-bold text-sm px-6 py-2.5 uppercase tracking-wider hover:bg-brand-orange-dark hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
-          style={{ boxShadow: '2px 2px 0 rgba(255,255,255,0.2)', textShadow: '1px 1px 3px rgba(0,0,0,0.2)' }}>
-          צור קשר
-        </Link>
       </div>
     </div>
   );
