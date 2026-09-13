@@ -12,9 +12,14 @@ import { cn } from '@/lib/utils';
 // The page is right-to-left, so 'start' is the right edge and 'end' the left.
 // The slide animations name physical sides, which is why the mapping is written
 // out here rather than derived.
+//
+// Only opening is animated. Radix keeps a closed panel mounted, with the page
+// locked and hidden from clicks, until its closing animation reports that it
+// ended. Tapping quickly could cut that animation off and leave an invisible
+// panel over the whole site that swallowed every click, so closing is instant.
 const SIDES = {
-  start: 'right-0 rounded-l-[1.75rem] data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right',
-  end: 'left-0 rounded-r-[1.75rem] data-[state=open]:slide-in-from-left data-[state=closed]:slide-out-to-left',
+  start: 'right-0 rounded-l-[1.75rem] data-[state=open]:slide-in-from-right',
+  end: 'left-0 rounded-r-[1.75rem] data-[state=open]:slide-in-from-left',
 };
 
 export default function SideDrawer({
@@ -35,11 +40,11 @@ export default function SideDrawer({
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-[70] bg-brand-navy-dark/45 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-[70] bg-brand-navy-dark/45 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
           dir="rtl"
           className={cn(
-            'fixed inset-y-0 z-[70] flex h-full w-[min(92vw,30rem)] flex-col bg-white shadow-lift outline-none duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out',
+            'fixed inset-y-0 z-[70] flex h-full w-[min(92vw,30rem)] flex-col bg-white shadow-lift outline-none duration-300 data-[state=open]:animate-in',
             SIDES[side],
             className,
           )}
