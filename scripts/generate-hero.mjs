@@ -21,20 +21,19 @@ if (!response.ok) throw new Error(`[hero] could not fetch the source photo: HTTP
 const source = Buffer.from(await response.arrayBuffer());
 const { width, height } = await sharp(source).metadata();
 
-// Desktop: a 2.2:1 band from just under the top, so the floodlights and the
-// whole row of shirts both fit.
-const bandHeight = Math.round(width / 2.2);
+// Desktop: the banner fills the screen, roughly 1.8:1 on a laptop, so the
+// band is cut to that from near the top: floodlights above, shirts below.
+const bandHeight = Math.round(width / 1.8);
 await sharp(source)
-  .extract({ left: 0, top: Math.round(height * 0.08), width, height: bandHeight })
-  .resize({ width: 1600, kernel: 'lanczos3' })
+  .extract({ left: 0, top: Math.min(Math.round(height * 0.04), height - bandHeight), width, height: bandHeight })
+  .resize({ width: 1920, kernel: 'lanczos3' })
   .jpeg({ quality: 80, progressive: true, mozjpeg: true })
   .toFile(resolve(ROOT, 'public/hero-desktop.jpg'));
 
-// Phones: 4:5 from the top, the shirts in the lower half where the card does
-// not cover them.
+// Phones: the whole portrait photo. The banner is taller than it is wide there,
+// and object-cover trims the sides to fit.
 await sharp(source)
-  .extract({ left: 0, top: 0, width, height: Math.round(width * 1.25) })
-  .resize({ width: 900 })
+  .resize({ width: 1000 })
   .jpeg({ quality: 78, progressive: true, mozjpeg: true })
   .toFile(resolve(ROOT, 'public/hero-mobile.jpg'));
 
