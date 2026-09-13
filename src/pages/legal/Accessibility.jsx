@@ -20,6 +20,7 @@ export default function Accessibility() {
     <LegalPage
       title="הצהרת נגישות"
       path="/legal/accessibility"
+      updated="2026-09-13"
       description="הצהרת הנגישות של JerseyLab: רמת ההנגשה של האתר, ההתאמות שבוצעו, מגבלות ידועות, ופרטי רכז הנגישות."
       intro="אנחנו רואים בנגישות האתר חלק מהשירות, לא תוספת. בעמוד הזה מפורט מה נעשה, מה עדיין לא, ואיך לפנות אלינו אם משהו לא עובד עבורך."
     >
