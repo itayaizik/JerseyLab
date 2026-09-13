@@ -5,6 +5,7 @@ import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { lazyPage as lazy } from '@/lib/chunkReload';
 import AppErrorBoundary from '@/components/AppErrorBoundary';
+import AccessibilityMenu from '@/components/AccessibilityMenu';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -164,6 +165,7 @@ function App() {
         <Router>
           <ScrollToTop />
           <AuthenticatedApp />
+          <AccessibilityMenu />
         </Router>
         <Toaster />
       </QueryClientProvider>
