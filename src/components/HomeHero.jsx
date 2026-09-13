@@ -1,24 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-// The first thing on the home page: one photograph across the whole screen with
-// a tall white card over it, the way the Real Madrid store opens. Everything is
+// The first thing on the home page: one photograph in a rounded banner with a
+// narrow white card over it on the left. Everything is
 // editable from ניהול > הגדרות אתר - both photos, the card's text, the link, or
 // no card at all.
 
 export const HERO_DEFAULTS = {
   desktop: '/hero-desktop.jpg',
   mobile: '/hero-mobile.jpg',
-  title: 'עונת|26/27|כבר כאן',
+  title: 'עונת 26/27|כבר כאן',
   subtitle: 'החולצה של הקבוצה שלך מחכה לך.',
   button: 'לכל החולצות',
   link: '/catalog',
 };
 
-// Each | starts a new line, all in the one colour.
 function Title({ text }) {
   const lines = text.split('|').map(line => line.trim()).filter(Boolean);
-  return lines.map((line, i) => <span key={i} className="block">{line}</span>);
+  return lines.map((line, i) => (
+    <span key={i} className={`block ${i > 0 ? 'text-brand-orange-ink' : ''}`}>{line}</span>
+  ));
 }
 
 export default function HomeHero({ settings = {} }) {
@@ -33,9 +34,10 @@ export default function HomeHero({ settings = {} }) {
   const button = settings.homepage_hero_button_text || HERO_DEFAULTS.button;
 
   return (
-    <section aria-label="באנר ראשי">
-      {/* Edge to edge, and tall enough to fill the screen under the header. */}
-      <div className="relative h-[calc(100svh-10rem)] max-h-[52rem] min-h-[30rem] overflow-hidden bg-brand-navy md:h-[calc(100svh-7rem)] md:min-h-[34rem] md:max-h-[58rem]">
+    <section className="shop-container pt-3 sm:pt-6" aria-label="באנר ראשי">
+      {/* Inside the page margins with rounded corners, a fixed shape rather than
+          the height of the screen, so the shirts below start in view. */}
+      <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-brand-navy sm:aspect-[16/10] sm:rounded-[2rem] md:aspect-[2/1] lg:aspect-[2.3/1]">
         <picture>
           <source media="(min-width: 768px)" srcSet={desktop} />
           {/* React 18 only passes the lowercase attribute through. */}
@@ -48,21 +50,17 @@ export default function HomeHero({ settings = {} }) {
 
         {showCard && (
           /* On the left, the end side of a right-to-left page. */
-          <div className="pointer-events-none absolute inset-y-0 end-0 flex items-end p-4 sm:p-6 md:items-start md:pe-12 md:pt-24 lg:pe-20 lg:pt-28">
-            {/* Modelled on the Real Madrid store's banner card: pale, tall and
-                narrow, a huge title one word or two to a line with wide
-                spacing between them, a short line under it and a big button. */}
-            <div className="pointer-events-auto w-[17.5rem] rounded-3xl bg-neutral-100/95 p-7 backdrop-blur sm:w-[20rem] md:w-[23rem] md:p-11 lg:w-[25rem] lg:p-12">
-              <h1 className="text-5xl font-bold leading-[1.3] tracking-[-0.02em] text-black md:text-6xl md:leading-[1.35] lg:text-7xl">
+          <div className="pointer-events-none absolute inset-y-0 end-0 flex items-end p-3 sm:p-5 md:items-center md:pe-8 lg:pe-12">
+            {/* A narrow white card: the title stacks down it and the button
+                sits under the line of text. */}
+            <div className="pointer-events-auto w-[15rem] rounded-[1.5rem] bg-white/95 p-5 shadow-float backdrop-blur sm:w-[17rem] md:w-[19rem] md:p-8 lg:w-[23rem] lg:p-10">
+              <h1 className="text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-brand-navy md:text-4xl lg:text-5xl">
                 <Title text={title} />
               </h1>
               {subtitle && (
-                <p className="mt-5 text-lg leading-[1.6] text-black md:mt-9 md:text-[1.375rem]">{subtitle}</p>
+                <p className="mt-2 text-sm leading-relaxed text-brand-navy/65 md:mt-4 md:text-base lg:text-lg">{subtitle}</p>
               )}
-              <Link to={link}
-                className="shop-btn mt-6 h-14 rounded-2xl px-8 text-lg md:mt-10 md:h-[4.25rem] md:px-10 md:text-[1.375rem]">
-                {button}
-              </Link>
+              <Link to={link} className="shop-btn mt-4 px-6 md:mt-7 md:px-8">{button}</Link>
             </div>
           </div>
         )}

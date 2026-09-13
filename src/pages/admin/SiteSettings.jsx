@@ -8,14 +8,14 @@ import { HERO_DEFAULTS } from '@/components/HomeHero';
 // thing most often changed: pick a file and it is live, no save button needed.
 const HERO_IMAGES = [
   { key: 'homepage_hero_image', label: 'תמונה למחשב', fallback: HERO_DEFAULTS.desktop, frame: 'aspect-[16/9]',
-    help: 'תמונה רחבה, למשל 2400×1300. היא ממלאת את כל רוחב המסך, אז הקצוות למעלה ולמטה עלולים להיחתך.' },
+    help: 'תמונה רחבה, למשל 2400×1050. אם היחס שונה, הקצוות למעלה ולמטה ייחתכו.' },
   { key: 'homepage_hero_image_mobile', label: 'תמונה לטלפון', fallback: HERO_DEFAULTS.mobile, frame: 'aspect-[9/16]',
     help: 'תמונה לאורך, למשל 1080×1920. ריק = משתמשים בתמונה של המחשב.' },
 ];
 
 const heroFields = [
   { key: 'homepage_hero_title', label: 'כותרת', type: 'text', placeholder: HERO_DEFAULTS.title,
-    help: 'הסימן | שובר שורה. הכי יפה במילה או שתיים בכל שורה, למשל: עונת|26/27|כבר כאן' },
+    help: 'הסימן | שובר שורה. מה שאחריו מוצג בכתום.' },
   { key: 'homepage_hero_subtitle', label: 'משפט מתחת לכותרת', type: 'text', placeholder: HERO_DEFAULTS.subtitle },
   { key: 'homepage_hero_button_text', label: 'טקסט הכפתור', type: 'text', placeholder: HERO_DEFAULTS.button },
   { key: 'homepage_hero_link', label: 'לאן הלחיצה מובילה', type: 'text', placeholder: HERO_DEFAULTS.link },
