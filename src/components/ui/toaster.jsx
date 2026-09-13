@@ -1,3 +1,4 @@
+import { Check, AlertCircle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Toast,
@@ -12,16 +13,20 @@ export function Toaster() {
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, ...props }) {
+      {toasts.map(function ({ id, title, description, action, variant, open }) {
+        const isError = variant === "error" || variant === "destructive";
         return (
-          <Toast key={id} {...props}>
-            <div className="flex flex-1 items-start gap-2">
-              <div className="grid flex-1 gap-0.5 text-right">
-                {title && <ToastTitle>{title}</ToastTitle>}
-                {description && (
-                  <ToastDescription>{description}</ToastDescription>
-                )}
-              </div>
+          // A tap anywhere on the notice closes it, not only on the small X.
+          <Toast key={id} variant={variant} open={open} onClick={() => dismiss(id)} className="cursor-pointer">
+            <span
+              className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full ${isError ? "bg-red-50 text-red-600" : "bg-brand-orange-soft text-brand-orange-ink"}`}
+              aria-hidden="true"
+            >
+              {isError ? <AlertCircle className="h-5 w-5" /> : <Check className="h-5 w-5" />}
+            </span>
+            <div className="grid min-w-0 flex-1 gap-0.5">
+              {title && <ToastTitle>{title}</ToastTitle>}
+              {description && <ToastDescription>{description}</ToastDescription>}
             </div>
             {action}
             <ToastClose onClick={() => dismiss(id)} />

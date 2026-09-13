@@ -3,11 +3,22 @@ import { cva } from "class-variance-authority";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// ToastProvider is the positioned container that holds the toasts.
-const ToastProvider = React.forwardRef(({ ...props }, ref) => (
+// The short notices the shop shows after an action ("נוספה למועדפים"), in the
+// storefront's style: a white card with a soft shadow, a round icon, navy text.
+//
+// On a phone they sit at the top, below the edge of the screen rather than on
+// the header's buttons; on a desktop, in the bottom corner on the left, the end
+// side of a right-to-left page.
+
+const ToastProvider = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className="pointer-events-none fixed z-[100] flex w-full flex-col gap-2 p-4 sm:bottom-0 sm:right-0 sm:top-auto md:max-w-[380px]"
+    dir="rtl"
+    className={cn(
+      "pointer-events-none fixed inset-x-0 top-3 z-[100] flex flex-col items-center gap-2 px-3",
+      "sm:inset-x-auto sm:bottom-5 sm:top-auto sm:end-5 sm:w-[24rem] sm:items-stretch sm:px-0",
+      className
+    )}
     {...props}
   />
 ));
@@ -20,14 +31,14 @@ const ToastViewport = React.forwardRef(({ ...props }, ref) => (
 ToastViewport.displayName = "ToastViewport";
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-start justify-between gap-3 overflow-hidden border-2 p-4 pl-10 text-right duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-80 data-[state=open]:slide-in-from-bottom-3 data-[state=closed]:slide-out-to-bottom-3 data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",
+  "group pointer-events-auto relative flex w-full max-w-md items-center gap-3 rounded-2xl bg-white py-3 pe-2 ps-3.5 text-right shadow-float ring-1 ring-brand-line transition-all duration-200 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-2 sm:data-[state=open]:slide-in-from-bottom-2 data-[state=closed]:pointer-events-none data-[state=closed]:opacity-0 data-[state=closed]:scale-95",
   {
     variants: {
       variant: {
-        default: "border-brand-navy bg-brand-navy text-white",
-        success: "border-brand-navy bg-brand-navy text-white",
-        error: "border-red-500 bg-red-500 text-white",
-        destructive: "border-red-500 bg-red-500 text-white",
+        default: "",
+        success: "",
+        error: "ring-red-200",
+        destructive: "ring-red-200",
       },
     },
     defaultVariants: {
@@ -36,46 +47,50 @@ const toastVariants = cva(
   }
 );
 
-const Toast = React.forwardRef(({ className, variant, open, ...props }, ref) => (
+// Only what a <div> understands is passed on. The toast state also carries
+// `duration` and `onOpenChange`, which used to be spread onto the element.
+const Toast = React.forwardRef(({ className, variant, open, children, onClick }, ref) => (
   <div
     ref={ref}
     data-state={open ? "open" : "closed"}
-    className={cn(toastVariants({ variant }), "shadow-lg", className)}
-    style={{ boxShadow: "3px 3px 0 var(--brand-orange)" }}
-    role="status"
-    aria-live="polite"
+    className={cn(toastVariants({ variant }), className)}
+    role={variant === "error" || variant === "destructive" ? "alert" : "status"}
+    aria-live={variant === "error" || variant === "destructive" ? "assertive" : "polite"}
     aria-atomic="true"
-    {...props}
+    onClick={onClick}
+    // An open cart or menu drawer treats any press outside it as a reason to
+    // close. A press on the toast is not about the drawer.
+    onPointerDown={(e) => e.stopPropagation()}
   >
-    <span className="absolute top-0 bottom-0 right-0 w-1.5 bg-brand-orange" aria-hidden="true" />
-    {props.children}
+    {children}
   </div>
 ));
 Toast.displayName = "Toast";
 
-const ToastClose = React.forwardRef(({ className, ...props }, ref) => (
+const ToastClose = React.forwardRef(({ className, onClick, ...props }, ref) => (
   <button
     ref={ref}
-    aria-label="סגור"
+    type="button"
+    aria-label="סגירה"
     className={cn(
-      "absolute left-2 top-2 p-1 text-white/70 transition-colors hover:text-white focus:outline-none",
+      "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl text-brand-navy/45 transition-colors hover:bg-brand-mist hover:text-brand-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange",
       className
     )}
-    toast-close=""
+    onClick={(e) => { e.stopPropagation(); onClick?.(e); }}
     {...props}
   >
-    <X className="h-4 w-4" />
+    <X className="h-4 w-4" aria-hidden="true" />
   </button>
 ));
 ToastClose.displayName = "ToastClose";
 
 const ToastTitle = React.forwardRef(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("text-sm font-heading font-bold text-white", className)} {...props} />
+  <div ref={ref} className={cn("text-[15px] font-semibold leading-snug text-brand-navy", className)} {...props} />
 ));
 ToastTitle.displayName = "ToastTitle";
 
 const ToastDescription = React.forwardRef(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("text-xs text-white/80 font-body leading-relaxed", className)} {...props} />
+  <div ref={ref} className={cn("text-[13px] leading-relaxed text-brand-navy/60", className)} {...props} />
 ));
 ToastDescription.displayName = "ToastDescription";
 
@@ -83,7 +98,7 @@ const ToastAction = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "inline-flex h-8 shrink-0 items-center justify-center border bg-transparent px-3 text-sm font-medium",
+      "inline-flex h-9 shrink-0 items-center justify-center rounded-xl border border-brand-line px-3 text-sm font-medium text-brand-navy",
       className
     )}
     {...props}
