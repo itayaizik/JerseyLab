@@ -203,6 +203,11 @@ alter table interest_requests_raw add column if not exists email text;
 alter table interest_requests_raw add column if not exists contact_channel text;
 alter table interest_requests_raw add column if not exists instagram_handle text;
 
+-- ── interest_requests_raw: order edit history ──────────────
+-- JSON array of { at, changes[] }, written by the order editor in the admin
+-- panel so there is a record of what was changed after the customer ordered.
+alter table interest_requests_raw add column if not exists edit_log text;
+
 -- ── reviews_raw: optional photo + anonymous display name ────
 alter table reviews_raw add column if not exists image_url text;
 alter table reviews_raw add column if not exists is_anonymous boolean not null default false;

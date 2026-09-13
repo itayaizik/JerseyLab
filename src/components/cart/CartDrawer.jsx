@@ -10,7 +10,7 @@ import { friendlyError } from '@/lib/errorMessages';
 import { sendOrderConfirmation } from '@/lib/orderEmail';
 import { notifyNewOrder } from '@/lib/adminNotify';
 import { SHOP_PHONE, WHATSAPP_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/contact';
-import { getCart, setCart, cartItemTotal, cartTotal, EXTRA_PRICES } from '@/lib/cart';
+import { getCart, setCart, cartItemTotal, cartTotal, EXTRA_PRICES, PATCHES_LABEL } from '@/lib/cart';
 import { MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 
 // The cart, as a drawer from the side of the screen: the bag, then the contact
@@ -73,6 +73,7 @@ function CartItem({ item, onRemove }) {
             {item.size && <p>מידה: <span dir="ltr" className="font-medium text-brand-navy">{item.size}</span></p>}
             {item.playerVersion && <p>גרסת שחקן (+₪{EXTRA_PRICES.player})</p>}
             {item.addName && <p>הדפסה: <span dir="ltr" className="font-medium text-brand-navy">{item.customName}</span> (+₪{EXTRA_PRICES.name})</p>}
+            {item.patches && <p>{`${PATCHES_LABEL} (+₪${EXTRA_PRICES.patches})`}</p>}
             {/* Items that price themselves (the mystery box) describe their own
                 add-ons rather than the fixed ones above. */}
             {item.extras?.map(x => <p key={x.label}>{x.label} (+₪{x.price})</p>)}
@@ -206,6 +207,7 @@ export default function CartDrawer({ open, onClose, user }) {
         const extras = (item.extras || []).map(x => `${x.label} (+₪${x.price})`);
         if (item.playerVersion) extras.push(`גרסת שחקן (+₪${EXTRA_PRICES.player})`);
         if (item.addName) extras.push(`הדפסת שם: ${item.customName || ''} (+₪${EXTRA_PRICES.name})`);
+        if (item.patches) extras.push(`${PATCHES_LABEL} (+₪${EXTRA_PRICES.patches})`);
         if (item.isExactStockItem) extras.push('חולצה קיימת מהמלאי בארץ');
         // Preferences carry no price but must reach the order, or asking for
         // them on the mystery box page would be theatre.

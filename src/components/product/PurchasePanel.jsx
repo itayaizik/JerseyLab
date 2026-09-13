@@ -11,7 +11,7 @@ import ProductImage from '@/components/ui/ProductImage';
 import TrustBar from '@/components/TrustBar';
 import { hasLocalStock, hasLocalStockForSize } from '@/components/ShippingBadge';
 import { itemsForSize, stockPrint } from '@/lib/localStock';
-import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES } from '@/lib/cart';
+import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL } from '@/lib/cart';
 import { BUSINESS, isPlaceholder } from '@/lib/business';
 
 // Everything needed to buy the shirt, in one card beside the photos: size,
@@ -50,6 +50,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
   const [printing, setPrinting] = useState(false);
   const [customName, setCustomName] = useState('');
   const [customNumber, setCustomNumber] = useState('');
+  const [patches, setPatches] = useState(false);
   const [errors, setErrors] = useState({});
   const [added, setAdded] = useState(false);
   const [highlight, setHighlight] = useState(false);
@@ -59,7 +60,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
   // A different shirt is a fresh start.
   useEffect(() => {
     setSize(''); setBuyMode(''); setStockItemId(''); setShirtType('regular');
-    setPrinting(false); setCustomName(''); setCustomNumber(''); setErrors({}); setAdded(false);
+    setPrinting(false); setCustomName(''); setCustomNumber(''); setPatches(false); setErrors({}); setAdded(false);
   }, [shirt.id]);
 
   // Asked for from outside - the sticky bar on a phone, or a link that arrives
@@ -86,7 +87,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
 
   const extras = buyingExact
     ? (stockItem?.player_version ? EXTRA_PRICES.player : 0) + (stockPrint(stockItem) ? EXTRA_PRICES.name : 0)
-    : (shirtType === 'player' ? EXTRA_PRICES.player : 0) + (printing ? EXTRA_PRICES.name : 0);
+    : (shirtType === 'player' ? EXTRA_PRICES.player : 0) + (printing ? EXTRA_PRICES.name : 0) + (patches ? EXTRA_PRICES.patches : 0);
   const total = basePrice + extras;
 
   const freeAbove = BUSINESS.shipping?.freeAbove;
@@ -123,6 +124,8 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
       addName: buyingExact ? !!stockPrint(stockItem) : printing,
       customName: buyingExact ? stockPrint(stockItem) : (printing ? `${customName} ${customNumber}`.trim() : ''),
       playerVersion: buyingExact ? !!stockItem?.player_version : shirtType === 'player',
+      // A shirt already in stock is finished as it is.
+      patches: buyingExact ? false : patches,
       localStockSizes: shirt.local_stock_sizes || {},
       isExactStockItem: buyingExact,
       // Which physical shirt, so the order says which of two size S shirts
@@ -256,6 +259,21 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
                 {errors.print && <p role="alert" className="mt-1.5 text-sm font-medium text-red-600">{errors.print}</p>}
               </div>
             )}
+          </Section>
+
+          <Section id="patches-heading" title={PATCHES_LABEL}>
+            <div role="group" aria-labelledby="patches-heading" className="flex flex-wrap gap-2">
+              <button type="button" aria-pressed={!patches} onClick={() => setPatches(false)}
+                className={`shop-chip px-5 ${!patches ? 'shop-chip-active' : ''}`}>
+                ללא
+              </button>
+              <button type="button" aria-pressed={patches} onClick={() => setPatches(true)}
+                className={`shop-chip px-5 ${patches ? 'shop-chip-active' : ''}`}>
+                {`${PATCHES_LABEL} של הליגה`}
+                <span className="tabular-nums">+₪{EXTRA_PRICES.patches}</span>
+              </button>
+            </div>
+            <p className="mt-2.5 text-[13px] text-brand-navy/55">{`ה${PATCHES_LABEL} של הליגה או הטורניר, לפי החולצה.`}</p>
           </Section>
         </>
       )}

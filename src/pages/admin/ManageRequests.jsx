@@ -1,19 +1,26 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Phone, Mail, ExternalLink, Plus, X, Package, Trash2, Copy, Check, Image as ImageIcon } from 'lucide-react';
+import { MessageCircle, Phone, Mail, ExternalLink, Package, Trash2, Copy, Check, Pencil, History, Image as ImageIcon } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { buildSupplierLine } from '@/lib/supplierText';
 import { formatDate, dateSortValue } from '@/lib/dates';
+import { parseEditLog } from '@/lib/orderItems';
+import OrderEditor, { NotifyCustomerPanel } from '@/components/admin/OrderEditor';
 
 export default function ManageRequests() {
   const [requests, setRequests] = useState([]);
   const [shirts, setShirts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
-  const [expandedId, setExpandedId] = useState(null);
-  const [addItemState, setAddItemState] = useState({}); // { [groupKey]: { shirtId, note, saving } }
+  const [editingKey, setEditingKey] = useState(null);
+  const [notice, setNotice] = useState(null); // { groupKey, payload } after an edit is saved
   const [copiedId, setCopiedId] = useState(null);
   const [copiedImageId, setCopiedImageId] = useState(null);
+
+  const loadRequests = async () => {
+    const data = await base44.entities.InterestRequest.list('-created_date', 200);
+    setRequests(data);
+  };
 
   useEffect(() => {
     async function load() {
@@ -42,9 +49,12 @@ export default function ManageRequests() {
     setRequests(p => p.filter(r => !ids.includes(r.id)));
   };
 
+  // Numbered when the order has more than one shirt, and each shirt below
+  // carries the same number, so the supplier can match a photo to its line.
   const handleCopySupplierText = async (groupKey, groupItems) => {
     const lines = groupItems.map(r => buildSupplierLine(r, shirts.find(s => s.id === r.shirt_id)));
-    await navigator.clipboard.writeText(lines.join('\n'));
+    const text = lines.length > 1 ? lines.map((line, i) => `${i + 1}. ${line}`).join('\n') : lines.join('\n');
+    await navigator.clipboard.writeText(text);
     setCopiedId(groupKey);
     setTimeout(() => setCopiedId(k => (k === groupKey ? null : k)), 1500);
   };
@@ -91,27 +101,10 @@ export default function ManageRequests() {
     setShirts(p => p.map(s => s.id === shirtId ? { ...s, status: 'sold' } : s));
   };
 
-  const handleAddExtraItem = async (groupKey, firstItem) => {
-    const state = addItemState[groupKey];
-    if (!state?.shirtId) return;
-    const shirt = shirts.find(s => s.id === state.shirtId);
-    if (!shirt) return;
-
-    setAddItemState(p => ({ ...p, [groupKey]: { ...p[groupKey], saving: true } }));
-
-    const extraLine = `\n[פריט נוסף שנמכר: ${shirt.name}${state.note ? ' - ' + state.note : ''}]`;
-    const updatedMessage = (firstItem.message || '') + extraLine;
-    await base44.entities.InterestRequest.update(firstItem.id, { message: updatedMessage });
-
-    const confirmSold = window.confirm(`לסמן את "${shirt.name}" כנמכרה גם כן?`);
-    if (confirmSold) {
-      await base44.entities.Shirt.update(shirt.id, { status: 'sold' });
-      setShirts(p => p.map(s => s.id === shirt.id ? { ...s, status: 'sold' } : s));
-    }
-
-    setRequests(p => p.map(r => r.id === firstItem.id ? { ...r, message: updatedMessage } : r));
-    setAddItemState(p => ({ ...p, [groupKey]: {} }));
-    setExpandedId(null);
+  const handleSaved = async (groupKey, payload) => {
+    setEditingKey(null);
+    await loadRequests();
+    setNotice({ groupKey, payload });
   };
 
   const filtered = requests.filter(r => !statusFilter || r.status === statusFilter);
@@ -153,8 +146,10 @@ export default function ManageRequests() {
       <div className="space-y-3">
         {groups.map(([groupKey, items]) => {
           const first = items[0];
-          const isExpanded = expandedId === groupKey;
-          const itemState = addItemState[groupKey] || {};
+          const isEditing = editingKey === groupKey;
+          const history = items
+            .flatMap(r => parseEditLog(r.edit_log))
+            .sort((a, b) => String(a.at).localeCompare(String(b.at)));
 
           return (
             <div key={groupKey} className="border border-white/10 bg-white/5 p-4">
@@ -168,17 +163,21 @@ export default function ManageRequests() {
                     {items.length > 1 && (
                       <span className="text-xs px-2 py-0.5 bg-turf/10 text-turf font-bold">{items.length} פריטים בהזמנה</span>
                     )}
+                    {history.length > 0 && (
+                      <span className="text-xs px-2 py-0.5 bg-amber-500/15 text-amber-400 font-bold">נערכה</span>
+                    )}
                   </div>
                   <h3 className="font-heading font-bold text-sm mb-2">{first.full_name}</h3>
 
                   {/* One block per item in this order */}
                   <div className="space-y-2 mb-2">
-                    {items.map(r => {
+                    {items.map((r, index) => {
                       const reqShirt = shirts.find(s => s.id === r.shirt_id);
                       return (
                         <div key={r.id} className={items.length > 1 ? 'border-r-2 border-turf/30 pr-2' : ''}>
                           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                             <p className="text-sm text-varnish">
+                              {items.length > 1 && <span className="font-mono text-turf">{index + 1}. </span>}
                               חולצה: <Link to={`/shirt/${r.shirt_id}`} className="text-turf hover:underline">{r.shirt_name || 'צפה'}</Link>
                               {r.wanted_size && <> • מידה: {r.wanted_size}</>}
                             </p>
@@ -242,6 +241,25 @@ export default function ManageRequests() {
                       )}
                     </div>
                   )}
+
+                  {history.length > 0 && (
+                    <details className="mt-2 text-xs text-varnish">
+                      <summary className="cursor-pointer inline-flex items-center gap-1 hover:text-chalk">
+                        <History className="w-3 h-3" />
+                        היסטוריית עריכות ({history.length})
+                      </summary>
+                      <ul className="mt-2 space-y-2 border-r border-white/10 pr-3">
+                        {history.map((entry, i) => (
+                          <li key={i}>
+                            <span className="font-mono text-white/50">{formatDate(entry.at, '')}</span>
+                            <ul className="mt-0.5 space-y-0.5">
+                              {entry.changes.map((change, j) => <li key={j}>• {change}</li>)}
+                            </ul>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-2 items-end">
@@ -253,11 +271,11 @@ export default function ManageRequests() {
                   </select>
 
                   <button
-                    onClick={() => setExpandedId(isExpanded ? null : groupKey)}
-                    className="flex items-center gap-1 text-xs text-turf hover:text-chalk border border-turf/40 hover:border-turf px-2 py-1.5 transition-colors"
+                    onClick={() => { setEditingKey(isEditing ? null : groupKey); setNotice(null); }}
+                    className={`flex items-center gap-1 text-xs border px-2 py-1.5 transition-colors ${isEditing ? 'bg-turf text-pitch border-turf' : 'text-turf hover:text-chalk border-turf/40 hover:border-turf'}`}
                   >
-                    {isExpanded ? <X className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
-                    {isExpanded ? 'ביטול' : 'הוסף פריט'}
+                    <Pencil className="w-3 h-3" />
+                    עריכת הזמנה
                   </button>
                   <button
                     onClick={() => handleCopySupplierText(groupKey, items)}
@@ -276,39 +294,22 @@ export default function ManageRequests() {
                 </div>
               </div>
 
-              {/* Add Extra Item Panel */}
-              {isExpanded && (
-                <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
-                  <p className="text-xs text-varnish font-heading uppercase tracking-wide">הוסף פריט שנמכר ללקוח זה</p>
-                  <div className="flex gap-2 flex-col sm:flex-row">
-                    <select
-                      value={itemState.shirtId || ''}
-                      onChange={e => setAddItemState(p => ({ ...p, [groupKey]: { ...p[groupKey], shirtId: e.target.value } }))}
-                      className="flex-1 bg-pitch border border-white/20 px-3 py-2 text-xs text-chalk focus:outline-none focus:border-turf"
-                    >
-                      <option value="">בחר חולצה...</option>
-                      {shirts.map(s => (
-                        <option key={s.id} value={s.id}>
-                          {s.name}{s.status === 'sold' ? ' ✓' : ''} - ₪{s.sale_price && s.sale_price < s.price ? s.sale_price : s.price}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      type="text"
-                      placeholder="הערה (אופציונלי)"
-                      value={itemState.note || ''}
-                      onChange={e => setAddItemState(p => ({ ...p, [groupKey]: { ...p[groupKey], note: e.target.value } }))}
-                      className="flex-1 bg-pitch border border-white/20 px-3 py-2 text-xs text-chalk focus:outline-none focus:border-turf placeholder-varnish"
-                    />
-                    <button
-                      onClick={() => handleAddExtraItem(groupKey, first)}
-                      disabled={!itemState.shirtId || itemState.saving}
-                      className="px-4 py-2 bg-turf text-pitch text-xs font-bold font-heading uppercase disabled:opacity-40 whitespace-nowrap"
-                    >
-                      {itemState.saving ? 'שומר...' : 'הוסף'}
-                    </button>
-                  </div>
-                </div>
+              {isEditing && (
+                <OrderEditor
+                  items={items}
+                  shirts={shirts}
+                  onCancel={() => setEditingKey(null)}
+                  onSaved={payload => handleSaved(groupKey, payload)}
+                />
+              )}
+
+              {notice?.groupKey === groupKey && (
+                <NotifyCustomerPanel
+                  request={first}
+                  orderId={groupKey}
+                  payload={notice.payload}
+                  onClose={() => setNotice(null)}
+                />
               )}
             </div>
           );

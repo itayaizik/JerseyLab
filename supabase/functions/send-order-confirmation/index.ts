@@ -42,6 +42,7 @@ interface OrderItem {
   size?: string;
   player_version?: boolean;
   custom_name?: string;
+  patches?: boolean;
   local_stock?: boolean;
   price?: number;
   notes?: string;
@@ -51,6 +52,7 @@ function itemRow(item: OrderItem): string {
   const extras: string[] = [];
   if (item.player_version) extras.push('גרסת שחקן');
   if (item.custom_name) extras.push(`הדפסה: ${esc(item.custom_name)}`);
+  if (item.patches) extras.push("פאצ'ים");
   const eta = item.local_stock ? 'מלאי בארץ - עד שבוע' : 'משלוח מהיר - עד 3 שבועות';
   // Mystery box exclusions and free-text notes. Echoing them back is the only
   // written record the customer has that we took the request down correctly.

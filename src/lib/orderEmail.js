@@ -17,6 +17,7 @@ export async function sendOrderConfirmation({ email, fullName, orderId, items, t
         size: item.size,
         player_version: !!item.playerVersion,
         custom_name: item.addName ? (item.customName || '') : '',
+        patches: !!item.patches,
         local_stock: !!item.isExactStockItem,
         // Must go through the shared helper: items that price themselves (the
         // mystery box, whose add-ons are +10/+5) would otherwise be mailed a
@@ -25,6 +26,18 @@ export async function sendOrderConfirmation({ email, fullName, orderId, items, t
         notes: (item.details || []).map(d => `${d.label}: ${d.value}`).join(' | '),
       })),
     },
+  });
+  if (error) throw error;
+}
+
+// Tells a customer their order was changed from the admin panel. Calls the
+// `send-order-update` Edge Function, which only sends for a signed-in admin -
+// supabase-js passes the admin's session along with the call. Unlike the
+// confirmation this one is awaited: the admin pressed a button and should see
+// whether the mail went.
+export async function sendOrderUpdate({ email, fullName, orderId, changes, items, total }) {
+  const { error } = await supabase.functions.invoke('send-order-update', {
+    body: { email, full_name: fullName, order_id: orderId, changes, items, total },
   });
   if (error) throw error;
 }

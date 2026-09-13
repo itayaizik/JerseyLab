@@ -81,11 +81,14 @@ function detectKitType(shirtName) {
 // "גרסת שחקן (+₪20)" and "הדפסת שם: {name} {number} (+₪15)". Parse them
 // back out rather than duplicating that formatting logic in two places.
 function parseCustomization(message) {
-  if (!message) return { playerVersion: false, customText: '' };
+  if (!message) return { playerVersion: false, customText: '', patches: false };
   const playerVersion = message.includes('גרסת שחקן');
   const match = message.match(/הדפסת שם:\s*([^(|]+)/);
   const customText = match ? match[1].trim() : '';
-  return { playerVersion, customText };
+  // "פאצ'ים (+₪5)" from a shirt, "כל הפאצ'ים (+₪5)" from a mystery box; either
+  // apostrophe, in case one was typed by hand.
+  const patches = /פאצ['׳]ים/.test(message);
+  return { playerVersion, customText, patches };
 }
 
 // Builds one line of supplier-facing order text, fully in English:
@@ -95,13 +98,14 @@ export function buildSupplierLine(request, shirt) {
   const teamHe = (shirt?.club || shirt?.national_team || '').trim();
   const team = teamHe ? translateTeamName(teamHe) : (request.shirt_name || '');
   const kit = detectKitType(shirt?.name || request.shirt_name || '');
-  const { playerVersion, customText } = parseCustomization(request.message || '');
+  const { playerVersion, customText, patches } = parseCustomization(request.message || '');
 
   const parts = [team];
   if (kit) parts.push(kit);
   if (shirt?.season) parts.push(shirt.season);
   if (playerVersion) parts.push('Player Version');
   if (customText) parts.push(customText);
+  if (patches) parts.push('With Patches');
   if (request.wanted_size) parts.push(`Size ${request.wanted_size}`);
   return parts.filter(Boolean).join(' - ');
 }

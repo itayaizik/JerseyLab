@@ -29,7 +29,12 @@ export function openCart() {
 }
 
 // What the configurator charges for each extra.
-export const EXTRA_PRICES = { name: 15, player: 20 };
+export const EXTRA_PRICES = { name: 15, player: 20, patches: 5 };
+
+// One spelling of the word, with a plain apostrophe: order messages are parsed
+// back by the admin (supplier text, order editing), so it must not drift into
+// the Hebrew geresh in one place and the apostrophe in another.
+export const PATCHES_LABEL = "פאצ'ים";
 
 // What a shirt costs before extras.
 //
@@ -51,7 +56,10 @@ export function shirtBasePrice(shirt) {
 // whose add-ons are +10 and +5 - carries `unitPrice` and wins.
 export function cartItemTotal(item) {
   if (typeof item?.unitPrice === 'number') return item.unitPrice;
-  return (item?.basePrice || 0) + (item?.addName ? EXTRA_PRICES.name : 0) + (item?.playerVersion ? EXTRA_PRICES.player : 0);
+  return (item?.basePrice || 0)
+    + (item?.addName ? EXTRA_PRICES.name : 0)
+    + (item?.playerVersion ? EXTRA_PRICES.player : 0)
+    + (item?.patches ? EXTRA_PRICES.patches : 0);
 }
 
 export function cartTotal(cart) {

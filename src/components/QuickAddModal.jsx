@@ -12,7 +12,7 @@ import OrderSummary from '@/components/configurator/OrderSummary';
 import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurator/recommendations';
 import { hasLocalStockForSize } from '@/components/ShippingBadge';
 import { itemsForSize, stockPrint } from '@/lib/localStock';
-import { addToCart, openCart, shirtBasePrice } from '@/lib/cart';
+import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL } from '@/lib/cart';
 
 // Adding a shirt straight from a product card, one question at a time. The
 // product page asks the same questions all at once; this is the short path for
@@ -43,6 +43,7 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   const [customNumber, setCustomNumber] = useState('');
   const [buyMode, setBuyMode] = useState(''); // '' | 'exact' | 'custom'
   const [stockItemId, setStockItemId] = useState(''); // which physical shirt, when buying exact
+  const [patches, setPatches] = useState(false);
   const [added, setAdded] = useState(false);
 
   const basePrice = shirtBasePrice(shirt);
@@ -68,7 +69,7 @@ export default function QuickAddModal({ shirt, open, onClose }) {
 
   const reset = () => {
     setStep('size'); setSelectedSize(''); setShirtType(''); setAddName(''); setCustomName(''); setCustomNumber('');
-    setBuyMode(''); setStockItemId(''); setAdded(false);
+    setBuyMode(''); setStockItemId(''); setPatches(false); setAdded(false);
   };
   const handleClose = () => { reset(); onClose(); };
 
@@ -98,6 +99,7 @@ export default function QuickAddModal({ shirt, open, onClose }) {
       addName: buyingExact ? !!stockPrint(stockItem) : addName === 'yes',
       customName: buyingExact ? stockPrint(stockItem) : (addName === 'yes' ? `${customName} ${customNumber}`.trim() : ''),
       playerVersion: buyingExact ? !!stockItem?.player_version : shirtType === 'player',
+      patches: buyingExact ? false : patches,
       localStockSizes: shirt.local_stock_sizes || {},
       isExactStockItem: buyingExact,
       stockItemId: buyingExact ? stockItem?.id || '' : '',
@@ -172,8 +174,22 @@ export default function QuickAddModal({ shirt, open, onClose }) {
                   addName={stockPrint(stockItem) ? 'yes' : 'no'}
                   customName={stockItem?.name || ''} customNumber={stockItem?.number || ''} basePrice={basePrice} />
               ) : (
-                <OrderSummary shirt={shirt} size={selectedSize} shirtType={shirtType} addName={addName}
-                  customName={customName} customNumber={customNumber} basePrice={basePrice} />
+                <>
+                  {/* Patches are asked here rather than as a step of their own:
+                      a yes-or-no for ₪5 does not deserve another screen. */}
+                  <label className="mb-3 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-brand-line p-4 transition hover:border-brand-navy/30">
+                    <span>
+                      <span className="block text-[15px] font-semibold text-brand-navy">{`${PATCHES_LABEL} של הליגה`}</span>
+                      <span className="block text-[13px] text-brand-navy/55">לפי החולצה</span>
+                    </span>
+                    <span className="flex items-center gap-3">
+                      <span className="text-sm font-semibold tabular-nums text-brand-navy">+₪{EXTRA_PRICES.patches}</span>
+                      <input type="checkbox" checked={patches} onChange={e => setPatches(e.target.checked)} className="h-5 w-5 accent-brand-orange" />
+                    </span>
+                  </label>
+                  <OrderSummary shirt={shirt} size={selectedSize} shirtType={shirtType} addName={addName}
+                    customName={customName} customNumber={customNumber} basePrice={basePrice} patches={patches} />
+                </>
               )}
             </motion.div>
           )}
