@@ -27,6 +27,17 @@ export default function ManageReviews() {
     setReviews(p => p.map(r => r.id === id ? { ...r, approved } : r));
   };
 
+  // Photo reviews can also be shown in "לקוחות מספרים" on the home page.
+  const toggleProofs = async (review) => {
+    const show_in_proofs = !review.show_in_proofs;
+    try {
+      await base44.entities.Review.update(review.id, { show_in_proofs });
+      setReviews(p => p.map(r => r.id === review.id ? { ...r, show_in_proofs } : r));
+    } catch {
+      alert('לא נשמר. אם זו הפעם הראשונה, צריך קודם להריץ את קובץ ה-SQL (עמודה show_in_proofs).');
+    }
+  };
+
   const handleDelete = async (id) => {
     if (!confirm('למחוק את הביקורת?')) return;
     await base44.entities.Review.delete(id);
@@ -83,9 +94,16 @@ export default function ManageReviews() {
                 </p>
                 <p className="text-sm text-varnish">{r.comment}</p>
                 {r.image_url && (
-                  <a href={r.image_url} target="_blank" rel="noopener noreferrer" className="inline-block mt-2">
-                    <img src={r.image_url} alt="" className="w-16 h-16 object-cover border border-white/10 hover:opacity-80 transition-opacity" />
-                  </a>
+                  <div className="mt-2 flex items-end gap-3">
+                    <a href={r.image_url} target="_blank" rel="noopener noreferrer" className="inline-block">
+                      <img src={r.image_url} alt="" className="w-16 h-16 object-cover border border-white/10 hover:opacity-80 transition-opacity" />
+                    </a>
+                    <button onClick={() => toggleProofs(r)}
+                      title={r.approved ? '' : 'יוצג רק אחרי שהביקורת תאושר'}
+                      className={`text-xs px-3 py-1.5 font-bold transition-colors ${r.show_in_proofs ? 'bg-turf text-pitch' : 'border border-white/20 text-varnish hover:text-chalk'}`}>
+                      {r.show_in_proofs ? '✓ מוצג ב"לקוחות מספרים"' : 'להציג ב"לקוחות מספרים"'}
+                    </button>
+                  </div>
                 )}
               </div>
               <div className="flex gap-1 flex-shrink-0">

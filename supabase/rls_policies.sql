@@ -206,6 +206,8 @@ alter table interest_requests_raw add column if not exists instagram_handle text
 -- ── reviews_raw: optional photo + anonymous display name ────
 alter table reviews_raw add column if not exists image_url text;
 alter table reviews_raw add column if not exists is_anonymous boolean not null default false;
+-- Photo reviews the owner picks to also appear in "לקוחות מספרים" on the home page.
+alter table reviews_raw add column if not exists show_in_proofs boolean not null default false;
 
 -- ── Storage: customer-submitted review photos ───────────────
 -- NOTE: create the bucket by hand first - Storage > New bucket > name

@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Loader2, Check } from 'lucide-react';
+import { Save, Loader2, Check, Upload } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { uploadErrorMessage } from '@/lib/supabaseStorage';
 
 const settingFields = [
   { key: 'about_us_text', label: 'טקסט "מי אנחנו"', type: 'textarea',
     help: 'מופיע בדף הבית, וגוגל לוקח ממנו לעיתים את התיאור בתוצאות החיפוש. שורה ריקה יוצרת פסקה חדשה.' },
-  { key: 'homepage_hero_title', label: 'כותרת ראשית בדף הבית', type: 'text',
-    placeholder: 'חולצות כדורגל איכותיות,|נדירות ובמחירים טובים',
+  { key: 'homepage_hero_image', label: 'באנר ראשי - תמונה למחשב', type: 'image',
+    help: 'תמונה רחבה, בערך פי 2 ברוחב מהגובה (למשל 2400×1100). ריק = תמונת ברירת המחדל.' },
+  { key: 'homepage_hero_image_mobile', label: 'באנר ראשי - תמונה לטלפון', type: 'image',
+    help: 'תמונה לאורך (למשל 1080×1350). ריק = משתמשים בתמונה של המחשב.' },
+  { key: 'homepage_hero_link', label: 'באנר ראשי - לאן הלחיצה מובילה', type: 'text', placeholder: '/catalog' },
+  { key: 'homepage_hero_card', label: 'באנר ראשי - להציג את הכרטיס הלבן עם הטקסט? (כתוב "no" להסתרה)', type: 'text', placeholder: 'yes',
+    help: 'בלי הכרטיס רואים רק את התמונה, וכל התמונה לחיצה.' },
+  { key: 'homepage_hero_title', label: 'באנר ראשי - כותרת', type: 'text',
+    placeholder: 'חולצות כדורגל|לכל הקבוצות',
     help: 'הסימן | שובר שורה. מה שאחריו מוצג בכתום.' },
-  { key: 'homepage_hero_subtitle', label: 'משפט מתחת לכותרת', type: 'text',
-    help: 'שורה אחת קצרה מתחת לכותרת הראשית.' },
+  { key: 'homepage_hero_subtitle', label: 'באנר ראשי - משפט מתחת לכותרת', type: 'text',
+    placeholder: 'קבוצות, נבחרות ורטרו במקום אחד.' },
+  { key: 'homepage_hero_button_text', label: 'באנר ראשי - טקסט הכפתור', type: 'text', placeholder: 'לכל החולצות' },
   { key: 'topbar_active', label: 'פס הודעה עליון - פעיל? (כתוב "yes" להצגה)', type: 'text', placeholder: 'yes',
     help: 'הפס הכתום מעל התפריט. ריק או לא "yes" = לא מוצג כלל.' },
   { key: 'topbar_text', label: 'פס הודעה - טקסט', type: 'text', placeholder: 'משלוח חינם בהזמנה מעל ₪200',
@@ -38,6 +47,8 @@ export default function SiteSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [uploadingKey, setUploadingKey] = useState(null);
+  const [uploadError, setUploadError] = useState('');
 
   useEffect(() => {
     async function load() {
@@ -50,6 +61,24 @@ export default function SiteSettings() {
     }
     load();
   }, []);
+
+  // Uploads go to the shirt-images bucket like every other admin image; the
+  // field only holds the URL, and is saved with the rest.
+  const handleImage = async (key, e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setUploadError('');
+    setUploadingKey(key);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setSettings(p => ({ ...p, [key]: file_url }));
+    } catch (err) {
+      setUploadError(uploadErrorMessage(err));
+    } finally {
+      setUploadingKey(null);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -76,7 +105,31 @@ export default function SiteSettings() {
         {settingFields.map(f => (
           <div key={f.key}>
             <label className="text-sm text-varnish block mb-1">{f.label}</label>
-            {f.type === 'textarea' ? (
+            {f.type === 'image' ? (
+              <div className="flex items-start gap-3">
+                {settings[f.key] && (
+                  <img src={settings[f.key]} alt="" className="h-20 w-32 flex-shrink-0 object-cover border border-white/10" />
+                )}
+                <div className="flex-1 space-y-2">
+                  <input
+                    value={settings[f.key] || ''}
+                    onChange={e => setSettings(p => ({ ...p, [f.key]: e.target.value }))}
+                    placeholder="https://... או העלאה"
+                    dir="ltr"
+                    className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none"
+                  />
+                  <label className={`inline-flex cursor-pointer items-center gap-2 border border-white/20 px-3 py-1.5 text-xs text-varnish hover:border-turf hover:text-chalk ${uploadingKey === f.key ? 'pointer-events-none opacity-60' : ''}`}>
+                    {uploadingKey === f.key ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+                    {uploadingKey === f.key ? 'מעלה…' : 'העלאת תמונה'}
+                    <input type="file" accept="image/*" className="hidden" onChange={e => handleImage(f.key, e)} />
+                  </label>
+                  {settings[f.key] && (
+                    <button type="button" onClick={() => setSettings(p => ({ ...p, [f.key]: '' }))}
+                      className="ms-3 text-xs text-white/40 hover:text-redcard">הסרה</button>
+                  )}
+                </div>
+              </div>
+            ) : f.type === 'textarea' ? (
               <textarea
                 value={settings[f.key] || ''}
                 onChange={e => setSettings(p => ({ ...p, [f.key]: e.target.value }))}
@@ -97,7 +150,8 @@ export default function SiteSettings() {
             {f.help && <p className="text-xs text-white/45 font-body mt-1 leading-relaxed">{f.help}</p>}
           </div>
         ))}
-        <button onClick={handleSave} disabled={saving}
+        {uploadError && <p className="text-redcard text-sm">{uploadError}</p>}
+        <button onClick={handleSave} disabled={saving || !!uploadingKey}
           className="bg-turf text-pitch px-6 py-3 font-heading font-bold text-sm hover:bg-turf/90 disabled:opacity-50 flex items-center gap-2">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
           {saving ? 'שומר...' : saved ? 'נשמר!' : 'שמור הגדרות'}

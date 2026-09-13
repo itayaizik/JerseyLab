@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShieldCheck, Camera, Ruler, Zap, Star, Sparkles, MessageCircle, Instagram, ArrowLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -14,33 +14,14 @@ import InstagramSection from '@/components/InstagramSection';
 import ChatProofsSection from '@/components/ChatProofsSection';
 import MysteryBoxPromo from '@/components/MysteryBoxPromo';
 import Seo from '@/components/Seo';
-import ProductImage from '@/components/ui/ProductImage';
+import HomeHero from '@/components/HomeHero';
 import { hasLocalStock } from '@/components/ShippingBadge';
 import { toast } from '@/components/ui/use-toast';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
-import { withStock } from '@/lib/catalogFacets';
-import { shirtBasePrice } from '@/lib/cart';
 import { WHATSAPP_URL, INSTAGRAM_URL } from '@/lib/contact';
-
-// The hero shows four named home kits - two Israeli, two Spanish. They are
-// matched by club rather than pinned by id so a re-import cannot empty the
-// hero, and the newest season always wins.
-const HERO_LINEUP = ['ביתר ירושלים', 'הפועל תל אביב', 'ברצלונה', 'ריאל מדריד'];
-
-// Shortcuts under the hero. Shortcuts to an empty catalogue are worse than no
-// shortcut at all, so the ones with nothing behind them drop out.
-const STOCKED_SHORTCUTS = withStock([
-  { label: 'מלאי בארץ', href: '/catalog?fast=true' },
-  { label: 'נבחרות', href: '/collections/national-teams' },
-  { label: 'רטרו', href: '/collections/retro' },
-  { label: 'סייל', href: '/catalog?sale=true' },
-  { label: 'ילדים', href: '/catalog?gender=kids' },
-]);
 
 // Shown when the matching setting is empty. Everything below is editable from
 // ניהול > הגדרות אתר without touching code.
-const DEFAULT_HERO_TITLE = 'חולצות כדורגל איכותיות,|נדירות ובמחירים טובים';
-const DEFAULT_HERO_SUBTITLE = 'מצאו חולצות של קבוצות, נבחרות ושחקנים אהובים במקום אחד.';
 const DEFAULT_ABOUT = `אנחנו אתר שמתמחה בחולצות כדורגל, נבחרות וחולצות מיוחדות לאוהדים ואספנים.
 המטרה שלנו היא לתת מקום פשוט, נוח ואמין למצוא חולצות יפות בלי להסתבך.
 אנחנו נגישים בוואטסאפ ובאינסטגרם ועונים מהר לכל שאלה.`;
@@ -53,16 +34,6 @@ const WHY_US = [
   { title: 'מחירים הוגנים', desc: 'מחירים שווים לכל כיס.', icon: Star },
   { title: 'חולצות מיוחדות', desc: 'רטרו ודגמים שקשה למצוא.', icon: Sparkles },
 ];
-
-function HeroTitle({ text }) {
-  const lines = text.split('|').map(line => line.trim());
-  return lines.map((line, i) => (
-    <React.Fragment key={i}>
-      {i === lines.length - 1 && lines.length > 1 ? <span className="text-brand-orange-ink">{line}</span> : line}
-      {i < lines.length - 1 && <br />}
-    </React.Fragment>
-  ));
-}
 
 export default function Home() {
   const [catalogShirts, setCatalogShirts] = useState([]);
@@ -79,29 +50,6 @@ export default function Home() {
   const [loadError, setLoadError] = useState(false);
   const [pickTab, setPickTab] = useState('new');
   const navigate = useNavigate();
-
-  const heroShirts = useMemo(() => {
-    const withPhoto = catalogShirts.filter(s => s?.main_image);
-    // The club name is stripped before testing for the kit: "ביתר ירושלים"
-    // contains "בית", so matching the raw name picks the away shirt too.
-    const newestHomeKit = (club) => withPhoto
-      .filter(s => s.club === club && (s.name || '').replace(club, '').includes('בית'))
-      .sort((a, b) => String(b.season || '').localeCompare(String(a.season || '')))[0];
-
-    const seen = new Set();
-    const picked = [];
-    const take = (shirt) => {
-      if (!shirt || seen.has(shirt.id)) return;
-      seen.add(shirt.id);
-      picked.push(shirt);
-    };
-
-    HERO_LINEUP.forEach(club => take(newestHomeKit(club)));
-    [...featuredShirts, ...newShirts, ...bestSellers, ...withPhoto].forEach(s => {
-      if (picked.length < 4) take(s?.main_image ? s : null);
-    });
-    return picked.slice(0, 4);
-  }, [catalogShirts, featuredShirts, newShirts, bestSellers]);
 
   useEffect(() => {
     async function load() {
@@ -170,8 +118,6 @@ export default function Home() {
   }
   const activeTab = tabs.find(tab => tab.id === pickTab) || tabs[0];
 
-  const lowestPrice = catalogShirts.length ? Math.min(...catalogShirts.map(shirtBasePrice).filter(Boolean)) : null;
-
   return (
     <div>
       <Seo
@@ -215,55 +161,7 @@ export default function Home() {
       ) : (
         <>
           {/* ===== HERO ===== */}
-          <section className="shop-container pt-4 sm:pt-6">
-            <div
-              className="grid overflow-hidden rounded-[2rem] lg:min-h-[34rem] lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]"
-              style={{ background: 'radial-gradient(circle at 15% 25%, rgba(232, 98, 42, 0.32), transparent 55%), var(--brand-navy)' }}
-            >
-              <div className="order-2 m-2.5 flex flex-col justify-center rounded-[1.75rem] bg-white p-7 sm:m-4 sm:p-10 lg:order-1 lg:my-6 lg:me-0 lg:ms-6 lg:p-12">
-                {lowestPrice > 0 && (
-                  <span className="inline-flex w-fit items-center rounded-full bg-brand-orange-soft px-3.5 py-1.5 text-[13px] font-semibold text-brand-orange-ink">
-                    חולצות כדורגל החל מ־₪{lowestPrice}
-                  </span>
-                )}
-                <h1 className="mt-5 text-[2.25rem] font-bold leading-[1.08] tracking-[-0.03em] text-brand-navy sm:text-5xl xl:text-[3.25rem]">
-                  <HeroTitle text={siteSettings.homepage_hero_title || DEFAULT_HERO_TITLE} />
-                </h1>
-                <p className="mt-4 max-w-xl text-base leading-relaxed text-brand-navy/70 sm:text-lg">
-                  {siteSettings.homepage_hero_subtitle || DEFAULT_HERO_SUBTITLE}
-                </p>
-                <div className="mt-8 grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap sm:gap-3">
-                  <Link to="/catalog" className="shop-btn px-4 sm:px-8">לכל החולצות</Link>
-                  <Link to="/mystery-box" className="shop-btn-secondary px-4 sm:px-6">מיסטרי בוקס</Link>
-                </div>
-                {STOCKED_SHORTCUTS.length > 0 && (
-                  <nav aria-label="קיצורי דרך לקטלוג" className="mt-8">
-                    <ul className="flex flex-wrap gap-2">
-                      {STOCKED_SHORTCUTS.map(shortcut => (
-                        <li key={shortcut.href}>
-                          <Link to={shortcut.href} className="shop-chip min-h-[2.5rem] px-4">{shortcut.label}</Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </nav>
-                )}
-              </div>
-
-              {/* Real shirts from the catalogue, each a way into its own page. */}
-              <div className="order-1 grid grid-cols-4 gap-2 p-2.5 sm:gap-3 sm:p-4 lg:order-2 lg:grid-cols-2 lg:gap-4 lg:p-6">
-                {(heroShirts.length ? heroShirts : Array.from({ length: 4 }, () => null)).map((shirt, i) => (
-                  shirt ? (
-                    <Link key={shirt.id} to={`/shirt/${shirt.id}`} aria-label={shirt.name}
-                      className={`group relative aspect-square overflow-hidden rounded-2xl bg-brand-navy-light sm:rounded-3xl ${i % 2 === 1 ? 'lg:translate-y-8' : ''}`}>
-                      <ProductImage src={shirt.main_image} alt="" eager sizes="(min-width: 1024px) 380px, 25vw" className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
-                    </Link>
-                  ) : (
-                    <div key={i} className={`aspect-square rounded-2xl bg-brand-navy-light/70 sm:rounded-3xl ${i % 2 === 1 ? 'lg:translate-y-8' : ''}`} />
-                  )
-                ))}
-              </div>
-            </div>
-          </section>
+          <HomeHero settings={siteSettings} />
 
           {/* ===== PICKS ===== */}
           {(loading || tabs.length > 0) && (
