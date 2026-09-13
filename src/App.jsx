@@ -65,6 +65,7 @@ const SearchAnalytics = lazy(() => import('@/pages/admin/SearchAnalytics'));
 const SalesReport = lazy(() => import('@/pages/admin/SalesReport'));
 const ManageHomeSections = lazy(() => import('@/pages/admin/ManageHomeSections'));
 const ManageInstagram = lazy(() => import('@/pages/admin/ManageInstagram'));
+const RecoverUploads = lazy(() => import('@/pages/admin/RecoverUploads'));
 
 function Spinner() {
   return <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-brand-mist-dark border-t-brand-orange"></div>;
@@ -150,6 +151,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin/sales" element={<SalesReport />} />
           <Route path="/admin/home-sections" element={<ManageHomeSections />} />
           <Route path="/admin/instagram" element={<ManageInstagram />} />
+          <Route path="/admin/recover-uploads" element={<RecoverUploads />} />
         </Route>
       </Route>
     </Routes>

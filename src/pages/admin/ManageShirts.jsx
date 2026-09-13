@@ -43,6 +43,10 @@ const QUICK_FILTERS = [
 const QUICK_BY_ID = Object.fromEntries(QUICK_FILTERS.flatMap(g => g.items).map(i => [i.id, i]));
 const applyQuick = (list, ids) => ids.reduce((acc, id) => (QUICK_BY_ID[id] ? acc.filter(QUICK_BY_ID[id].test) : acc), list);
 
+// Unsaved edits, kept in the browser as they are made, so a crash or a closed
+// tab does not lose them. Offered back when the list next loads.
+const DRAFTS_KEY = 'jl_admin_shirt_drafts';
+
 const priceOf = s => Number(s.sale_price && Number(s.sale_price) < Number(s.price) ? s.sale_price : s.price) || 0;
 const SORTS = {
   updated: (a, b) => (dateSortValue(b.updated_date) || 0) - (dateSortValue(a.updated_date) || 0),
@@ -110,6 +114,7 @@ export default function ManageShirts() {
   const [submitting, setSubmitting] = useState(false);
   const [saveResult, setSaveResult] = useState(null);
   const [copiedQueryId, setCopiedQueryId] = useState(null);
+  const [restoredCount, setRestoredCount] = useState(0);
   const navigate = useNavigate();
 
   // The English phrase for a shirt, copied for pasting into a Google search
@@ -128,6 +133,18 @@ export default function ManageShirts() {
     setLoading(true);
     const data = await base44.entities.Shirt.list('-created_date', 500);
     setShirts(data);
+
+    // Edits left unsaved by a crash or a closed tab come back, marked unsaved.
+    try {
+      const saved = JSON.parse(localStorage.getItem(DRAFTS_KEY) || 'null');
+      const valid = Object.entries(saved?.drafts || {}).filter(([sid, d]) => d?.form && data.some(s => s.id === sid));
+      if (valid.length) {
+        setDrafts(prev => ({ ...prev, ...Object.fromEntries(valid) }));
+        setDirty(prev => ({ ...prev, ...Object.fromEntries(valid.map(([sid]) => [sid, true])) }));
+        setRestoredCount(valid.length);
+      }
+    } catch { /* nothing to restore */ }
+
     setLoading(false);
   }
 
@@ -140,6 +157,17 @@ export default function ManageShirts() {
     window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
   }, [dirtyCount]);
+
+  // Every unsaved draft is written to the browser as it changes, and removed
+  // once it is saved.
+  useEffect(() => {
+    if (loading) return;
+    try {
+      const pending = Object.fromEntries(Object.keys(dirty).filter(k => dirty[k] && drafts[k]).map(k => [k, drafts[k]]));
+      if (Object.keys(pending).length) localStorage.setItem(DRAFTS_KEY, JSON.stringify({ at: Date.now(), drafts: pending }));
+      else localStorage.removeItem(DRAFTS_KEY);
+    } catch { /* private mode or storage full - the beforeunload warning still applies */ }
+  }, [drafts, dirty, loading]);
 
   // Search ranks, every filter after it only narrows, and an explicit sort is
   // the only thing allowed to reorder - so with no sort chosen, a search keeps
@@ -190,6 +218,21 @@ export default function ManageShirts() {
     setDirty(prev => ({ ...prev, [id]: true }));
   };
 
+  // A photo added in the inline editor is written to the shirt immediately
+  // (see ShirtEditForm), and the list reflects it straight away.
+  const handleImageSaved = async (id, patch) => {
+    await base44.entities.Shirt.update(id, patch);
+    setShirts(prev => prev.map(s => (s.id === id ? { ...s, ...patch } : s)));
+  };
+
+  const discardRestored = () => {
+    try { localStorage.removeItem(DRAFTS_KEY); } catch { /* nothing stored */ }
+    setDrafts({});
+    setDirty({});
+    setExpandedId(null);
+    setRestoredCount(0);
+  };
+
   const handleSaveAll = async () => {
     if (!dirtyIds.length) return;
     setSubmitting(true);
@@ -236,11 +279,25 @@ export default function ManageShirts() {
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             {submitting ? 'שומר...' : dirtyCount > 0 ? `שמור הכל (${dirtyCount})` : 'שמור הכל'}
           </button>
+          <button onClick={() => navigate('/admin/recover-uploads')} className="flex items-center gap-1 bg-white/5 border border-white/10 text-chalk px-4 py-2 text-sm font-bold hover:bg-white/10">
+            שחזור תמונות
+          </button>
           <button onClick={() => navigate('/admin/add-shirt')} className="flex items-center gap-1 bg-white/5 border border-white/10 text-chalk px-4 py-2 text-sm font-bold hover:bg-white/10">
             <Plus className="w-4 h-4" /> הוסף חולצה
           </button>
         </div>
       </div>
+
+      {restoredCount > 0 && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border border-amber-400/40 bg-amber-500/10 p-3 text-sm">
+          <span className="text-amber-300">
+            שוחזרו שינויים שלא נשמרו ב-{restoredCount} חולצות (מסומנות ב-●). עבור עליהן ולחץ "שמור הכל".
+          </span>
+          <button type="button" onClick={discardRestored} className="border border-white/20 px-3 py-1.5 text-xs text-varnish hover:text-chalk">
+            ביטול השחזור
+          </button>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-3 mb-3">
@@ -426,7 +483,7 @@ export default function ManageShirts() {
                 {expandedId === s.id && drafts[s.id] && (
                   <tr className="border-b border-white/10">
                     <td colSpan={7} className="p-4 bg-pitch/30">
-                      <ShirtEditForm draft={drafts[s.id]} onChange={(next) => updateDraft(s.id, next)} />
+                      <ShirtEditForm draft={drafts[s.id]} onChange={(next) => updateDraft(s.id, next)} onImageSaved={(patch) => handleImageSaved(s.id, patch)} />
                       <div className="flex items-center justify-between mt-4 max-w-3xl">
                         <button onClick={() => setExpandedId(null)} className="text-sm text-varnish hover:text-turf">סגור עריכה</button>
                         <span className="text-xs text-varnish">{dirty[s.id] ? 'שינויים לא שמורים - ישמרו ב"שמור הכל"' : 'אין שינויים'}</span>

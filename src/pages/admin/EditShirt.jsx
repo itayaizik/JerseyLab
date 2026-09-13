@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Upload, Loader2, Plus, ArrowRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { trimShirtText } from '@/lib/shirtText';
 import LocalStockEditor from '@/components/admin/LocalStockEditor';
 import { stockItems, stockPayload } from '@/lib/localStock';
+import { uploadErrorMessage } from '@/lib/supabaseStorage';
 
 const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
 // Canonical spellings - see lib/sizes. Reads tolerate the legacy 'XXL' key,
@@ -28,6 +29,13 @@ export default function EditShirt() {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [uploadError, setUploadError] = useState('');
+  // Edits autosaved from a visit that ended before "שמור שינויים".
+  const [restorable, setRestorable] = useState(null);
+  const initialRef = useRef('');
+  const extraRef = useRef([]);
+  extraRef.current = extraImageUrls;
+  const autosaveKey = `jl_admin_edit_${id}`;
 
   useEffect(() => {
     async function load() {
@@ -47,21 +55,64 @@ export default function EditShirt() {
       setLocalStockItems(stockItems(s));
       setMainImageUrl(s.main_image || '');
       setExtraImageUrls(s.extra_images || []);
+      initialRef.current = '';
+      try {
+        const saved = JSON.parse(localStorage.getItem(`jl_admin_edit_${id}`) || 'null');
+        if (saved?.form) setRestorable(saved);
+      } catch { /* nothing saved */ }
       setLoading(false);
     }
     load();
   }, [id]);
 
+  // Unsaved edits are kept in the browser as they are made, so a crash or a
+  // closed tab does not lose them. The first snapshot after loading is the
+  // shirt as saved, and is only remembered, not stored.
+  useEffect(() => {
+    if (loading || !form) return;
+    const snapshot = JSON.stringify({ form, sizes, localStockItems, mainImageUrl, extraImageUrls });
+    if (!initialRef.current) { initialRef.current = snapshot; return; }
+    try {
+      if (snapshot === initialRef.current) localStorage.removeItem(autosaveKey);
+      else localStorage.setItem(autosaveKey, JSON.stringify({ at: Date.now(), form, sizes, localStockItems, mainImageUrl, extraImageUrls }));
+    } catch { /* private mode */ }
+  }, [loading, form, sizes, localStockItems, mainImageUrl, extraImageUrls, autosaveKey]);
+
+  const restoreAutosave = () => {
+    const d = restorable;
+    if (!d) return;
+    setForm(d.form);
+    setSizes(d.sizes || {});
+    setLocalStockItems(d.localStockItems || []);
+    setMainImageUrl(d.mainImageUrl || '');
+    setExtraImageUrls(d.extraImageUrls || []);
+    setRestorable(null);
+  };
+  const discardAutosave = () => {
+    try { localStorage.removeItem(autosaveKey); } catch { /* nothing stored */ }
+    setRestorable(null);
+  };
+
   const handleChange = (field, value) => setForm(p => ({ ...p, [field]: value }));
   const handleSizeChange = (size, qty) => setSizes(p => ({ ...p, [size]: Math.max(0, parseInt(qty) || 0) }));
 
+  // A photo is written to the shirt as soon as it is uploaded, so a crash
+  // before "שמור שינויים" does not leave it in storage attached to nothing.
   const handleMainImage = async (e) => {
     const file = e.target.files[0];
+    e.target.value = '';
     if (!file) return;
     setUploading(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    setMainImageUrl(file_url);
-    setUploading(false);
+    setUploadError('');
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setMainImageUrl(file_url);
+      await base44.entities.Shirt.update(id, { main_image: file_url });
+    } catch (err) {
+      setUploadError(uploadErrorMessage(err));
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleMainImageUrl = () => {
@@ -73,11 +124,28 @@ export default function EditShirt() {
 
   const handleExtraImages = async (e) => {
     const files = Array.from(e.target.files);
+    e.target.value = '';
     if (!files.length) return;
     setUploading(true);
-    for (const file of files) {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setExtraImageUrls(p => [...p, file_url]);
+    setUploadError('');
+    const urls = [];
+    try {
+      for (const file of files) {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        urls.push(file_url);
+      }
+    } catch (err) {
+      setUploadError(uploadErrorMessage(err));
+    }
+    // Whatever did upload is kept and saved, even if a later file failed.
+    if (urls.length) {
+      const next = [...extraRef.current, ...urls];
+      setExtraImageUrls(next);
+      try {
+        await base44.entities.Shirt.update(id, { extra_images: next });
+      } catch (err) {
+        setUploadError(`התמונות עלו אבל לא נשמרו בחולצה: ${uploadErrorMessage(err)}`);
+      }
     }
     setUploading(false);
   };
@@ -105,6 +173,7 @@ export default function EditShirt() {
     });
     const user = await base44.auth.me();
     await base44.entities.AdminLog.create({ action: 'עדכן חולצה', entity_type: 'Shirt', entity_id: id, details: form.name, admin_user_id: user.id });
+    try { localStorage.removeItem(autosaveKey); } catch { /* nothing stored */ }
     setSubmitting(false);
     navigate('/admin/shirts');
   };
@@ -119,6 +188,17 @@ export default function EditShirt() {
         <ArrowRight className="w-4 h-4" /> חזרה לרשימה
       </button>
       <h1 className="font-heading font-black text-2xl mb-6 text-turf">עריכת חולצה</h1>
+      {restorable && (
+        <div className="max-w-3xl mb-4 flex flex-wrap items-center justify-between gap-2 border border-amber-400/40 bg-amber-500/10 p-3 text-sm">
+          <span className="text-amber-300">
+            נמצאו שינויים שלא נשמרו בחולצה הזו (מ-{new Date(restorable.at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}).
+          </span>
+          <span className="flex gap-2">
+            <button type="button" onClick={restoreAutosave} className="bg-turf text-pitch px-3 py-1.5 text-xs font-bold">שחזור השינויים</button>
+            <button type="button" onClick={discardAutosave} className="border border-white/20 px-3 py-1.5 text-xs text-varnish hover:text-chalk">התעלמות</button>
+          </span>
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
         {/* Basic Info */}
         <div className="border border-white/10 bg-white/5 p-4 space-y-4">
@@ -200,6 +280,7 @@ export default function EditShirt() {
             )}
           </div>
           {uploading && <p className="text-xs text-turf"><Loader2 className="w-3 h-3 animate-spin inline" /> מעלה...</p>}
+          {uploadError && <p className="text-xs text-redcard">{uploadError}</p>}
         </div>
 
         <LocalStockEditor items={localStockItems} onChange={setLocalStockItems} sizes={LOCAL_STOCK_SIZES} />

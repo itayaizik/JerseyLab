@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Upload, Loader2, Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { uploadErrorMessage } from '@/lib/supabaseStorage';
 import { sizeAliases, normalizeSize } from '@/lib/sizes';
 import LocalStockEditor from '@/components/admin/LocalStockEditor';
 
@@ -20,7 +21,12 @@ const kidsSizeOptions = ['6-7Y', '8-9Y', '10-11Y', '12-13Y', '14-15Y'];
  *
  * draft shape: { form, sizes, localStockItems, mainImageUrl, extraImageUrls }
  */
-export default function ShirtEditForm({ draft, onChange }) {
+export default function ShirtEditForm({ draft, onChange, onImageSaved }) {
+  // Uploads take seconds; by the time one finishes the draft may have changed,
+  // so they apply to the latest draft rather than the one from when they began.
+  const draftRef = useRef(draft);
+  draftRef.current = draft;
+  const [uploadError, setUploadError] = useState('');
   const [uploading, setUploading] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [useUrlMode, setUseUrlMode] = useState(true);
@@ -40,29 +46,70 @@ export default function ShirtEditForm({ draft, onChange }) {
     if (value !== '') next[normalizeSize(size)] = Number(value) === 0 ? 0 : 1;
     onChange({ ...draft, sizes: next });
   };
-  const setMain = (url) => onChange({ ...draft, mainImageUrl: url });
-  const addExtra = (url) => onChange({ ...draft, extraImageUrls: [...draft.extraImageUrls, url] });
+  const setMain = (url) => onChange({ ...draftRef.current, mainImageUrl: url });
   const removeExtra = (i) => onChange({ ...draft, extraImageUrls: draft.extraImageUrls.filter((_, idx) => idx !== i) });
+
+  // A photo is written to the shirt the moment it is added (onImageSaved), not
+  // only into the draft. Uploads used to wait for "שמור הכל", so a crash before
+  // it left the photos in storage attached to nothing - 86 of them in one
+  // evening of work.
+  const saveImages = async (patch) => {
+    if (!onImageSaved) return;
+    try {
+      await onImageSaved(patch);
+    } catch (err) {
+      setUploadError(`התמונה עלתה אבל לא נשמרה בחולצה: ${uploadErrorMessage(err)}`);
+    }
+  };
+
+  const addMainUrl = (url) => {
+    setMain(url);
+    saveImages({ main_image: url });
+  };
+  const addExtraUrl = (url) => {
+    const next = [...draftRef.current.extraImageUrls, url];
+    onChange({ ...draftRef.current, extraImageUrls: next });
+    saveImages({ extra_images: next });
+  };
 
   const uploadMain = async (e) => {
     const file = e.target.files[0];
+    e.target.value = '';
     if (!file) return;
     setUploading(true);
-    try { const { file_url } = await base44.integrations.Core.UploadFile({ file }); setMain(file_url); }
-    finally { setUploading(false); }
+    setUploadError('');
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setMain(file_url);
+      await saveImages({ main_image: file_url });
+    } catch (err) {
+      setUploadError(uploadErrorMessage(err));
+    } finally {
+      setUploading(false);
+    }
   };
   const uploadExtras = async (e) => {
     const files = Array.from(e.target.files);
+    e.target.value = '';
     if (!files.length) return;
     setUploading(true);
+    setUploadError('');
+    const urls = [];
     try {
-      let next = [...draft.extraImageUrls];
       for (const file of files) {
         const { file_url } = await base44.integrations.Core.UploadFile({ file });
-        next = [...next, file_url];
+        urls.push(file_url);
       }
-      onChange({ ...draft, extraImageUrls: next });
-    } finally { setUploading(false); }
+    } catch (err) {
+      setUploadError(uploadErrorMessage(err));
+    }
+    // Whatever did upload is kept, even if a later file failed.
+    if (urls.length) {
+      const next = [...draftRef.current.extraImageUrls, ...urls];
+      onChange({ ...draftRef.current, extraImageUrls: next });
+      await saveImages({ extra_images: next });
+    }
+    setUploading(false);
   };
 
   const addTag = () => {
@@ -157,7 +204,7 @@ export default function ShirtEditForm({ draft, onChange }) {
           {draft.mainImageUrl ? (
             <div className="relative w-32 h-32 mt-1"><img src={draft.mainImageUrl} className="w-full h-full object-cover border border-white/10" onError={e => { e.target.src = 'https://placehold.co/128x128'; }} /><button type="button" onClick={() => setMain('')} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button></div>
           ) : useUrlMode ? (
-            <div className="flex gap-2 mt-1"><input value={mainUrlInput} onChange={e => setMainUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={() => { if (mainUrlInput.trim()) { setMain(mainUrlInput.trim()); setMainUrlInput(''); } }} className="px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
+            <div className="flex gap-2 mt-1"><input value={mainUrlInput} onChange={e => setMainUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={() => { if (mainUrlInput.trim()) { addMainUrl(mainUrlInput.trim()); setMainUrlInput(''); } }} className="px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
           ) : (
             <label className="flex items-center justify-center w-32 h-32 border border-dashed border-white/20 cursor-pointer hover:border-turf mt-1"><Upload className="w-6 h-6 text-varnish" /><input type="file" accept="image/*" onChange={uploadMain} className="hidden" /></label>
           )}
@@ -170,12 +217,14 @@ export default function ShirtEditForm({ draft, onChange }) {
             ))}
           </div>
           {useUrlMode ? (
-            <div className="flex gap-2 mt-2"><input value={extraUrlInput} onChange={e => setExtraUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={() => { if (extraUrlInput.trim()) { addExtra(extraUrlInput.trim()); setExtraUrlInput(''); } }} className="px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
+            <div className="flex gap-2 mt-2"><input value={extraUrlInput} onChange={e => setExtraUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={() => { if (extraUrlInput.trim()) { addExtraUrl(extraUrlInput.trim()); setExtraUrlInput(''); } }} className="px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
           ) : (
             <label className="flex items-center justify-center w-20 h-20 border border-dashed border-white/20 cursor-pointer hover:border-turf mt-2"><Plus className="w-5 h-5 text-varnish" /><input type="file" accept="image/*" multiple onChange={uploadExtras} className="hidden" /></label>
           )}
         </div>
         {uploading && <p className="text-xs text-turf"><Loader2 className="w-3 h-3 animate-spin inline" /> מעלה...</p>}
+        {uploadError && <p className="text-xs text-redcard">{uploadError}</p>}
+        {onImageSaved && <p className="text-[11px] text-white/40">תמונה שמוסיפים נשמרת בחולצה מיד, גם בלי ללחוץ על "שמור הכל".</p>}
       </div>
 
       <LocalStockEditor items={draft.localStockItems || []} onChange={items => onChange({ ...draft, localStockItems: items })} sizes={currentSizeOptions} />

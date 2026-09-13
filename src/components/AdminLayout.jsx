@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PlusCircle, Shirt, Users, FolderOpen, Star, HelpCircle, Settings, ArrowRight, BarChart2, TrendingUp, Layout, Upload, Mail, Instagram } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, Shirt, Users, FolderOpen, Star, HelpCircle, Settings, ArrowRight, BarChart2, TrendingUp, Layout, Upload, Mail, Instagram, History } from 'lucide-react';
 
 const adminLinks = [
   { to: '/admin', label: 'דשבורד', icon: LayoutDashboard },
@@ -8,6 +8,7 @@ const adminLinks = [
   { to: '/admin/add-shirt', label: 'הוסף מוצר', icon: PlusCircle },
   { to: '/admin/bulk-import', label: 'ייבוא מסיבי', icon: Upload },
   { to: '/admin/shirts', label: 'ערוך מוצרים', icon: Shirt },
+  { to: '/admin/recover-uploads', label: 'שחזור תמונות', icon: History },
   { to: '/admin/requests', label: 'הזמנות', icon: Users },
   { to: '/admin/contact-messages', label: 'פניות צור קשר', icon: Mail },
   { to: '/admin/categories', label: 'קטגוריות', icon: FolderOpen },
