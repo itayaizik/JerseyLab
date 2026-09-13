@@ -1,28 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { BOX_TYPES } from '@/lib/mysteryBox';
-import { MYSTERY_BOX_PANELS } from '@/components/MysteryBoxInfo';
 
-// The mystery box on the home page: the offer on a navy panel, and beside it
-// the three questions the product page answers at length - what it is, what
-// arrives, and what you can rule out - condensed to what fits without
-// scrolling.
+// The mystery box on the home page: the offer on a navy panel, and beside it a
+// photo of the JerseyLab bag the shirt arrives in.
 //
 // It sits after the shirts rather than under the hero: a side product placed
 // above the catalogue reads as an interruption, here it reads as a discovery.
-
-const PROMO_PANEL_TITLES = ['מה זה מיסטרי בוקס?', 'מה מקבלים', 'מה אפשר לפסול'];
-
-const promoPanels = PROMO_PANEL_TITLES
-  .map(title => MYSTERY_BOX_PANELS.find(p => p.title === title))
-  .filter(Boolean);
-
-// One line per panel, short enough to scan. Taken from the panel's own copy so
-// the two pages cannot drift apart.
-function panelLine(panel) {
-  if (panel.items?.length) return panel.items[0];
-  return panel.paragraphs?.[0] || '';
-}
 
 export default function MysteryBoxPromo() {
   return (
@@ -47,26 +31,12 @@ export default function MysteryBoxPromo() {
           <Link to="/mystery-box" className="shop-btn mt-8 self-start px-8">לבניית הבוקס</Link>
         </div>
 
-        {promoPanels.length > 0 && (
-          <div className="p-2.5 sm:p-4 lg:ps-0">
-            <ul className="grid h-full content-center gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-1">
-              {promoPanels.map(panel => {
-                const Icon = panel.icon;
-                return (
-                  <li key={panel.title} className="flex flex-col rounded-3xl bg-white p-6 lg:flex-row lg:items-start lg:gap-4">
-                    <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-brand-orange-soft text-brand-orange-ink">
-                      <Icon className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                    <div className="mt-4 lg:mt-0">
-                      <h3 className="text-base font-semibold text-brand-navy">{panel.title}</h3>
-                      <p className="mt-1 text-sm leading-relaxed text-brand-navy/60">{panelLine(panel)}</p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
+        {/* The bag the box arrives in. The questions it used to sit beside are
+            answered in full on the mystery box page. */}
+        <Link to="/mystery-box" tabIndex={-1} aria-hidden="true" className="block p-2.5 sm:p-4 lg:ps-0">
+          <img src="/mystery-box.jpg" alt="" loading="lazy" width="1200" height="1104"
+            className="aspect-[4/3] h-full w-full rounded-3xl object-cover lg:aspect-auto" />
+        </Link>
       </div>
     </section>
   );
