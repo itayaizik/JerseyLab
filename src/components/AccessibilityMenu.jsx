@@ -1,35 +1,85 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Accessibility, X, RotateCcw, Contrast, Palette, Link2, Heading, Type, AlignJustify, Pause, MousePointer2,
+  Accessibility, X, RotateCcw, Contrast, Link2, ALargeSmall, MoveHorizontal, Pause, ImageOff, BookOpenText,
+  MousePointer2, MessageSquareText, UnfoldVertical, AlignJustify, Droplet, Heading, EyeOff, PanelLeft, PanelRight,
 } from 'lucide-react';
-import { loadPrefs, savePrefs, applyPrefs, isDefault, DEFAULT_PREFS } from '@/lib/accessibilityPrefs';
+import {
+  loadPrefs, savePrefs, applyPrefs, pageIsDefault, resetPage, LEVELS, A11Y_HIDDEN_KEY, OPEN_A11Y_EVENT,
+} from '@/lib/accessibilityPrefs';
 
-// The accessibility menu: a tab on the left edge of every shop page that opens
-// a panel of display adjustments. It is an addition to the site's own
+// The accessibility menu: a tab at the edge of every shop page that opens a
+// panel of display adjustments. It is an addition to the site's own
 // accessibility (semantic markup, keyboard use, contrast, alt text), not a
 // replacement for it - the statement at /legal/accessibility says as much.
 //
-// The tab sits half way down the edge so it never covers the product page's
-// sticky bar at the bottom or the notices, and it is not shown in the admin.
+// Tiles with levels step through them on each press and back to off. The
+// reading guide, the reading mask and the descriptions follow the pointer, so
+// they are drawn here; everything else is CSS on <html>.
+//
+// Opens from the tab, from Ctrl+U, and from the footer link, so hiding the tab
+// never leaves a visitor without a way back in.
 
-const TEXT_LABELS = ['רגיל', 'גדול', 'גדול מאוד'];
-
-const OPTIONS = [
-  { key: 'contrast', label: 'ניגודיות גבוהה', icon: Contrast },
-  { key: 'grayscale', label: 'גווני אפור', icon: Palette },
+const TILES = [
+  { key: 'contrast', label: 'ניגודיות', icon: Contrast },
   { key: 'links', label: 'הדגשת קישורים', icon: Link2 },
+  { key: 'text', label: 'טקסט גדול', icon: ALargeSmall },
+  { key: 'spacing', label: 'ריווח טקסט', icon: MoveHorizontal },
+  { key: 'noMotion', label: 'ביטול הנפשות', icon: Pause },
+  { key: 'hideImages', label: 'הסתרת תמונות', icon: ImageOff },
+  { key: 'dyslexia', label: 'תמיכה בדיסלקציה', icon: BookOpenText },
+  { key: 'cursor', label: 'סמן', icon: MousePointer2 },
+  { key: 'tooltips', label: 'תיאורים', icon: MessageSquareText },
+  { key: 'lineHeight', label: 'גובה שורה', icon: UnfoldVertical },
+  { key: 'align', label: 'יישור טקסט', icon: AlignJustify },
+  { key: 'saturation', label: 'רוויה', icon: Droplet },
   { key: 'headings', label: 'הדגשת כותרות', icon: Heading },
-  { key: 'readableFont', label: 'גופן קריא', icon: Type },
-  { key: 'spacing', label: 'ריווח טקסט', icon: AlignJustify },
-  { key: 'noMotion', label: 'עצירת אנימציות', icon: Pause },
-  { key: 'bigCursor', label: 'סמן גדול', icon: MousePointer2 },
 ];
+
+function readHidden() {
+  try { return sessionStorage.getItem(A11Y_HIDDEN_KEY) === '1'; } catch { return false; }
+}
+
+// The text a screen reader would announce for the element under the pointer or
+// focus: its label, its title, or an image's alt text.
+function describe(target) {
+  const el = target?.closest?.('[aria-label], [title], img[alt]');
+  if (!el || el.closest('#a11y-panel')) return null;
+  const text = (el.getAttribute('aria-label') || el.getAttribute('title') || el.getAttribute('alt') || '').trim();
+  return text ? { el, text } : null;
+}
+
+function Tile({ tile, prefs, onPress, big }) {
+  const { key, label, icon: Icon } = tile;
+  const levels = LEVELS[key];
+  const value = prefs[key];
+  const active = levels ? value > 0 : !!value;
+  const caption = levels && active ? levels[value - 1] : label;
+
+  return (
+    <button type="button" onClick={onPress} aria-pressed={active}
+      aria-label={levels ? `${label}: ${active ? levels[value - 1] : 'כבוי'}` : label}
+      className={`flex flex-col items-center justify-center gap-1.5 rounded-2xl border p-3 text-center font-medium transition ${big ? 'min-h-[6.5rem] text-[15px]' : 'min-h-[5.25rem] text-[13px]'} ${active ? 'border-brand-orange bg-brand-orange-soft text-brand-navy' : 'border-brand-line text-brand-navy/75 hover:border-brand-navy/30'}`}>
+      <Icon className={`${big ? 'h-7 w-7' : 'h-5 w-5'} ${active ? 'text-brand-orange-ink' : ''}`} aria-hidden="true" />
+      <span className="leading-tight">{caption}</span>
+      {levels && (
+        <span className="flex gap-1" aria-hidden="true">
+          {levels.map((_, i) => (
+            <span key={i} className={`h-1 w-4 rounded-full ${i < value ? 'bg-brand-orange' : 'bg-brand-line'}`} />
+          ))}
+        </span>
+      )}
+    </button>
+  );
+}
 
 export default function AccessibilityMenu() {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const [prefs, setPrefs] = useState(loadPrefs);
+  const [hidden, setHidden] = useState(readHidden);
+  const [pointer, setPointer] = useState(null); // { x, y } for the reading guide and mask
+  const [tip, setTip] = useState(null); // { text, x, y }
   const panelRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -40,6 +90,23 @@ export default function AccessibilityMenu() {
 
   // Moving to another page closes the panel; the choices stay.
   useEffect(() => { setOpen(false); }, [pathname]);
+
+  // Ctrl+U and the footer link open the menu from anywhere.
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'u') {
+        e.preventDefault();
+        setOpen(o => !o);
+      }
+    };
+    const onOpen = () => setOpen(true);
+    document.addEventListener('keydown', onKey);
+    window.addEventListener(OPEN_A11Y_EVENT, onOpen);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      window.removeEventListener(OPEN_A11Y_EVENT, onOpen);
+    };
+  }, []);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -60,26 +127,104 @@ export default function AccessibilityMenu() {
     };
   }, [open]);
 
+  // Reading guide (cursor level 2) and reading mask (level 3) follow the pointer.
+  const followPointer = prefs.cursor >= 2;
+  useEffect(() => {
+    if (!followPointer) { setPointer(null); return undefined; }
+    const onMove = (e) => setPointer({ x: e.clientX, y: e.clientY });
+    window.addEventListener('pointermove', onMove, { passive: true });
+    return () => window.removeEventListener('pointermove', onMove);
+  }, [followPointer]);
+
+  // Descriptions: the label of whatever is under the pointer or has focus.
+  useEffect(() => {
+    if (!prefs.tooltips) { setTip(null); return undefined; }
+    const onOver = (e) => {
+      const found = describe(e.target);
+      setTip(found ? { text: found.text, x: e.clientX, y: e.clientY } : null);
+    };
+    const onFocus = (e) => {
+      const found = describe(e.target);
+      if (!found) { setTip(null); return; }
+      const r = found.el.getBoundingClientRect();
+      setTip({ text: found.text, x: r.left + r.width / 2, y: r.bottom });
+    };
+    const onLeave = () => setTip(null);
+    document.addEventListener('mouseover', onOver);
+    document.addEventListener('focusin', onFocus);
+    document.addEventListener('mouseleave', onLeave);
+    return () => {
+      document.removeEventListener('mouseover', onOver);
+      document.removeEventListener('focusin', onFocus);
+      document.removeEventListener('mouseleave', onLeave);
+    };
+  }, [prefs.tooltips]);
+
   if (pathname.startsWith('/admin')) return null;
 
   const set = (key, value) => setPrefs(p => ({ ...p, [key]: value }));
-  const changed = !isDefault(prefs);
+  const press = (key) => setPrefs(p => {
+    const levels = LEVELS[key];
+    return { ...p, [key]: levels ? (p[key] + 1) % (levels.length + 1) : !p[key] };
+  });
+  const changed = !pageIsDefault(prefs);
+  const onLeft = prefs.side === 'left';
+  const big = prefs.bigWidget;
+
+  const hideTab = () => {
+    try { sessionStorage.setItem(A11Y_HIDDEN_KEY, '1'); } catch { /* the tab simply stays */ }
+    setHidden(true);
+    setOpen(false);
+  };
+  const showTab = () => {
+    try { sessionStorage.removeItem(A11Y_HIDDEN_KEY); } catch { /* nothing to undo */ }
+    setHidden(false);
+  };
+
+  // In a right-to-left page 'end' is the left edge and 'start' the right.
+  const edge = onLeft ? 'end-0 rounded-s-2xl' : 'start-0 rounded-e-2xl';
+  const panelEdge = onLeft ? 'end-3' : 'start-3';
 
   return (
     <>
-      <button
-        ref={buttonRef}
-        type="button"
-        onClick={() => setOpen(o => !o)}
-        aria-expanded={open}
-        aria-controls="a11y-panel"
-        aria-label="תפריט נגישות"
-        title="תפריט נגישות"
-        className="fixed end-0 top-1/2 z-[90] flex h-12 w-11 -translate-y-1/2 items-center justify-center rounded-s-2xl bg-brand-navy text-white shadow-float transition-[width,background-color] hover:w-12 hover:bg-brand-navy-light focus-visible:w-12 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-orange"
-      >
-        <Accessibility className="h-6 w-6" aria-hidden="true" />
-        {changed && <span className="absolute end-1.5 top-1.5 h-2 w-2 rounded-full bg-brand-orange" aria-hidden="true" />}
-      </button>
+      {!hidden && (
+        <button
+          ref={buttonRef}
+          type="button"
+          onClick={() => setOpen(o => !o)}
+          aria-expanded={open}
+          aria-controls="a11y-panel"
+          aria-label="תפריט נגישות (Ctrl+U)"
+          title="תפריט נגישות (Ctrl+U)"
+          className={`fixed top-1/2 z-[90] flex h-12 w-11 -translate-y-1/2 items-center justify-center bg-brand-navy text-white shadow-float transition-[width,background-color] hover:w-12 hover:bg-brand-navy-light focus-visible:w-12 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-orange ${edge}`}
+        >
+          <Accessibility className="h-6 w-6" aria-hidden="true" />
+          {changed && <span className="absolute end-1.5 top-1.5 h-2 w-2 rounded-full bg-brand-orange" aria-hidden="true" />}
+        </button>
+      )}
+
+      {/* Reading guide: a bar under the line being read. */}
+      {prefs.cursor === 2 && pointer && (
+        <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 z-[88] h-2.5 rounded-full bg-brand-orange/70 shadow-float"
+          style={{ top: pointer.y + 12 }} />
+      )}
+
+      {/* Reading mask: everything dimmed except a band around the pointer. */}
+      {prefs.cursor === 3 && pointer && (
+        <>
+          <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 top-0 z-[88] bg-brand-navy-dark/60" style={{ height: Math.max(pointer.y - 55, 0) }} />
+          <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 bottom-0 z-[88] bg-brand-navy-dark/60" style={{ top: pointer.y + 55 }} />
+        </>
+      )}
+
+      {/* Descriptions. */}
+      {prefs.tooltips && tip && (
+        <div role="tooltip" dir="rtl"
+          className="pointer-events-none fixed z-[96] max-w-[16rem] -translate-x-1/2 rounded-xl bg-brand-navy-dark px-3 py-2 text-sm font-medium text-white shadow-lift"
+          style={{ left: Math.min(Math.max(tip.x, 140), window.innerWidth - 140), top: Math.min(tip.y + 18, window.innerHeight - 60) }}>
+          {tip.text}
+        </div>
+      )}
 
       {open && (
         <div
@@ -89,12 +234,13 @@ export default function AccessibilityMenu() {
           aria-modal="false"
           aria-labelledby="a11y-title"
           dir="rtl"
-          className="fixed end-3 top-1/2 z-[95] max-h-[88vh] w-[min(22rem,calc(100vw-1.5rem))] -translate-y-1/2 overflow-y-auto rounded-3xl bg-white p-5 text-brand-navy shadow-lift ring-1 ring-brand-line"
+          className={`fixed top-1/2 z-[95] max-h-[90vh] -translate-y-1/2 overflow-y-auto rounded-3xl bg-white p-5 text-brand-navy shadow-lift ring-1 ring-brand-line ${panelEdge} ${big ? 'w-[min(30rem,calc(100vw-1.5rem))]' : 'w-[min(23rem,calc(100vw-1.5rem))]'}`}
         >
           <div className="flex items-center justify-between gap-3">
-            <h2 id="a11y-title" className="flex items-center gap-2 text-lg font-semibold">
+            <h2 id="a11y-title" className={`flex items-center gap-2 font-semibold ${big ? 'text-xl' : 'text-lg'}`}>
               <Accessibility className="h-5 w-5 text-brand-orange-ink" aria-hidden="true" />
               תפריט נגישות
+              <span className="text-xs font-normal text-brand-navy/50" dir="ltr">(Ctrl+U)</span>
             </h2>
             <button type="button" onClick={() => { setOpen(false); buttonRef.current?.focus(); }} aria-label="סגירת תפריט הנגישות"
               className="flex h-10 w-10 items-center justify-center rounded-xl text-brand-navy/55 transition hover:bg-brand-mist hover:text-brand-navy">
@@ -102,38 +248,56 @@ export default function AccessibilityMenu() {
             </button>
           </div>
 
-          <div role="group" aria-labelledby="a11y-text-label" className="mt-4">
-            <p id="a11y-text-label" className="mb-2 text-sm font-medium text-brand-navy/70">גודל טקסט</p>
-            <div className="grid grid-cols-3 gap-2">
-              {TEXT_LABELS.map((label, step) => (
-                <button key={label} type="button" aria-pressed={prefs.text === step} onClick={() => set('text', step)}
-                  className={`rounded-xl border px-2 py-2.5 font-medium transition ${prefs.text === step ? 'border-brand-orange bg-brand-orange-soft text-brand-navy' : 'border-brand-line text-brand-navy/75 hover:border-brand-navy/30'}`}
-                  style={{ fontSize: `${13 + step * 2}px` }}>
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <label className="mt-4 flex cursor-pointer items-center justify-between gap-3 rounded-2xl bg-brand-mist px-4 py-3">
+            <span className="text-sm font-medium">יישומון גדול</span>
+            <input type="checkbox" role="switch" checked={big} onChange={e => set('bigWidget', e.target.checked)}
+              className="h-5 w-5 accent-brand-orange" />
+          </label>
 
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            {OPTIONS.map(({ key, label, icon: Icon }) => (
-              <button key={key} type="button" aria-pressed={!!prefs[key]} onClick={() => set(key, !prefs[key])}
-                className={`flex min-h-[4.5rem] flex-col items-center justify-center gap-1.5 rounded-2xl border p-3 text-[13px] font-medium transition ${prefs[key] ? 'border-brand-orange bg-brand-orange-soft text-brand-navy' : 'border-brand-line text-brand-navy/75 hover:border-brand-navy/30'}`}>
-                <Icon className={`h-5 w-5 ${prefs[key] ? 'text-brand-orange-ink' : ''}`} aria-hidden="true" />
-                {label}
-              </button>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            {TILES.map(tile => (
+              <Tile key={tile.key} tile={tile} prefs={prefs} big={big} onPress={() => press(tile.key)} />
             ))}
           </div>
 
-          <div className="mt-4 flex items-center justify-between gap-3 border-t border-brand-line pt-4">
-            <button type="button" onClick={() => setPrefs({ ...DEFAULT_PREFS })} disabled={!changed}
-              className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-brand-navy transition hover:bg-brand-mist disabled:opacity-40">
-              <RotateCcw className="h-4 w-4" aria-hidden="true" />
-              איפוס
-            </button>
-            <Link to="/legal/accessibility" className="shop-link text-sm">הצהרת נגישות</Link>
+          <button type="button" onClick={() => setPrefs(p => resetPage(p))} disabled={!changed}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-navy px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-navy-light disabled:opacity-40">
+            <RotateCcw className="h-4 w-4" aria-hidden="true" />
+            איפוס כל הגדרות הנגישות
+          </button>
+
+          <div className="mt-4 border-t border-brand-line pt-4">
+            <p className="mb-2 text-sm font-medium text-brand-navy/70">מיקום הכפתור</p>
+            <div className="grid grid-cols-3 gap-2 text-[13px]">
+              <button type="button" aria-pressed={onLeft} onClick={() => set('side', 'left')}
+                className={`flex items-center justify-center gap-1.5 rounded-xl border px-2 py-2 font-medium ${onLeft ? 'border-brand-orange bg-brand-orange-soft' : 'border-brand-line text-brand-navy/75'}`}>
+                <PanelLeft className="h-4 w-4" aria-hidden="true" /> שמאל
+              </button>
+              <button type="button" aria-pressed={!onLeft} onClick={() => set('side', 'right')}
+                className={`flex items-center justify-center gap-1.5 rounded-xl border px-2 py-2 font-medium ${!onLeft ? 'border-brand-orange bg-brand-orange-soft' : 'border-brand-line text-brand-navy/75'}`}>
+                <PanelRight className="h-4 w-4" aria-hidden="true" /> ימין
+              </button>
+              {hidden ? (
+                <button type="button" onClick={showTab}
+                  className="flex items-center justify-center gap-1.5 rounded-xl border border-brand-orange bg-brand-orange-soft px-2 py-2 font-medium">
+                  <Accessibility className="h-4 w-4" aria-hidden="true" /> הצגה
+                </button>
+              ) : (
+                <button type="button" onClick={hideTab}
+                  className="flex items-center justify-center gap-1.5 rounded-xl border border-brand-line px-2 py-2 font-medium text-brand-navy/75">
+                  <EyeOff className="h-4 w-4" aria-hidden="true" /> הסתרה
+                </button>
+              )}
+            </div>
+            <p className="mt-2 text-xs leading-relaxed text-brand-navy/50">
+              הסתרה מסתירה את הכפתור עד שתסגרו את הדפדפן. אפשר לפתוח את התפריט תמיד ב-Ctrl+U או מהקישור בתחתית העמוד.
+            </p>
           </div>
-          <p className="mt-2 text-xs text-brand-navy/50">ההגדרות נשמרות בדפדפן הזה.</p>
+
+          <div className="mt-4 flex items-center justify-between gap-3 border-t border-brand-line pt-4">
+            <Link to="/legal/accessibility" className="shop-link text-sm">הצהרת נגישות</Link>
+            <p className="text-xs text-brand-navy/50">ההגדרות נשמרות בדפדפן הזה.</p>
+          </div>
         </div>
       )}
     </>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, MessageCircle } from 'lucide-react';
+import { Instagram, MessageCircle, Accessibility } from 'lucide-react';
+import { OPEN_A11Y_EVENT } from '@/lib/accessibilityPrefs';
 import { COLLECTIONS } from '@/lib/collections';
 import { LEGAL_PAGES } from '@/components/LegalPage';
 import { withStock } from '@/lib/catalogFacets';
@@ -104,6 +105,13 @@ export default function Footer() {
             © {new Date().getFullYear()} JerseyLab. כל הזכויות שמורות.
           </p>
           <div className="flex items-center gap-1">
+            {/* Opens the accessibility menu - the way back in for a visitor who
+                hid its tab at the edge of the screen. */}
+            <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_A11Y_EVENT))}
+              className="inline-flex min-h-[2.75rem] items-center gap-2 rounded-full px-3 text-[13px] text-white/75 transition hover:bg-white/10 hover:text-white">
+              <Accessibility className="h-5 w-5" aria-hidden="true" />
+              תפריט נגישות
+            </button>
             <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="JerseyLab באינסטגרם"
               className="inline-flex h-11 w-11 items-center justify-center rounded-full transition hover:bg-white/10">
               <Instagram className="h-5 w-5" />
