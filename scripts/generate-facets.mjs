@@ -1,5 +1,5 @@
 // Writes src/lib/catalogFacets.json: how many shirts sit behind each category
-// link in the navigation.
+// link in the navigation, and a photo to show for each.
 //
 // Four links in the menus led to an empty page - ילדים, שחקנים, סייל and NBA -
 // because every shirt in the catalogue is a men's football shirt with no player
@@ -12,6 +12,7 @@
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { ROOT, fetchShirts } from './lib/build-data.mjs';
+import { COLLECTIONS, collectionShirts } from '../src/lib/collections.js';
 
 const OUT = resolve(ROOT, 'src/lib/catalogFacets.json');
 
@@ -33,12 +34,34 @@ const shirts = await fetchShirts({ label: 'facets' });
 // With no catalogue data every count would be zero and every link would vanish.
 // An empty file means "unknown", and the UI shows everything, which is the
 // behaviour we had before this existed.
-const counts = shirts.length
-  ? Object.fromEntries(Object.entries(FACETS).map(([key, match]) => [key, shirts.filter(match).length]))
-  : {};
+let output = {};
 
-writeFileSync(OUT, JSON.stringify(counts, null, 2) + '\n', 'utf8');
+if (shirts.length) {
+  const counts = Object.fromEntries(Object.entries(FACETS).map(([key, match]) => [key, shirts.filter(match).length]));
 
-const empty = Object.entries(counts).filter(([, n]) => n === 0).map(([k]) => k);
-console.log(`[facets] ${Object.keys(counts).length} counted -> src/lib/catalogFacets.json`);
+  // The menus and the landing heroes show a shirt from behind each link. Chosen
+  // here, newest first, so the picture is always of something still for sale -
+  // a hardcoded image outlives the shirt it shows.
+  const newestFirst = [...shirts].sort((a, b) => String(b.created_date || '').localeCompare(String(a.created_date || '')));
+  const firstImage = list => list.find(s => s.main_image)?.main_image;
+
+  const images = { all: firstImage(newestFirst) };
+  for (const [key, match] of Object.entries(FACETS)) {
+    const image = firstImage(newestFirst.filter(match));
+    if (image) images[key] = image;
+  }
+  for (const collection of COLLECTIONS) {
+    const items = collectionShirts(collection, shirts);
+    counts[`collection:${collection.slug}`] = items.length;
+    const image = firstImage(items);
+    if (image) images[`collection:${collection.slug}`] = image;
+  }
+
+  output = { ...counts, _images: images };
+}
+
+writeFileSync(OUT, JSON.stringify(output, null, 2) + '\n', 'utf8');
+
+const empty = Object.entries(output).filter(([, n]) => n === 0).map(([k]) => k);
+console.log(`[facets] ${Object.keys(output).filter(k => k !== '_images').length} counted -> src/lib/catalogFacets.json`);
 if (empty.length) console.log(`[facets] hidden (no stock): ${empty.join(', ')}`);

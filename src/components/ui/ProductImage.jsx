@@ -42,10 +42,12 @@ const WIDTHS = [160, 320, 480, 640, 900, 1280, 1600];
 // compression. Thumbnails had the opposite problem, fetching a card-sized file
 // to paint 64 pixels.
 export const IMAGE_SIZES = {
-  card: '(min-width: 1024px) 300px, (min-width: 640px) 45vw, 50vw',
-  // Deliberately generous: the hero can be zoomed to 150%, and the browser will
-  // not fetch a larger file when it is, so the headroom has to be there first.
-  hero: '(min-width: 1024px) 700px, 100vw',
+  card: '(min-width: 1280px) 360px, (min-width: 768px) 32vw, 50vw',
+  // The first card of a collection, which spans two columns and two rows.
+  featured: '(min-width: 1280px) 740px, (min-width: 768px) 64vw, 100vw',
+  // Deliberately generous: the hero can be zoomed, and the browser will not
+  // fetch a larger file when it is, so the headroom has to be there first.
+  hero: '(min-width: 1280px) 900px, (min-width: 1024px) 56vw, 100vw',
   thumb: '64px',
 };
 

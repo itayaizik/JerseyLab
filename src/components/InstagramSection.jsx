@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Instagram, ExternalLink } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import SectionHeader from '@/components/shop/SectionHeader';
 
+// Posts from the shop's Instagram, managed from ניהול > אינסטגרם. Hidden when
+// there are none.
 export default function InstagramSection({ title, instagramHandle = 'Jerseylabil' }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,78 +17,42 @@ export default function InstagramSection({ title, instagramHandle = 'Jerseylabil
 
   if (!loading && posts.length === 0) return null;
 
+  const profileUrl = `https://instagram.com/${instagramHandle}`;
+
   return (
-    <section className="bg-brand-cream py-12">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045)' }}>
-              <Instagram className="w-4 h-4 text-white" />
-            </div>
-            <h2 className="font-heading font-bold text-xl text-brand-navy uppercase tracking-wide">
-              {title || 'עקבו אותנו באינסטגרם'}
-            </h2>
-          </div>
-          <a
-            href={`https://instagram.com/${instagramHandle}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-brand-orange font-body font-medium hover:underline"
-          >
-            @{instagramHandle}
-          </a>
-        </div>
+    <section className="shop-container mt-16 sm:mt-24" aria-labelledby="instagram-heading">
+      <SectionHeader
+        id="instagram-heading"
+        title={title || 'עקבו אחרינו באינסטגרם'}
+        subtitle={<a href={profileUrl} target="_blank" rel="noopener noreferrer" className="shop-link" dir="ltr">@{instagramHandle}</a>}
+      />
 
-        {/* Posts grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3">
-          {loading
-            ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="aspect-square skeleton" />
-              ))
-            : posts.map(post => (
-                <a
-                  key={post.id}
-                  href={post.post_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative aspect-square overflow-hidden bg-white group"
-                  style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-navy)' }}
-                >
-                  <img
-                    src={post.image_url}
-                    alt={post.caption || 'Instagram post'}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-brand-navy/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center p-3 text-center">
-                    {post.caption && (
-                      <p className="text-white text-[10px] md:text-xs font-body line-clamp-3 mb-2 leading-snug">{post.caption}</p>
-                    )}
-                    <ExternalLink className="w-4 h-4 text-brand-orange" />
-                  </div>
-                  {/* Instagram icon badge */}
-                  <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-0">
-                    <Instagram className="w-3 h-3 text-white" />
-                  </div>
-                </a>
-              ))}
-        </div>
+      <ul className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
+        {loading
+          ? Array.from({ length: 6 }).map((_, i) => (
+            <li key={i} className="aspect-square rounded-3xl skeleton" />
+          ))
+          : posts.map(post => (
+            <li key={post.id}>
+              <a href={post.post_url} target="_blank" rel="noopener noreferrer"
+                aria-label={post.caption ? `פוסט באינסטגרם: ${post.caption}` : 'פוסט באינסטגרם'}
+                className="group relative block aspect-square overflow-hidden rounded-3xl bg-brand-mist">
+                <img src={post.image_url} alt="" loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <span className="absolute inset-0 flex flex-col items-center justify-center bg-brand-navy/75 p-3 text-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                  {post.caption && <span className="mb-2 line-clamp-3 text-xs leading-snug text-white">{post.caption}</span>}
+                  <ExternalLink className="h-4 w-4 text-white" aria-hidden="true" />
+                </span>
+              </a>
+            </li>
+          ))}
+      </ul>
 
-        {/* CTA */}
-        <div className="text-center mt-6">
-          <a
-            href={`https://instagram.com/${instagramHandle}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-brand-navy text-white px-6 py-3 text-sm font-heading font-bold uppercase tracking-wider hover:bg-brand-navy-light hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
-            style={{ boxShadow: '3px 3px 0 var(--brand-orange)' }}
-          >
-            <Instagram className="w-4 h-4" />
-            עקבו אותנו
-          </a>
-        </div>
+      <div className="mt-8 text-center">
+        <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="shop-btn-secondary rounded-full px-8">
+          <Instagram className="h-5 w-5" aria-hidden="true" />
+          לעמוד שלנו באינסטגרם
+        </a>
       </div>
     </section>
   );

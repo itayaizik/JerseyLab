@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { MessageSquare, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import SectionHeader from '@/components/shop/SectionHeader';
+import ScrollRow from '@/components/shop/ScrollRow';
 
-// Real conversations with customers, shown as social proof.
+// Conversations with customers, shown as social proof.
 //
 // The whole section is driven from the admin panel: it appears when there is
 // at least one active screenshot and disappears when there are none, so the
@@ -24,68 +26,59 @@ export default function ChatProofsSection({ title }) {
     return () => { cancelled = true; };
   }, []);
 
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e) => { if (e.key === 'Escape') setLightbox(null); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [lightbox]);
+
   // Nothing to show means no empty section and no stray heading.
   if (!proofs.length) return null;
 
   return (
-    <section className="py-12" style={{ background: 'var(--brand-cream-dark)' }}>
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center gap-2.5 mb-2">
-          <span className="w-9 h-9 flex-shrink-0 bg-brand-navy flex items-center justify-center">
-            <MessageSquare className="w-5 h-5 text-brand-gold" />
-          </span>
-          <h2 className="font-heading font-black text-2xl text-brand-navy uppercase">
-            {title || 'לקוחות מספרים'}
-          </h2>
-        </div>
+    <section className="mt-16 sm:mt-24" aria-labelledby="chat-proofs-heading">
+      <div className="shop-container">
         {/* Says where they came from rather than insisting they are genuine.
             Protesting that screenshots are real invites the opposite thought;
             naming the source is a fact the reader can check for themselves. */}
-        <p className="font-body text-sm text-brand-navy/60 mb-6 max-w-2xl">
-          צילומי מסך מהוואטסאפ. לחצו כדי לקרוא.
-        </p>
+        <SectionHeader id="chat-proofs-heading" title={title || 'לקוחות מספרים'} subtitle="צילומי מסך מהוואטסאפ. לחצו כדי לקרוא." />
 
         {/* A screenshot of a conversation is a picture of text, so the card has
-            to be wide enough to read some of it. At the old 210px the message
-            text came out around 8px and the card sold nothing - it was a
-            thumbnail of a status bar. The crop is centred rather than anchored
-            to the top for the same reason: the top of a WhatsApp screenshot is
-            the battery icon and a scribbled-out name, and the messages are
-            below it. */}
-        <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-          {proofs.map(proof => (
-            <figure key={proof.id} className="flex-shrink-0 w-[300px] sm:w-[360px]">
-              <button type="button" onClick={() => setLightbox(proof)}
-                className="block w-full bg-white border-2 border-brand-navy p-2 hover:-translate-y-1 transition-transform cursor-zoom-in"
-                style={{ boxShadow: '4px 4px 0 var(--brand-navy)' }}>
-                <img src={proof.image_url} alt={proof.caption || 'שיחה עם לקוח'} loading="lazy"
-                  className="w-full h-[420px] object-cover object-center" />
-              </button>
-              {proof.caption && (
-                <figcaption className="mt-2 text-xs font-body text-brand-navy/70 leading-snug">
-                  {proof.caption}
-                </figcaption>
-              )}
-            </figure>
-          ))}
+            to be wide enough to read some of it, and the crop is centred rather
+            than anchored to the top: the top of a WhatsApp screenshot is the
+            battery icon and a scribbled-out name, and the messages are below. */}
+        <div className="mt-10">
+          <ScrollRow label="צילומי שיחות עם לקוחות" itemClassName="w-[300px] sm:w-[360px]">
+            {proofs.map(proof => (
+              <figure key={proof.id} className="h-full">
+                <button type="button" onClick={() => setLightbox(proof)} aria-label="הגדלת צילום השיחה"
+                  className="block w-full cursor-zoom-in rounded-3xl bg-white p-2 shadow-card transition-shadow hover:shadow-lift">
+                  <img src={proof.image_url} alt={proof.caption || 'שיחה עם לקוח'} loading="lazy"
+                    className="h-[420px] w-full rounded-[1.25rem] object-cover object-center" />
+                </button>
+                {proof.caption && (
+                  <figcaption className="mt-3 px-2 text-[13px] leading-snug text-brand-navy/65">{proof.caption}</figcaption>
+                )}
+              </figure>
+            ))}
+          </ScrollRow>
         </div>
       </div>
 
       {lightbox && (
         <div role="dialog" aria-modal="true" aria-label="צילום שיחה"
           onClick={() => setLightbox(null)}
-          className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 cursor-zoom-out">
-          <button type="button" onClick={() => setLightbox(null)} aria-label="סגור"
-            className="absolute top-4 left-4 w-11 h-11 flex items-center justify-center bg-white text-brand-navy hover:bg-brand-orange hover:text-white transition-colors">
-            <X className="w-5 h-5" />
+          className="fixed inset-0 z-[80] flex cursor-zoom-out items-center justify-center bg-brand-navy-dark/85 p-4">
+          <button type="button" onClick={() => setLightbox(null)} aria-label="סגירה"
+            className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white text-brand-navy shadow-lift transition hover:bg-brand-orange hover:text-white">
+            <X className="h-5 w-5" />
           </button>
-          <figure className="max-h-full flex flex-col items-center gap-3" onClick={e => e.stopPropagation()}>
+          <figure className="flex max-h-full flex-col items-center gap-3" onClick={e => e.stopPropagation()}>
             <img src={lightbox.image_url} alt={lightbox.caption || 'שיחה עם לקוח'}
-              className="max-w-full max-h-[80vh] object-contain border-2 border-white" />
+              className="max-h-[80vh] max-w-full rounded-2xl object-contain" />
             {lightbox.caption && (
-              <figcaption className="text-sm text-white/85 font-body text-center max-w-lg">
-                {lightbox.caption}
-              </figcaption>
+              <figcaption className="max-w-lg text-center text-sm text-white/85">{lightbox.caption}</figcaption>
             )}
           </figure>
         </div>

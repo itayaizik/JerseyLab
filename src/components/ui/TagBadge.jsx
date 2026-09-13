@@ -1,17 +1,18 @@
 import React from 'react';
 
 const tagStyles = {
-  'נדיר': 'bg-amber-100 text-amber-800 border-amber-300',
-  'רטרו': 'bg-orange-100 text-orange-800 border-orange-300',
-  'חדש': 'bg-brand-orange/20 text-brand-navy border-brand-orange',
-  'סייל': 'bg-redcard/10 text-redcard border-redcard/30',
-  'מלאי מוגבל': 'bg-red-600 text-white border-red-700 animate-pulse',
+  'נדיר': 'bg-amber-100 text-amber-900',
+  'רטרו': 'bg-brand-mist text-brand-navy',
+  'חדש': 'bg-brand-orange-soft text-brand-orange-ink',
+  'סייל': 'bg-red-50 text-red-700',
+  'מלאי מוגבל': 'bg-red-600 text-white',
+  'מלאי בארץ': 'bg-emerald-50 text-emerald-700',
 };
 
 export default function TagBadge({ tag }) {
-  const style = tagStyles[tag] || 'bg-gray-100 text-gray-700 border-gray-300';
+  const style = tagStyles[tag] || 'bg-brand-mist text-brand-navy/70';
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 text-[11px] font-semibold border ${style}`}>
+    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold leading-none ${style}`}>
       {tag}
     </span>
   );

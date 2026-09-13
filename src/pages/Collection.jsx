@@ -1,15 +1,19 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PackageSearch } from 'lucide-react';
 import { getAllShirts } from '@/api/shirts';
 import { base44 } from '@/api/base44Client';
 import ShirtCard from '@/components/ShirtCard';
 import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
+import CollectionHero from '@/components/catalog/CollectionHero';
+import SortSelect from '@/components/catalog/SortSelect';
 import Seo from '@/components/Seo';
 import PageNotFound from '@/lib/PageNotFound';
 import { toast } from '@/components/ui/use-toast';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
 import { COLLECTIONS, findCollection, collectionShirts } from '@/lib/collections';
+import { sortShirts } from '@/lib/sortShirts';
+import { withStock } from '@/lib/catalogFacets';
 
 // A landing page per subject - "חולצות רטרו", "חולצות ברצלונה" - rather than a
 // query string on /catalog. Same grid as the catalogue, but with a title, an
@@ -24,6 +28,7 @@ export default function Collection() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [wishlistIds, setWishlistIds] = useState([]);
+  const [sort, setSort] = useState('featured');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,23 +66,30 @@ export default function Collection() {
       const items = await base44.entities.Wishlist.filter({ user_id: user.id, shirt_id: shirtId });
       if (items[0]) await base44.entities.Wishlist.delete(items[0].id);
       setWishlistIds(p => p.filter(id => id !== shirtId));
-      toast({ title: 'הוסר ממועדפים' });
+      toast({ title: 'הוסרה מהמועדפים' });
     } else {
       await base44.entities.Wishlist.create({ user_id: user.id, shirt_id: shirtId });
       setWishlistIds(p => [...p, shirtId]);
-      toast({ title: 'נוסף למועדפים' });
+      toast({ title: 'נוספה למועדפים' });
     }
   }, [user, navigate]);
+
+  // A collection already arrives newest season first, which is what
+  // "recommended" means here.
+  const sorted = useMemo(() => sortShirts(shirts, sort, { keepOrder: true }), [shirts, sort]);
 
   // An unknown slug is a genuine 404, not an empty collection page - otherwise
   // every typo becomes a thin page competing with the real ones.
   if (!collection) return <PageNotFound />;
 
   const url = `${SITE_ORIGIN}/collections/${collection.slug}`;
-  const others = COLLECTIONS.filter(c => c.slug !== collection.slug).slice(0, 8);
+  const others = withStock(
+    COLLECTIONS.filter(c => c.slug !== collection.slug).map(c => ({ ...c, href: `/collections/${c.slug}` })),
+  );
+  const featureFirst = sort === 'featured' && sorted.length >= 7;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div>
       <Seo
         title={collection.title}
         description={collection.description}
@@ -104,59 +116,75 @@ export default function Collection() {
         }}
       />
 
-      <header className="mb-6 pb-5 border-b-2 border-brand-navy/15">
-        <nav className="text-xs font-body text-brand-navy/50 mb-2" aria-label="נתיב ניווט">
-          <Link to="/" className="hover:text-brand-orange">דף הבית</Link>
-          {' · '}
-          <Link to="/catalog" className="hover:text-brand-orange">קטלוג</Link>
-        </nav>
-        <h1 className="font-heading font-black text-3xl md:text-4xl text-brand-navy uppercase mb-3"
-          style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>
-          {collection.h1}
-        </h1>
-        <p className="font-body text-sm text-brand-navy/70 leading-relaxed max-w-2xl">{collection.intro}</p>
-        {!loading && (
-          <p className="text-sm text-brand-navy/50 mt-2 font-body">{shirts.length} חולצות</p>
+      <CollectionHero
+        breadcrumb={(
+          <nav aria-label="נתיב ניווט" className="shop-eyebrow mb-3">
+            <Link to="/" className="transition hover:text-brand-navy">דף הבית</Link>
+            <span className="mx-2" aria-hidden="true">/</span>
+            <Link to="/catalog" className="transition hover:text-brand-navy">קטלוג</Link>
+          </nav>
         )}
-      </header>
+        title={collection.h1}
+        description={collection.intro}
+        chips={others.slice(0, 6).map(c => ({ label: c.name, href: c.href }))}
+        images={sorted.filter(s => s.main_image).slice(0, 3).map(s => s.main_image)}
+        loading={loading}
+      />
 
-      {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {Array.from({ length: 8 }).map((_, i) => <ShirtCardSkeleton key={i} />)}
+      <div className="shop-container">
+        <div className="mt-6 flex items-center justify-between gap-3 sm:mt-8">
+          <h2 className="text-2xl font-bold text-brand-navy sm:text-[1.75rem]" aria-live="polite">
+            {loading ? ' ' : sorted.length === 1 ? 'חולצה אחת' : `${sorted.length} חולצות`}
+          </h2>
+          {sorted.length > 1 && <SortSelect value={sort} onChange={setSort} />}
         </div>
-      ) : shirts.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {shirts.map(s => (
-            <ShirtCard key={s.id} shirt={s} user={user}
-              isWishlisted={wishlistIds.includes(s.id)} onToggleWishlist={toggleWishlist} />
-          ))}
-        </div>
-      ) : (
-        <div className="bg-brand-navy border-2 border-brand-navy p-6 text-center"
-          style={{ boxShadow: '4px 4px 0 var(--brand-orange)' }}>
-          <p className="font-heading font-bold text-white uppercase mb-1.5">אין כרגע מלאי בקטגוריה הזו</p>
-          <p className="text-sm text-white/70 font-body mb-4">אבל אנחנו יכולים להשיג - שלח לנו בקשה ונבדוק.</p>
-          <Link to="/request-shirt"
-            className="inline-flex items-center gap-2 bg-brand-gold text-brand-navy px-5 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-white transition-colors">
-            <PackageSearch className="w-4 h-4" />
-            בקש חולצה
-          </Link>
-        </div>
-      )}
 
-      {/* Internal links between collections: they give crawlers a path from any
-          one landing page to the rest, instead of each sitting isolated. */}
-      <nav className="mt-10 pt-6 border-t-2 border-brand-navy/15" aria-label="קטגוריות נוספות">
-        <h2 className="font-heading font-bold text-sm text-brand-navy uppercase tracking-wide mb-3">קטגוריות נוספות</h2>
-        <div className="flex flex-wrap gap-2">
-          {others.map(c => (
-            <Link key={c.slug} to={`/collections/${c.slug}`}
-              className="flex items-center min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 border-brand-navy/30 text-brand-navy bg-white hover:border-brand-navy hover:bg-brand-cream transition-colors">
-              {c.name}
+        {loading ? (
+          <ul className="mt-5 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-4" aria-busy="true">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <li key={i} className={i === 0 ? 'col-span-2 md:row-span-2' : ''}>
+                <ShirtCardSkeleton featured={i === 0} />
+              </li>
+            ))}
+          </ul>
+        ) : sorted.length > 0 ? (
+          <ul className="mt-5 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-4">
+            {sorted.map((s, idx) => {
+              const featured = featureFirst && idx === 0;
+              return (
+                <li key={s.id} className={featured ? 'col-span-2 md:row-span-2' : ''}>
+                  <ShirtCard shirt={s} user={user} eager={idx < 6} featured={featured}
+                    isWishlisted={wishlistIds.includes(s.id)} onToggleWishlist={toggleWishlist} />
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <div className="mt-6 flex flex-col items-start justify-between gap-5 rounded-3xl bg-brand-navy p-7 text-white sm:flex-row sm:items-center sm:p-9">
+            <div>
+              <p className="text-xl font-semibold">אין כרגע מלאי בקטגוריה הזו</p>
+              <p className="mt-1.5 max-w-lg text-[15px] leading-relaxed text-white/70">אבל אנחנו יכולים להשיג. שלחו לנו בקשה ונבדוק.</p>
+            </div>
+            <Link to="/request-shirt" className="shop-btn flex-shrink-0">
+              <PackageSearch className="h-5 w-5" aria-hidden="true" />
+              בקשת חולצה
             </Link>
-          ))}
-        </div>
-      </nav>
+          </div>
+        )}
+
+        {/* Internal links between collections: they give crawlers a path from any
+            one landing page to the rest, instead of each sitting isolated. */}
+        <nav aria-labelledby="more-collections" className="mt-16 border-t border-brand-line pt-10">
+          <h2 id="more-collections" className="text-xl font-semibold text-brand-navy">קטגוריות נוספות</h2>
+          <ul className="mt-4 flex flex-wrap gap-2.5">
+            {others.map(c => (
+              <li key={c.slug}>
+                <Link to={c.href} className="shop-chip px-5">{c.name}</Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
     </div>
   );
 }

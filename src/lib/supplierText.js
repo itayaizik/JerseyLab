@@ -77,7 +77,7 @@ function detectKitType(shirtName) {
 }
 
 // Player-version and custom name+number aren't stored as their own columns
-// - InterestModal folds them into the free-text `message` as
+// - the cart drawer folds them into the free-text `message` as
 // "גרסת שחקן (+₪20)" and "הדפסת שם: {name} {number} (+₪15)". Parse them
 // back out rather than duplicating that formatting logic in two places.
 function parseCustomization(message) {

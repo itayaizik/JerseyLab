@@ -1,192 +1,49 @@
 import React, { useState } from 'react';
-import { Ruler, Info } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Seo from '@/components/Seo';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
-
-// FAN VERSION - columns: S, M, L, XL, 2XL, 3XL
-const fanRows = [
-  { measure: 'אורך (ס"מ)', S: '69-71',   M: '71-73',   L: '73-75',  XL: '75-78',  '2XL': '78-81',  '3XL': '81-83' },
-  { measure: 'רוחב (ס"מ)', S: '53-55',   M: '55-57',   L: '57-58',  XL: '58-60',  '2XL': '60-62',  '3XL': '62-64' },
-  { measure: 'גובה (ס"מ)', S: '162-170', M: '170-176', L: '175-182', XL: '182-190', '2XL': '192-197', '3XL': '197-200' },
-  { measure: 'משקל (ק"ג)', S: '50-62',   M: '62-70',   L: '70-83',  XL: '83-90',  '2XL': '90-97',  '3XL': '97-104' },
-];
-
-// PLAYER VERSION - columns: S, M, L, XL, 2XL, 3XL
-const playerRows = [
-  { measure: 'אורך (ס"מ)', S: '67-69',   M: '69-71',   L: '71-73',  XL: '75-76',  '2XL': '76-78',  '3XL': '78-79' },
-  { measure: 'רוחב (ס"מ)', S: '49-51',   M: '51-53',   L: '53-55',  XL: '55-57',  '2XL': '57-60',  '3XL': '60-63' },
-  { measure: 'גובה (ס"מ)', S: '162-170', M: '170-176', L: '175-180', XL: '180-185', '2XL': '185-190', '3XL': '190-195' },
-  { measure: 'משקל (ק"ג)', S: '50-62',   M: '62-75',   L: '75-80',  XL: '80-85',  '2XL': '85-90',  '3XL': '90-95' },
-];
-
-// WOMEN'S VERSION - columns: S, M, L, XL
-const womenRows = [
-  { measure: 'אורך (ס"מ)', S: '61-63',   M: '63-66', L: '66-69',   XL: '69-71' },
-  { measure: 'רוחב (ס"מ)', S: '40-41',   M: '41-44', L: '44-47',   XL: '47-50' },
-  { measure: 'גובה (ס"מ)', S: '150-160', M: '160-165', L: '165-170', XL: '170-175' },
-];
-
-const adultSizes = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
-const womenSizes = ['S', 'M', 'L', 'XL'];
-
-// KIDS VERSION - rows per size, columns: HEIGHT, AGE, LENGTH, WIDTH, WAIST
-const kidsRows = [
-  { size: '14', height: '85-95',   age: '2-3',   length: '41', width: '33', waist: '19-36' },
-  { size: '16', height: '95-105',  age: '3-4',   length: '44', width: '35', waist: '20-37' },
-  { size: '18', height: '105-115', age: '4-5',   length: '47', width: '37', waist: '21-39' },
-  { size: '20', height: '115-125', age: '5-6',   length: '50', width: '39', waist: '22-41' },
-  { size: '22', height: '125-135', age: '6-7',   length: '53', width: '41', waist: '23-42' },
-  { size: '24', height: '135-145', age: '8-9',   length: '56', width: '43', waist: '24-44' },
-  { size: '26', height: '145-155', age: '10-11', length: '59', width: '45', waist: '25-47' },
-  { size: '28', height: '155-165', age: '11-12', length: '62', width: '47', waist: '26-50' },
-];
-
-// Measurement-rows table (FAN / PLAYER / WOMEN) - first column = measure name
-function MeasureTable({ rows, sizes }) {
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm border-2 border-brand-navy">
-        <thead>
-          <tr className="bg-brand-navy text-white">
-            <th className="px-3 py-3 text-right font-heading uppercase tracking-wide text-xs">מידה</th>
-            {sizes.map(s => (
-              <th key={s} className="px-3 py-3 text-center font-heading uppercase tracking-wide text-xs">{s}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, i) => (
-            <tr key={row.measure} className={i % 2 === 0 ? 'bg-white' : 'bg-brand-cream'}>
-              <td className="px-3 py-3 font-bold text-brand-orange border-b border-brand-navy/10">{row.measure}</td>
-              {sizes.map(s => (
-                <td key={s} className="px-3 py-3 font-mono text-center text-brand-navy border-b border-brand-navy/10">{row[s]}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-// Size-rows table (KIDS) - first column = size number
-function KidsTable({ data }) {
-  const cols = [
-    { key: 'size', label: 'מידה' },
-    { key: 'height', label: 'גובה (ס"מ)' },
-    { key: 'age', label: 'גיל' },
-    { key: 'length', label: 'אורך (ס"מ)' },
-    { key: 'width', label: 'רוחב (ס"מ)' },
-    { key: 'waist', label: 'היקף מותן (ס"מ)' },
-  ];
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm border-2 border-brand-navy">
-        <thead>
-          <tr className="bg-brand-navy text-white">
-            {cols.map(c => (
-              <th key={c.key} className="px-3 py-3 text-center font-heading uppercase tracking-wide text-xs">{c.label}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row, i) => (
-            <tr key={row.size} className={i % 2 === 0 ? 'bg-white' : 'bg-brand-cream'}>
-              {cols.map((c, ci) => (
-                <td key={c.key} className={`px-3 py-3 font-mono text-center border-b border-brand-navy/10 ${ci === 0 ? 'font-bold text-brand-orange' : 'text-brand-navy'}`}>
-                  {row[c.key]}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-const tips = [
-  'מודדים אורך מהכתף ועד קצה החולצה בצד האחורי',
-  'רוחב נמדד מבית שחי לבית שחי (מתחת לבית השחי)',
-  'גובה ומשקל מתארים טווח מומלץ לבחירת המידה',
-  'בין שתי מידות? תמיד עדיף לקחת את הגדולה יותר',
-  'מידות עשויות להשתנות בין יצרנים - פנה אלינו לאישור',
-];
-
-const TABS = [
-  { key: 'fan', label: 'אוהד' },
-  { key: 'player', label: 'גרסת שחקן' },
-  { key: 'women', label: 'נשים' },
-  { key: 'kids', label: 'ילדים' },
-];
+import { SizeChartTabs, SizeChartTable, SizeTips } from '@/components/product/SizeChart';
 
 export default function SizeGuide() {
   const [tab, setTab] = useState('fan');
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
+    <div className="shop-container py-8 lg:py-14">
       <Seo title="מדריך מידות - JerseyLab" description="מדריך מידות לחולצות כדורגל: טבלאות מידות לאוהד, גרסת שחקן, נשים וילדים. איך לבחור את המידה הנכונה לפי מידות הגוף." canonicalPath="/size-guide" jsonLd={{ "@context": "https://schema.org", "@type": "WebPage", name: "מדריך מידות - JerseyLab", description: "מדריך מידות לחולצות כדורגל וטבלאות מידה.", url: (SITE_ORIGIN) + "/size-guide", inLanguage: "he-IL" }} />
 
-      {/* Header */}
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-brand-orange"
-          style={{ border: '2px solid var(--brand-navy)', boxShadow: '4px 4px 0 var(--brand-navy)' }}>
-          <Ruler className="w-8 h-8 text-white" />
+      <div className="mx-auto max-w-4xl">
+        <nav aria-label="נתיב ניווט" className="shop-eyebrow">
+          <Link to="/" className="hover:text-brand-navy">דף הבית</Link>
+          <span className="mx-2" aria-hidden="true">/</span>
+          <span className="text-brand-navy/70">מדריך מידות</span>
+        </nav>
+
+        <h1 className="shop-title mt-3">מדריך מידות</h1>
+        <p className="mt-3 max-w-2xl text-lg leading-relaxed text-brand-navy/65">
+          בחרו גרסה ומצאו את המידה לפי הטבלה. גרסת שחקן צמודה יותר מגרסת אוהד.
+        </p>
+
+        <div className="mt-8">
+          <SizeChartTabs value={tab} onChange={setTab} />
         </div>
-        <div className="inline-block mb-3">
-          <div className="bg-brand-gold/60 px-4 py-1 text-xs font-heading tracking-widest text-brand-navy uppercase"
-            style={{ transform: 'rotate(-1deg)' }}>
-            מדריך רכישה
+        <div className="mt-5">
+          <SizeChartTable tab={tab} />
+        </div>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+          <div className="rounded-3xl bg-brand-mist p-6 sm:p-8">
+            <SizeTips />
+          </div>
+          <div className="flex flex-col justify-between gap-6 rounded-3xl bg-brand-navy p-6 text-white sm:p-8">
+            <div>
+              <h2 className="text-xl font-semibold">לא בטוחים באיזו מידה לבחור?</h2>
+              <p className="mt-2 text-[15px] leading-relaxed text-white/70">
+                כתבו לנו גובה, משקל ואיזו גזרה אתם אוהבים, ונמליץ על מידה.
+              </p>
+            </div>
+            <Link to="/contact" className="shop-btn self-start">צרו קשר</Link>
           </div>
         </div>
-        <h1 className="font-heading font-black text-4xl text-brand-navy uppercase mb-2" style={{ textShadow: '2px 2px 6px rgba(27,42,74,0.15)' }}>מדריך מידות</h1>
-        <p className="text-brand-navy/60 font-body text-sm">בחר את המידה המושלמת לפי הטבלה</p>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex mb-6 border-2 border-brand-navy" style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}>
-        {TABS.map(t => (
-          <button key={t.key} onClick={() => setTab(t.key)}
-            className={`flex-1 py-3 text-xs sm:text-sm font-heading font-bold uppercase tracking-wide transition-all duration-200 hover:-translate-y-0.5 ${tab === t.key ? 'bg-brand-navy text-white' : 'bg-white text-brand-navy hover:bg-brand-cream'}`}>
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Table */}
-      <div className="mb-8" style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}>
-        {tab === 'fan' && <MeasureTable rows={fanRows} sizes={adultSizes} />}
-        {tab === 'player' && <MeasureTable rows={playerRows} sizes={adultSizes} />}
-        {tab === 'women' && <MeasureTable rows={womenRows} sizes={womenSizes} />}
-        {tab === 'kids' && <KidsTable data={kidsRows} />}
-      </div>
-
-      {/* How to measure */}
-      <div className="bg-white p-6" style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-orange)' }}>
-        <div className="flex items-center gap-2 mb-4">
-          <Info className="w-5 h-5 text-brand-orange" />
-          <h3 className="font-heading font-bold text-sm text-brand-navy uppercase tracking-wide">איך מודדים נכון?</h3>
-        </div>
-        <ul className="space-y-3">
-          {tips.map((tip, i) => (
-            <li key={i} className="flex items-start gap-3 text-sm font-body text-brand-navy/80">
-              <span className="flex-shrink-0 w-5 h-5 bg-brand-orange text-white text-xs font-mono font-bold flex items-center justify-center mt-0.5">
-                {i + 1}
-              </span>
-              {tip}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Contact CTA */}
-      <div className="mt-8 text-center bg-brand-navy py-6 px-4" style={{ border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-orange)' }}>
-        <p className="text-white/80 text-sm font-body mb-3">לא בטוח באיזו מידה לבחור?</p>
-        <a href="/contact"
-          className="inline-block bg-brand-orange text-white font-heading font-bold text-sm px-6 py-2.5 uppercase tracking-wider hover:bg-brand-orange-dark hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
-          style={{ boxShadow: '2px 2px 0 rgba(255,255,255,0.2)', textShadow: '1px 1px 3px rgba(0,0,0,0.2)' }}>
-          צור קשר
-        </a>
       </div>
     </div>
   );

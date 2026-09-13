@@ -15,7 +15,7 @@ export function facetCount(query) {
   const value = counts[query];
   // Unknown key, or a build with no catalogue data: assume it has stock rather
   // than hiding a link that might be fine.
-  return value === undefined ? null : value;
+  return typeof value === 'number' ? value : null;
 }
 
 export function hasStock(query) {
@@ -23,13 +23,33 @@ export function hasStock(query) {
   return value === null ? true : value > 0;
 }
 
+// How many shirts a collection page (/collections/<slug>) lists.
+export function collectionCount(slug) {
+  return facetCount(`collection:${slug}`);
+}
+
+// Whether any link - a catalogue query, a collection page or a plain page -
+// leads somewhere with shirts on it.
+export function linkHasStock(href) {
+  if (!href) return false;
+  const collection = href.match(/^\/collections\/([^/?#]+)/);
+  if (collection) {
+    const n = collectionCount(collection[1]);
+    return n === null ? true : n > 0;
+  }
+  if (!href.includes('?')) return true;
+  return hasStock(href.split('?')[1]);
+}
+
 // Keeps only the entries whose href leads somewhere. Takes the href off each
 // item so every menu can use the same rule.
 export function withStock(items, getHref = (item) => item.href) {
-  return items.filter(item => {
-    const href = getHref(item);
-    if (!href || !href.includes('?')) return true;
-    const query = href.split('?')[1];
-    return hasStock(query);
-  });
+  return items.filter(item => linkHasStock(getHref(item)));
+}
+
+// A photo of a shirt from behind a link, for the menus and the landing heroes.
+// Keyed like the counts: "new=true", "collection:retro", or "all". Picked at
+// build time, newest season first, so a menu card shows current stock.
+export function facetImage(key) {
+  return counts._images?.[key] || null;
 }

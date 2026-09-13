@@ -1,7 +1,8 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, ChevronLeft, Trophy } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import SectionHeader from '@/components/shop/SectionHeader';
 
 const DEFAULT_LEAGUES = [
   { name: 'ליגת העל', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/9/9d/Ligat_ha%27Al_logo.svg/200px-Ligat_ha%27Al_logo.svg.png', href: `/catalog?q=${encodeURIComponent('ליגת העל')}` },
@@ -16,8 +17,17 @@ const DEFAULT_LEAGUES = [
   { name: 'רטרו', logo_url: '', href: '/catalog?tag=retro' },
 ];
 
+function LeagueLogo({ src }) {
+  const [failed, setFailed] = useState(false);
+  if (!src || failed) return <Trophy className="h-9 w-9 text-brand-orange-ink" aria-hidden="true" />;
+  return (
+    <img src={src} alt="" loading="lazy" onError={() => setFailed(true)}
+      className="max-h-16 max-w-[4rem] object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-110" />
+  );
+}
+
+// Leagues and tournaments as tiles, managed from ניהול > סקשנים בדף הבית.
 export default function LeaguesSection({ title }) {
-  const scrollRef = useRef(null);
   const [leagues, setLeagues] = useState([]);
 
   useEffect(() => {
@@ -26,79 +36,29 @@ export default function LeaguesSection({ title }) {
       .catch(() => setLeagues(DEFAULT_LEAGUES));
   }, []);
 
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-    const handleScroll = () => {
-      if (container.scrollLeft >= container.scrollWidth - container.clientWidth - 10) {
-        container.scrollLeft = 0;
-      }
-    };
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scroll = (dir) => {
-    if (scrollRef.current) scrollRef.current.scrollBy({ left: -dir * 200, behavior: 'smooth' });
-  };
-
-  const displayLeagues = leagues.length > 0 ? leagues : DEFAULT_LEAGUES;
-  const loopedLeagues = [...displayLeagues, ...displayLeagues];
+  if (!leagues.length) return null;
 
   return (
-    <section className="py-10" style={{ background: 'var(--brand-cream-dark)' }}>
-      <div className="max-w-7xl mx-auto px-6">
-        <h2 className="font-heading font-bold text-xl text-brand-navy uppercase tracking-wide mb-6 text-center border-b-2 border-brand-orange pb-1 inline-block w-full">
-          {title || 'ליגות וטורנירים'}
-        </h2>
-
-        <div className="relative flex items-center gap-2">
-          <button
-            onClick={() => scroll(-1)}
-            aria-label="גלול ימינה"
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors"
-            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}
-          >
-            <ChevronRight className="w-4 h-4 text-brand-navy" />
-          </button>
-
-          <div ref={scrollRef} className="flex gap-3 overflow-x-auto scroll-smooth pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {loopedLeagues.map((league, i) => (
-              <Link
-                key={`${league.id || league.name}-${i}`}
-                to={league.href || '#'}
-                className="flex-shrink-0 flex flex-col items-center gap-2 bg-white border-2 border-brand-navy p-4 hover:border-brand-orange hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
-                style={{ width: 110, boxShadow: '2px 2px 0 var(--brand-navy)' }}
-              >
-                {league.logo_url ? (
-                  <img
-                    src={league.logo_url}
-                    alt={league.name}
-                    loading="lazy"
-                    className="w-12 h-12 object-contain group-hover:scale-110 transition-transform"
-                    onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
-                  />
-                ) : null}
-                {!league.logo_url && (
-                  <div className="w-12 h-12 flex items-center justify-center bg-brand-cream rounded-full">
-                    <Trophy className="w-6 h-6 text-brand-orange" />
-                  </div>
-                )}
-                <span className="text-xs font-heading font-bold text-brand-navy text-center leading-tight">{league.name}</span>
-              </Link>
-            ))}
-          </div>
-
-          <button
-            onClick={() => scroll(1)}
-            aria-label="גלול שמאלה"
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors"
-            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}
-          >
-            <ChevronLeft className="w-4 h-4 text-brand-navy" />
-          </button>
-        </div>
-      </div>
+    <section className="shop-container mt-16 sm:mt-24" aria-labelledby="leagues-heading">
+      <SectionHeader id="leagues-heading" title={title || 'ליגות וטורנירים'} />
+      <ul className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+        {leagues.map(league => (
+          <li key={league.id || league.name}>
+            <Link
+              to={league.href || `/catalog?q=${encodeURIComponent(league.name)}`}
+              className="group flex h-full flex-col items-center gap-4 rounded-3xl bg-brand-mist px-4 py-7 text-center transition hover:bg-brand-mist-dark"
+            >
+              <span className="flex h-16 w-16 items-center justify-center">
+                <LeagueLogo src={league.logo_url} />
+              </span>
+              <span className="text-base font-semibold text-brand-navy">{league.name}</span>
+              <span className="mt-auto inline-flex min-h-[2.25rem] items-center rounded-full border border-brand-navy/15 bg-white px-4 text-[13px] font-medium text-brand-navy/75 transition group-hover:border-brand-orange group-hover:text-brand-orange-ink">
+                לחולצות
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

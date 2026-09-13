@@ -1,30 +1,44 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Star, Loader2, Check, Lock, ImagePlus, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { friendlyError } from '@/lib/errorMessages';
-import EmptyState from '@/components/ui/EmptyState';
 
 function StarRating({ rating, onSelect, interactive = false }) {
   const [hovered, setHovered] = useState(0);
   return (
-    <div className="flex gap-1">
+    <div className="flex gap-0.5" aria-label={interactive ? 'דירוג' : `${rating} מתוך 5`}>
       {[1, 2, 3, 4, 5].map((s) => (
         <button
           key={s}
-          type={interactive ? 'button' : undefined}
+          type="button"
+          tabIndex={interactive ? 0 : -1}
+          aria-label={interactive ? `${s} כוכבים` : undefined}
           onClick={() => interactive && onSelect && onSelect(s)}
           onMouseEnter={() => interactive && setHovered(s)}
           onMouseLeave={() => interactive && setHovered(0)}
-          className={interactive ? 'cursor-pointer' : 'cursor-default'}
+          className={interactive ? 'cursor-pointer' : 'cursor-default pointer-events-none'}
         >
-          <Star className={`w-5 h-5 ${(hovered || rating) >= s ? 'fill-brand-orange text-brand-orange' : 'text-gray-300'}`} />
+          <Star className={`h-[1.1rem] w-[1.1rem] ${(hovered || rating) >= s ? 'fill-brand-orange text-brand-orange' : 'text-brand-line'}`} />
         </button>
       ))}
     </div>
   );
 }
 
-export default function ShirtReviews({ shirtId, user }) {
+function Notice({ icon: Icon = Lock, children }) {
+  return (
+    <div className="flex items-center gap-2.5 rounded-2xl bg-brand-mist px-4 py-3 text-[13px] text-brand-navy/65">
+      <Icon className="h-4 w-4 flex-shrink-0 text-brand-navy/50" aria-hidden="true" />
+      <p>{children}</p>
+    </div>
+  );
+}
+
+// The reviews of one shirt, and the form for writing one. Shown inside a row on
+// the product page, which supplies the heading; `onSummary` hands it the count
+// and the average once they are known.
+export default function ShirtReviews({ shirtId, user, onSummary }) {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [canReview, setCanReview] = useState(false);
@@ -42,19 +56,27 @@ export default function ShirtReviews({ shirtId, user }) {
 
   async function loadData() {
     setLoading(true);
-    const all = await base44.entities.Review.filter({ approved: true, shirt_id: shirtId }, '-created_date', 20);
-    setReviews(all);
-
-    // Check if this user has a closed InterestRequest for this shirt
-    if (user) {
-      const closed = await base44.entities.InterestRequest.filter({
-        user_id: user.id,
-        shirt_id: shirtId,
-        status: 'closed',
+    try {
+      const all = await base44.entities.Review.filter({ approved: true, shirt_id: shirtId }, '-created_date', 20);
+      setReviews(all);
+      onSummary?.({
+        count: all.length,
+        average: all.length ? all.reduce((s, r) => s + r.rating, 0) / all.length : null,
       });
-      setCanReview(closed.length > 0);
+
+      // Only a customer with a closed order for this shirt may review it.
+      if (user) {
+        const closed = await base44.entities.InterestRequest.filter({
+          user_id: user.id,
+          shirt_id: shirtId,
+          status: 'closed',
+        });
+        setCanReview(closed.length > 0);
+      }
+    } catch { /* reviews are secondary to the product; the row just stays empty */ }
+    finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   const avgRating = reviews.length
@@ -64,9 +86,9 @@ export default function ShirtReviews({ shirtId, user }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = {};
-    if (!form.rating) errs.rating = 'בחר דירוג';
+    if (!form.rating) errs.rating = 'בחרו דירוג';
     if (!form.comment.trim()) errs.comment = 'שדה חובה';
-    if (form.comment.length > 1000) errs.comment = 'הביקורת ארוכה מדי (מקסימום 1000 תווים)';
+    if (form.comment.length > 1000) errs.comment = 'הביקורת ארוכה מדי (עד 1000 תווים)';
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setSubmitting(true);
     setErrors({});
@@ -88,135 +110,112 @@ export default function ShirtReviews({ shirtId, user }) {
       });
       setSubmitted(true);
     } catch (err) {
-      setErrors({ submit: friendlyError(err, 'שליחת הביקורת נכשלה. נסה שוב בעוד רגע.') });
+      setErrors({ submit: friendlyError(err, 'שליחת הביקורת נכשלה. נסו שוב בעוד רגע.') });
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (loading) return null;
+  if (loading) return <div className="h-14 rounded-2xl skeleton" />;
 
   return (
-    <div className="mt-12 border-t-2 border-brand-navy pt-10">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="font-heading font-black text-xl text-brand-navy uppercase">ביקורות לקוחות</h2>
-        {avgRating && (
-          <div className="flex items-center gap-2 bg-brand-navy text-white px-3 py-1.5">
-            <span className="font-mono font-bold text-lg text-brand-orange">{avgRating}</span>
-            <StarRating rating={Math.round(avgRating)} />
-            <span className="text-xs text-gray-300">({reviews.length})</span>
-          </div>
-        )}
-      </div>
-
-      {/* Reviews list */}
+    <div className="space-y-4">
       {reviews.length === 0 ? (
-        <EmptyState
-          compact
-          icon={Star}
-          title="אין ביקורות עדיין"
-          description="הביקורות הראשונות יופיעו כאן לאחר אישור."
-          className="mb-6"
-        />
+        <p className="text-[15px] text-brand-navy/60">עדיין אין ביקורות על החולצה הזו.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-          {reviews.map((r) => (
-            <div key={r.id} className="bg-white p-4" style={{ border: '2px solid var(--brand-navy)' }}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-heading font-bold text-sm text-brand-navy uppercase">{r.is_anonymous ? 'אנונימי' : r.reviewer_name}</span>
-                <StarRating rating={r.rating} />
-              </div>
-              <p className="text-sm text-gray-600 font-body leading-relaxed">{r.comment}</p>
-              {r.image_url && (
-                <button type="button" onClick={() => setLightboxImage(r.image_url)} className="mt-3 block">
-                  <img src={r.image_url} alt="" className="w-40 h-40 object-cover border-2 border-brand-navy hover:opacity-90 transition-opacity cursor-zoom-in" />
-                </button>
-              )}
+        <>
+          <div className="flex items-center gap-3">
+            <span className="text-3xl font-bold tabular-nums text-brand-navy">{avgRating}</span>
+            <div>
+              <StarRating rating={Math.round(avgRating)} />
+              <p className="mt-0.5 text-[13px] text-brand-navy/55">{reviews.length} ביקורות</p>
             </div>
-          ))}
-        </div>
+          </div>
+          <ul className="space-y-3">
+            {reviews.map((r) => (
+              <li key={r.id} className="rounded-2xl border border-brand-line p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[15px] font-semibold text-brand-navy">{r.is_anonymous ? 'אנונימי' : r.reviewer_name}</span>
+                  <StarRating rating={r.rating} />
+                </div>
+                <p className="mt-2 text-[15px] leading-relaxed text-brand-navy/75">{r.comment}</p>
+                {r.image_url && (
+                  <button type="button" onClick={() => setLightboxImage(r.image_url)} className="mt-3 block" aria-label="הגדלת התמונה">
+                    <img src={r.image_url} alt="" className="h-28 w-28 cursor-zoom-in rounded-xl object-cover transition hover:opacity-90" />
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
       )}
 
-      {/* Write review - only for verified buyers */}
       {!user ? (
-        <div className="bg-brand-cream p-4 flex items-center gap-3" style={{ border: '2px solid var(--brand-navy)' }}>
-          <Lock className="w-4 h-4 text-brand-navy flex-shrink-0" />
-          <p className="text-sm font-body text-gray-600">יש להתחבר כדי לכתוב ביקורת</p>
-        </div>
+        <Notice>רכשתם את החולצה? <Link to="/login" className="shop-link">התחברו</Link> כדי לכתוב ביקורת.</Notice>
       ) : !canReview ? (
-        <div className="bg-brand-cream p-4 flex items-center gap-3" style={{ border: '2px solid var(--brand-navy)' }}>
-          <Lock className="w-4 h-4 text-brand-navy flex-shrink-0" />
-          <p className="text-sm font-body text-gray-600">רק לקוחות שרכשו את החולצה יכולים לכתוב ביקורת</p>
-        </div>
+        <Notice>רק לקוחות שרכשו את החולצה יכולים לכתוב עליה ביקורת.</Notice>
       ) : submitted ? (
-        <div className="bg-brand-cream p-4 flex items-center gap-3" style={{ border: '2px solid var(--brand-navy)' }}>
-          <Check className="w-4 h-4 text-brand-orange" />
-          <p className="text-sm font-body font-bold text-brand-navy">תודה! הביקורת תפורסם לאחר אישור.</p>
-        </div>
+        <Notice icon={Check}>תודה! הביקורת תפורסם אחרי אישור.</Notice>
       ) : (
-        <div className="bg-brand-cream p-5" style={{ border: '2px solid var(--brand-navy)' }}>
-          <h3 className="font-heading font-bold text-base text-brand-navy uppercase mb-4">כתוב ביקורת</h3>
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div>
-              <label className="text-sm font-medium font-body block mb-1">דירוג *</label>
-              <StarRating rating={form.rating} interactive onSelect={r => { setForm(p => ({ ...p, rating: r })); setErrors(p => ({ ...p, rating: undefined })); }} />
-              {errors.rating && <p className="text-red-500 text-xs mt-1">{errors.rating}</p>}
-            </div>
-            <div>
-              <label className="text-sm font-medium font-body block mb-1">ביקורת *</label>
-              <textarea value={form.comment} onChange={e => { setForm(p => ({ ...p, comment: e.target.value })); setErrors(p => ({ ...p, comment: undefined })); }} maxLength={1000}
-                rows={3} className={`w-full border-2 px-3 py-2 text-sm bg-white focus:outline-none resize-none font-body ${errors.comment ? 'border-red-500' : 'border-brand-navy'}`} />
-              {errors.comment && <p className="text-red-500 text-xs mt-1">{errors.comment}</p>}
-            </div>
-            <div>
-              <label className="text-sm font-medium font-body block mb-1">תמונה (אופציונלי)</label>
-              {imagePreview ? (
-                <div className="relative w-20 h-20">
-                  <img src={imagePreview} alt="" className="w-20 h-20 object-cover border-2 border-brand-navy" />
-                  <button type="button" onClick={() => { setImage(null); setImagePreview(''); }}
-                    className="absolute -top-2 -left-2 bg-brand-navy text-white rounded-full p-0.5">
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ) : (
-                <label className="flex items-center gap-2 w-fit border-2 border-dashed border-brand-navy/40 px-3 py-2 text-sm text-gray-600 cursor-pointer hover:border-brand-navy transition-colors font-body">
-                  <ImagePlus className="w-4 h-4" />
-                  הוסף תמונה
-                  <input type="file" accept="image/*" className="hidden" onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (!f) return;
-                    setImage(f);
-                    setImagePreview(URL.createObjectURL(f));
-                  }} />
-                </label>
-              )}
-            </div>
-            <label className="flex items-center gap-2 text-sm font-body text-gray-600 cursor-pointer">
-              <input type="checkbox" checked={form.anonymous} onChange={(e) => setForm(p => ({ ...p, anonymous: e.target.checked }))} />
-              פרסם כאנונימי (השם שלי לא יוצג)
-            </label>
-            <button type="submit" disabled={submitting}
-              className="bg-brand-orange text-white px-5 py-2 font-heading font-bold text-sm uppercase hover:bg-brand-orange-dark transition-colors disabled:opacity-50 flex items-center gap-2"
-              style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
-              {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-              {submitting ? 'שולח...' : 'שלח ביקורת'}
-            </button>
-            {errors.submit && <p className="text-red-500 text-xs mt-2">{errors.submit}</p>}
-          </form>
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-brand-line p-4 sm:p-5">
+          <p className="text-[15px] font-semibold text-brand-navy">כתיבת ביקורת</p>
+          <div>
+            <p className="mb-1.5 text-sm text-brand-navy/60">דירוג</p>
+            <StarRating rating={form.rating} interactive onSelect={r => { setForm(p => ({ ...p, rating: r })); setErrors(p => ({ ...p, rating: undefined })); }} />
+            {errors.rating && <p className="mt-1 text-xs text-red-600">{errors.rating}</p>}
+          </div>
+          <div>
+            <label htmlFor="review-comment" className="mb-1.5 block text-sm text-brand-navy/60">הביקורת שלכם</label>
+            <textarea id="review-comment" value={form.comment} maxLength={1000} rows={3}
+              onChange={e => { setForm(p => ({ ...p, comment: e.target.value })); setErrors(p => ({ ...p, comment: undefined })); }}
+              className={`shop-field resize-none py-3 ${errors.comment ? 'border-red-300' : ''}`} />
+            {errors.comment && <p className="mt-1 text-xs text-red-600">{errors.comment}</p>}
+          </div>
+          <div>
+            <p className="mb-1.5 text-sm text-brand-navy/60">תמונה (לא חובה)</p>
+            {imagePreview ? (
+              <div className="relative h-20 w-20">
+                <img src={imagePreview} alt="" className="h-20 w-20 rounded-xl object-cover" />
+                <button type="button" onClick={() => { setImage(null); setImagePreview(''); }} aria-label="הסרת התמונה"
+                  className="absolute -end-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-brand-navy text-white">
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ) : (
+              <label className="flex w-fit cursor-pointer items-center gap-2 rounded-2xl border border-dashed border-brand-navy/25 px-4 py-2.5 text-sm text-brand-navy/70 transition hover:border-brand-navy/50">
+                <ImagePlus className="h-4 w-4" aria-hidden="true" />
+                הוספת תמונה
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  setImage(f);
+                  setImagePreview(URL.createObjectURL(f));
+                }} />
+              </label>
+            )}
+          </div>
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-brand-navy/70">
+            <input type="checkbox" checked={form.anonymous} onChange={(e) => setForm(p => ({ ...p, anonymous: e.target.checked }))} className="h-4 w-4 accent-brand-orange" />
+            פרסום כאנונימי (השם שלי לא יוצג)
+          </label>
+          <button type="submit" disabled={submitting} className="shop-btn">
+            {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+            {submitting ? 'שולח...' : 'שליחת הביקורת'}
+          </button>
+          {errors.submit && <p className="text-xs text-red-600">{errors.submit}</p>}
+        </form>
       )}
 
       {lightboxImage && (
         <div
           role="button"
           tabIndex={0}
-          aria-label="סגור תמונה"
+          aria-label="סגירת התמונה"
           onClick={() => setLightboxImage('')}
-          onKeyDown={(e) => { if (e.key === 'Escape') setLightboxImage(''); }}
-          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-6 cursor-zoom-out"
+          onKeyDown={(e) => { if (e.key === 'Escape' || e.key === 'Enter') setLightboxImage(''); }}
+          className="fixed inset-0 z-[80] flex cursor-zoom-out items-center justify-center bg-brand-navy-dark/85 p-6"
         >
-          <img src={lightboxImage} alt="" className="max-w-full max-h-full object-contain border-2 border-white" />
+          <img src={lightboxImage} alt="" className="max-h-full max-w-full rounded-2xl object-contain" />
         </div>
       )}
     </div>

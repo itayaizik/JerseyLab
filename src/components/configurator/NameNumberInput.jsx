@@ -1,20 +1,38 @@
 import React from 'react';
 
-export default function NameNumberInput({ customName, customNumber, onChange }) {
+export const NAME_MAX = 20;
+export const NUMBER_MAX = 3;
+
+// The name and number to print on the back. Latin letters and digits only,
+// since that is what the print can do. Each field carries its own label and a
+// live count, so the limit is visible before it is hit rather than after.
+export default function NameNumberInput({ customName, customNumber, onChange, invalid = false }) {
+  const fieldClass = `flex min-h-[3.25rem] items-center gap-3 rounded-2xl border bg-brand-mist px-4 transition focus-within:border-brand-navy/25 focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-orange/60 ${
+    invalid ? 'border-red-300' : 'border-transparent'
+  }`;
+  const inputClass = 'min-w-0 flex-1 bg-transparent text-[15px] font-semibold uppercase tracking-wide text-brand-navy placeholder:font-normal placeholder:text-brand-navy/30 focus:outline-none focus-visible:!outline-none';
+
   return (
-    <div className="grid grid-cols-2 gap-3">
-      <div>
-        <label className="text-xs text-gray-500 font-body block mb-1.5">שם להדפסה</label>
-        <input value={customName} onChange={e => onChange('customName', e.target.value.slice(0, 20).replace(/[^a-zA-Z0-9 \-]/g, ''))}
-          placeholder="RONALDO" dir="ltr" maxLength={20} autoComplete="off"
-          className="w-full border-2 border-brand-navy px-3 py-2.5 text-sm bg-white focus:outline-none font-mono" />
-      </div>
-      <div>
-        <label className="text-xs text-gray-500 font-body block mb-1.5">מספר</label>
-        <input value={customNumber} onChange={e => onChange('customNumber', e.target.value.slice(0, 3).replace(/[^0-9]/g, ''))}
-          placeholder="7" type="text" inputMode="numeric" dir="ltr" maxLength={3} autoComplete="off"
-          className="w-full border-2 border-brand-navy px-3 py-2.5 text-sm bg-white focus:outline-none font-mono" />
-      </div>
+    <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,9rem)] gap-2.5">
+      <label className={fieldClass}>
+        <span className="flex-shrink-0 text-[15px] text-brand-navy/55">שם</span>
+        <input
+          value={customName}
+          onChange={e => onChange('customName', e.target.value.slice(0, NAME_MAX).replace(/[^a-zA-Z0-9 -]/g, ''))}
+          placeholder="MESSI" dir="ltr" maxLength={NAME_MAX} autoComplete="off" aria-label="שם להדפסה"
+          className={inputClass}
+        />
+        <span dir="ltr" className="flex-shrink-0 text-xs tabular-nums text-brand-navy/40">{customName.length}/{NAME_MAX}</span>
+      </label>
+      <label className={fieldClass}>
+        <span className="flex-shrink-0 text-[15px] text-brand-navy/55">מספר</span>
+        <input
+          value={customNumber}
+          onChange={e => onChange('customNumber', e.target.value.slice(0, NUMBER_MAX).replace(/[^0-9]/g, ''))}
+          placeholder="10" type="text" inputMode="numeric" dir="ltr" maxLength={NUMBER_MAX} autoComplete="off" aria-label="מספר להדפסה"
+          className={inputClass}
+        />
+      </label>
     </div>
   );
 }

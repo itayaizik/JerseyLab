@@ -20,7 +20,7 @@ import Honeypot, { isBot } from '@/components/ui/Honeypot';
 // lose exactly the customers this page exists to capture.
 
 // Same contact details the cart remembers, so someone who has ordered before
-// is not retyping them. Written by InterestModal; only read here.
+// is not retyping them. Written by the cart drawer; only read here.
 const CONTACT_KEY = 'jerseylab_contact';
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 

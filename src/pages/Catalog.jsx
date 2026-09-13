@@ -1,15 +1,20 @@
 import { getAllShirts } from "@/api/shirts";
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { Search, SlidersHorizontal, X, ChevronDown, Gift, PackageSearch } from 'lucide-react';
+import { Search, SlidersHorizontal, X, PackageSearch } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ShirtCard from '@/components/ShirtCard';
 import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
 import EmptyState from '@/components/ui/EmptyState';
+import CollectionHero from '@/components/catalog/CollectionHero';
+import FilterDrawer from '@/components/catalog/FilterDrawer';
+import SortSelect from '@/components/catalog/SortSelect';
 import Seo from '@/components/Seo';
+import { hasLocalStock } from '@/components/ShippingBadge';
 import { toast } from '@/components/ui/use-toast';
 import { shirtSizes, sortSizes } from '@/lib/sizes';
 import { searchShirts, formatEra, toDisplay } from '@/lib/search';
+import { sortShirts } from '@/lib/sortShirts';
 import { COLLECTIONS } from '@/lib/collections';
 import { withStock } from '@/lib/catalogFacets';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
@@ -23,8 +28,8 @@ function SearchExplanation({ info }) {
     notes.push(
       <p key="player">
         {info.eraFallback
-          ? <>לא מצאנו חולצה מהעונות ש<strong className="text-brand-navy">{info.player.label}</strong> שיחק בהן, אז אלה חולצות של הקבוצות שלו מתקופות אחרות.</>
-          : <>חולצות מהקבוצות ומהעונות של <strong className="text-brand-navy">{info.player.label}</strong>:</>}
+          ? <>לא מצאנו חולצה מהעונות ש<strong className="font-semibold text-brand-navy">{info.player.label}</strong> שיחק בהן, אז אלה חולצות של הקבוצות שלו מתקופות אחרות.</>
+          : <>חולצות מהקבוצות ומהעונות של <strong className="font-semibold text-brand-navy">{info.player.label}</strong>:</>}
         {' '}
         <span className="text-brand-navy/60">{info.player.teams.map(t => `${t.team} ${formatEra(t)}`).join(' · ')}</span>
       </p>
@@ -35,7 +40,7 @@ function SearchExplanation({ info }) {
       <p key="fix">
         מציג תוצאות עבור{' '}
         {info.corrections.map((c, i) => (
-          <span key={c.from}>{i > 0 && ', '}<strong className="text-brand-navy">{toDisplay(c.to)}</strong></span>
+          <span key={c.from}>{i > 0 && ', '}<strong className="font-semibold text-brand-navy">{toDisplay(c.to)}</strong></span>
         ))}
         {' '}(חיפשת: {info.corrections.map(c => toDisplay(c.from)).join(', ')})
       </p>
@@ -44,7 +49,7 @@ function SearchExplanation({ info }) {
   if (info.relaxed) notes.push(<p key="relaxed">אין חולצה שמתאימה לכל המילים שחיפשת, אז אלה הקרובות ביותר.</p>);
   if (!notes.length) return null;
   return (
-    <div className="mt-3 max-w-2xl space-y-1 border-s-4 border-brand-orange bg-white/60 px-3 py-2 text-sm font-body text-brand-navy/75">
+    <div className="mt-5 max-w-2xl space-y-1.5 rounded-2xl bg-brand-mist px-4 py-3 text-[15px] leading-relaxed text-brand-navy/75">
       {notes}
     </div>
   );
@@ -52,14 +57,14 @@ function SearchExplanation({ info }) {
 
 const quickFilters = [
   { label: 'הכל', params: {} },
-  { label: 'חדשים', params: { new: 'true' } },
-  { label: 'רטרו', params: { tag: 'retro' } },
-  { label: 'סייל 🔥', params: { sale: 'true' } },
-  { label: 'נבחרות', params: { type: 'national' } },
-  { label: 'שחקנים', params: { type: 'player' } },
-  { label: 'NBA', params: { sport: 'basketball' } },
-  { label: 'ילדים', params: { gender: 'kids' } },
-  { label: 'משלוח מהיר', params: { fast: 'true' } },
+  { label: 'חדשים', params: { new: 'true' }, title: 'חדשים באתר', description: 'החולצות שהגיעו לאחרונה לאתר.' },
+  { label: 'רטרו', params: { tag: 'retro' }, title: 'רטרו', description: 'עונות קלאסיות ודגמים שכבר לא מייצרים.' },
+  { label: 'סייל', params: { sale: 'true' }, title: 'סייל', description: 'חולצות במחיר מוזל, לזמן מוגבל.' },
+  { label: 'נבחרות', params: { type: 'national' }, title: 'נבחרות', description: 'חולצות של נבחרות לאומיות, בית וחוץ.' },
+  { label: 'שחקנים', params: { type: 'player' }, title: 'שחקנים', description: 'חולצות עם שם ומספר של שחקן.' },
+  { label: 'NBA', params: { sport: 'basketball' }, title: 'NBA', description: 'חולצות כדורסל מה-NBA.' },
+  { label: 'ילדים', params: { gender: 'kids' }, title: 'ילדים', description: 'חולצות במידות ילדים.' },
+  { label: 'מלאי בארץ', params: { fast: 'true' }, title: 'מלאי בארץ', description: 'חולצות שכבר נמצאות בארץ ומגיעות עד שבוע.' },
 ];
 
 // "הכל" has no query string and always stays; the rest are dropped when the
@@ -68,6 +73,16 @@ const stockedQuickFilters = withStock(quickFilters, qf => {
   const params = new URLSearchParams(qf.params).toString();
   return params ? `/catalog?${params}` : '/catalog';
 });
+
+const quickFilterHref = (qf) => {
+  const params = new URLSearchParams(qf.params).toString();
+  return params ? `/catalog?${params}` : '/catalog';
+};
+
+const DEFAULT_DESCRIPTION = 'כל החולצות באתר במקום אחד: קבוצות, נבחרות ורטרו. אפשר לסנן לפי מידה, ליגה ומחיר.';
+const EMPTY_FILTERS = { condition: '', minPrice: '', maxPrice: '', league: '', national_team: '', size: '' };
+const CONDITION_LABELS = { new: 'חדש', like_new: 'כמו חדש', used: 'משומש' };
+const PAGE_SIZE = 24;
 
 export default function Catalog() {
   const [searchParams] = useSearchParams();
@@ -81,22 +96,9 @@ export default function Catalog() {
   const [user, setUser] = useState(null);
   const [wishlistIds, setWishlistIds] = useState([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [showMoreFilters, setShowMoreFilters] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
-  const PAGE_SIZE = 24;
+  const [filters, setFilters] = useState(EMPTY_FILTERS);
+  const [sort, setSort] = useState('featured');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-
-  const [filters, setFilters] = useState({
-    gender: searchParams.get('gender') || '',
-    sport: searchParams.get('sport') || '',
-    condition: '',
-    status: '',
-    minPrice: '',
-    maxPrice: '',
-    league: '',
-    national_team: '',
-    size: '',
-  });
 
   // Fetch the full catalog once; URL + local filters are applied client-side (no refetch on navigation).
   useEffect(() => {
@@ -119,7 +121,7 @@ export default function Catalog() {
     let all;
     try {
       all = await getAllShirts();
-    } catch (err) {
+    } catch {
       setLoadError(true);
       setLoading(false);
       return;
@@ -128,12 +130,7 @@ export default function Catalog() {
     setLoading(false);
   }
 
-  // Keep the search box in step with the URL. Switching category from the nav
-  // clears `q`, and without this the old term stayed in the input, contradicting
-  // the results next to it.
-  useEffect(() => { setSearchTerm(searchParams.get('q') || ''); }, [searchParams]);
-
-  // Recompute visible shirts whenever URL params, local filters, or the raw list change.
+  // Recompute visible shirts whenever URL params, local filters, the sort or the raw list change.
   useEffect(() => {
     let result = [...allShirtsRaw];
 
@@ -159,44 +156,38 @@ export default function Catalog() {
     if (tag === 'retro') result = result.filter(s => s.is_retro);
     if (type === 'national' || type === 'נבחרות') result = result.filter(s => s.national_team);
     if (type === 'player') result = result.filter(s => s.player_name);
-    if (fast === 'true') result = result.filter(s => s.local_stock_sizes && Object.values(s.local_stock_sizes).some(q => Number(q) > 0));
+    if (fast === 'true') result = result.filter(hasLocalStock);
     if (best === 'true') result = result.filter(s => s.best_seller === true);
     if (league) result = result.filter(s => s.league && s.league.toLowerCase().includes(league.toLowerCase()));
 
     if (filters.condition) result = result.filter(s => s.condition === filters.condition);
-    if (filters.status) result = result.filter(s => s.status === filters.status);
     if (filters.minPrice) result = result.filter(s => s.price >= Number(filters.minPrice));
     if (filters.maxPrice) result = result.filter(s => s.price <= Number(filters.maxPrice));
     if (filters.league) result = result.filter(s => s.league === filters.league);
     if (filters.national_team) result = result.filter(s => s.national_team === filters.national_team);
     if (filters.size) result = result.filter(s => shirtSizes(s).includes(filters.size));
 
-    setShirts(result);
+    setShirts(sortShirts(result, sort, { keepOrder: !!q }));
     setVisibleCount(PAGE_SIZE);
     setSearchInfo(searchResult);
 
     // Logged here rather than when a search form is submitted: this is the one
     // place that knows how many shirts the search found, and it means a search
-    // counts once whether it started in the navbar, on the home page or here.
+    // counts once whether it started in the header, on the home page or here.
     if (!q) loggedQueryRef.current = null;
     else if (allShirtsRaw.length && loggedQueryRef.current !== q) {
       loggedQueryRef.current = q;
       base44.entities.SearchLog.create({ search_term: q.trim(), results_count: searchResult.results.length }).catch(() => {});
     }
-  }, [searchParams, filters, allShirtsRaw]);
+  }, [searchParams, filters, allShirtsRaw, sort]);
 
-  const { leagues, nationalTeams, allSizes } = useMemo(() => {
+  const { leagues, nationalTeams, allSizes, conditions } = useMemo(() => {
     const leagues = [...new Set(allShirtsRaw.map(s => s.league).filter(Boolean))].sort();
     const nationalTeams = [...new Set(allShirtsRaw.map(s => s.national_team).filter(Boolean))].sort();
     const allSizes = sortSizes([...new Set(allShirtsRaw.flatMap(shirtSizes))]);
-    return { leagues, nationalTeams, allSizes };
+    const conditions = [...new Set(allShirtsRaw.map(s => s.condition).filter(Boolean))];
+    return { leagues, nationalTeams, allSizes, conditions };
   }, [allShirtsRaw]);
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    // Logged by the results effect, together with how many shirts it found.
-    navigate(`/catalog?q=${encodeURIComponent(searchTerm)}`);
-  };
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -211,58 +202,73 @@ export default function Catalog() {
       const items = await base44.entities.Wishlist.filter({ user_id: user.id, shirt_id: shirtId });
       if (items[0]) await base44.entities.Wishlist.delete(items[0].id);
       setWishlistIds(p => p.filter(id => id !== shirtId));
-      toast({ title: 'הוסר ממועדפים' });
+      toast({ title: 'הוסרה מהמועדפים' });
     } else {
       await base44.entities.Wishlist.create({ user_id: user.id, shirt_id: shirtId });
       setWishlistIds(p => [...p, shirtId]);
-      toast({ title: 'נוסף למועדפים' });
+      toast({ title: 'נוספה למועדפים' });
     }
   }, [user, navigate]);
 
-  const clearFilters = () => {
-    const empty = { gender: '', sport: '', condition: '', status: '', minPrice: '', maxPrice: '', league: '', national_team: '', size: '' };
-    setFilters(empty);
-    setShowMoreFilters(false);
-    setSearchTerm('');
+  // Everything: the drawer's filters, the search and the category in the URL.
+  const clearEverything = () => {
+    setFilters(EMPTY_FILTERS);
     navigate('/catalog');
   };
 
-  // Whether any of the "advanced" filters are active (so we auto-expand them)
-  const hasAdvancedFilters = !!(filters.national_team || filters.size);
-
-  const pageTitle = () => {
-    const q = searchParams.get('q');
-    if (q) return `תוצאות: "${q}"`;
-    const gender = searchParams.get('gender');
-    if (gender === 'men') return 'גברים';
-    if (gender === 'kids') return 'ילדים';
-    if (searchParams.get('sport') === 'basketball') return 'NBA';
-    if (searchParams.get('sale') === 'true') return 'סייל';
-    if (searchParams.get('new') === 'true') return 'חדשים';
-    if (searchParams.get('tag') === 'retro') return 'רטרו';
-    if (searchParams.get('type') === 'national') return 'נבחרות';
-    if (searchParams.get('type') === 'player') return 'שחקנים';
-    if (searchParams.get('fast') === 'true') return 'משלוח מהיר';
-    if (searchParams.get('best') === 'true') return 'הנמכרים ביותר';
-    return 'קטלוג';
-  };
-
-  const hasActiveFilters = Object.values(filters).some(v => v !== '');
+  const q = searchParams.get('q');
 
   // Which quick filter the current query string corresponds to.
   //
   // Held as the filter object rather than its position. It used to be an index
   // found in `quickFilters`, the full list, while the chips are rendered from
-  // `stockedQuickFilters`, the subset that still has stock behind it. With four
-  // filters currently dropped for having none, every index after the first gap
-  // pointed at the wrong chip: choosing נבחרות lit up משלוח מהיר, and choosing
-  // משלוח מהיר lit nothing at all, because its index did not exist in the
-  // shorter list. Comparing the object itself cannot drift that way again.
+  // `stockedQuickFilters`, the subset that still has stock behind it; every
+  // index after the first gap pointed at the wrong chip. Comparing the object
+  // itself cannot drift that way again.
   const activeQuickFilter = stockedQuickFilters.find(qf => {
     const keys = Object.keys(qf.params);
-    if (keys.length === 0) return !searchParams.get('new') && !searchParams.get('tag') && !searchParams.get('sale') && !searchParams.get('type') && !searchParams.get('sport') && !searchParams.get('gender') && !searchParams.get('fast') && !searchParams.get('q');
+    if (keys.length === 0) return !searchParams.get('new') && !searchParams.get('tag') && !searchParams.get('sale') && !searchParams.get('type') && !searchParams.get('sport') && !searchParams.get('gender') && !searchParams.get('fast') && !searchParams.get('q') && !searchParams.get('best');
     return keys.every(k => searchParams.get(k) === qf.params[k]);
   }) ?? null;
+
+  const pageTitle = () => {
+    if (q) return `תוצאות: "${q}"`;
+    if (searchParams.get('best') === 'true') return 'הנמכרים ביותר';
+    if (searchParams.get('gender') === 'men') return 'גברים';
+    if (activeQuickFilter?.title) return activeQuickFilter.title;
+    return 'כל החולצות';
+  };
+
+  const heroDescription = searchParams.get('best') === 'true'
+    ? 'החולצות המבוקשות ביותר אצלנו.'
+    : activeQuickFilter?.description || DEFAULT_DESCRIPTION;
+
+  const heroChips = stockedQuickFilters.map(qf => ({
+    label: qf.label,
+    href: quickFilterHref(qf),
+    active: activeQuickFilter === qf,
+  }));
+
+  const heroImages = shirts.filter(s => s.main_image).slice(0, 3).map(s => s.main_image);
+
+  const activePills = [
+    filters.size && { key: 'size', label: <>מידה <span dir="ltr">{filters.size}</span></> },
+    filters.league && { key: 'league', label: filters.league },
+    filters.national_team && { key: 'national_team', label: filters.national_team },
+    filters.condition && { key: 'condition', label: CONDITION_LABELS[filters.condition] || filters.condition },
+    (filters.minPrice || filters.maxPrice) && { key: 'price', label: `₪${filters.minPrice || 0}–${filters.maxPrice || '∞'}` },
+  ].filter(Boolean);
+
+  const removePill = (key) => {
+    if (key === 'price') setFilters(f => ({ ...f, minPrice: '', maxPrice: '' }));
+    else handleFilterChange(key, '');
+  };
+
+  // The first shirt of a browsing page gets a card twice the size, as the
+  // collection pages of big club shops do. Not on a search, where the first
+  // result is only the best guess, and not on a short list, where one large
+  // card would leave the grid lopsided.
+  const featureFirst = !q && sort === 'featured' && shirts.length >= 7;
 
   const seoTitle = `${pageTitle()} - JerseyLab`;
   const seoDesc = `קטלוג חולצות כדורגל: ${pageTitle()}. חולצות של קבוצות, נבחרות ושחקנים במחירים טובים.`;
@@ -279,228 +285,157 @@ export default function Catalog() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-3 md:px-4 py-4 md:py-6">
+    <div>
       <Seo title={seoTitle} description={seoDesc} canonicalPath="/catalog" jsonLd={catalogJsonLd} />
 
-      {/* Page header */}
-      <div className="mb-5">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div>
-            <p className="text-xs text-brand-navy/40 font-heading uppercase tracking-widest mb-1">JerseyLab Archive</p>
-            <h1 className="font-heading font-black text-3xl md:text-4xl text-brand-navy uppercase">{pageTitle()}</h1>
-            {!loading && !loadError && (
-              <p className="text-sm text-brand-navy/50 mt-1 font-body">{shirts.length} חולצות נמצאו</p>
+      <CollectionHero
+        breadcrumb={(
+          <nav aria-label="נתיב ניווט" className="shop-eyebrow mb-3">
+            <Link to="/" className="transition hover:text-brand-navy">דף הבית</Link>
+            <span className="mx-2" aria-hidden="true">/</span>
+            <span className="text-brand-navy/70">קטלוג</span>
+          </nav>
+        )}
+        title={q ? <>תוצאות עבור <span className="text-brand-orange-ink">"{q}"</span></> : pageTitle()}
+        description={q ? null : heroDescription}
+        chips={q ? [] : heroChips}
+        images={heroImages}
+        loading={loading}
+      >
+        {!loading && !loadError && searchInfo && <SearchExplanation info={searchInfo} />}
+      </CollectionHero>
+
+      <div className="shop-container">
+        <div className="mt-6 flex items-center justify-between gap-3 sm:mt-8">
+          <button type="button" onClick={() => setFiltersOpen(true)}
+            className="inline-flex min-h-[3.25rem] items-center gap-2.5 rounded-2xl border border-brand-line bg-white px-5 text-[15px] font-medium text-brand-navy transition hover:border-brand-navy/30 sm:min-h-[3.5rem] sm:px-6 sm:text-base">
+            <SlidersHorizontal className="h-5 w-5 text-brand-orange-ink" aria-hidden="true" />
+            סינון
+            {activePills.length > 0 && (
+              <span className="flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-brand-orange px-1.5 text-xs font-bold text-white">
+                {activePills.length}
+              </span>
             )}
-            {!loading && !loadError && searchInfo && <SearchExplanation info={searchInfo} />}
-          </div>
+          </button>
+          <SortSelect value={sort} onChange={setSort} />
+        </div>
 
-          {/* Search + filter buttons */}
-          <div className="flex gap-2">
-            <form onSubmit={handleSearch} className="flex border-2 border-brand-navy bg-white flex-1 md:w-80" style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
-              <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} maxLength={100} autoComplete="off"
-                placeholder="חפש לפי שחקן, קבוצה, עונה..." className="flex-1 px-3 py-2 text-sm focus:outline-none font-body" />
-              {searchTerm && (
-                <button type="button" onClick={() => { setSearchTerm(''); navigate('/catalog'); }} className="px-2 text-gray-400 hover:text-gray-600">
-                  <X className="w-3.5 h-3.5" />
+        {!loadError && (
+          <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 sm:mt-8">
+            <h2 className="text-2xl font-bold text-brand-navy sm:text-[1.75rem]" aria-live="polite">
+              {loading ? ' ' : shirts.length === 1 ? 'חולצה אחת' : `${shirts.length} חולצות`}
+            </h2>
+            {activePills.length > 0 && (
+              <ul className="flex flex-wrap items-center gap-2">
+                {activePills.map(pill => (
+                  <li key={pill.key}>
+                    <button type="button" onClick={() => removePill(pill.key)} className="shop-chip min-h-[2.25rem] gap-1.5 px-3.5 text-[13px]">
+                      {pill.label}
+                      <X className="h-3.5 w-3.5" aria-hidden="true" />
+                      <span className="sr-only">הסרת הסינון</span>
+                    </button>
+                  </li>
+                ))}
+                <li>
+                  <button type="button" onClick={() => setFilters(EMPTY_FILTERS)} className="shop-link px-2 text-[13px]">ניקוי הכל</button>
+                </li>
+              </ul>
+            )}
+          </div>
+        )}
+
+        {loadError ? (
+          <EmptyState
+            className="mt-6"
+            icon={Search}
+            title="לא הצלחנו לטעון את הקטלוג"
+            description="בדקו את החיבור לאינטרנט ונסו שוב."
+            actionLabel="לנסות שוב"
+            onAction={loadShirts}
+          />
+        ) : loading ? (
+          <ul className="mt-5 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-4" aria-busy="true">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <li key={i} className={i === 0 ? 'col-span-2 md:row-span-2' : ''}>
+                <ShirtCardSkeleton featured={i === 0} />
+              </li>
+            ))}
+          </ul>
+        ) : shirts.length > 0 ? (
+          <>
+            <ul className="mt-5 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-4">
+              {shirts.slice(0, visibleCount).map((s, idx) => {
+                const featured = featureFirst && idx === 0;
+                return (
+                  <li key={s.id} className={featured ? 'col-span-2 md:row-span-2' : ''}>
+                    <ShirtCard shirt={s} user={user} eager={idx < 6} featured={featured}
+                      isWishlisted={wishlistIds.includes(s.id)} onToggleWishlist={toggleWishlist} />
+                  </li>
+                );
+              })}
+            </ul>
+            {visibleCount < shirts.length && (
+              <div className="mt-10 flex flex-col items-center gap-3">
+                <p className="text-sm text-brand-navy/55">מוצגות {visibleCount} מתוך {shirts.length} חולצות</p>
+                <button type="button" onClick={() => setVisibleCount(c => c + PAGE_SIZE)} className="shop-btn-secondary rounded-full px-8">
+                  הצגת עוד חולצות
                 </button>
-              )}
-              <button type="submit" className="px-3 text-brand-navy hover:text-brand-orange border-r-2 border-brand-navy">
-                <Search className="w-4 h-4" />
-              </button>
-            </form>
-            <button onClick={() => setFiltersOpen(!filtersOpen)}
-              className={`flex items-center gap-1.5 px-3 py-2 border-2 text-sm font-bold font-heading uppercase transition-colors ${filtersOpen || hasActiveFilters ? 'bg-brand-navy text-white border-brand-navy' : 'border-brand-navy bg-white text-brand-navy hover:bg-brand-cream'}`}
-              style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
-              <SlidersHorizontal className="w-4 h-4" />
-              <span>סינון{hasActiveFilters ? ' ●' : ''}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Collection landing pages. Unlike the quick filters below - which
-            only change a query string - each of these is a real page about one
-            subject, which is what search engines rank and people share. */}
-        <nav className="flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide" aria-label="קטגוריות">
-          {COLLECTIONS.map(c => (
-            <Link key={c.slug} to={`/collections/${c.slug}`}
-              className="flex-shrink-0 flex items-center min-h-[44px] px-3 text-xs font-body text-brand-navy bg-white border-2 border-brand-navy/25 whitespace-nowrap hover:border-brand-navy hover:bg-brand-cream transition-colors">
-              {c.name}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Quick filter pills. The mystery box leads because it is a product
-            of its own, not one more way to slice the catalogue. */}
-        <div className="flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide">
-          <Link to="/mystery-box"
-            className="flex-shrink-0 flex items-center gap-1.5 min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 border-brand-navy bg-brand-gold text-brand-navy whitespace-nowrap hover:bg-brand-navy hover:text-brand-gold transition-colors"
-            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
-            <Gift className="w-3.5 h-3.5" />
-            מיסטרי בוקס
-            <span className="font-mono opacity-70">₪70</span>
-          </Link>
-          <Link to="/request-shirt"
-            className="flex-shrink-0 flex items-center gap-1.5 min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 border-brand-navy bg-white text-brand-navy whitespace-nowrap hover:bg-brand-navy hover:text-white transition-colors"
-            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
-            <PackageSearch className="w-3.5 h-3.5" />
-            בקש חולצה
-          </Link>
-          {stockedQuickFilters.map((qf, i) => {
-            const params = new URLSearchParams(qf.params).toString();
-            const href = params ? `/catalog?${params}` : '/catalog';
-            return (
-              <Link key={i} to={href}
-                aria-current={activeQuickFilter === qf ? 'page' : undefined}
-                className={`flex-shrink-0 flex items-center min-h-[44px] px-3 text-xs font-heading font-bold uppercase tracking-wide border-2 transition-colors whitespace-nowrap ${activeQuickFilter === qf ? 'bg-brand-navy text-white border-brand-navy' : 'border-brand-navy/30 text-brand-navy bg-white hover:border-brand-navy hover:bg-brand-cream'}`}>
-                {qf.label}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="mt-6 space-y-4">
+            <EmptyState
+              icon={Search}
+              title="לא נמצאו חולצות"
+              description="נסו לחפש משהו אחר או לשנות את הסינון."
+              actionLabel="ניקוי הסינון"
+              onAction={clearEverything}
+            />
+            {/* The best moment on the whole site to offer this: someone just
+                searched for a shirt and we did not have it. */}
+            <div className="flex flex-col items-start justify-between gap-5 rounded-3xl bg-brand-navy p-7 text-white sm:flex-row sm:items-center sm:p-9">
+              <div>
+                <p className="text-xl font-semibold">אנחנו יכולים להשיג אותה</p>
+                <p className="mt-1.5 max-w-lg text-[15px] leading-relaxed text-white/70">
+                  הקטלוג הוא לא הכל. שלחו לנו תמונה או תיאור של החולצה שחיפשתם, ונבדוק אם אפשר להביא אותה.
+                </p>
+              </div>
+              <Link to="/request-shirt" className="shop-btn flex-shrink-0">
+                <PackageSearch className="h-5 w-5" aria-hidden="true" />
+                בקשת חולצה
               </Link>
-            );
-          })}
-        </div>
+            </div>
+          </div>
+        )}
+
+        {/* Collection landing pages. Unlike the quick filters above - which only
+            change a query string - each of these is a real page about one
+            subject, which is what search engines rank and people share. */}
+        <nav aria-labelledby="catalog-collections" className="mt-16 border-t border-brand-line pt-10">
+          <h2 id="catalog-collections" className="text-xl font-semibold text-brand-navy">קטגוריות</h2>
+          <ul className="mt-4 flex flex-wrap gap-2.5">
+            {withStock(COLLECTIONS.map(c => ({ ...c, href: `/collections/${c.slug}` }))).map(c => (
+              <li key={c.slug}>
+                <Link to={c.href} className="shop-chip px-5">{c.name}</Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
 
-      {/* Advanced Filters panel */}
-      {filtersOpen && (
-        <div className="border-2 border-brand-navy bg-white p-5 mb-6" style={{ boxShadow: '4px 4px 0 var(--brand-navy)' }}>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-heading font-bold text-sm text-brand-navy uppercase tracking-wide">סינון מתקדם</h3>
-            <button onClick={clearFilters} className="text-xs text-brand-orange font-bold font-heading uppercase hover:underline flex items-center gap-1">
-              <X className="w-3 h-3" /> נקה סינון
-            </button>
-          </div>
-          {/* Primary filters - always visible */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <div>
-              <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">מצב</label>
-              <select value={filters.condition} onChange={e => handleFilterChange('condition', e.target.value)}
-                className="w-full border-2 border-brand-navy px-3 py-2 text-sm focus:outline-none bg-white font-body">
-                <option value="">הכל</option>
-                <option value="new">חדש</option>
-                <option value="like_new">כמו חדש</option>
-                <option value="used">משומש</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">טווח מחיר</label>
-              <div className="flex gap-2">
-                <input type="number" value={filters.minPrice} onChange={e => handleFilterChange('minPrice', e.target.value)}
-                  placeholder="מין" className="w-full border-2 border-brand-navy px-2 py-2 text-sm focus:outline-none font-body" dir="ltr" />
-                <input type="number" value={filters.maxPrice} onChange={e => handleFilterChange('maxPrice', e.target.value)}
-                  placeholder="מקס" className="w-full border-2 border-brand-navy px-2 py-2 text-sm focus:outline-none font-body" dir="ltr" />
-              </div>
-            </div>
-
-            {leagues.length > 0 && (
-              <div>
-                <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">ליגה</label>
-                <select value={filters.league} onChange={e => handleFilterChange('league', e.target.value)}
-                  className="w-full border-2 border-brand-navy px-3 py-2 text-sm focus:outline-none bg-white font-body">
-                  <option value="">הכל</option>
-                  {leagues.map(l => <option key={l} value={l}>{l}</option>)}
-                </select>
-              </div>
-            )}
-          </div>
-
-          {/* More filters toggle - progressive disclosure */}
-          <button type="button"
-            onClick={() => setShowMoreFilters(!showMoreFilters)}
-            className="flex items-center gap-1.5 mt-4 text-xs font-heading font-bold text-brand-navy uppercase tracking-wide hover:text-brand-orange transition-colors">
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showMoreFilters || hasAdvancedFilters ? 'rotate-180' : ''}`} />
-            {showMoreFilters || hasAdvancedFilters ? 'פחות מסננים' : 'מסננים נוספים'}
-            {hasAdvancedFilters && <span className="w-1.5 h-1.5 bg-brand-orange rounded-full" />}
-          </button>
-
-          {/* Advanced filters - revealed on demand */}
-          {(showMoreFilters || hasAdvancedFilters) && (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4 pt-4 border-t border-brand-navy/10">
-              {nationalTeams.length > 0 && (
-                <div>
-                  <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">נבחרת</label>
-                  <select value={filters.national_team} onChange={e => handleFilterChange('national_team', e.target.value)}
-                    className="w-full border-2 border-brand-navy px-3 py-2 text-sm focus:outline-none bg-white font-body">
-                    <option value="">הכל</option>
-                    {nationalTeams.map(n => <option key={n} value={n}>{n}</option>)}
-                  </select>
-                </div>
-              )}
-
-              {allSizes.length > 0 && (
-                <div className="col-span-2 md:col-span-2 lg:col-span-3">
-                  <label className="text-xs font-heading font-bold text-brand-navy/60 uppercase block mb-1.5">מידה</label>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {allSizes.map(s => (
-                      <button key={s} type="button"
-                        onClick={() => handleFilterChange('size', filters.size === s ? '' : s)}
-                        className={`text-xs px-3 py-1.5 border-2 font-mono transition-colors ${filters.size === s ? 'bg-brand-navy text-white border-brand-navy' : 'border-brand-navy/40 text-brand-navy bg-transparent hover:border-brand-navy hover:bg-brand-cream'}`}>
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Grid */}
-      {loadError ? (
-        <div className="text-center py-20 border-2 border-dashed border-brand-navy/20">
-          <p className="font-heading font-bold text-xl text-brand-navy/40 mb-2 uppercase">לא הצלחנו לטעון את הקטלוג</p>
-          <p className="text-sm text-brand-navy/30 font-body mb-4">בדוק את החיבור לאינטרנט ונסה שוב</p>
-          <button onClick={loadShirts} className="px-4 py-2 bg-brand-orange text-white text-sm font-bold font-heading uppercase hover:bg-brand-orange-dark transition-colors">
-            נסה שוב
-          </button>
-        </div>
-      ) : loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
-          {Array.from({ length: 8 }).map((_, i) => <ShirtCardSkeleton key={i} />)}
-        </div>
-      ) : shirts.length > 0 ? (
-        <>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
-            {shirts.slice(0, visibleCount).map((s, idx) => (
-              <ShirtCard key={s.id} shirt={s} user={user} eager={idx < 8} isWishlisted={wishlistIds.includes(s.id)} onToggleWishlist={toggleWishlist} />
-            ))}
-          </div>
-          {visibleCount < shirts.length && (
-            <div className="flex justify-center mt-8">
-              <button onClick={() => setVisibleCount(c => c + PAGE_SIZE)}
-                className="px-6 py-2.5 border-2 border-brand-navy bg-white text-brand-navy text-sm font-bold font-heading uppercase hover:bg-brand-cream transition-colors"
-                style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
-                טען עוד ({shirts.length - visibleCount} נוספות)
-              </button>
-            </div>
-          )}
-        </>
-      ) : (
-        <>
-          <EmptyState
-            icon={Search}
-            title="לא נמצאו חולצות"
-            description="נסה לחפש משהו אחר או שנה את הסינון."
-            actionLabel="נקה סינון"
-            onAction={clearFilters}
-          />
-
-          {/* The best moment on the whole site to offer this: someone just
-              searched for a shirt and we did not have it. */}
-          <div className="mt-4 bg-brand-navy border-2 border-brand-navy p-5 text-center"
-            style={{ boxShadow: '4px 4px 0 var(--brand-orange)' }}>
-            <p className="font-heading font-bold text-white uppercase mb-1.5">אנחנו יכולים להשיג אותה</p>
-            <p className="text-sm text-white/70 font-body mb-4 max-w-md mx-auto">
-              הקטלוג הוא לא הכל. שלח לנו תמונה או תיאור של החולצה שחיפשת ונבדוק אם אפשר להביא אותה.
-            </p>
-            <Link to="/request-shirt"
-              className="inline-flex items-center gap-2 bg-brand-gold text-brand-navy px-6 py-3 font-heading font-bold text-sm uppercase tracking-wider hover:bg-white transition-colors">
-              <PackageSearch className="w-4 h-4" />
-              בקש חולצה
-            </Link>
-          </div>
-        </>
-      )}
+      <FilterDrawer
+        open={filtersOpen}
+        onOpenChange={setFiltersOpen}
+        filters={filters}
+        onChange={handleFilterChange}
+        onClear={() => setFilters(EMPTY_FILTERS)}
+        resultCount={shirts.length}
+        sizes={allSizes}
+        leagues={leagues}
+        nationalTeams={nationalTeams}
+        conditions={conditions}
+      />
     </div>
   );
 }

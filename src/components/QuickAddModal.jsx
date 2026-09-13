@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Check, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ShoppingBag, Check, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import StepIndicator from '@/components/configurator/StepIndicator';
@@ -12,8 +12,27 @@ import OrderSummary from '@/components/configurator/OrderSummary';
 import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurator/recommendations';
 import { hasLocalStockForSize } from '@/components/ShippingBadge';
 import { itemsForSize, stockPrint } from '@/lib/localStock';
+import { addToCart, openCart, shirtBasePrice } from '@/lib/cart';
 
-import { getCart, setCart } from '@/lib/cart';
+// Adding a shirt straight from a product card, one question at a time. The
+// product page asks the same questions all at once; this is the short path for
+// someone who already knows what they want.
+
+function Tip({ children }) {
+  return (
+    <div className="mb-3 flex items-start gap-2 rounded-2xl bg-brand-mist p-3 text-[13px] leading-relaxed text-brand-navy/70">
+      <Sparkles className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
+      <span>{children}</span>
+    </div>
+  );
+}
+
+const stepMotion = {
+  initial: { opacity: 0, x: -16 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: 16 },
+  transition: { duration: 0.2 },
+};
 
 export default function QuickAddModal({ shirt, open, onClose }) {
   const [step, setStep] = useState('size');
@@ -26,16 +45,11 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   const [stockItemId, setStockItemId] = useState(''); // which physical shirt, when buying exact
   const [added, setAdded] = useState(false);
 
-  const basePrice = (() => {
-    if (!shirt) return 0;
-    if (shirt.is_retro) return Math.max(shirt.sale_price || shirt.price, 90);
-    if (shirt.is_new || shirt.condition === 'new') return Math.max(shirt.sale_price || shirt.price, 70);
-    return shirt.sale_price || shirt.price;
-  })();
+  const basePrice = shirtBasePrice(shirt);
 
-  const sizeHasLocalStock = hasLocalStockForSize(shirt, selectedSize) && !!selectedSize;
-  const buyingExact = sizeHasLocalStock && buyMode === 'exact';
   const sizeStockItems = selectedSize ? itemsForSize(shirt, selectedSize) : [];
+  const sizeHasLocalStock = !!selectedSize && hasLocalStockForSize(shirt, selectedSize) && sizeStockItems.length > 0;
+  const buyingExact = sizeHasLocalStock && buyMode === 'exact';
   const stockItem = buyingExact ? sizeStockItems.find(item => item.id === stockItemId) || null : null;
 
   const flow = [
@@ -48,12 +62,13 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   const stepLabels = [
     'מידה',
     ...(sizeHasLocalStock ? ['בחירה'] : []),
-    ...(buyingExact ? [] : ['סוג חולצה', 'הדפסה', ...(addName === 'yes' ? ['שם ומספר'] : [])]),
+    ...(buyingExact ? [] : ['גרסה', 'הדפסה', ...(addName === 'yes' ? ['שם ומספר'] : [])]),
     'סיכום',
   ];
 
   const reset = () => {
-    setStep('size'); setSelectedSize(''); setShirtType(''); setAddName(''); setCustomName(''); setCustomNumber(''); setBuyMode(''); setStockItemId(''); setAdded(false);
+    setStep('size'); setSelectedSize(''); setShirtType(''); setAddName(''); setCustomName(''); setCustomNumber('');
+    setBuyMode(''); setStockItemId(''); setAdded(false);
   };
   const handleClose = () => { reset(); onClose(); };
 
@@ -71,12 +86,13 @@ export default function QuickAddModal({ shirt, open, onClose }) {
     return true;
   };
 
-  const goNext = () => { if (!canProceed()) return; const idx = flow.indexOf(step); setStep(flow[idx + 1]); };
-  const goBack = () => { const idx = flow.indexOf(step); setStep(flow[idx - 1]); };
+  const goNext = () => { if (!canProceed()) return; setStep(flow[flow.indexOf(step) + 1]); };
+  const goBack = () => { setStep(flow[flow.indexOf(step) - 1]); };
 
+  // Adds, confirms for a moment, then hands over to the cart drawer, so the
+  // customer sees where the shirt went.
   const handleAdd = () => {
-    const cart = getCart();
-    cart.push({
+    addToCart({
       shirtId: shirt.id, shirtName: shirt.name, image: shirt.main_image,
       size: selectedSize, basePrice,
       addName: buyingExact ? !!stockPrint(stockItem) : addName === 'yes',
@@ -86,23 +102,22 @@ export default function QuickAddModal({ shirt, open, onClose }) {
       isExactStockItem: buyingExact,
       stockItemId: buyingExact ? stockItem?.id || '' : '',
     });
-    setCart(cart);
     setAdded(true);
-    setTimeout(() => handleClose(), 1200);
+    setTimeout(() => { handleClose(); openCart(); }, 650);
   };
 
   if (!shirt) return null;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md text-right">
+      <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto text-right">
         <DialogTitle className="sr-only">הוספה לסל - {shirt.name}</DialogTitle>
 
-        <div className="flex gap-3 items-start mb-1">
-          {shirt.main_image && <img src={shirt.main_image} alt="" className="w-14 h-14 object-cover border-2 border-brand-navy flex-shrink-0" />}
-          <div className="flex-1 min-w-0">
-            <p className="font-heading font-bold text-sm text-brand-navy uppercase leading-tight truncate">{shirt.name}</p>
-            <p className="font-mono font-bold text-brand-orange text-sm mt-0.5">₪{basePrice}</p>
+        <div className="mb-1 flex items-center gap-3 pe-10">
+          {shirt.main_image && <img src={shirt.main_image} alt="" className="h-14 w-14 flex-shrink-0 rounded-xl object-cover" />}
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[15px] font-semibold leading-tight text-brand-navy">{shirt.name}</p>
+            <p className="mt-0.5 text-[15px] font-semibold tabular-nums text-brand-navy/70">₪{basePrice}</p>
           </div>
         </div>
 
@@ -110,54 +125,47 @@ export default function QuickAddModal({ shirt, open, onClose }) {
 
         <AnimatePresence mode="wait">
           {step === 'size' && (
-            <motion.div key="size" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">בוא נתאים לך את החולצה</h3>
-              <p className="text-sm text-gray-500 font-body mb-4">איזו מידה הכי מתאימה לך?</p>
+            <motion.div key="size" {...stepMotion}>
+              <h3 className="mb-1 text-lg font-semibold text-brand-navy">איזו מידה?</h3>
+              <p className="mb-4 text-sm text-brand-navy/55">בחרו את המידה שמתאימה לכם.</p>
               <SizeSelector shirt={shirt} value={selectedSize} onChange={(s) => { setSelectedSize(s); setBuyMode(''); setStockItemId(''); }} />
             </motion.div>
           )}
           {step === 'exactOrCustom' && (
-            <motion.div key="exactOrCustom" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">יש לנו את זו במלאי בארץ!</h3>
-              <p className="text-sm text-gray-500 font-body mb-4">
-                {sizeStockItems.length > 1 ? 'יש אצלנו כמה חולצות במידה הזו. אפשר לקנות אחת מהן כמו שהיא, או להזמין גרסה משלך.' : 'רוצה לקנות בדיוק את החולצה שקיימת, או להזמין גרסה משלך?'}
+            <motion.div key="exactOrCustom" {...stepMotion}>
+              <h3 className="mb-1 text-lg font-semibold text-brand-navy">יש לנו את זו במלאי בארץ</h3>
+              <p className="mb-4 text-sm text-brand-navy/55">
+                {sizeStockItems.length > 1 ? 'יש אצלנו כמה חולצות במידה הזו. אפשר לקנות אחת מהן כמו שהיא, או להזמין גרסה משלכם.' : 'אפשר לקנות את החולצה שכבר נמצאת בארץ, או להזמין גרסה משלכם.'}
               </p>
               <ExactOrCustomChoice items={sizeStockItems} value={buyMode} itemId={stockItemId}
                 onChange={(mode, id) => { setBuyMode(mode); setStockItemId(id || ''); }} />
             </motion.div>
           )}
           {step === 'shirtType' && (
-            <motion.div key="shirtType" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">איזה סוג חולצה?</h3>
-              <div className="flex items-start gap-1.5 mb-3 text-xs text-brand-navy/70 font-body bg-brand-cream p-2.5 border-r-2 border-brand-orange">
-                <Sparkles className="w-3.5 h-3.5 text-brand-orange flex-shrink-0 mt-0.5" />
-                <span>{getShirtTypeTip()}</span>
-              </div>
+            <motion.div key="shirtType" {...stepMotion}>
+              <h3 className="mb-2 text-lg font-semibold text-brand-navy">איזו גרסה?</h3>
+              <Tip>{getShirtTypeTip()}</Tip>
               <ShirtTypeChoice value={shirtType} onChange={setShirtType} />
             </motion.div>
           )}
           {step === 'addName' && (
-            <motion.div key="addName" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">רוצה שם ומספר על הגב?</h3>
-              <div className="flex items-start gap-1.5 mb-3 text-xs text-brand-navy/70 font-body bg-brand-cream p-2.5 border-r-2 border-brand-orange">
-                <Sparkles className="w-3.5 h-3.5 text-brand-orange flex-shrink-0 mt-0.5" />
-                <span>{getPersonalizationTip(shirt)}</span>
-              </div>
+            <motion.div key="addName" {...stepMotion}>
+              <h3 className="mb-2 text-lg font-semibold text-brand-navy">שם ומספר על הגב?</h3>
+              <Tip>{getPersonalizationTip(shirt)}</Tip>
               <PersonalizationChoice value={addName} onChange={handleAddNameChange} />
             </motion.div>
           )}
           {step === 'nameDetails' && (
-            <motion.div key="nameDetails" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">איזה שם ומספר תרצה?</h3>
-              <p className="text-sm text-gray-500 font-body mb-4">הקלד את השם והמספר להדפסה</p>
+            <motion.div key="nameDetails" {...stepMotion}>
+              <h3 className="mb-1 text-lg font-semibold text-brand-navy">מה להדפיס?</h3>
+              <p className="mb-4 text-sm text-brand-navy/55">באותיות לועזיות, כמו שיודפס על הגב.</p>
               <NameNumberInput customName={customName} customNumber={customNumber}
                 onChange={(field, val) => field === 'customName' ? setCustomName(val) : setCustomNumber(val)} />
             </motion.div>
           )}
           {step === 'summary' && (
-            <motion.div key="summary" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-              <h3 className="font-heading font-bold text-lg text-brand-navy mb-1">הכול מוכן - נשאר רק לאשר</h3>
-              <p className="text-sm text-gray-500 font-body mb-4">הנה הבחירה שלך:</p>
+            <motion.div key="summary" {...stepMotion}>
+              <h3 className="mb-4 text-lg font-semibold text-brand-navy">הכל מוכן</h3>
               {buyingExact ? (
                 <OrderSummary shirt={shirt} size={selectedSize}
                   shirtType={stockItem?.player_version ? 'player' : 'regular'}
@@ -171,26 +179,29 @@ export default function QuickAddModal({ shirt, open, onClose }) {
           )}
         </AnimatePresence>
 
-        <div className="flex gap-2 mt-5">
+        <div className="mt-5 flex gap-2">
           {step !== 'size' && !added && (
-            <button onClick={goBack} className="flex items-center gap-1 px-4 py-3 border-2 border-brand-navy text-brand-navy text-sm font-heading font-bold uppercase hover:bg-brand-cream transition-colors">
-              <ChevronLeft className="w-4 h-4" /> חזור
+            <button type="button" onClick={goBack} className="shop-btn-secondary px-4">
+              <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              חזרה
             </button>
           )}
           {!added && step !== 'summary' && (
-            <button onClick={goNext} disabled={!canProceed()}
-              className="flex-1 flex items-center justify-center gap-1.5 py-3 bg-brand-navy text-white text-sm font-heading font-bold uppercase hover:bg-brand-navy-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-              המשך <ChevronRight className="w-4 h-4" />
+            <button type="button" onClick={goNext} disabled={!canProceed()} className="shop-btn-dark flex-1">
+              המשך
+              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
             </button>
           )}
           {!added && step === 'summary' && (
-            <button onClick={handleAdd} className="flex-1 flex items-center justify-center gap-2 py-3 bg-brand-orange text-white text-sm font-heading font-bold uppercase hover:bg-brand-orange-dark transition-colors" style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}>
-              <ShoppingCart className="w-4 h-4" /> הוספה לסל
+            <button type="button" onClick={handleAdd} className="shop-btn flex-1">
+              <ShoppingBag className="h-4 w-4" aria-hidden="true" />
+              הוספה לסל
             </button>
           )}
           {added && (
-            <div className="flex-1 flex items-center justify-center gap-2 py-3 bg-green-500 text-white text-sm font-heading font-bold uppercase">
-              <Check className="w-4 h-4" /> נוסף לסל!
+            <div role="status" className="flex min-h-[3.25rem] flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-600 text-[15px] font-semibold text-white">
+              <Check className="h-4 w-4" aria-hidden="true" />
+              נוספה לסל
             </div>
           )}
         </div>

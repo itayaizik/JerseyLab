@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Megaphone, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
-// The strip above the navbar.
+// The strip above the header.
 //
-// It used to be a fixed sentence about the shop that no visitor needed twice,
-// and because the navbar is fixed and this was not, the navbar covered it
-// entirely — all anyone ever saw was a sliver of orange behind the bar.
-//
-// It is now what a strip in that position is for: the one offer or notice worth
+// It is what a strip in that position is for: the one offer or notice worth
 // interrupting for. Empty by default, edited from ניהול > הגדרות אתר, and
-// dismissible — a permanent banner is noise, and noise is what people learn to
+// dismissible - a permanent banner is noise, and noise is what people learn to
 // scroll past.
 
 const SETTING_KEYS = {
@@ -60,24 +56,26 @@ export default function PromoBar() {
     try { localStorage.setItem(dismissKey(promo.text), '1'); } catch { /* private mode */ }
   };
 
+  // The darker orange rather than the accent itself: this is small white text,
+  // and on the accent it falls short of a readable contrast.
   return (
-    <div className="bg-brand-orange text-white">
-      <div className="max-w-7xl mx-auto px-4 lg:px-6 flex items-center gap-2 min-h-[36px] py-1.5">
-        <Megaphone className="w-3.5 h-3.5 flex-shrink-0 text-brand-gold" aria-hidden="true" />
-        <p className="flex-1 min-w-0 text-xs font-body text-center sm:text-right leading-snug">
+    <div className="bg-brand-orange-ink text-white">
+      <div className="shop-container flex min-h-[2.25rem] items-center gap-2 py-1.5">
+        <span className="w-8 flex-shrink-0" aria-hidden="true" />
+        <p className="min-w-0 flex-1 text-center text-[13px] font-medium leading-snug">
           {promo.text}
           {promo.linkText && promo.linkHref && (
             <>
               {' '}
-              <Link to={promo.linkHref} className="font-bold underline underline-offset-2 hover:text-brand-gold transition-colors">
+              <Link to={promo.linkHref} className="font-semibold underline underline-offset-2 hover:opacity-85">
                 {promo.linkText}
               </Link>
             </>
           )}
         </p>
-        <button type="button" onClick={close} aria-label="סגור הודעה"
-          className="flex-shrink-0 w-7 h-7 flex items-center justify-center hover:bg-white/20 transition-colors">
-          <X className="w-3.5 h-3.5" />
+        <button type="button" onClick={close} aria-label="סגירת ההודעה"
+          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition hover:bg-white/15">
+          <X className="h-3.5 w-3.5" />
         </button>
       </div>
     </div>

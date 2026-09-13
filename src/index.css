@@ -19,12 +19,17 @@
     --brand-navy-dark: #0F1D38;
     --brand-orange: #E8622A;
     --brand-orange-dark: #D0551F;
+    --brand-orange-ink: #C2501C;
+    --brand-orange-soft: #FDF1EB;
     --brand-cream: #F2ECD9;
     --brand-cream-dark: #E8DFC8;
     --brand-gold: #FFD95A;
+    --brand-mist: #F3F5F8;
+    --brand-mist-dark: #E8ECF2;
+    --brand-line: #E3E7EE;
 
-    --background: 40 33% 95%;
-    --foreground: 30 15% 15%;
+    --background: 0 0% 100%;
+    --foreground: 221 46% 20%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 5%;
     --popover: 0 0% 100%;
@@ -39,8 +44,8 @@
     --accent-foreground: 0 0% 5%;
     --destructive: 4 100% 59%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89%;
-    --input: 0 0% 89%;
+    --border: 216 22% 91%;
+    --input: 216 22% 91%;
     --ring: 27 87% 67%;
     --chart-1: 27 87% 67%;
     --chart-2: 173 58% 39%;
@@ -49,8 +54,8 @@
     --chart-5: 27 87% 67%;
     --radius: 0.375rem;
     --font-heading: 'Heebo', sans-serif;
-    --font-body: 'Assistant', sans-serif;
-    --font-display: 'Playfair Display', serif;
+    --font-body: 'Heebo', sans-serif;
+    --font-display: 'Heebo', sans-serif;
     --font-mono: 'Space Mono', monospace;
     --sidebar-background: 0 0% 4%;
     --sidebar-foreground: 0 0% 96%;
@@ -82,57 +87,96 @@
     direction: rtl;
     /* Match the 110% zoom the site was being read at. */
     font-size: 100%;
+    -webkit-tap-highlight-color: transparent;
   }
   @media (min-width: 768px) {
     html { font-size: 110%; }
   }
   body {
-    @apply bg-background text-foreground font-body antialiased;
-    font-family: 'Assistant', sans-serif;
-    background-color: var(--brand-cream);
-    background-image:
-      radial-gradient(circle at 20% 30%, rgba(27, 42, 74, 0.035) 0 1px, transparent 1px),
-      radial-gradient(circle at 70% 75%, rgba(27, 42, 74, 0.03) 0 1px, transparent 1px),
-      radial-gradient(circle at 45% 55%, rgba(232, 98, 42, 0.025) 0 1px, transparent 1px);
-    background-size: 37px 41px, 53px 47px, 71px 67px;
+    @apply bg-white text-brand-navy font-body antialiased;
+    font-family: 'Heebo', system-ui, sans-serif;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Heebo', sans-serif;
+    font-family: 'Heebo', system-ui, sans-serif;
+  }
+  ::selection {
+    background: var(--brand-orange-soft);
+    color: var(--brand-navy);
   }
 }
 
-/* The floating header's rounded corners.
+/* The storefront's building blocks.
  *
- * Applied to the bars inside the header rather than by clipping the header,
- * because the header also contains the catalogue panel, the account menu and
- * the icon tooltips, all of which hang below the bar and would be cut off.
- *
- * first-child and last-child rather than naming the two bars, so it stays
- * correct whether or not the promo strip is showing: with it, the strip takes
- * the top corners and the nav the bottom; without it, the nav is both and takes
- * all four. */
-.header-floating > :first-child {
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+ * Prefixed `shop-` because the admin area shares this stylesheet and already
+ * uses plain names like `card` for its own markup. Each one is the single
+ * definition of that element: a button that looks like the add-to-cart button
+ * is this class, not a copy of its utilities. */
+@layer components {
+  .shop-container {
+    @apply mx-auto w-full max-w-[1560px] px-4 sm:px-6 lg:px-10;
+  }
+
+  /* The one primary action on a screen. A gradient from the accent down to its
+     darker shade, which is what gives it depth on a flat white page. */
+  .shop-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-brand-orange to-brand-orange-dark px-6 min-h-[3.25rem] text-[15px] font-semibold text-white shadow-cta transition hover:brightness-[1.06] active:brightness-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none;
+  }
+  .shop-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-brand-line bg-white px-6 min-h-[3.25rem] text-[15px] font-semibold text-brand-navy transition hover:border-brand-navy/30 hover:bg-brand-mist disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .shop-btn-dark {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-navy px-6 min-h-[3.25rem] text-[15px] font-semibold text-white transition hover:bg-brand-navy-light disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .shop-link {
+    @apply inline-flex items-center gap-1.5 font-semibold text-brand-orange-ink underline-offset-4 transition hover:underline;
+  }
+
+  .shop-chip {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-full border border-brand-line bg-white px-4 min-h-[2.75rem] text-sm text-brand-navy/80 transition hover:border-brand-navy/35 hover:text-brand-navy;
+  }
+  .shop-chip-active {
+    @apply border-brand-orange bg-brand-orange-soft font-semibold text-brand-orange-ink ring-1 ring-inset ring-brand-orange hover:border-brand-orange hover:text-brand-orange-ink;
+  }
+
+  .shop-field {
+    @apply w-full rounded-2xl border border-transparent bg-brand-mist px-4 min-h-[3.25rem] text-[15px] text-brand-navy placeholder:text-brand-navy/40 transition focus:border-brand-navy/25 focus:bg-white focus:outline-none;
+  }
+
+  .shop-card {
+    @apply rounded-3xl bg-white shadow-card;
+  }
+  .shop-eyebrow {
+    @apply text-sm font-normal text-brand-navy/50;
+  }
+  .shop-icon-btn {
+    @apply inline-flex h-11 w-11 items-center justify-center rounded-full text-brand-navy transition hover:bg-brand-mist;
+  }
+  .shop-title {
+    @apply text-[1.75rem] font-bold leading-[1.15] tracking-[-0.02em] text-brand-navy sm:text-4xl lg:text-[2.75rem];
+  }
 }
-.header-floating > :last-child {
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
-.header-floating > * {
-  transition: border-radius 300ms ease;
+
+@layer utilities {
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--brand-cream-dark);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--brand-navy);
-  border-radius: 3px;
+  background: rgba(27, 42, 74, 0.22);
+  border-radius: 999px;
 }
 
 /* Polaroid photo effect */
@@ -163,7 +207,7 @@
   100% { background-position: calc(200px + 100%) 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, var(--brand-cream-dark) 25%, #d8cfb8 50%, var(--brand-cream-dark) 75%);
+  background: linear-gradient(90deg, var(--brand-mist) 25%, var(--brand-mist-dark) 50%, var(--brand-mist) 75%);
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -184,4 +228,15 @@
 .tape {
   background: rgba(255,220,100,0.6);
   transform: rotate(-2deg);
+}
+
+/* Someone who has asked their system for less motion gets the page without the
+   slides, fades and zooms. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

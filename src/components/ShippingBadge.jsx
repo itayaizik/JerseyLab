@@ -1,6 +1,10 @@
-import React from 'react';
-import { Zap, Truck } from 'lucide-react';
 import { sizeQty } from '@/lib/sizes';
+
+// Whether a shirt, or one size of it, is physically in Israel.
+//
+// The badge this file was named for is gone - the product card and the purchase
+// card now say it in their own words - but these two questions are asked all
+// over the shop, from the catalogue filter to the admin list.
 
 export function hasLocalStock(shirt) {
   const sizes = shirt?.local_stock_sizes;
@@ -13,37 +17,4 @@ export function hasLocalStockForSize(shirt, size) {
   // sizeQty, not a direct lookup: stock for this size may be filed under 'XXL'
   // while the selector hands us '2XL' (or the other way round).
   return sizeQty(shirt?.local_stock_sizes, size) > 0;
-}
-
-export function getShippingInfo(shirt, size) {
-  if (hasLocalStockForSize(shirt, size)) {
-    return { type: 'local', label: 'מלאי בארץ', eta: 'הגעה עד שבוע או איסוף עצמי מקריית אונו', color: 'var(--brand-navy)', Icon: Truck };
-  }
-  return { type: 'fast', label: 'משלוח מהיר', eta: 'הגעה עד 3 שבועות', color: 'var(--brand-orange)', Icon: Zap };
-}
-
-export default function ShippingBadge({ shirt, size, compact }) {
-  const info = getShippingInfo(shirt, size);
-  const { Icon, label, eta, color } = info;
-
-  if (compact) {
-    return (
-      <div className="inline-flex items-center gap-1 px-1.5 py-0.5" style={{ background: color, color: 'white' }}>
-        <Icon className="w-2.5 h-2.5 flex-shrink-0" />
-        <span className="text-[9px] font-heading font-bold uppercase tracking-wide leading-none">{label}</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{ background: color, color: 'white', border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-navy)' }}>
-      <div className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
-        <Icon className="w-4 h-4" />
-      </div>
-      <div>
-        <p className="text-sm font-heading font-bold uppercase tracking-wide leading-tight">{label}</p>
-        <p className="text-[11px] leading-tight opacity-90 font-body">{eta}</p>
-      </div>
-    </div>
-  );
 }

@@ -114,6 +114,29 @@ await sharp(master('logo-wide.png'))
   .toFile(out('logo-navbar.png'));
 note(out('logo-navbar.png'));
 
+// The same logo for light backgrounds. The master's wordmark and the L are
+// white, drawn for the navy bar, so on the white header they vanish. Every
+// light, unsaturated pixel is recoloured navy with its alpha kept, which
+// carries the anti-aliased edges across; the orange J is saturated and stays.
+{
+  const { data, info } = await sharp(master('logo-wide.png'))
+    .resize({ height: 128, fit: 'inside' })
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  for (let i = 0; i < data.length; i += 4) {
+    const [r, g, b, a] = [data[i], data[i + 1], data[i + 2], data[i + 3]];
+    if (a === 0) continue;
+    const light = Math.min(r, g, b) > 150;
+    const grey = Math.max(r, g, b) - Math.min(r, g, b) < 60;
+    if (light && grey) { data[i] = NAVY.r; data[i + 1] = NAVY.g; data[i + 2] = NAVY.b; }
+  }
+  await sharp(data, { raw: info })
+    .png({ compressionLevel: 9, palette: true })
+    .toFile(out('logo-navbar-dark.png'));
+  note(out('logo-navbar-dark.png'));
+}
+
 const total = written.reduce((n, [, size]) => n + size, 0);
 for (const [path, size] of written) {
   console.log(`  public/${basename(path).padEnd(28)} ${(size / 1024).toFixed(1)} KB`);

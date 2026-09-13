@@ -1,23 +1,86 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { Heart, Share2, ChevronRight, Copy, Check, Info, Shirt } from 'lucide-react';
+import { Heart, Share2, Shirt, ChevronLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import StatusBadge from '@/components/ui/StatusBadge';
-import TagBadge from '@/components/ui/TagBadge';
-import InterestModal, { CartModal } from '@/components/InterestModal';
-import ShirtCard from '@/components/ShirtCard';
+import ProductGallery from '@/components/product/ProductGallery';
+import PurchasePanel from '@/components/product/PurchasePanel';
+import SizeGuideDrawer from '@/components/product/SizeGuideDrawer';
+import ProductRail from '@/components/shop/ProductRail';
+import Disclosure from '@/components/shop/Disclosure';
 import ShirtReviews from '@/components/ShirtReviews';
-import ShippingBadge, { hasLocalStock, hasLocalStockForSize } from '@/components/ShippingBadge';
-import ShippingInfoModal from '@/components/ShippingInfoModal';
-import ProductImage, { IMAGE_SIZES } from '@/components/ui/ProductImage';
 import Seo from '@/components/Seo';
 import EmptyState from '@/components/ui/EmptyState';
-import TrustBar from '@/components/TrustBar';
 import { toast } from '@/components/ui/use-toast';
-import { shirtSizes, isSizeAvailable } from '@/lib/sizes';
+import { shirtSizes } from '@/lib/sizes';
+import { shirtBasePrice } from '@/lib/cart';
+import { BUSINESS, detail } from '@/lib/business';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
 
 const conditionLabels = { new: 'חדש', like_new: 'כמו חדש', used: 'משומש' };
+
+function ProductDescription({ shirt }) {
+  const facts = [
+    [shirt.national_team && !shirt.club ? 'נבחרת' : 'קבוצה', shirt.club || shirt.national_team],
+    ['ליגה', shirt.league],
+    ['עונה', shirt.season],
+    ['שחקן', shirt.player_name],
+    ['מצב', conditionLabels[shirt.condition]],
+    ['מידות', shirtSizes(shirt).join(', ')],
+  ].filter(([, value]) => value);
+
+  return (
+    <div className="space-y-4 text-[15px] leading-relaxed text-brand-navy/75">
+      {shirt.description && <p className="whitespace-pre-line">{shirt.description}</p>}
+      {facts.length > 0 && (
+        <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-2 text-sm">
+          {facts.map(([label, value]) => (
+            <React.Fragment key={label}>
+              <dt className="text-brand-navy/50">{label}</dt>
+              <dd className="font-medium text-brand-navy">{value}</dd>
+            </React.Fragment>
+          ))}
+        </dl>
+      )}
+      {shirt.tags?.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {shirt.tags.map(tag => (
+            <Link key={tag} to={`/catalog?q=${encodeURIComponent(tag)}`} className="shop-chip min-h-[2.25rem] px-3.5 text-[13px]">
+              #{tag}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// The shipping terms as the business has set them in lib/business, so this row
+// and the shipping policy page always say the same thing.
+function ShippingDetails() {
+  const s = BUSINESS.shipping;
+  return (
+    <ul className="space-y-3 text-[15px] leading-relaxed text-brand-navy/75">
+      <li>
+        <span className="font-semibold text-brand-navy">מלאי בארץ: </span>
+        {detail(s.localStockDays)}, או איסוף עצמי מ{detail(s.pickupLocation)} בתיאום מראש.
+      </li>
+      <li>
+        <span className="font-semibold text-brand-navy">הזמנה מיוחדת: </span>
+        {detail(s.specialOrderWeeks)}.
+      </li>
+      {s.carrier && s.price && (
+        <li>
+          <span className="font-semibold text-brand-navy">משלוח: </span>
+          {detail(s.carrier)}, {detail(s.price)}{s.freeAbove ? `, וחינם בהזמנה מעל ${detail(s.freeAbove)}` : ''}.
+        </li>
+      )}
+      <li>
+        ביטול עסקה והחזרות לפי חוק הגנת הצרכן.{' '}
+        <Link to="/legal/shipping" className="shop-link">כל הפרטים</Link>
+      </li>
+    </ul>
+  );
+}
 
 export default function ShirtDetail() {
   const { id } = useParams();
@@ -25,19 +88,16 @@ export default function ShirtDetail() {
   const navigate = useNavigate();
   const [shirt, setShirt] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [zoomed, setZoomed] = useState(false);
-  const [zoomOrigin, setZoomOrigin] = useState('50% 50%');
+  const [error, setError] = useState(false);
   const [user, setUser] = useState(null);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [interestOpen, setInterestOpen] = useState(searchParams.get('interest') === 'true');
-  const [cartOpen, setCartOpen] = useState(false);
+  const [siblings, setSiblings] = useState([]);
   const [related, setRelated] = useState([]);
-  const [copied, setCopied] = useState(false);
-  const [selectedSize, setSelectedSize] = useState('');
-  const [shippingInfoOpen, setShippingInfoOpen] = useState(false);
-  const [error, setError] = useState(false);
-  const [showAllImages, setShowAllImages] = useState(false);
+  const [sizeGuide, setSizeGuide] = useState({ open: false, tab: 'fan' });
+  const [reviewSummary, setReviewSummary] = useState(null);
+  const [attention, setAttention] = useState(0);
+  const [ctaPosition, setCtaPosition] = useState('below');
+  const ctaRef = useRef(null);
 
   useEffect(() => {
     loadShirt();
@@ -47,7 +107,9 @@ export default function ShirtDetail() {
   async function loadShirt() {
     setLoading(true);
     setError(false);
+    setSiblings([]);
     setRelated([]);
+    setReviewSummary(null);
     try {
       // Direct single-shirt fetch - never loads the whole catalog
       const s = await base44.entities.Shirt.get(id);
@@ -57,26 +119,36 @@ export default function ShirtDetail() {
       // Fire-and-forget view increment - never block the UI
       base44.entities.Shirt.update(id, { views_count: (s.views_count || 0) + 1 }).catch(() => {});
 
-      // Load related products in the background AFTER the shirt is visible
+      // Related shirts load in the background, after the shirt is visible.
       loadRelated(s);
-    } catch (e) {
+    } catch {
       setError(true);
       setLoading(false);
     }
   }
 
-  // Background load of related shirts - does not block the main product rendering
+  // Other shirts of the same club or national team, shown as small swatches in
+  // the purchase card; and a longer row for the foot of the page, topped up
+  // from the same league and then the newest shirts when the team alone has
+  // too few to fill it.
   async function loadRelated(s) {
     try {
-      if (!s.club && !s.national_team) return;
-      let rel = [];
-      if (s.club) {
-        rel = await base44.entities.Shirt.filter({ club: s.club, status: 'available' }, '-created_date', 5);
-      } else {
-        rel = await base44.entities.Shirt.filter({ national_team: s.national_team, status: 'available' }, '-created_date', 5);
+      const team = s.club ? { club: s.club } : s.national_team ? { national_team: s.national_team } : null;
+      const sameTeam = team
+        ? (await base44.entities.Shirt.filter({ ...team, status: 'available' }, '-created_date', 12)).filter(r => r.id !== s.id)
+        : [];
+      setSiblings(sameTeam.slice(0, 5));
+
+      let rail = sameTeam.slice(0, 10);
+      if (rail.length < 8) {
+        const pool = s.league
+          ? await base44.entities.Shirt.filter({ league: s.league, status: 'available' }, '-created_date', 20)
+          : await base44.entities.Shirt.filter({ status: 'available' }, '-created_date', 20);
+        const seen = new Set([s.id, ...rail.map(r => r.id)]);
+        rail = [...rail, ...pool.filter(r => !seen.has(r.id))].slice(0, 10);
       }
-      setRelated(rel.filter((r) => r.id !== s.id).slice(0, 4));
-    } catch {/* related products are non-critical */}
+      setRelated(rail);
+    } catch { /* related products are non-critical */ }
   }
 
   async function loadUser() {
@@ -85,46 +157,61 @@ export default function ShirtDetail() {
       setUser(me);
       const wl = await base44.entities.Wishlist.filter({ user_id: me.id, shirt_id: id });
       setIsWishlisted(wl.length > 0);
-    } catch {/* not logged in */}
+    } catch { /* not logged in */ }
   }
 
+  // A link that arrives with ?interest=true (older cards and shared links)
+  // lands on the size choice rather than on a window that no longer exists.
+  useEffect(() => {
+    if (shirt && searchParams.get('interest') === 'true') setAttention(a => a + 1);
+  }, [shirt?.id]);
+
+  // The phone's sticky bar shows only while the real button is still further
+  // down the page. Once the customer has scrolled to it or past it, the bar
+  // would only cover the footer.
+  useEffect(() => {
+    const el = ctaRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setCtaPosition('visible');
+      else setCtaPosition(entry.boundingClientRect.top > 0 ? 'below' : 'above');
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [shirt?.id, loading]);
+
   const toggleWishlist = async () => {
-    if (!user) {navigate('/login');return;}
+    if (!user) { navigate('/login'); return; }
     if (isWishlisted) {
       const items = await base44.entities.Wishlist.filter({ user_id: user.id, shirt_id: id });
       if (items[0]) await base44.entities.Wishlist.delete(items[0].id);
       setIsWishlisted(false);
-      toast({ title: 'הוסר ממועדפים' });
+      toast({ title: 'הוסרה מהמועדפים' });
     } else {
       await base44.entities.Wishlist.create({ user_id: user.id, shirt_id: id });
       setIsWishlisted(true);
-      toast({ title: 'נוסף למועדפים' });
+      toast({ title: 'נוספה למועדפים' });
     }
   };
 
-  const shareUrl = window.location.href;
-  const handleCopy = () => {
-    navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  // The phone's own share sheet where there is one; elsewhere, the link is
+  // copied.
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try { await navigator.share({ title: shirt.name, url }); } catch { /* dismissed */ }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: 'הקישור הועתק' });
+    } catch { /* clipboard unavailable */ }
   };
 
   const allImages = useMemo(() =>
     shirt ? [shirt.main_image, ...(shirt.extra_images || [])].filter(Boolean) : [],
     [shirt]
   );
-
-  const sortedSizes = useMemo(() => shirtSizes(shirt), [shirt]);
-
-  const displayTags = useMemo(() => {
-    if (!shirt) return [];
-    const t = [];
-    if (shirt.is_rare) t.push('נדיר');
-    if (shirt.is_retro) t.push('רטרו');
-    if (shirt.is_new) t.push('חדש');
-    if (shirt.sale_price && shirt.sale_price < shirt.price) t.push('סייל');
-    return t;
-  }, [shirt]);
 
   const productJsonLd = useMemo(() => {
     if (!shirt) return null;
@@ -146,7 +233,7 @@ export default function ShirtDetail() {
           offers: {
             "@type": "Offer",
             url: origin + "/shirt/" + shirt.id,
-            price: shirt.sale_price || shirt.price,
+            price: shirtBasePrice(shirt),
             priceCurrency: "ILS",
             availability: shirt.status === "available" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
             ...(shirt.condition && shirt.condition !== "new" ? { itemCondition: "https://schema.org/UsedCondition" } : {}),
@@ -166,291 +253,156 @@ export default function ShirtDetail() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="aspect-square skeleton" />
-          <div className="space-y-4">
-            <div className="h-8 skeleton w-3/4" />
-            <div className="h-4 skeleton w-1/2" />
-            <div className="h-6 skeleton w-1/4" />
+      <div className="shop-container pb-16 pt-6 lg:pt-10" aria-busy="true">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,33rem)] xl:gap-16">
+          <div className="aspect-square rounded-[1.75rem] skeleton" />
+          <div className="shop-card space-y-4 p-6 sm:p-8">
+            <div className="h-8 w-3/4 rounded-full skeleton" />
+            <div className="h-5 w-1/3 rounded-full skeleton" />
+            <div className="h-8 w-24 rounded-full skeleton" />
+            <div className="h-px bg-brand-line" />
+            <div className="flex gap-2">
+              {[0, 1, 2, 3, 4].map(i => <div key={i} className="h-11 w-14 rounded-full skeleton" />)}
+            </div>
+            <div className="h-14 rounded-2xl skeleton" />
           </div>
         </div>
-      </div>);
-
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="shop-container py-10">
         <EmptyState
           icon={Shirt}
           title="לא הצלחנו לטעון את החולצה"
-          description="בדוק את החיבור לאינטרנט ונסה שוב, או חזור לקטלוג."
-          actionLabel="נסה שוב"
+          description="בדקו את החיבור לאינטרנט ונסו שוב, או חזרו לקטלוג."
+          actionLabel="לנסות שוב"
           onAction={() => window.location.reload()}
+          secondaryLabel="לקטלוג"
+          secondaryTo="/catalog"
         />
-        <div className="text-center -mt-2 mb-4">
-          <Link to="/catalog" className="text-sm text-brand-navy/60 hover:text-brand-orange font-body">חזור לקטלוג ←</Link>
-        </div>
       </div>
     );
   }
 
   if (!shirt) {
     return (
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="shop-container py-10">
         <EmptyState
           icon={Shirt}
-          title="חולצה לא נמצאה"
+          title="החולצה לא נמצאה"
           description="ייתכן שהחולצה כבר לא זמינה או שהקישור אינו תקין."
-          actionLabel="חזור לקטלוג"
+          actionLabel="לקטלוג"
           actionTo="/catalog"
         />
       </div>
     );
   }
 
-  const visibleThumbs = showAllImages ? allImages : allImages.slice(0, 3);
-
   const seoTitle = `${shirt.name} - JerseyLab`;
   const seoDesc = shirt.description
     ? shirt.description.slice(0, 155)
     : `${shirt.name} - ${shirt.club || shirt.national_team || ''} ${shirt.season || ''} ${shirt.player_name || ''}`.trim();
 
+  const roundButton = 'flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-brand-navy shadow-card backdrop-blur transition hover:scale-105';
+  const reviewsMeta = reviewSummary?.count
+    ? `${reviewSummary.average.toFixed(1)} ★ (${reviewSummary.count})`
+    : undefined;
+
   return (
     <div>
       <Seo title={seoTitle} description={seoDesc} image={shirt.main_image} type="product" canonicalPath={`/shirt/${shirt.id}`} jsonLd={productJsonLd} />
-      <div className="max-w-7xl mx-auto px-4 pt-6 pb-24 lg:pb-6">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-brand-navy/50 mb-6">
-          <Link to="/" className="hover:text-brand-orange">דף הבית</Link>
-          <ChevronRight className="w-3 h-3 rotate-180" />
-          <Link to="/catalog" className="hover:text-brand-orange">קטלוג</Link>
-          <ChevronRight className="w-3 h-3 rotate-180" />
-          <span className="text-brand-navy">{shirt.name}</span>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-          {/* Images */}
-          <div className="lg:sticky lg:top-20 lg:self-start">
-            <div className="relative">
-              <StatusBadge status={shirt.status} className="absolute top-3 right-3 z-10" />
-              <div
-                role="button"
-                tabIndex={0}
-                aria-label={zoomed ? 'הקטן תמונה' : 'הגדל תמונה'}
-                aria-pressed={zoomed}
-                className={`aspect-square bg-gray-50 overflow-hidden relative border-2 border-brand-navy ${zoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
-                style={{ boxShadow: '4px 4px 0 var(--brand-orange)' }}
-                onClick={() => { setZoomed(z => !z); setZoomOrigin('50% 50%'); }}
-                onMouseMove={(e) => {
-                  if (!zoomed) return;
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const x = ((e.clientX - rect.left) / rect.width) * 100;
-                  const y = ((e.clientY - rect.top) / rect.height) * 100;
-                  setZoomOrigin(`${x}% ${y}%`);
-                }}
-                onMouseLeave={() => setZoomOrigin('50% 50%')}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoomed(z => !z); } }}>
-                <ProductImage
-                  eager
-                  sizes={IMAGE_SIZES.hero}
-                  src={allImages[selectedImage]}
-                  alt={shirt.name}
-                  className={`w-full h-full object-cover transition-transform duration-300 ${zoomed ? 'scale-150' : ''}`}
-                  style={{ transformOrigin: zoomOrigin }}
-                />
-              </div>
-            </div>
+      <div className="shop-container pb-12 pt-5 lg:pb-16 lg:pt-8">
+        <nav aria-label="נתיב ניווט" className="mb-5 flex min-w-0 items-center gap-1.5 text-sm text-brand-navy/50 lg:mb-8">
+          <Link to="/" className="flex-shrink-0 transition hover:text-brand-navy">דף הבית</Link>
+          <ChevronLeft className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+          <Link to="/catalog" className="flex-shrink-0 transition hover:text-brand-navy">קטלוג</Link>
+          <ChevronLeft className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+          <span className="truncate text-brand-navy/75">{shirt.name}</span>
+        </nav>
 
-            {allImages.length > 1 && (
-              <div className="flex gap-2 mt-3 overflow-x-auto pb-1 items-center">
-                {visibleThumbs.map((img, i) => (
-                  <button key={i} onClick={() => { setSelectedImage(i); setZoomed(false); }}
-                    className={`relative w-16 h-16 flex-shrink-0 border-2 overflow-hidden touch-manipulation ${i === selectedImage ? 'border-brand-navy' : 'border-gray-200'}`}>
-                    <ProductImage src={img} alt="" sizes={IMAGE_SIZES.thumb} className="w-full h-full object-cover" />
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,33rem)] xl:gap-16">
+          <div className="lg:sticky lg:top-28">
+            <ProductGallery
+              shirt={shirt}
+              images={allImages}
+              overlay={(
+                <div className="absolute end-4 top-4 flex flex-col gap-2">
+                  <button type="button" onClick={toggleWishlist} aria-pressed={isWishlisted}
+                    aria-label={isWishlisted ? 'הסרה מהמועדפים' : 'הוספה למועדפים'} className={roundButton}>
+                    <Heart className={`h-5 w-5 ${isWishlisted ? 'fill-brand-orange text-brand-orange' : ''}`} />
                   </button>
-                ))}
-                {!showAllImages && allImages.length > 3 && (
-                  <button onClick={() => setShowAllImages(true)}
-                    className="w-16 h-16 flex-shrink-0 border-2 border-brand-navy text-brand-navy text-xs font-heading font-bold hover:bg-brand-cream">
-                    +{allImages.length - 3}
+                  <button type="button" onClick={handleShare} aria-label="שיתוף החולצה" className={roundButton}>
+                    <Share2 className="h-5 w-5" />
                   </button>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Details */}
-          <div>
-            {/* Tags */}
-            {displayTags.length > 0 &&
-            <div className="flex gap-1 flex-wrap mb-3">
-                {displayTags.map((t) => <TagBadge key={t} tag={t} />)}
-              </div>
-            }
-
-
-
-            <h1 className="font-heading font-black text-2xl md:text-3xl mb-2">{shirt.name}</h1>
-
-            <div className="flex flex-wrap gap-3 text-sm text-brand-navy/60 mb-4">
-              {shirt.club && <span>{shirt.club}</span>}
-              {shirt.national_team && <span>{shirt.national_team}</span>}
-              {shirt.league && <span>• {shirt.league}</span>}
-              {shirt.season && <span>• {shirt.season}</span>}
-              {shirt.player_name && <span>• {shirt.player_name}</span>}
-            </div>
-
-            {/* Price */}
-            <div className="flex items-center gap-3 mb-6">
-              {shirt.sale_price && shirt.sale_price < shirt.price ?
-              <>
-                  <span className="font-mono font-bold text-3xl text-redcard">₪{shirt.sale_price}</span>
-                  <span className="font-mono text-xl text-brand-navy/40 line-through">₪{shirt.price}</span>
-                </> :
-              <span className="font-mono font-bold text-3xl text-brand-navy">₪{shirt.price}</span>
-              }
-            </div>
-
-            {/* Sizes */}
-            {shirt.sizes && Object.keys(shirt.sizes).length > 0 &&
-            <div className="mb-6">
-                <h3 className="font-heading font-bold text-sm mb-2">מידות זמינות:</h3>
-                <div className="flex gap-2 flex-wrap">
-                  {sortedSizes.map(size => {
-                      const available = isSizeAvailable(shirt, size);
-                      const isLocal = available && hasLocalStockForSize(shirt, size);
-                      const isSelected = selectedSize === size;
-                      return (
-                        <button key={size} type="button" disabled={!available}
-                          aria-label={available ? size : `${size} - אזל`}
-                          onClick={() => setSelectedSize(selectedSize === size ? '' : size)}
-                          className={`flex flex-col items-center justify-center min-h-[2.75rem] px-3 py-1 border-2 text-sm font-mono transition-all ${!available ? 'border-brand-navy/25 text-brand-navy/35 line-through cursor-not-allowed' : isSelected ? (isLocal ? 'border-green-700 bg-green-600 text-white' : 'bg-brand-navy text-white border-brand-navy') : isLocal ? 'border-green-600 text-green-700 bg-green-50 hover:bg-green-100' : 'border-brand-navy text-brand-navy hover:bg-brand-cream'}`}>
-                          <span>{size}</span>
-                          {!available ? (
-                            <span className="text-[8px] font-heading font-bold uppercase leading-none mt-0.5 no-underline">אזל</span>
-                          ) : isLocal ? (
-                            <span className="text-[8px] font-heading font-bold uppercase leading-none mt-0.5">מלאי בארץ</span>
-                          ) : (
-                            <span className="text-[8px] leading-none mt-0.5 opacity-0">מלאי</span>
-                          )}
-                        </button>
-                      );
-                    })}
                 </div>
-                {hasLocalStock(shirt) && (
-                  <div className="flex items-center gap-1.5 mt-2 text-[11px] text-green-700 font-body">
-                    <span className="w-2 h-2 rounded-full bg-green-600"></span>
-                    מידות מסומנות זמינות במלאי בארץ
-                  </div>
-                )}
-              </div>
-            }
-
-            {/* Trust signals - reassure right before the CTA */}
-            <TrustBar />
-
-            {/* Actions */}
-            <div className="space-y-3 mb-6">
-              {shirt.status === 'available' && (
-                <>
-                <button onClick={() => setInterestOpen(true)}
-                  className="w-full py-4 font-heading font-black text-base bg-brand-orange text-white active:bg-brand-orange-dark touch-manipulation"
-                  style={{ boxShadow: '3px 3px 0 var(--brand-navy)' }}
-                  aria-label={`שלח בקשת התעניינות עבור ${shirt.name}`}>
-                  אני מעוניין
-                </button>
-                <p className="text-center text-[11px] text-brand-navy/50 font-body">ללא התחייבות - נחזור אליך עם פרטי זמינות</p>
-                </>
               )}
-              <div className="flex gap-2">
-                <button onClick={toggleWishlist}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 border-2 text-sm font-bold touch-manipulation transition-colors ${isWishlisted ? 'border-redcard text-redcard bg-red-50' : 'border-brand-navy text-brand-navy'}`}>
-                  <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-redcard' : ''}`} />
-                  <span className="hidden sm:inline">{isWishlisted ? 'במועדפים' : 'הוסף למועדפים'}</span>
-                  <span className="sm:hidden">{isWishlisted ? 'במועדפים' : 'מועדפים'}</span>
-                </button>
-                <button onClick={handleCopy}
-                  aria-label={copied ? 'קישור הועתן' : 'העתק קישור לחולצה'}
-                  className="flex items-center justify-center px-4 py-3.5 border-2 border-brand-navy text-brand-navy touch-manipulation">
-                  {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                </button>
-                <a href={`https://wa.me/?text=${encodeURIComponent(shirt.name + ' ' + shareUrl)}`} target="_blank" rel="noopener noreferrer"
-                  aria-label="שתף את החולצה בוואטסאפ"
-                  className="flex items-center justify-center px-4 py-3.5 border-2 border-brand-navy text-brand-navy touch-manipulation">
-                  <Share2 className="w-4 h-4" />
-                </a>
-              </div>
+            />
+          </div>
+
+          <div>
+            <PurchasePanel
+              shirt={shirt}
+              siblings={siblings}
+              attention={attention}
+              ctaRef={ctaRef}
+              onOpenSizeGuide={(tab) => setSizeGuide({ open: true, tab: tab || (shirt.gender_category === 'kids' ? 'kids' : 'fan') })}
+            />
+
+            <div className="mt-4 space-y-2.5">
+              <Disclosure title="תיאור המוצר">
+                <ProductDescription shirt={shirt} />
+              </Disclosure>
+              <Disclosure title="משלוחים והחזרות">
+                <ShippingDetails />
+              </Disclosure>
+              <Disclosure title="ביקורות" meta={reviewsMeta}>
+                <ShirtReviews shirtId={id} user={user} onSummary={setReviewSummary} />
+              </Disclosure>
             </div>
-            {/* Description */}
-            {shirt.description &&
-            <div className="mb-6">
-                <h3 className="font-heading font-bold text-sm mb-2">תיאור:</h3>
-                <p className="text-sm text-brand-navy/70 leading-relaxed whitespace-pre-wrap">{shirt.description}</p>
-              </div>
-            }
-
-            {/* Tags */}
-            {shirt.tags && shirt.tags.length > 0 &&
-            <div className="flex gap-1 flex-wrap mb-6">
-                {shirt.tags.map((t) =>
-              <Link key={t} to={`/catalog?q=${encodeURIComponent(t)}`} className="text-xs px-2 py-1 border-2 border-brand-navy text-brand-navy bg-transparent hover:bg-brand-cream transition-colors font-mono">
-                    #{t}
-                  </Link>
-              )}
-              </div>
-            }
-
-            {/* Shipping and delivery.
-                Moved below the call to action: this block is orange and full
-                width, which made it read as the order button, and customers
-                were pressing it expecting to buy. The real button now sits
-                directly under the size chips, where the decision is made. */}
-            <div className="mb-6">
-              <ShippingBadge shirt={shirt} size={selectedSize} />
-              <button onClick={() => setShippingInfoOpen(true)} className="flex items-center gap-1 text-xs text-brand-orange font-bold font-heading uppercase mt-2 hover:underline">
-                <Info className="w-3.5 h-3.5" />
-                פרטים על משלוחים
-              </button>
-            </div>
-
           </div>
         </div>
-
-        {/* Reviews & Trust Section */}
-        <ShirtReviews shirtId={id} user={user} />
-
-        {/* Related */}
-        {related.length > 0 &&
-        <div className="mt-16">
-            <h2 className="font-heading font-black text-xl mb-6">חולצות דומות</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {related.map((s) => <ShirtCard key={s.id} shirt={s} user={user} />)}
-            </div>
-          </div>
-        }
       </div>
 
-      {/* Interest Modal */}
-      {shirt &&
-      <InterestModal shirt={shirt} open={interestOpen} onClose={() => setInterestOpen(false)} user={user} initialSize={selectedSize} onGoToCart={() => setCartOpen(true)} />
-      }
-      <CartModal open={cartOpen} onClose={() => setCartOpen(false)} user={user} />
-      <ShippingInfoModal open={shippingInfoOpen} onClose={() => setShippingInfoOpen(false)} />
-
-      {/* Sticky mobile CTA - keeps the primary action reachable while scrolling */}
-      {shirt.status === 'available' && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t-2 border-brand-navy px-3 py-2 flex items-center gap-3" style={{ boxShadow: '0 -3px 0 var(--brand-orange)' }}>
-          <div className="flex-1 min-w-0">
-            <p className="font-heading font-bold text-xs text-brand-navy uppercase truncate">{shirt.name}</p>
-            <p className="font-mono font-bold text-sm text-brand-orange">{shirt.sale_price && shirt.sale_price < shirt.price ? `₪${shirt.sale_price}` : `₪${shirt.price}`}</p>
+      {related.length > 0 && (
+        <section className="shop-container" aria-labelledby="related-heading">
+          <div className="rounded-[2rem] bg-gradient-to-b from-brand-mist to-white px-4 pb-2 pt-10 sm:px-8 sm:pt-14 lg:px-12">
+            <h2 id="related-heading" className="shop-title text-center">אולי יעניין אתכם גם</h2>
+            <div className="mt-8 sm:mt-10">
+              <ProductRail shirts={related} user={user} label="חולצות נוספות" />
+            </div>
           </div>
-          <button onClick={() => setInterestOpen(true)} className="bg-brand-orange text-white px-6 py-3 font-heading font-black text-sm uppercase touch-manipulation active:bg-brand-orange-dark" style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}>
-            אני מעוניין
-          </button>
+        </section>
+      )}
+
+      <SizeGuideDrawer
+        open={sizeGuide.open}
+        onOpenChange={(open) => setSizeGuide(g => ({ ...g, open }))}
+        shirtName={shirt.name}
+        defaultTab={sizeGuide.tab}
+      />
+
+      {/* Keeps the way to order in reach on a phone, where the purchase card
+          sits below the photo. */}
+      {shirt.status === 'available' && (
+        <div
+          className={`fixed inset-x-0 bottom-0 z-40 border-t border-brand-line bg-white/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-transform duration-300 lg:hidden ${ctaPosition === 'below' ? 'translate-y-0' : 'translate-y-full'}`}
+          aria-hidden={ctaPosition !== 'below'}
+        >
+          <div className="flex items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-brand-navy">{shirt.name}</p>
+              <p className="text-sm font-semibold tabular-nums text-brand-navy/65">₪{shirtBasePrice(shirt)}</p>
+            </div>
+            <button type="button" tabIndex={ctaPosition === 'below' ? 0 : -1} onClick={() => setAttention(a => a + 1)} className="shop-btn min-h-[3rem] px-6">
+              להזמנה
+            </button>
+          </div>
         </div>
       )}
-    </div>);
-
+    </div>
+  );
 }

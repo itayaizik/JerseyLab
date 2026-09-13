@@ -1,22 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Gift, ArrowLeft } from 'lucide-react';
 import { BOX_TYPES } from '@/lib/mysteryBox';
 import { MYSTERY_BOX_PANELS } from '@/components/MysteryBoxInfo';
 
-// The mystery box on the home page: a pitch on one side, the explanation on
-// the other.
+// The mystery box on the home page: the offer on a navy panel, and beside it
+// the three questions the product page answers at length - what it is, what
+// arrives, and what you can rule out - condensed to what fits without
+// scrolling.
 //
-// It used to sit directly under the hero as a wide banner, which put a side
-// product ahead of the catalogue itself. It now sits further down, after a
-// visitor has seen actual shirts, where an unusual offer reads as a discovery
-// rather than an interruption.
-//
-// The right block is the offer and the way in; the left block answers the three
-// questions the product page answers at length — what it is, what arrives, and
-// what you can rule out — condensed to what fits without scrolling.
+// It sits after the shirts rather than under the hero: a side product placed
+// above the catalogue reads as an interruption, here it reads as a discovery.
 
-// The three panels worth showing here. The rest stay on the product page.
 const PROMO_PANEL_TITLES = ['מה זה מיסטרי בוקס?', 'מה מקבלים', 'מה אפשר לפסול'];
 
 const promoPanels = PROMO_PANEL_TITLES
@@ -32,72 +26,47 @@ function panelLine(panel) {
 
 export default function MysteryBoxPromo() {
   return (
-    <section className="max-w-7xl mx-auto px-6 py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)] gap-5 items-stretch">
-
-        {/* The offer */}
-        <div className="bg-brand-navy border-2 border-brand-navy p-6 flex flex-col"
-          style={{ boxShadow: '5px 5px 0 var(--brand-orange)' }}>
-          <div className="flex items-center gap-3 mb-4">
-            <span className="w-12 h-12 flex-shrink-0 bg-brand-orange flex items-center justify-center">
-              <Gift className="w-6 h-6 text-white" />
-            </span>
-            <div className="min-w-0">
-              <p className="text-[10px] font-heading uppercase tracking-[0.2em] text-brand-gold">חדש</p>
-              <h2 className="font-heading font-black text-2xl text-white uppercase leading-none">מיסטרי בוקס</h2>
-            </div>
-          </div>
-
-          <p className="font-body text-sm text-white/70 leading-relaxed mb-5">
-            אתה בוחר סגנון ומידה, אנחנו בוחרים את החולצה. אותה איכות כמו בקטלוג,
-            במחיר נמוך יותר.
+    <section className="shop-container mt-16 sm:mt-24" aria-labelledby="mystery-heading">
+      <div className="grid overflow-hidden rounded-[2rem] bg-brand-navy lg:grid-cols-2">
+        <div className="flex flex-col justify-center p-7 text-white sm:p-12">
+          <span className="inline-flex w-fit items-center rounded-full bg-white/10 px-3.5 py-1.5 text-[13px] font-semibold text-brand-gold">
+            חדש באתר
+          </span>
+          <h2 id="mystery-heading" className="mt-5 text-4xl font-bold leading-tight tracking-[-0.02em] sm:text-5xl">מיסטרי בוקס</h2>
+          <p className="mt-3 max-w-md text-base leading-relaxed text-white/70 sm:text-lg">
+            אתם בוחרים סגנון ומידה, אנחנו בוחרים את החולצה. אותה איכות כמו בקטלוג, במחיר נמוך יותר.
           </p>
-
-          <div className="space-y-1.5 mb-6">
+          <ul className="mt-6 max-w-sm divide-y divide-white/10 border-y border-white/10">
             {BOX_TYPES.map(box => (
-              <div key={box.id} className="flex items-center justify-between border-b border-white/10 pb-1.5">
-                <span className="font-body text-sm text-white/70">{box.label}</span>
-                <span className="font-mono font-bold text-base text-brand-gold">₪{box.price}</span>
-              </div>
+              <li key={box.id} className="flex items-center justify-between py-2.5">
+                <span className="text-[15px] text-white/75">{box.label}</span>
+                <span className="text-base font-semibold tabular-nums text-white">₪{box.price}</span>
+              </li>
             ))}
-          </div>
-
-          <Link to="/mystery-box"
-            className="mt-auto flex items-center justify-center gap-2 bg-brand-gold text-brand-navy py-3.5 font-heading font-bold text-sm uppercase tracking-wider hover:bg-white transition-colors">
-            בנה את הבוקס
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
+          </ul>
+          <Link to="/mystery-box" className="shop-btn mt-8 self-start px-8">לבניית הבוקס</Link>
         </div>
 
-        {/* What it actually is */}
-        <div className="bg-white border-2 border-brand-navy p-6 lg:p-7 flex flex-col"
-          style={{ boxShadow: '5px 5px 0 var(--brand-navy)' }}>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 flex-1">
-            {promoPanels.map(panel => {
-              const Icon = panel.icon;
-              return (
-                <div key={panel.title} className="flex flex-col gap-2">
-                  <span className="w-8 h-8 flex-shrink-0 bg-brand-cream border border-brand-navy/15 flex items-center justify-center">
-                    <Icon className="w-4 h-4 text-brand-orange" />
-                  </span>
-                  <h3 className="font-heading font-bold text-sm text-brand-navy uppercase leading-tight">
-                    {panel.title}
-                  </h3>
-                  <p className="font-body text-[13px] text-brand-navy/65 leading-relaxed">
-                    {panelLine(panel)}
-                  </p>
-                </div>
-              );
-            })}
+        {promoPanels.length > 0 && (
+          <div className="p-2.5 sm:p-4 lg:ps-0">
+            <ul className="grid h-full content-center gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-1">
+              {promoPanels.map(panel => {
+                const Icon = panel.icon;
+                return (
+                  <li key={panel.title} className="flex flex-col rounded-3xl bg-white p-6 lg:flex-row lg:items-start lg:gap-4">
+                    <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-brand-orange-soft text-brand-orange-ink">
+                      <Icon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <div className="mt-4 lg:mt-0">
+                      <h3 className="text-base font-semibold text-brand-navy">{panel.title}</h3>
+                      <p className="mt-1 text-sm leading-relaxed text-brand-navy/60">{panelLine(panel)}</p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
-
-          <p className="mt-5 pt-4 border-t border-brand-navy/10 font-body text-xs text-brand-navy/55">
-            כל הפרטים, כולל מה אפשר לפסול ומה קורה אם לא אהבת,
-            {' '}
-            <Link to="/mystery-box" className="text-brand-orange font-bold hover:underline">בעמוד המיסטרי בוקס</Link>.
-          </p>
-        </div>
-
+        )}
       </div>
     </section>
   );

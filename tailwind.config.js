@@ -7,7 +7,16 @@ module.exports = {
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
+  			sm: 'calc(var(--radius) - 4px)',
+  			'4xl': '2rem'
+  		},
+  		// Soft, wide shadows in the navy's own hue rather than black, so cards
+  		// lift off a white page without the grey smudge a neutral shadow leaves.
+  		boxShadow: {
+  			card: '0 1px 2px rgba(27, 42, 74, 0.04), 0 10px 30px -10px rgba(27, 42, 74, 0.14)',
+  			lift: '0 2px 6px rgba(27, 42, 74, 0.06), 0 24px 48px -16px rgba(27, 42, 74, 0.26)',
+  			float: '0 10px 40px -10px rgba(15, 29, 56, 0.28)',
+  			cta: '0 10px 24px -10px rgba(232, 98, 42, 0.7)'
   		},
   		colors: {
   			background: 'hsl(var(--background))',
@@ -19,20 +28,24 @@ module.exports = {
   			// These used to be written as bare hex values in class names -
   			// `bg-[#1B2A4A]` and so on, 1,092 times across 63 files - which meant
   			// a change of shade was a sweep through the codebase and a near
-  			// certainty of missing some. The values are unchanged; only the way
-  			// they are referenced is.
+  			// certainty of missing some.
   			//
   			// The matching CSS variables in index.css carry the same values for
   			// inline styles, which cannot use a class name.
   			brand: {
-  				navy: '#1B2A4A',          // headings, body text, borders, the navbar
+  				navy: '#1B2A4A',          // headings, body text, the footer
   				'navy-light': '#2A3F6B',  // raised surfaces on navy
-  				'navy-dark': '#0F1D38',   // pressed states, the footer
-  				orange: '#E8622A',        // the accent: links, prices, active states
-  				'orange-dark': '#D0551F', // hover on orange
-  				cream: '#F2ECD9',         // the page ground
-  				'cream-dark': '#E8DFC8',  // alternating sections, card insets
-  				gold: '#FFD95A',          // highlights and badges
+  				'navy-dark': '#0F1D38',   // pressed states, overlays
+  				orange: '#E8622A',        // the accent: buttons, highlights, badges
+  				'orange-dark': '#D0551F', // hover on orange, the foot of the button gradient
+  				'orange-ink': '#C2501C',  // orange as text on white, 4.7:1 where the accent is 3.4:1
+  				'orange-soft': '#FDF1EB', // the ground of a selected chip or option
+  				cream: '#F2ECD9',         // the old page ground, kept for pages not yet redesigned
+  				'cream-dark': '#E8DFC8',  // the same
+  				gold: '#FFD95A',          // product badges
+  				mist: '#F3F5F8',          // quiet surfaces: search, fields, accordions
+  				'mist-dark': '#E8ECF2',   // hover on mist, alternate table rows
+  				line: '#E3E7EE',          // dividers and card outlines
   			},
 
   			// The admin area's own darker palette. Deliberately not the shop's:
@@ -95,11 +108,12 @@ module.exports = {
   			}
   		},
   		fontFamily: {
-  			// Heebo and Assistant both cover Hebrew. The previous heading face,
-  			// Oswald, did not, so every Hebrew heading fell back silently.
-  			heading: ['Heebo', 'Assistant', 'system-ui', 'sans-serif'],
-  			body: ['Assistant', 'Heebo', 'system-ui', 'sans-serif'],
-  			display: ['Heebo', 'Assistant', 'sans-serif'],
+  			// One family for the whole shop. Heebo covers Hebrew and Latin with the
+  			// same proportions, so a shirt name that mixes the two ("חולצת PSG")
+  			// reads as one line of type rather than two fonts side by side.
+  			heading: ['Heebo', 'system-ui', 'sans-serif'],
+  			body: ['Heebo', 'system-ui', 'sans-serif'],
+  			display: ['Heebo', 'system-ui', 'sans-serif'],
   			mono: ['Space Mono', 'ui-monospace', 'monospace']
   		},
   		keyframes: {

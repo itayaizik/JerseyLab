@@ -1,7 +1,9 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import SectionHeader from '@/components/shop/SectionHeader';
+import ScrollRow from '@/components/shop/ScrollRow';
 
 const DEFAULT_CLUBS = [
   { name: 'ליברפול', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/c/cd/Liverpool_FC.svg/200px-Liverpool_FC.svg.png', href: `/catalog?q=${encodeURIComponent('ליברפול')}` },
@@ -16,84 +18,50 @@ const DEFAULT_CLUBS = [
   { name: "צ'לסי", logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/c/cc/Chelsea_FC.svg/200px-Chelsea_FC.svg.png', href: `/catalog?q=${encodeURIComponent('צלסי')}` },
 ];
 
+// The clubs row on the home page, managed from ניהול > סקשנים בדף הבית.
 export default function PopularClubsSection({ title }) {
-  const scrollRef = useRef(null);
   const [clubs, setClubs] = useState([]);
 
   useEffect(() => {
-  base44.entities.PopularClub.filter({ active: true }, 'sort_order', 100)
-    .then(data => setClubs(data.length > 0 ? data : DEFAULT_CLUBS))
-    .catch(() => setClubs(DEFAULT_CLUBS));
-}, []);
-
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-    
-    const handleScroll = () => {
-      if (container.scrollLeft >= container.scrollWidth - container.clientWidth - 10) {
-        container.scrollLeft = 0;
-      }
-    };
-    
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
+    base44.entities.PopularClub.filter({ active: true }, 'sort_order', 100)
+      .then(data => setClubs(data.length > 0 ? data : DEFAULT_CLUBS))
+      .catch(() => setClubs(DEFAULT_CLUBS));
   }, []);
 
-  const scroll = (dir) => {
-    if (scrollRef.current) scrollRef.current.scrollBy({ left: -dir * 200, behavior: 'smooth' });
-  };
-
-  const displayClubs = clubs.length > 0 ? clubs : DEFAULT_CLUBS;
-  const loopedClubs = [...displayClubs, ...displayClubs];
+  if (!clubs.length) return null;
 
   return (
-    <section className="py-10" style={{ background: 'var(--brand-cream)' }}>
-      <div className="max-w-7xl mx-auto px-6">
-        <h2 className="font-heading font-bold text-xl text-brand-navy uppercase tracking-wide mb-6 text-center border-b-2 border-brand-orange pb-1 inline-block w-full">
-          {title || 'קבוצות פופולריות'}
-        </h2>
-
-        <div className="relative flex items-center gap-2">
-          <button
-            onClick={() => scroll(-1)}
-            aria-label="גלול ימינה"
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors"
-            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}
-          >
-            <ChevronRight className="w-4 h-4 text-brand-navy" />
-          </button>
-
-          <div ref={scrollRef} className="flex gap-3 overflow-x-auto scroll-smooth pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {loopedClubs.map((club, i) => (
+    <section className="mt-16 sm:mt-24" aria-labelledby="clubs-heading">
+      <div className="shop-container">
+        <SectionHeader id="clubs-heading" title={title || 'קנו לפי קבוצה'} />
+        <div className="mt-10">
+          <ScrollRow label="קבוצות" itemClassName="w-[44%] sm:w-[30%] md:w-[23%] lg:w-[18%] xl:w-[15.2%]">
+            {clubs.map(club => (
               <Link
-                key={`${club.id || club.name}-${i}`}
-                to={club.href || club.logo_url || '#'}
-                className="flex-shrink-0 flex flex-col items-center gap-2 bg-white border-2 border-brand-navy p-4 hover:border-brand-orange hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
-                style={{ width: 110, boxShadow: '2px 2px 0 var(--brand-navy)' }}
+                key={club.id || club.name}
+                to={club.href || `/catalog?q=${encodeURIComponent(club.name)}`}
+                className="group flex h-full flex-col rounded-3xl bg-white p-2.5 shadow-card transition-shadow hover:shadow-lift sm:p-3"
               >
-                {(club.logo_url) && (
-                  <img
-                    src={club.logo_url}
-                    alt={club.name}
-                    loading="lazy"
-                    className="w-12 h-12 object-contain group-hover:scale-110 transition-transform"
-                    onError={e => { e.target.style.display = 'none'; }}
-                  />
-                )}
-                <span className="text-xs font-heading font-bold text-brand-navy text-center leading-tight">{club.name}</span>
+                <span className="flex aspect-square items-center justify-center rounded-[1.125rem] bg-brand-mist">
+                  {club.logo_url && (
+                    <img
+                      src={club.logo_url}
+                      alt=""
+                      loading="lazy"
+                      className="h-1/2 w-1/2 object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-110"
+                      onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
+                    />
+                  )}
+                </span>
+                <span className="flex items-center justify-between gap-2 px-1.5 pb-1 pt-3.5">
+                  <span className="min-w-0 truncate text-[15px] font-semibold text-brand-navy">{club.name}</span>
+                  <span aria-hidden="true" className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-brand-orange to-brand-orange-dark text-white transition-transform duration-200 group-hover:-translate-x-0.5">
+                    <ArrowLeft className="h-4 w-4" />
+                  </span>
+                </span>
               </Link>
             ))}
-          </div>
-
-          <button
-            onClick={() => scroll(1)}
-            aria-label="גלול שמאלה"
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors"
-            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}
-          >
-            <ChevronLeft className="w-4 h-4 text-brand-navy" />
-          </button>
+          </ScrollRow>
         </div>
       </div>
     </section>

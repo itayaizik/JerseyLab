@@ -1,21 +1,19 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { withStock } from '@/lib/catalogFacets';
+import SectionHeader from '@/components/shop/SectionHeader';
 
 const DEFAULT_CATS = [
-  { label: 'ילדים', subtitle: 'כל הגלים ובחורות', href: '/catalog?gender=kids', image_url: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=400&q=80' },
-  { label: 'רטרו', subtitle: 'קלאסיקות נצחיות', href: '/catalog?tag=retro', image_url: 'https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=400&q=80' },
-  { label: 'ליגות', subtitle: 'אנגליה • ספרד • עוד', href: '/catalog', image_url: 'https://images.unsplash.com/photo-1551958219-acbc630e2914?w=400&q=80' },
-  { label: 'נבחרות', subtitle: 'מונדיאל 2026', href: '/catalog?type=national', image_url: 'https://images.unsplash.com/photo-1522778526097-ce0a22ceb253?w=400&q=80' },
-  { label: 'שחקנים', subtitle: 'חולצות עם שם', href: '/catalog?type=player', image_url: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&q=80' },
-  { label: 'NBA 🏀', subtitle: 'באסקטבול', href: '/catalog?sport=basketball', image_url: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&q=80' },
-  { label: 'סייל ⚡', subtitle: 'מחירים מטורפים', href: '/catalog?sale=true', image_url: 'https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=400&q=80' },
+  { label: 'ילדים', subtitle: 'מידות ילדים', href: '/catalog?gender=kids', image_url: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=600&q=80' },
+  { label: 'רטרו', subtitle: 'קלאסיקות נצחיות', href: '/catalog?tag=retro', image_url: 'https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=600&q=80' },
+  { label: 'ליגות', subtitle: 'אנגליה, ספרד ועוד', href: '/catalog', image_url: 'https://images.unsplash.com/photo-1551958219-acbc630e2914?w=600&q=80' },
+  { label: 'נבחרות', subtitle: 'מונדיאל 2026', href: '/catalog?type=national', image_url: 'https://images.unsplash.com/photo-1522778526097-ce0a22ceb253?w=600&q=80' },
+  { label: 'שחקנים', subtitle: 'חולצות עם שם', href: '/catalog?type=player', image_url: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600&q=80' },
 ];
 
+// Photo cards for the main categories, managed from ניהול > קטגוריות.
 export default function CategoryCardsSection({ title }) {
-  const scrollRef = useRef(null);
   const [cats, setCats] = useState([]);
 
   useEffect(() => {
@@ -24,86 +22,50 @@ export default function CategoryCardsSection({ title }) {
       .catch(() => setCats(DEFAULT_CATS));
   }, []);
 
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-    
-    const handleScroll = () => {
-      if (container.scrollLeft >= container.scrollWidth - container.clientWidth - 10) {
-        container.scrollLeft = 0;
-      }
-    };
-    
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scroll = (dir) => {
-    if (scrollRef.current) scrollRef.current.scrollBy({ left: -dir * 220, behavior: 'smooth' });
-  };
-
   // A card pointing at an empty catalogue is worse than one card fewer, and
-  // these come from the admin panel as well as the defaults below.
-  const displayCats = withStock(cats.length > 0 ? cats : DEFAULT_CATS);
-  const loopedCats = [...displayCats, ...displayCats];
+  // these come from the admin panel as well as the defaults above.
+  const displayCats = withStock(cats);
+  if (!displayCats.length) return null;
+
+  // As many columns as there are cards, up to five, so three cards fill the
+  // row instead of leaving two empty columns beside them. Fewer, wider cards
+  // are cut shorter to keep the row from towering.
+  const count = displayCats.length;
+  const columns = count <= 3 ? 'lg:grid-cols-3' : count === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-5';
+  const wide = count <= 3;
 
   return (
-    <section className="py-10" style={{ background: 'var(--brand-cream-dark)' }}>
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between mb-6">
-          <Link to="/catalog" className="text-xs font-heading font-bold text-brand-orange uppercase tracking-wide border-b border-brand-orange hover:opacity-70">
-            ← כל המוצרים
-          </Link>
-          <h2 className="font-heading font-bold text-xl text-brand-navy uppercase tracking-wide">
-            {title || 'קנה לפי קטגוריה'}
-          </h2>
-        </div>
-
-        <div className="relative flex items-center gap-2">
-          <button
-            onClick={() => scroll(-1)}
-            aria-label="גלול ימינה"
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors"
-            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}
-          >
-            <ChevronRight className="w-4 h-4 text-brand-navy" />
-          </button>
-
-          <div ref={scrollRef} className="flex gap-3 overflow-x-auto scroll-smooth pb-1 flex-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {loopedCats.map((cat, i) => (
+    <section className="shop-container mt-16 sm:mt-24" aria-labelledby="categories-heading">
+      <SectionHeader id="categories-heading" title={title || 'קנו לפי קטגוריה'} />
+      <ul className={`mt-10 grid grid-cols-2 gap-3 sm:gap-4 ${columns}`}>
+        {displayCats.map((cat, i) => {
+          // An odd card out at the end of a two-column grid spans the row,
+          // wider and shorter, instead of leaving a hole beside it.
+          const lonely = displayCats.length % 2 === 1 && i === displayCats.length - 1;
+          return (
+            <li key={cat.id || cat.label} className={lonely ? 'col-span-2 lg:col-span-1' : ''}>
               <Link
-                key={`${cat.id || cat.label}-${i}`}
-                to={cat.href || '#'}
-                className="flex-shrink-0 relative overflow-hidden group hover:-translate-y-1 hover:shadow-xl transition-all duration-200"
-                style={{ width: 160, height: 220, border: '2px solid var(--brand-navy)', boxShadow: '3px 3px 0 var(--brand-navy)' }}
+                to={cat.href || '/catalog'}
+                className={`group relative block overflow-hidden rounded-3xl bg-brand-navy ${lonely ? 'aspect-[16/9]' : 'aspect-[4/5]'} ${wide ? 'lg:aspect-[4/3]' : 'lg:aspect-[4/5]'}`}
               >
                 {cat.image_url && (
-                  <img
-                    src={cat.image_url}
-                    alt={cat.label}
-                    loading="lazy"
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
+                  <img src={cat.image_url} alt="" loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/90 via-brand-navy/30 to-transparent" />
-                <div className="absolute bottom-0 inset-x-0 p-3 text-right">
-                  <p className="font-heading font-black text-white text-base leading-tight">{cat.label}</p>
-                  {cat.subtitle && <p className="font-body text-white/70 text-xs mt-0.5">{cat.subtitle}</p>}
-                </div>
+                <span className="absolute inset-x-2.5 bottom-2.5 flex items-center justify-between gap-2 rounded-2xl bg-white/90 px-3.5 py-3 backdrop-blur sm:inset-x-3 sm:bottom-3 sm:px-4">
+                  <span className="min-w-0">
+                    <span className="block truncate text-[15px] font-semibold text-brand-navy">{cat.label}</span>
+                    {cat.subtitle && <span className="block truncate text-xs text-brand-navy/55">{cat.subtitle}</span>}
+                  </span>
+                  <span className="hidden flex-shrink-0 rounded-xl bg-gradient-to-b from-brand-orange to-brand-orange-dark px-3 py-1.5 text-[13px] font-semibold text-white sm:inline-flex">
+                    לצפייה
+                  </span>
+                </span>
               </Link>
-            ))}
-          </div>
-
-          <button
-            onClick={() => scroll(1)}
-            aria-label="גלול שמאלה"
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center border-2 border-brand-navy bg-white hover:bg-brand-cream transition-colors"
-            style={{ boxShadow: '2px 2px 0 var(--brand-navy)' }}
-          >
-            <ChevronLeft className="w-4 h-4 text-brand-navy" />
-          </button>
-        </div>
-      </div>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }
