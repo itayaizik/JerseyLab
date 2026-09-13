@@ -9,17 +9,16 @@ import { Link } from 'react-router-dom';
 export const HERO_DEFAULTS = {
   desktop: '/hero-desktop.jpg',
   mobile: '/hero-mobile.jpg',
-  title: 'עונת 26/27|כבר כאן',
+  title: 'עונת|26/27|כבר כאן',
   subtitle: 'החולצה של הקבוצה שלך מחכה לך.',
   button: 'לכל החולצות',
   link: '/catalog',
 };
 
+// Each | starts a new line, all in the one colour.
 function Title({ text }) {
   const lines = text.split('|').map(line => line.trim()).filter(Boolean);
-  return lines.map((line, i) => (
-    <span key={i} className={`block ${i > 0 ? 'text-brand-orange-ink' : ''}`}>{line}</span>
-  ));
+  return lines.map((line, i) => <span key={i} className="block">{line}</span>);
 }
 
 export default function HomeHero({ settings = {} }) {
@@ -49,19 +48,21 @@ export default function HomeHero({ settings = {} }) {
 
         {showCard && (
           /* On the left, the end side of a right-to-left page. */
-          <div className="pointer-events-none absolute inset-y-0 end-0 flex items-end p-4 sm:p-6 md:items-center md:pe-10 lg:pe-16 xl:pe-24">
-            {/* A tall, narrow card: the title stacks down it in big type and the
-                button sits at the foot. */}
-            <div className="pointer-events-auto flex w-[16rem] flex-col rounded-[1.75rem] bg-white/95 p-6 shadow-float backdrop-blur sm:w-[18rem] md:min-h-[26rem] md:w-[22rem] md:p-9 lg:min-h-[30rem] lg:w-[25rem] lg:p-11">
-              <h1 className="text-[2.1rem] font-bold leading-[1.05] tracking-[-0.02em] text-brand-navy md:text-5xl lg:text-[3.5rem]">
+          <div className="pointer-events-none absolute inset-y-0 end-0 flex items-end p-4 sm:p-6 md:items-start md:pe-12 md:pt-24 lg:pe-20 lg:pt-28">
+            {/* Modelled on the Real Madrid store's banner card: pale, tall and
+                narrow, a huge title one word or two to a line with wide
+                spacing between them, a short line under it and a big button. */}
+            <div className="pointer-events-auto w-[17.5rem] rounded-3xl bg-neutral-100/95 p-7 backdrop-blur sm:w-[20rem] md:w-[23rem] md:p-11 lg:w-[25rem] lg:p-12">
+              <h1 className="text-5xl font-bold leading-[1.3] tracking-[-0.02em] text-black md:text-6xl md:leading-[1.35] lg:text-7xl">
                 <Title text={title} />
               </h1>
               {subtitle && (
-                <p className="mt-3 text-[15px] leading-relaxed text-brand-navy/65 md:mt-5 md:text-lg">{subtitle}</p>
+                <p className="mt-5 text-lg leading-[1.6] text-black md:mt-9 md:text-[1.375rem]">{subtitle}</p>
               )}
-              <div className="mt-5 md:mt-auto md:pt-8">
-                <Link to={link} className="shop-btn px-7 md:px-9">{button}</Link>
-              </div>
+              <Link to={link}
+                className="shop-btn mt-6 h-14 rounded-2xl px-8 text-lg md:mt-10 md:h-[4.25rem] md:px-10 md:text-[1.375rem]">
+                {button}
+              </Link>
             </div>
           </div>
         )}

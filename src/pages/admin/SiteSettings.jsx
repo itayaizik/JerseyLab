@@ -15,7 +15,7 @@ const HERO_IMAGES = [
 
 const heroFields = [
   { key: 'homepage_hero_title', label: 'כותרת', type: 'text', placeholder: HERO_DEFAULTS.title,
-    help: 'הסימן | שובר שורה. מה שאחריו מוצג בכתום.' },
+    help: 'הסימן | שובר שורה. הכי יפה במילה או שתיים בכל שורה, למשל: עונת|26/27|כבר כאן' },
   { key: 'homepage_hero_subtitle', label: 'משפט מתחת לכותרת', type: 'text', placeholder: HERO_DEFAULTS.subtitle },
   { key: 'homepage_hero_button_text', label: 'טקסט הכפתור', type: 'text', placeholder: HERO_DEFAULTS.button },
   { key: 'homepage_hero_link', label: 'לאן הלחיצה מובילה', type: 'text', placeholder: HERO_DEFAULTS.link },
