@@ -11,6 +11,7 @@ import { sendOrderConfirmation } from '@/lib/orderEmail';
 import { notifyNewOrder } from '@/lib/adminNotify';
 import { SHOP_PHONE, WHATSAPP_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/contact';
 import { getCart, setCart, cartItemTotal, cartTotal, EXTRA_PRICES } from '@/lib/cart';
+import { MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 
 // The cart, as a drawer from the side of the screen: the bag, then the contact
 // details, then the confirmation. There is no payment on the site, so "checkout"
@@ -60,7 +61,11 @@ function CartItem({ item, onRemove }) {
     <li className="overflow-hidden rounded-3xl border border-brand-line">
       <div className="flex gap-4 p-4">
         <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-2xl bg-brand-mist">
-          <ProductImage src={item.image} alt="" sizes="96px" className="h-full w-full object-cover" />
+          {/* The mystery box has no shirt photo of its own, so it shows the
+              JerseyLab bag it arrives in. Chosen here rather than stored on the
+              item, so boxes already sitting in a cart get it too. */}
+          <ProductImage src={item.image || (item.shirtId === MYSTERY_BOX_ID ? '/mystery-box.jpg' : undefined)}
+            alt="" sizes="96px" className="h-full w-full object-cover" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="line-clamp-2 text-[15px] font-semibold leading-snug text-brand-navy">{item.shirtName}</p>

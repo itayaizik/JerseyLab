@@ -19,7 +19,6 @@ export default function MysteryBox() {
         breadcrumb={<Breadcrumb trail={[{ label: 'מיסטרי בוקס' }]} />}
         title="מיסטרי בוקס"
         description="אתם בוחרים סגנון ומידה, אנחנו בוחרים את החולצה. אותה איכות כמו בקטלוג, במחיר נמוך יותר."
-        images={['/mystery-box.jpg']}
       />
 
       {/* The configurator is the page. It gets the wider column and the top of
