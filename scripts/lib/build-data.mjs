@@ -108,5 +108,5 @@ export function shirtDescription(shirt) {
     shirt.is_retro ? 'רטרו' : null,
   ].filter(Boolean);
   const price = shirtPrice(shirt);
-  return `${parts.join(' · ')}${price ? ` - ₪${price}` : ''}. חולצת כדורגל מקורית מ-JerseyLab, משלוח לכל הארץ.`;
+  return `${parts.join(' · ')}${price ? ` - ₪${price}` : ''}. חולצת כדורגל מ-JerseyLab, משלוח לכל הארץ.`;
 }

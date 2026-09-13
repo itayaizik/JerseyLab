@@ -66,10 +66,8 @@ function openingSentence(shirt) {
   const kitWord = kit ? `חולצת ה${kit}` : 'החולצה';
   const when = season ? (isNational ? ` ${season}` : ` לעונת ${season}`) : '';
 
-  return pick([
-    `${kitWord} של ${subject}${when}.`,
-    `${kitWord} הרשמית של ${subject}${when}.`,
-  ], shirt.id + 'open');
+  // No "official" wording: the shop does not claim its shirts are licensed.
+  return `${kitWord} של ${subject}${when}.`;
 }
 
 function eraSentence(shirt, lead) {
