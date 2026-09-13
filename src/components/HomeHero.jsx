@@ -9,8 +9,8 @@ import { Link } from 'react-router-dom';
 export const HERO_DEFAULTS = {
   desktop: '/hero-desktop.jpg',
   mobile: '/hero-mobile.jpg',
-  title: 'חולצות כדורגל|לכל הקבוצות',
-  subtitle: 'קבוצות, נבחרות ורטרו במקום אחד.',
+  title: 'עונת 26/27|כבר כאן',
+  subtitle: 'החולצה של הקבוצה שלך מחכה לך.',
   button: 'לכל החולצות',
   link: '/catalog',
 };
@@ -48,7 +48,8 @@ export default function HomeHero({ settings = {} }) {
         <Link to={link} aria-label={button} tabIndex={showCard ? -1 : undefined} className="absolute inset-0" />
 
         {showCard && (
-          <div className="pointer-events-none absolute inset-y-0 start-0 flex items-end p-4 sm:p-6 md:items-center md:ps-10 lg:ps-16 xl:ps-24">
+          /* On the left, the end side of a right-to-left page. */
+          <div className="pointer-events-none absolute inset-y-0 end-0 flex items-end p-4 sm:p-6 md:items-center md:pe-10 lg:pe-16 xl:pe-24">
             {/* A tall, narrow card: the title stacks down it in big type and the
                 button sits at the foot. */}
             <div className="pointer-events-auto flex w-[16rem] flex-col rounded-[1.75rem] bg-white/95 p-6 shadow-float backdrop-blur sm:w-[18rem] md:min-h-[26rem] md:w-[22rem] md:p-9 lg:min-h-[30rem] lg:w-[25rem] lg:p-11">
