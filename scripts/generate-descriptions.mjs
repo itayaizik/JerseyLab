@@ -39,7 +39,7 @@ function kitType(shirt) {
 
 function sizeList(shirt) {
   const sizes = shirt.sizes && typeof shirt.sizes === 'object' ? Object.keys(shirt.sizes) : [];
-  const order = ['S', 'M', 'L', 'XL', '2XL', 'XXL', '3XL', 'XXXL', '4XL'];
+  const order = ['S', 'M', 'L', 'XL', '2XL', 'XXL', '3XL', 'XXXL'];
   const sorted = sizes
     .map(s => (s === 'XXL' ? '2XL' : s === 'XXXL' ? '3XL' : s))
     .filter((s, i, a) => a.indexOf(s) === i)

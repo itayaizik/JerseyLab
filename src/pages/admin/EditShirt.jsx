@@ -7,11 +7,11 @@ import LocalStockEditor from '@/components/admin/LocalStockEditor';
 import { stockItems, stockPayload } from '@/lib/localStock';
 import { uploadErrorMessage } from '@/lib/supabaseStorage';
 
-const sizeOptions = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
+const sizeOptions = ['S', 'M', 'L', 'XL', 'XXL', '3XL'];
 // Canonical spellings - see lib/sizes. Reads tolerate the legacy 'XXL' key,
 // writes always land on '2XL', so stock can no longer be filed under a spelling
 // the storefront then fails to find.
-const LOCAL_STOCK_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
+const LOCAL_STOCK_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 const kidsSizeOptions = ['6-7Y', '8-9Y', '10-11Y', '12-13Y', '14-15Y'];
 
 export default function EditShirt() {

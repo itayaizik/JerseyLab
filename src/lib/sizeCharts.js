@@ -25,6 +25,27 @@ export const WOMEN_ROWS = [
 ];
 
 export const ADULT_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+
+// The size to recommend from height and weight. Each measure picks the first
+// size whose range reaches it, the larger of the two wins, and then one size
+// up, because customers want the shirt comfortable rather than tight:
+// 173 cm / 60 kg -> L, 178 cm / 70 kg -> XL.
+const upperBound = (range) => Number(String(range).split('-').pop());
+
+function sizeIndexFor(value, row) {
+  const i = ADULT_SIZES.findIndex(size => value <= upperBound(row[size]));
+  return i === -1 ? ADULT_SIZES.length - 1 : i;
+}
+
+export function recommendSize(height, weight, tab = 'fan') {
+  const rows = tab === 'player' ? PLAYER_ROWS : FAN_ROWS;
+  const h = Number(height);
+  const w = Number(weight);
+  if (!(h >= 120 && h <= 230) || !(w >= 30 && w <= 200)) return null;
+  const byHeight = sizeIndexFor(h, rows.find(r => r.measure.startsWith('גובה')));
+  const byWeight = sizeIndexFor(w, rows.find(r => r.measure.startsWith('משקל')));
+  return ADULT_SIZES[Math.min(Math.max(byHeight, byWeight) + 1, ADULT_SIZES.length - 1)];
+}
 export const WOMEN_SIZES = ['S', 'M', 'L', 'XL'];
 
 // KIDS VERSION - rows per size, columns: HEIGHT, AGE, LENGTH, WIDTH, WAIST

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import SideDrawer from '@/components/shop/SideDrawer';
-import { SizeChartTabs, SizeChartTable, SizeTips } from '@/components/product/SizeChart';
+import { SizeChartTabs, SizeChartTable, SizeTips, SizeCalculator } from '@/components/product/SizeChart';
 
 // The size tables without leaving the product page. Opens on the version the
 // customer is looking at: the player table when player version is selected,
@@ -21,6 +21,11 @@ export default function SizeGuideDrawer({ open, onOpenChange, shirtName, default
       className="w-[min(96vw,44rem)]"
     >
       <SizeChartTabs value={tab} onChange={setTab} />
+      {(tab === 'fan' || tab === 'player') && (
+        <div className="mt-5">
+          <SizeCalculator tab={tab} />
+        </div>
+      )}
       <div className="mt-5">
         <SizeChartTable tab={tab} />
       </div>

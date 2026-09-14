@@ -6,13 +6,12 @@ import { trimShirtText } from '@/lib/shirtText';
 import LocalStockEditor from '@/components/admin/LocalStockEditor';
 import { stockPayload } from '@/lib/localStock';
 
-// No XS: the shop does not sell it. 4XL is for World Cup shirts and the new
-// season's top-five-league shirts; tick it only on those.
-const sizeOptions = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
+// No XS: the shop does not sell it.
+const sizeOptions = ['S', 'M', 'L', 'XL', 'XXL', '3XL'];
 // Canonical spellings - see lib/sizes. Reads tolerate the legacy 'XXL' key,
 // writes always land on '2XL', so stock can no longer be filed under a spelling
 // the storefront then fails to find.
-const LOCAL_STOCK_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
+const LOCAL_STOCK_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 const kidsSizeOptions = ['6-7Y', '8-9Y', '10-11Y', '12-13Y', '14-15Y'];
 
 export default function AddShirt() {

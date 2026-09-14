@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Seo from '@/components/Seo';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
-import { SizeChartTabs, SizeChartTable, SizeTips } from '@/components/product/SizeChart';
+import { SizeChartTabs, SizeChartTable, SizeTips, SizeCalculator } from '@/components/product/SizeChart';
 
 export default function SizeGuide() {
   const [tab, setTab] = useState('fan');
@@ -26,6 +26,11 @@ export default function SizeGuide() {
         <div className="mt-8">
           <SizeChartTabs value={tab} onChange={setTab} />
         </div>
+        {(tab === 'fan' || tab === 'player') && (
+          <div className="mt-5">
+            <SizeCalculator tab={tab} />
+          </div>
+        )}
         <div className="mt-5">
           <SizeChartTable tab={tab} />
         </div>

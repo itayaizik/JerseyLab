@@ -7,7 +7,7 @@
 // '2XL' is the canonical label; the aliases are only ever used for lookups.
 
 // No XS: the shop does not sell it.
-export const SIZE_ORDER = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '6-7Y', '8-9Y', '10-11Y', '12-13Y', '14-15Y'];
+export const SIZE_ORDER = ['S', 'M', 'L', 'XL', '2XL', '3XL', '6-7Y', '8-9Y', '10-11Y', '12-13Y', '14-15Y'];
 
 const ALIASES = { XXL: '2XL', XXXL: '3XL' };
 
