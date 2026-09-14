@@ -9,9 +9,16 @@ import { ChevronDown } from 'lucide-react';
 // content of any length opens smoothly without a layout pass. While closed it is
 // `inert`, so a keyboard user does not tab into links they cannot see.
 
-export default function Disclosure({ title, meta, children, defaultOpen = false, className = '' }) {
+// `variant="dark"` is for navy backgrounds such as the footer.
+const VARIANTS = {
+  light: { button: 'bg-brand-mist text-brand-navy hover:bg-brand-mist-dark', meta: 'text-brand-navy/50' },
+  dark: { button: 'bg-white/[0.07] text-white hover:bg-white/[0.12]', meta: 'text-white/50' },
+};
+
+export default function Disclosure({ title, meta, children, defaultOpen = false, className = '', variant = 'light' }) {
   const [open, setOpen] = useState(defaultOpen);
   const panelId = useId();
+  const style = VARIANTS[variant] || VARIANTS.light;
 
   return (
     <div className={className}>
@@ -20,11 +27,11 @@ export default function Disclosure({ title, meta, children, defaultOpen = false,
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen(o => !o)}
-        className="flex min-h-[3.75rem] w-full items-center justify-between gap-3 rounded-2xl bg-brand-mist px-5 text-start text-[15px] font-medium text-brand-navy transition hover:bg-brand-mist-dark"
+        className={`flex min-h-[3.75rem] w-full items-center justify-between gap-3 rounded-2xl px-5 text-start text-[15px] font-medium transition ${style.button}`}
       >
         <span className="min-w-0 py-3.5 leading-snug">{title}</span>
         <span className="flex flex-shrink-0 items-center gap-2">
-          {meta && <span className="text-sm font-normal text-brand-navy/50">{meta}</span>}
+          {meta && <span className={`text-sm font-normal ${style.meta}`}>{meta}</span>}
           <ChevronDown aria-hidden="true" className={`h-5 w-5 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
         </span>
       </button>

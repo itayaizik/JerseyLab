@@ -41,12 +41,14 @@ export default function LeaguesSection({ title }) {
   return (
     <section className="shop-container mt-16 sm:mt-24" aria-labelledby="leagues-heading">
       <SectionHeader id="leagues-heading" title={title || 'ליגות וטורנירים'} />
-      <ul className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+      {/* A row that scrolls sideways on a phone - ten tiles two to a row were
+          more than a screen of scrolling - and a grid from a tablet up. */}
+      <ul className="scrollbar-hide -mx-4 mt-8 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 pb-2 sm:mx-0 sm:mt-10 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-5">
         {leagues.map(league => (
-          <li key={league.id || league.name}>
+          <li key={league.id || league.name} className="w-[8.5rem] flex-shrink-0 snap-start sm:w-auto">
             <Link
               to={league.href || `/catalog?q=${encodeURIComponent(league.name)}`}
-              className="group flex h-full flex-col items-center gap-4 rounded-3xl bg-brand-mist px-4 py-7 text-center transition hover:bg-brand-mist-dark"
+              className="group flex h-full flex-col items-center gap-3 rounded-3xl bg-brand-mist px-3 py-5 text-center transition hover:bg-brand-mist-dark sm:gap-4 sm:px-4 sm:py-7"
             >
               <span className="flex h-16 w-16 items-center justify-center">
                 <LeagueLogo src={league.logo_url} />

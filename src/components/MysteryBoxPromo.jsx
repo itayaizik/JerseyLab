@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { BOX_TYPES } from '@/lib/mysteryBox';
 import { MYSTERY_BOX_PANELS } from '@/components/MysteryBoxInfo';
+import Disclosure from '@/components/shop/Disclosure';
 
 // The mystery box on the home page: the offer on a navy panel, and beside it
 // the three questions the product page answers at length - what it is, what
@@ -49,7 +50,16 @@ export default function MysteryBoxPromo() {
 
         {promoPanels.length > 0 && (
           <div className="p-2.5 sm:p-4 lg:ps-0">
-            <ul className="grid h-full content-center gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-1">
+            {/* Phone: the three answers as rows that open, so the offer and its
+                button are not pushed a screen away by the cards. */}
+            <div className="space-y-2 rounded-3xl bg-white p-2.5 sm:hidden">
+              {promoPanels.map(panel => (
+                <Disclosure key={panel.title} title={panel.title}>
+                  <p className="text-sm leading-relaxed text-brand-navy/65">{panelLine(panel)}</p>
+                </Disclosure>
+              ))}
+            </div>
+            <ul className="hidden h-full content-center gap-2.5 sm:grid sm:grid-cols-3 sm:gap-3 lg:grid-cols-1">
               {promoPanels.map(panel => {
                 const Icon = panel.icon;
                 return (

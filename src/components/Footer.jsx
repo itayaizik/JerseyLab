@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram, MessageCircle, Accessibility } from 'lucide-react';
 import { OPEN_A11Y_EVENT } from '@/lib/accessibilityPrefs';
+import Disclosure from '@/components/shop/Disclosure';
 import { COLLECTIONS } from '@/lib/collections';
 import { LEGAL_PAGES } from '@/components/LegalPage';
 import { withStock } from '@/lib/catalogFacets';
@@ -39,16 +40,31 @@ const LEGAL_LINKS = LEGAL_PAGES.map(p => ({ label: p.label, href: p.path }));
 
 function Column({ title, links }) {
   return (
-    <nav aria-label={title}>
-      <h2 className="text-base font-semibold text-white">{title}</h2>
-      <ul className="mt-5 space-y-3">
-        {links.map(link => (
-          <li key={link.href}>
-            <Link to={link.href} className="text-[15px] text-white/65 transition hover:text-white">{link.label}</Link>
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <>
+      {/* Phone: a row that opens, as the big club stores do, instead of four
+          lists of links stacked down the screen. */}
+      <Disclosure title={title} variant="dark" className="sm:hidden">
+        <nav aria-label={title}>
+          <ul className="space-y-3 pb-1">
+            {links.map(link => (
+              <li key={link.href}>
+                <Link to={link.href} className="text-[15px] text-white/70 transition hover:text-white">{link.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </Disclosure>
+      <nav aria-label={title} className="hidden sm:block">
+        <h2 className="text-base font-semibold text-white">{title}</h2>
+        <ul className="mt-5 space-y-3">
+          {links.map(link => (
+            <li key={link.href}>
+              <Link to={link.href} className="text-[15px] text-white/65 transition hover:text-white">{link.label}</Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </>
   );
 }
 
@@ -69,13 +85,13 @@ export default function Footer() {
   return (
     <footer className="mt-20 bg-brand-navy text-white">
       <div className="shop-container pb-12 pt-14 lg:pt-20">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,1fr))_minmax(0,1.4fr)] lg:gap-8">
+        <div className="grid gap-2.5 sm:grid-cols-2 sm:gap-10 lg:grid-cols-[repeat(4,minmax(0,1fr))_minmax(0,1.4fr)] lg:gap-8">
           <Column title="חנות" links={SHOP_LINKS} />
           <Column title="קטגוריות" links={FOOTER_COLLECTIONS} />
           <Column title="עזרה" links={HELP_LINKS} />
           <Column title="מידע משפטי" links={LEGAL_LINKS} />
 
-          <div className="flex flex-col justify-center rounded-3xl bg-white/[0.07] p-7 sm:col-span-2 lg:col-span-1 lg:p-9">
+          <div className="mt-5 flex flex-col justify-center rounded-3xl bg-white/[0.07] p-7 sm:col-span-2 sm:mt-0 lg:col-span-1 lg:p-9">
             <h2 className="text-2xl font-semibold leading-tight">לא מצאתם את החולצה?</h2>
             <p className="mt-2 text-[15px] leading-relaxed text-white/70">
               שלחו לנו תמונה או תיאור, ונבדוק אם אפשר להשיג אותה ובכמה.

@@ -231,7 +231,35 @@ export default function Home() {
 
           {/* ===== WHY US + ABOUT ===== */}
           <section className="shop-container mt-16 sm:mt-24" aria-labelledby="why-heading">
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+            {/* On a phone the two panels are rows that open, instead of close to
+                two screens of cards to scroll past on the way down the page. */}
+            <div className="space-y-2.5 lg:hidden">
+              <Disclosure title="למה לקנות אצלנו">
+                <ul className="space-y-3.5">
+                  {WHY_US.map(({ title, desc, icon: Icon }) => (
+                    <li key={title} className="flex items-start gap-3">
+                      <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-orange-soft text-brand-orange-ink">
+                        <Icon className="h-4 w-4" aria-hidden="true" />
+                      </span>
+                      <span>
+                        <span className="block text-[15px] font-semibold text-brand-navy">{title}</span>
+                        <span className="block text-sm leading-relaxed text-brand-navy/60">{desc}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </Disclosure>
+              <Disclosure title="מי אנחנו">
+                <p className="whitespace-pre-line text-[15px] leading-relaxed text-brand-navy/75">
+                  {siteSettings.about_us_text || DEFAULT_ABOUT}
+                </p>
+                <Link to="/contact" className="shop-link mt-3">
+                  דברו איתנו
+                  <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </Disclosure>
+            </div>
+            <div className="hidden gap-4 lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
               <div className="rounded-[2rem] bg-brand-mist p-6 sm:p-10">
                 <h2 id="why-heading" className="shop-title">למה לקנות אצלנו</h2>
                 <ul className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
