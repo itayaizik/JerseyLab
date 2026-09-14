@@ -29,12 +29,15 @@ export function openCart() {
 }
 
 // What the configurator charges for each extra.
-export const EXTRA_PRICES = { name: 15, player: 20, patches: 5 };
+export const EXTRA_PRICES = { name: 15, player: 20, patches: 5, longSleeve: 20, shorts: 40 };
 
 // One spelling of the word, with a plain apostrophe: order messages are parsed
 // back by the admin (supplier text, order editing), so it must not drift into
 // the Hebrew geresh in one place and the apostrophe in another.
 export const PATCHES_LABEL = "פאצ'ים";
+export const LONG_SLEEVE_LABEL = 'שרוול ארוך';
+// Matching shorts, in the same size as the shirt.
+export const SHORTS_LABEL = 'מכנס קצר';
 
 // What a shirt costs before extras.
 //
@@ -59,7 +62,9 @@ export function cartItemTotal(item) {
   return (item?.basePrice || 0)
     + (item?.addName ? EXTRA_PRICES.name : 0)
     + (item?.playerVersion ? EXTRA_PRICES.player : 0)
-    + (item?.patches ? EXTRA_PRICES.patches : 0);
+    + (item?.patches ? EXTRA_PRICES.patches : 0)
+    + (item?.longSleeve ? EXTRA_PRICES.longSleeve : 0)
+    + (item?.shorts ? EXTRA_PRICES.shorts : 0);
 }
 
 export function cartTotal(cart) {

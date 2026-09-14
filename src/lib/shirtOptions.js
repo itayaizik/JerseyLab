@@ -19,3 +19,8 @@ export function isIsraeliLeagueShirt(shirt) {
 export const allowsPlayerVersion = (shirt) => !shirt?.is_retro && !isIsraeliLeagueShirt(shirt);
 
 export const allowsPatches = (shirt) => !isIsraeliLeagueShirt(shirt);
+
+// Long sleeves: every shirt but Israeli league ones. Matching shorts: not for
+// Israeli league shirts, and not for retro, which comes as the shirt alone.
+export const allowsLongSleeve = (shirt) => !isIsraeliLeagueShirt(shirt);
+export const allowsShorts = (shirt) => !shirt?.is_retro && !isIsraeliLeagueShirt(shirt);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { shirtSizes, sizeQty, isSizeAvailable } from '@/lib/sizes';
 
-const FALLBACK_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+const FALLBACK_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 
 // The size chips, shared by the product page and the quick-add window.
 //

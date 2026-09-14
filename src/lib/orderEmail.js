@@ -18,6 +18,8 @@ export async function sendOrderConfirmation({ email, fullName, orderId, items, t
         player_version: !!item.playerVersion,
         custom_name: item.addName ? (item.customName || '') : '',
         patches: !!item.patches,
+        long_sleeve: !!item.longSleeve,
+        shorts: !!item.shorts,
         local_stock: !!item.isExactStockItem,
         // Must go through the shared helper: items that price themselves (the
         // mystery box, whose add-ons are +10/+5) would otherwise be mailed a

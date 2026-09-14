@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { cartItemTotal, PATCHES_LABEL } from '@/lib/cart';
+import { cartItemTotal, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 
 // Tells the shop owner that something came in. Calls the `notify-admin` Edge
 // Function, which holds the Resend key server-side.
@@ -22,6 +22,8 @@ export function notifyNewOrder({ orderId, fullName, phone, email, channel, insta
       const extras = [];
       if (item.playerVersion) extras.push('גרסת שחקן');
       if (item.addName) extras.push(`הדפסה: ${item.customName || ''}`);
+      if (item.longSleeve) extras.push(LONG_SLEEVE_LABEL);
+      if (item.shorts) extras.push(SHORTS_LABEL);
       if (item.patches) extras.push(PATCHES_LABEL);
       (item.extras || []).forEach(x => extras.push(x.label));
       (item.details || []).forEach(d => extras.push(`${d.label}: ${d.value}`));

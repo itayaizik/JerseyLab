@@ -48,6 +48,8 @@ interface OrderItem {
   player_version?: boolean;
   custom_name?: string;
   patches?: boolean;
+  long_sleeve?: boolean;
+  shorts?: boolean;
   price?: number;
 }
 
@@ -68,6 +70,8 @@ function itemRow(item: OrderItem): string {
   const extras: string[] = [];
   if (item.player_version) extras.push('גרסת שחקן');
   if (item.custom_name) extras.push(`הדפסה: ${esc(item.custom_name)}`);
+  if (item.long_sleeve) extras.push('שרוול ארוך');
+  if (item.shorts) extras.push('מכנס קצר');
   if (item.patches) extras.push("פאצ'ים");
   return `
     <tr>

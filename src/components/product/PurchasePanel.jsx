@@ -11,8 +11,8 @@ import ProductImage from '@/components/ui/ProductImage';
 import TrustBar from '@/components/TrustBar';
 import { hasLocalStock, hasLocalStockForSize } from '@/components/ShippingBadge';
 import { itemsForSize, stockPrint } from '@/lib/localStock';
-import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL } from '@/lib/cart';
-import { allowsPlayerVersion, allowsPatches } from '@/lib/shirtOptions';
+import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
+import { allowsPlayerVersion, allowsPatches, allowsLongSleeve, allowsShorts } from '@/lib/shirtOptions';
 import { BUSINESS, isPlaceholder } from '@/lib/business';
 
 // Everything needed to buy the shirt, in one card beside the photos: size,
@@ -52,6 +52,8 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
   const [customName, setCustomName] = useState('');
   const [customNumber, setCustomNumber] = useState('');
   const [patches, setPatches] = useState(false);
+  const [longSleeve, setLongSleeve] = useState(false);
+  const [shorts, setShorts] = useState(false);
   const [errors, setErrors] = useState({});
   const [added, setAdded] = useState(false);
   const [highlight, setHighlight] = useState(false);
@@ -61,7 +63,8 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
   // A different shirt is a fresh start.
   useEffect(() => {
     setSize(''); setBuyMode(''); setStockItemId(''); setShirtType('regular');
-    setPrinting(false); setCustomName(''); setCustomNumber(''); setPatches(false); setErrors({}); setAdded(false);
+    setPrinting(false); setCustomName(''); setCustomNumber(''); setPatches(false);
+    setLongSleeve(false); setShorts(false); setErrors({}); setAdded(false);
   }, [shirt.id]);
 
   // Asked for from outside - the sticky bar on a phone, or a link that arrives
@@ -94,9 +97,18 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
   const wantsPlayer = playerAllowed && shirtType === 'player';
   const wantsPatches = patchesAllowed && patches;
 
+  // Long sleeves: not on Israeli league shirts. Matching shorts: not on Israeli
+  // league shirts or retro. Both are made to order, so neither applies to a
+  // shirt bought as it is from stock.
+  const longSleeveAllowed = allowsLongSleeve(shirt);
+  const shortsAllowed = allowsShorts(shirt);
+  const wantsLongSleeve = longSleeveAllowed && !buyingExact && longSleeve;
+  const wantsShorts = shortsAllowed && !buyingExact && shorts;
+
   const extras = buyingExact
     ? (stockItem?.player_version ? EXTRA_PRICES.player : 0) + (stockPrint(stockItem) ? EXTRA_PRICES.name : 0) + (wantsPatches ? EXTRA_PRICES.patches : 0)
-    : (wantsPlayer ? EXTRA_PRICES.player : 0) + (printing ? EXTRA_PRICES.name : 0) + (wantsPatches ? EXTRA_PRICES.patches : 0);
+    : (wantsPlayer ? EXTRA_PRICES.player : 0) + (printing ? EXTRA_PRICES.name : 0) + (wantsPatches ? EXTRA_PRICES.patches : 0)
+      + (wantsLongSleeve ? EXTRA_PRICES.longSleeve : 0) + (wantsShorts ? EXTRA_PRICES.shorts : 0);
   const total = basePrice + extras;
 
   const freeAbove = BUSINESS.shipping?.freeAbove;
@@ -135,6 +147,8 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
       playerVersion: buyingExact ? !!stockItem?.player_version : wantsPlayer,
       // Patches can go on a shirt already in stock as well.
       patches: wantsPatches,
+      longSleeve: wantsLongSleeve,
+      shorts: wantsShorts,
       localStockSizes: shirt.local_stock_sizes || {},
       isExactStockItem: buyingExact,
       // Which physical shirt, so the order says which of two size S shirts
@@ -271,6 +285,32 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
               </div>
             )}
           </Section>
+
+          {(longSleeveAllowed || shortsAllowed) && (
+          <Section id="extras-heading" title="שרוול ומכנס">
+            <div role="group" aria-labelledby="extras-heading" className="flex flex-wrap gap-2">
+              {longSleeveAllowed && (
+                <button type="button" aria-pressed={longSleeve} onClick={() => setLongSleeve(v => !v)}
+                  className={`shop-chip px-5 ${longSleeve ? 'shop-chip-active' : ''}`}>
+                  {LONG_SLEEVE_LABEL}
+                  <span className="tabular-nums">+₪{EXTRA_PRICES.longSleeve}</span>
+                </button>
+              )}
+              {shortsAllowed && (
+                <button type="button" aria-pressed={shorts} onClick={() => setShorts(v => !v)}
+                  className={`shop-chip px-5 ${shorts ? 'shop-chip-active' : ''}`}>
+                  {SHORTS_LABEL}
+                  <span className="tabular-nums">+₪{EXTRA_PRICES.shorts}</span>
+                </button>
+              )}
+            </div>
+            <p className="mt-2.5 text-[13px] text-brand-navy/55">
+              {shortsAllowed
+                ? `אפשר לבחור אחד, שניים או אף אחד. ה${SHORTS_LABEL} של אותה חולצה, באותה מידה שבחרתם.`
+                : `אותה חולצה, בגרסת ${LONG_SLEEVE_LABEL}.`}
+            </p>
+          </Section>
+          )}
 
         </>
       )}

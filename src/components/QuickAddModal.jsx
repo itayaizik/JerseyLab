@@ -12,8 +12,8 @@ import OrderSummary from '@/components/configurator/OrderSummary';
 import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurator/recommendations';
 import { hasLocalStockForSize } from '@/components/ShippingBadge';
 import { itemsForSize, stockPrint } from '@/lib/localStock';
-import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL } from '@/lib/cart';
-import { allowsPlayerVersion, allowsPatches } from '@/lib/shirtOptions';
+import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
+import { allowsPlayerVersion, allowsPatches, allowsLongSleeve, allowsShorts } from '@/lib/shirtOptions';
 
 // Adding a shirt straight from a product card, one question at a time. The
 // product page asks the same questions all at once; this is the short path for
@@ -45,6 +45,8 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   const [buyMode, setBuyMode] = useState(''); // '' | 'exact' | 'custom'
   const [stockItemId, setStockItemId] = useState(''); // which physical shirt, when buying exact
   const [patches, setPatches] = useState(false);
+  const [longSleeve, setLongSleeve] = useState(false);
+  const [shorts, setShorts] = useState(false);
   const [added, setAdded] = useState(false);
 
   const basePrice = shirtBasePrice(shirt);
@@ -60,6 +62,12 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   const patchesAllowed = allowsPatches(shirt);
   const wantsPlayer = playerAllowed && shirtType === 'player';
   const wantsPatches = patchesAllowed && patches;
+  // Long sleeves: not on Israeli league shirts. Shorts: not on Israeli league
+  // shirts or retro. Both made to order only, never on a shirt from stock.
+  const longSleeveAllowed = allowsLongSleeve(shirt) && !buyingExact;
+  const shortsAllowed = allowsShorts(shirt) && !buyingExact;
+  const wantsLongSleeve = longSleeveAllowed && longSleeve;
+  const wantsShorts = shortsAllowed && shorts;
 
   const flow = [
     'size',
@@ -77,7 +85,7 @@ export default function QuickAddModal({ shirt, open, onClose }) {
 
   const reset = () => {
     setStep('size'); setSelectedSize(''); setShirtType(''); setAddName(''); setCustomName(''); setCustomNumber('');
-    setBuyMode(''); setStockItemId(''); setPatches(false); setAdded(false);
+    setBuyMode(''); setStockItemId(''); setPatches(false); setLongSleeve(false); setShorts(false); setAdded(false);
   };
   const handleClose = () => { reset(); onClose(); };
 
@@ -108,6 +116,8 @@ export default function QuickAddModal({ shirt, open, onClose }) {
       customName: buyingExact ? stockPrint(stockItem) : (addName === 'yes' ? `${customName} ${customNumber}`.trim() : ''),
       playerVersion: buyingExact ? !!stockItem?.player_version : wantsPlayer,
       patches: wantsPatches,
+      longSleeve: wantsLongSleeve,
+      shorts: wantsShorts,
       localStockSizes: shirt.local_stock_sizes || {},
       isExactStockItem: buyingExact,
       stockItemId: buyingExact ? stockItem?.id || '' : '',
@@ -116,20 +126,27 @@ export default function QuickAddModal({ shirt, open, onClose }) {
     setTimeout(() => { handleClose(); openCart(); }, 650);
   };
 
-  // Patches are asked on the summary rather than as a step of their own: a
-  // yes-or-no for ₪5 does not deserve another screen. Offered for a shirt from
-  // stock as well as one made up.
-  const patchesToggle = patchesAllowed && (
-    <label className="mb-3 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-brand-line p-4 transition hover:border-brand-navy/30">
+  // The yes-or-no extras are asked on the summary rather than as steps of their
+  // own: a tick box each does not deserve another screen.
+  const toggle = (key, title, hint, price, checked, onChange) => (
+    <label key={key} className="mb-2 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-brand-line p-4 transition hover:border-brand-navy/30">
       <span>
-        <span className="block text-[15px] font-semibold text-brand-navy">{`${PATCHES_LABEL} של הליגה`}</span>
-        <span className="block text-[13px] text-brand-navy/55">לפי החולצה</span>
+        <span className="block text-[15px] font-semibold text-brand-navy">{title}</span>
+        <span className="block text-[13px] text-brand-navy/55">{hint}</span>
       </span>
       <span className="flex items-center gap-3">
-        <span className="text-sm font-semibold tabular-nums text-brand-navy">+₪{EXTRA_PRICES.patches}</span>
-        <input type="checkbox" checked={patches} onChange={e => setPatches(e.target.checked)} className="h-5 w-5 accent-brand-orange" />
+        <span className="text-sm font-semibold tabular-nums text-brand-navy">+₪{price}</span>
+        <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} className="h-5 w-5 accent-brand-orange" />
       </span>
     </label>
+  );
+  // Patches are offered for a shirt from stock as well as one made up.
+  const patchesToggle = patchesAllowed && toggle('patches', `${PATCHES_LABEL} של הליגה`, 'לפי החולצה', EXTRA_PRICES.patches, patches, setPatches);
+  const sleeveAndShortsToggles = (
+    <>
+      {longSleeveAllowed && toggle('longSleeve', LONG_SLEEVE_LABEL, 'אותה חולצה עם שרוול ארוך', EXTRA_PRICES.longSleeve, longSleeve, setLongSleeve)}
+      {shortsAllowed && toggle('shorts', SHORTS_LABEL, 'של אותה חולצה, באותה מידה', EXTRA_PRICES.shorts, shorts, setShorts)}
+    </>
   );
 
   if (!shirt) return null;
@@ -203,9 +220,13 @@ export default function QuickAddModal({ shirt, open, onClose }) {
                 </>
               ) : (
                 <>
+                  {sleeveAndShortsToggles}
                   {patchesToggle}
-                  <OrderSummary shirt={shirt} size={selectedSize} shirtType={wantsPlayer ? 'player' : 'regular'} addName={addName}
-                    customName={customName} customNumber={customNumber} basePrice={basePrice} patches={wantsPatches} />
+                  <div className="mt-3">
+                    <OrderSummary shirt={shirt} size={selectedSize} shirtType={wantsPlayer ? 'player' : 'regular'} addName={addName}
+                      customName={customName} customNumber={customNumber} basePrice={basePrice} patches={wantsPatches}
+                      longSleeve={wantsLongSleeve} shorts={wantsShorts} />
+                  </div>
                 </>
               )}
             </motion.div>

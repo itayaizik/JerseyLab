@@ -7,11 +7,13 @@ import LocalStockEditor from '@/components/admin/LocalStockEditor';
 
 // '2XL', not 'XXL': the canonical spelling, so the label the owner sees matches
 // the key that gets written. The legacy 'XXL' is still read, via sizeAliases.
-const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+// No XS: the shop does not sell it. 4XL is offered on World Cup shirts and on
+// the new season's top-five-league shirts.
+const sizeOptions = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
 // Canonical spellings - see lib/sizes. Reads tolerate the legacy 'XXL' key,
 // writes always land on '2XL', so stock can no longer be filed under a spelling
 // the storefront then fails to find.
-const LOCAL_STOCK_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+const LOCAL_STOCK_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
 const kidsSizeOptions = ['6-7Y', '8-9Y', '10-11Y', '12-13Y', '14-15Y'];
 
 /**

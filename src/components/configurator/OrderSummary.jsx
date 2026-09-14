@@ -1,5 +1,5 @@
 import React from 'react';
-import { EXTRA_PRICES, PATCHES_LABEL } from '@/lib/cart';
+import { EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 
 function Row({ label, value, ltr = false }) {
   return (
@@ -10,13 +10,18 @@ function Row({ label, value, ltr = false }) {
   );
 }
 
-export default function OrderSummary({ shirt, size, shirtType, addName, customName, customNumber, basePrice, patches = false }) {
+export default function OrderSummary({
+  shirt, size, shirtType, addName, customName, customNumber, basePrice,
+  patches = false, longSleeve = false, shorts = false,
+}) {
   const shirtTypeLabel = shirtType === 'player' ? 'גרסת שחקן' : 'גרסה רגילה';
   const printing = addName === 'yes';
   const printLabel = printing ? `${customName} ${customNumber}`.trim() : 'בלי הדפסה';
   const extra = (shirtType === 'player' ? EXTRA_PRICES.player : 0)
     + (printing ? EXTRA_PRICES.name : 0)
-    + (patches ? EXTRA_PRICES.patches : 0);
+    + (patches ? EXTRA_PRICES.patches : 0)
+    + (longSleeve ? EXTRA_PRICES.longSleeve : 0)
+    + (shorts ? EXTRA_PRICES.shorts : 0);
   const total = basePrice + extra;
 
   return (
@@ -34,6 +39,8 @@ export default function OrderSummary({ shirt, size, shirtType, addName, customNa
         <Row label="מידה" value={size} ltr />
         <Row label="גרסה" value={shirtTypeLabel} />
         <Row label="הדפסה" value={printLabel} ltr={printing} />
+        {longSleeve && <Row label={LONG_SLEEVE_LABEL} value={`+₪${EXTRA_PRICES.longSleeve}`} />}
+        {shorts && <Row label={`${SHORTS_LABEL} (מידה ${size})`} value={`+₪${EXTRA_PRICES.shorts}`} />}
         {patches && <Row label={PATCHES_LABEL} value={`+₪${EXTRA_PRICES.patches}`} />}
       </dl>
       <div className="mt-4 flex items-baseline justify-between border-t border-brand-line pt-4">

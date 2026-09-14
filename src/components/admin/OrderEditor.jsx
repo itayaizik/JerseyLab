@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Trash2, Undo2, Plus, Loader2, Save, X, MessageCircle, Instagram, Mail, Copy, Check } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { EXTRA_PRICES, PATCHES_LABEL, shirtBasePrice } from '@/lib/cart';
+import { EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL, shirtBasePrice } from '@/lib/cart';
 import { sendOrderUpdate } from '@/lib/orderEmail';
 import {
   parseOrderItem, buildOrderMessage, isMysteryBoxRequest, extraPrice, orderTotal,
@@ -35,6 +35,8 @@ function draftFromRequest(request) {
     playerVersion: parsed.playerVersion,
     customName: parsed.customName,
     patches: parsed.patches,
+    longSleeve: parsed.longSleeve,
+    shorts: parsed.shorts,
     price: parsed.price ?? '',
     removed: false,
     parsed,
@@ -74,6 +76,8 @@ export default function OrderEditor({ items, shirts, onCancel, onSaved }) {
       playerVersion: false,
       customName: '',
       patches: false,
+      longSleeve: false,
+      shorts: false,
       price: shirtBasePrice(shirt),
       removed: false,
       parsed: { prefix: 'סל קניות', other: [], trailing: '' },
@@ -117,6 +121,8 @@ export default function OrderEditor({ items, shirts, onCancel, onSaved }) {
           playerVersion: d.playerVersion,
           customName: d.customName.trim(),
           patches: d.patches,
+          longSleeve: d.longSleeve,
+          shorts: d.shorts,
           price: d.price,
         }, d.mystery);
         const patch = {};
@@ -137,7 +143,8 @@ export default function OrderEditor({ items, shirts, onCancel, onSaved }) {
           instagram_handle: first.instagram_handle,
           wanted_size: d.size.trim(),
           message: buildOrderMessage({
-            ...d.parsed, playerVersion: d.playerVersion, customName: d.customName.trim(), patches: d.patches, price: d.price,
+            ...d.parsed, playerVersion: d.playerVersion, customName: d.customName.trim(), patches: d.patches,
+            longSleeve: d.longSleeve, shorts: d.shorts, price: d.price,
           }),
           status: first.status || 'new',
           user_id: first.user_id || '',
@@ -207,6 +214,18 @@ export default function OrderEditor({ items, shirts, onCancel, onSaved }) {
                 <label className="flex items-center gap-2 text-xs text-chalk pb-2 cursor-pointer">
                   <input type="checkbox" checked={d.patches} onChange={e => setOption(d.key, 'patches', e.target.checked)} className="h-4 w-4 accent-[#E8622A]" />
                   {`${PATCHES_LABEL} (+₪${EXTRA_PRICES.patches})`}
+                </label>
+              )}
+              {!d.mystery && (
+                <label className="flex items-center gap-2 text-xs text-chalk pb-2 cursor-pointer">
+                  <input type="checkbox" checked={!!d.longSleeve} onChange={e => setOption(d.key, 'longSleeve', e.target.checked)} className="h-4 w-4 accent-[#E8622A]" />
+                  {`${LONG_SLEEVE_LABEL} (+₪${EXTRA_PRICES.longSleeve})`}
+                </label>
+              )}
+              {!d.mystery && (
+                <label className="flex items-center gap-2 text-xs text-chalk pb-2 cursor-pointer">
+                  <input type="checkbox" checked={!!d.shorts} onChange={e => setOption(d.key, 'shorts', e.target.checked)} className="h-4 w-4 accent-[#E8622A]" />
+                  {`${SHORTS_LABEL} (+₪${EXTRA_PRICES.shorts})`}
                 </label>
               )}
               <Labelled label="מחיר (₪)">

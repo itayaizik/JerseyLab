@@ -43,6 +43,8 @@ interface OrderItem {
   player_version?: boolean;
   custom_name?: string;
   patches?: boolean;
+  long_sleeve?: boolean;
+  shorts?: boolean;
   local_stock?: boolean;
   price?: number;
   notes?: string;
@@ -52,6 +54,8 @@ function itemRow(item: OrderItem): string {
   const extras: string[] = [];
   if (item.player_version) extras.push('גרסת שחקן');
   if (item.custom_name) extras.push(`הדפסה: ${esc(item.custom_name)}`);
+  if (item.long_sleeve) extras.push('שרוול ארוך');
+  if (item.shorts) extras.push('מכנס קצר');
   if (item.patches) extras.push("פאצ'ים");
   const eta = item.local_stock ? 'מלאי בארץ - עד שבוע' : 'משלוח מהיר - עד 3 שבועות';
   // Mystery box exclusions and free-text notes. Echoing them back is the only

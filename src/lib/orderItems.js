@@ -1,9 +1,9 @@
-import { EXTRA_PRICES, PATCHES_LABEL } from '@/lib/cart';
+import { EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 
 // An order item's options live in its free-text `message`, the way the cart
 // wrote them at checkout:
-//   "סל קניות | גרסת שחקן (+₪20) | הדפסת שם: MESSI 10 (+₪15) | פאצ'ים (+₪5) | מחיר סופי: ₪110"
+//   "סל קניות | גרסת שחקן (+₪20) | הדפסת שם: MESSI 10 (+₪15) | שרוול ארוך (+₪20) | מכנס קצר (+₪40) | פאצ'ים (+₪5) | מחיר סופי: ₪175"
 // The supplier text and the admin list already read that string, so the order
 // editor reads it the same way and writes it back in the same shape rather than
 // moving the options into columns that nothing else knows about.
@@ -14,6 +14,8 @@ const PLAYER_RE = /^גרסת שחקן/;
 const PRINT_RE = /^הדפסת שם:\s*(.*?)\s*(?:\(\+₪\d+\))?$/;
 // Starts with the word, so a mystery box's "כל הפאצ'ים" is not taken for it.
 const PATCHES_RE = /^פאצ['׳]ים/;
+const LONG_SLEEVE_RE = /^שרוול ארוך/;
+const SHORTS_RE = /^מכנס קצר/;
 
 export const isMysteryBoxRequest = (request) => request?.shirt_id === MYSTERY_BOX_ID;
 
@@ -23,7 +25,7 @@ export function parseOrderItem(request) {
   const [firstLine, ...moreLines] = message.split('\n');
   const mystery = isMysteryBoxRequest(request);
   const item = {
-    prefix: '', playerVersion: false, customName: '', patches: false, price: null,
+    prefix: '', playerVersion: false, customName: '', patches: false, longSleeve: false, shorts: false, price: null,
     other: [], trailing: moreLines.join('\n'),
   };
 
@@ -37,6 +39,8 @@ export function parseOrderItem(request) {
       const print = part.match(PRINT_RE);
       if (print) { item.customName = print[1].trim(); return; }
       if (PATCHES_RE.test(part)) { item.patches = true; return; }
+      if (LONG_SLEEVE_RE.test(part)) { item.longSleeve = true; return; }
+      if (SHORTS_RE.test(part)) { item.shorts = true; return; }
     }
     item.other.push(part);
   });
@@ -50,6 +54,8 @@ export function buildOrderMessage(item, mystery = false) {
   if (!mystery) {
     if (item.playerVersion) parts.push(`גרסת שחקן (+₪${EXTRA_PRICES.player})`);
     if (item.customName) parts.push(`הדפסת שם: ${item.customName} (+₪${EXTRA_PRICES.name})`);
+    if (item.longSleeve) parts.push(`${LONG_SLEEVE_LABEL} (+₪${EXTRA_PRICES.longSleeve})`);
+    if (item.shorts) parts.push(`${SHORTS_LABEL} (+₪${EXTRA_PRICES.shorts})`);
     if (item.patches) parts.push(`${PATCHES_LABEL} (+₪${EXTRA_PRICES.patches})`);
   }
   parts.push(...(item.other || []));
@@ -62,7 +68,9 @@ export function extraPrice(draft) {
   if (draft.mystery) return 0;
   return (draft.playerVersion ? EXTRA_PRICES.player : 0)
     + (draft.customName?.trim() ? EXTRA_PRICES.name : 0)
-    + (draft.patches ? EXTRA_PRICES.patches : 0);
+    + (draft.patches ? EXTRA_PRICES.patches : 0)
+    + (draft.longSleeve ? EXTRA_PRICES.longSleeve : 0)
+    + (draft.shorts ? EXTRA_PRICES.shorts : 0);
 }
 
 export const priceOf = (draft) => Number(draft.price) || 0;
@@ -73,6 +81,8 @@ export function itemLine(draft) {
   const extras = [];
   if (draft.playerVersion) extras.push('גרסת שחקן');
   if (draft.customName?.trim()) extras.push(`הדפסה: ${draft.customName.trim()}`);
+  if (draft.longSleeve) extras.push(LONG_SLEEVE_LABEL);
+  if (draft.shorts) extras.push(SHORTS_LABEL);
   if (draft.patches) extras.push(PATCHES_LABEL);
   const size = draft.size?.trim() ? ` - מידה ${draft.size.trim()}` : '';
   return `${draft.name}${size} - ₪${priceOf(draft)}${extras.length ? ` (${extras.join(', ')})` : ''}`;
@@ -101,6 +111,8 @@ export function diffOrder(original, drafts) {
     const before = o.customName.trim();
     const after = d.customName.trim();
     if (before !== after) parts.push(!after ? 'ההדפסה הוסרה' : before ? `ההדפסה שונתה ל-${after}` : `נוספה הדפסה: ${after}`);
+    if (d.longSleeve !== o.longSleeve) parts.push(d.longSleeve ? `שונה ל${LONG_SLEEVE_LABEL}` : 'שונה לשרוול קצר');
+    if (d.shorts !== o.shorts) parts.push(d.shorts ? `נוסף ${SHORTS_LABEL}` : `ה${SHORTS_LABEL} הוסר`);
     if (d.patches !== o.patches) parts.push(d.patches ? `נוספו ${PATCHES_LABEL}` : `ה${PATCHES_LABEL} הוסרו`);
     if (String(d.price) !== String(o.price)) {
       parts.push(`המחיר עודכן${o.price !== '' && o.price !== null ? ` מ-₪${o.price}` : ''} ל-₪${priceOf(d)}`);
@@ -147,5 +159,7 @@ export const emailItem = (draft) => ({
   player_version: !!draft.playerVersion,
   custom_name: draft.customName?.trim() || '',
   patches: !!draft.patches,
+  long_sleeve: !!draft.longSleeve,
+  shorts: !!draft.shorts,
   price: priceOf(draft),
 });
