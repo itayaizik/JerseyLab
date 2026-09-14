@@ -80,10 +80,12 @@ export default function HomeHero({ settings = {}, ready = true }) {
 
         {hasSource && showCard && (
           /* On the left, the end side of a right-to-left page. */
-          <div className="pointer-events-none absolute inset-y-0 end-0 flex items-end p-3 sm:p-5 md:items-center md:pe-8 lg:pe-12">
+          /* Phone: centred at the foot of the photo. Tablet up: on the left,
+             half way down. */
+          <div className="pointer-events-none absolute inset-0 flex items-end justify-center p-3 sm:p-5 md:items-center md:justify-end md:pe-8 lg:pe-12">
             {/* A narrow white card: the title stacks down it and the button
                 sits under the line of text. */}
-            <div className="pointer-events-auto w-[15rem] rounded-[1.5rem] bg-white/95 p-5 shadow-float backdrop-blur sm:w-[17rem] md:w-[19rem] md:p-8 lg:w-[23rem] lg:p-10">
+            <div className="pointer-events-auto w-full max-w-[20rem] rounded-[1.5rem] bg-white/95 p-5 text-center shadow-float backdrop-blur md:w-[19rem] md:max-w-none md:p-8 md:text-start lg:w-[23rem] lg:p-10">
               <h1 className="text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-brand-navy md:text-4xl lg:text-5xl">
                 <Title text={title} />
               </h1>
