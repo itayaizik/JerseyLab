@@ -3,7 +3,7 @@ import { MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 
 // An order item's options live in its free-text `message`, the way the cart
 // wrote them at checkout:
-//   "סל קניות | גרסת שחקן (+₪20) | הדפסת שם: MESSI 10 (+₪15) | שרוול ארוך (+₪20) | מכנס קצר (+₪40) | פאצ'ים (+₪5) | מחיר סופי: ₪175"
+//   "סל קניות | גרסת שחקן (+₪20) | הדפסת שם: MESSI 10 (+₪10) | שרוול ארוך (+₪20) | מכנס קצר (+₪40) | פאצ'ים (+₪5) | מחיר סופי: ₪165"
 // The supplier text and the admin list already read that string, so the order
 // editor reads it the same way and writes it back in the same shape rather than
 // moving the options into columns that nothing else knows about.

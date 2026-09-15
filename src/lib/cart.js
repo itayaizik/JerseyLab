@@ -29,7 +29,7 @@ export function openCart() {
 }
 
 // What the configurator charges for each extra.
-export const EXTRA_PRICES = { name: 15, player: 20, patches: 5, longSleeve: 20, shorts: 40 };
+export const EXTRA_PRICES = { name: 10, player: 20, patches: 5, longSleeve: 20, shorts: 40 };
 
 // One spelling of the word, with a plain apostrophe: order messages are parsed
 // back by the admin (supplier text, order editing), so it must not drift into

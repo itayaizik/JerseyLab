@@ -80,7 +80,7 @@ function detectKitType(shirtName) {
 
 // Player-version and custom name+number aren't stored as their own columns
 // - the cart drawer folds them into the free-text `message` as
-// "גרסת שחקן (+₪20)" and "הדפסת שם: {name} {number} (+₪15)". Parse them
+// "גרסת שחקן (+₪20)" and "הדפסת שם: {name} {number} (+₪10)". Parse them
 // back out rather than duplicating that formatting logic in two places.
 function parseCustomization(message) {
   if (!message) return { playerVersion: false, customText: '', patches: false, longSleeve: false, shorts: false };
