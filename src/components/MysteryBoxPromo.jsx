@@ -35,7 +35,7 @@ export default function MysteryBoxPromo() {
           </span>
           <h2 id="mystery-heading" className="mt-5 text-4xl font-bold leading-tight tracking-[-0.02em] sm:text-5xl">מיסטרי בוקס</h2>
           <p className="mt-3 max-w-md text-base leading-relaxed text-white/70 sm:text-lg">
-            אתם בוחרים סגנון ומידה, אנחנו בוחרים את החולצה. אותה איכות כמו בקטלוג, במחיר נמוך יותר.
+            אתם בוחרים סגנון ומידה, והחולצה יוצאת אקראית. אותה איכות ואותו מחיר כמו בקטלוג, רק בהפתעה.
           </p>
           <ul className="mt-6 max-w-sm divide-y divide-white/10 border-y border-white/10">
             {BOX_TYPES.map(box => (

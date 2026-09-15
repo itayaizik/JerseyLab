@@ -11,14 +11,14 @@ export default function MysteryBox() {
     <div>
       <Seo
         title="מיסטרי בוקס - JerseyLab"
-        description="מיסטרי בוקס של JerseyLab: חולצת כדורגל מפתיעה לפי סגנון ומידה שתבחר. רגיל ₪70, רטרו ₪90, מונדיאל ₪70. אפשר לסמן קבוצות וצבעים שלא תרצה לקבל."
+        description="מיסטרי בוקס של JerseyLab: חולצת כדורגל מפתיעה לפי סגנון ומידה שתבחר. רגיל ₪70, רטרו ₪80, מונדיאל ₪70. אפשר לסמן קבוצות וצבעים שלא תרצה לקבל."
         canonicalPath="/mystery-box"
       />
 
       <CollectionHero
         breadcrumb={<Breadcrumb trail={[{ label: 'מיסטרי בוקס' }]} />}
         title="מיסטרי בוקס"
-        description="אתם בוחרים סגנון ומידה, אנחנו בוחרים את החולצה. אותה איכות כמו בקטלוג, במחיר נמוך יותר."
+        description="אתם בוחרים סגנון ומידה, והחולצה יוצאת אקראית. אותה איכות ואותו מחיר כמו בקטלוג, רק בהפתעה."
       />
 
       {/* The configurator is the page. It gets the wider column and the top of

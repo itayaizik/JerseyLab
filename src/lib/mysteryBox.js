@@ -12,7 +12,7 @@ export const BOX_TYPES = [
   {
     id: 'retro',
     label: 'רטרו',
-    price: 90,
+    price: 80,
     blurb: 'חולצה קלאסית מהארכיון. עונות ישנות ודגמים שכבר לא מייצרים.',
   },
   {

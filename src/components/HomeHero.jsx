@@ -10,8 +10,8 @@ export const HERO_DEFAULTS = {
   desktop: '/hero-desktop.jpg',
   mobile: '/hero-mobile.jpg',
   title: 'עונת 26/27|כבר כאן',
-  subtitle: 'החולצה של הקבוצה שלך מחכה לך.',
-  button: 'לכל החולצות',
+  subtitle: 'הגיע הזמן להתחדש. קנה חולצה חדשה לפני שייגמר.',
+  button: 'לקטלוג',
   link: '/catalog',
 };
 

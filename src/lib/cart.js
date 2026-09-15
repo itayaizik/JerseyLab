@@ -41,15 +41,15 @@ export const SHORTS_LABEL = 'מכנס קצר';
 
 // What a shirt costs before extras.
 //
-// Retro shirts are never under ₪90 and new ones never under ₪70. This rule was
+// Retro shirts are never under ₪80 and new ones never under ₪70. This rule was
 // written out separately in two modals while the product page and the cards
 // printed the stored price, so a retro shirt stored at 70 read ₪70 everywhere
-// the customer looked and ₪90 in the cart. Everything that shows a price reads
+// the customer looked and more in the cart. Everything that shows a price reads
 // it from here now.
 export function shirtBasePrice(shirt) {
   if (!shirt) return 0;
   const price = Number(shirt.sale_price) || Number(shirt.price) || 0;
-  if (shirt.is_retro) return Math.max(price, 90);
+  if (shirt.is_retro) return Math.max(price, 80);
   if (shirt.is_new || shirt.condition === 'new') return Math.max(price, 70);
   return price;
 }

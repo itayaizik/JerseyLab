@@ -4,7 +4,7 @@ import {
   Gift, Check, ShoppingBag, Shirt, Sparkles, Ban, MessageSquare,
   ChevronLeft, ChevronRight, Pencil,
 } from 'lucide-react';
-import { addToCart, openCart } from '@/lib/cart';
+import { addToCart, openCart, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { BOX_TYPES, SIZES, NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 
 // Building a mystery box, one question at a time.
@@ -53,13 +53,19 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   const [size, setSize] = useState('');
   const [addName, setAddName] = useState(false);
   const [patches, setPatches] = useState(false);
+  const [longSleeve, setLongSleeve] = useState(false);
+  const [shorts, setShorts] = useState(false);
   const [excludeClubs, setExcludeClubs] = useState('');
   const [excludeColors, setExcludeColors] = useState([]);
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
 
   const selected = BOX_TYPES.find(b => b.id === type);
-  const total = selected.price + (addName ? NAME_PRICE : 0) + (patches ? PATCHES_PRICE : 0);
+  // Same rule as a catalogue shirt: retro comes without shorts.
+  const shortsAllowed = type !== 'retro';
+  const wantsShorts = shorts && shortsAllowed;
+  const total = selected.price + (addName ? NAME_PRICE : 0) + (patches ? PATCHES_PRICE : 0)
+    + (longSleeve ? EXTRA_PRICES.longSleeve : 0) + (wantsShorts ? EXTRA_PRICES.shorts : 0);
 
   // Two of these can be on the page at once, so field ids are per instance.
   const fid = (name) => `${idPrefix}-${name}`;
@@ -91,6 +97,9 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     const extras = [];
     if (addName) extras.push({ label: 'שם ומספר מאחורה (לבחירתנו)', price: NAME_PRICE });
     if (patches) extras.push({ label: 'כל הפאצ\'ים', price: PATCHES_PRICE });
+    // The same words a catalogue shirt uses, so the supplier text reads them.
+    if (longSleeve) extras.push({ label: LONG_SLEEVE_LABEL, price: EXTRA_PRICES.longSleeve });
+    if (wantsShorts) extras.push({ label: `${SHORTS_LABEL} במידה ${size}`, price: EXTRA_PRICES.shorts });
 
     // Preferences carry no price, so they travel separately from `extras` —
     // but they still have to reach the order, or asking was theatre.
@@ -120,7 +129,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     if (id === 'type') return `${selected.label} · ₪${selected.price}`;
     if (id === 'size') return size || 'טרם נבחרה';
     if (id === 'extras') {
-      const on = [addName && 'שם ומספר', patches && 'פאצ\'ים'].filter(Boolean);
+      const on = [addName && 'שם ומספר', patches && 'פאצ\'ים', longSleeve && LONG_SLEEVE_LABEL, wantsShorts && SHORTS_LABEL].filter(Boolean);
       return on.length ? on.join(' · ') : 'בלי תוספות';
     }
     const picked = [
@@ -235,9 +244,15 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                       {/* The name add-on has no text field on purpose: the shirt
                           is the surprise, so the print is too. */}
                       <Extra checked={addName} onChange={setAddName} label="שם ומספר מאחורה" price={NAME_PRICE}
-                        hint="אנחנו בוחרים את השם והמספר שמתאימים לחולצה שתצא" />
+                        hint="שחקן שמתאים לחולצה שתצא - גם הוא הפתעה" />
                       <Extra checked={patches} onChange={setPatches} label="כל הפאצ'ים" price={PATCHES_PRICE}
                         hint="פאצ'ים של הליגה והטורניר, לפי החולצה" />
+                      <Extra checked={longSleeve} onChange={setLongSleeve} label={LONG_SLEEVE_LABEL} price={EXTRA_PRICES.longSleeve}
+                        hint="אותה חולצה, עם שרוולים ארוכים" />
+                      {shortsAllowed && (
+                        <Extra checked={shorts} onChange={setShorts} label={SHORTS_LABEL} price={EXTRA_PRICES.shorts}
+                          hint={size ? `מכנס תואם לחולצה, במידה ${size}` : 'מכנס תואם לחולצה, באותה מידה'} />
+                      )}
                     </div>
                   )}
 
@@ -285,7 +300,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                       </label>
                       <textarea id={fid('notes')} value={notes} maxLength={500} rows={3}
                         onChange={e => setNotes(e.target.value)}
-                        placeholder="ליגה שאתם מעדיפים, שחקן שתשמחו לקבל, מתנה למישהו. כל דבר שיעזור לנו לבחור."
+                        placeholder="ליגה שאתם מעדיפים, שחקן שתשמחו לקבל, מתנה למישהו. כל דבר שחשוב לכם."
                         className="shop-field resize-none py-3" />
                       <p dir="ltr" className="mt-1 text-right text-[11px] tabular-nums text-brand-navy/40">{notes.length}/500</p>
                     </>
@@ -320,6 +335,8 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           <Row label={`מיסטרי בוקס ${selected.label}`} value={selected.price} />
           {addName && <Row label="שם ומספר מאחורה" value={NAME_PRICE} />}
           {patches && <Row label="כל הפאצ'ים" value={PATCHES_PRICE} />}
+          {longSleeve && <Row label={LONG_SLEEVE_LABEL} value={EXTRA_PRICES.longSleeve} />}
+          {wantsShorts && <Row label={SHORTS_LABEL} value={EXTRA_PRICES.shorts} />}
           {size && <Row label="מידה" text={size} />}
         </div>
 
