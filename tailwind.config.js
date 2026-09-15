@@ -10,6 +10,48 @@ module.exports = {
   			sm: 'calc(var(--radius) - 4px)',
   			'4xl': '2rem'
   		},
+  		// Dark mode. The brand colours above stay fixed hex values, but the few
+  		// that change with the theme are read through CSS variables per use:
+  		// navy as a background (the footer, dark panels) and navy as text swap
+  		// differently - in dark mode the text turns light while a navy panel
+  		// only deepens - so each kind of utility gets its own variable. The
+  		// variables are set in index.css, under :root and html.dark.
+  		backgroundColor: {
+  			white: 'rgb(var(--c-surface) / <alpha-value>)',
+  			brand: {
+  				navy: 'rgb(var(--c-navy-bg) / <alpha-value>)',
+  				'navy-light': 'rgb(var(--c-navy-light-bg) / <alpha-value>)',
+  				mist: 'rgb(var(--c-mist) / <alpha-value>)',
+  				'mist-dark': 'rgb(var(--c-mist-dark) / <alpha-value>)',
+  				line: 'rgb(var(--c-line) / <alpha-value>)',
+  				'orange-soft': 'rgb(var(--c-orange-soft) / <alpha-value>)',
+  			},
+  		},
+  		// The soft bands at the top of pages fade from mist to the page colour.
+  		gradientColorStops: {
+  			white: 'rgb(var(--c-surface) / <alpha-value>)',
+  			brand: {
+  				mist: 'rgb(var(--c-mist) / <alpha-value>)',
+  			},
+  		},
+  		textColor: {
+  			brand: {
+  				navy: 'rgb(var(--c-ink) / <alpha-value>)',
+  				'orange-ink': 'rgb(var(--c-orange-ink) / <alpha-value>)',
+  			},
+  		},
+  		borderColor: {
+  			brand: {
+  				navy: 'rgb(var(--c-ink) / <alpha-value>)',
+  				line: 'rgb(var(--c-line) / <alpha-value>)',
+  			},
+  		},
+  		ringColor: {
+  			brand: {
+  				navy: 'rgb(var(--c-ink) / <alpha-value>)',
+  				line: 'rgb(var(--c-line) / <alpha-value>)',
+  			},
+  		},
   		// Soft, wide shadows in the navy's own hue rather than black, so cards
   		// lift off a white page without the grey smudge a neutral shadow leaves.
   		boxShadow: {

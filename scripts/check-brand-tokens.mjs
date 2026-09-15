@@ -25,7 +25,10 @@ const problems = [];
 
 // --- the two definition lists must match ----------------------------------
 const config = read('tailwind.config.js');
-const brandBlock = config.match(/brand:\s*\{([^}]*)\}/);
+// The palette is the brand block written in hex. The config has other brand
+// blocks too - the dark mode ones, which point at CSS variables - so the first
+// block is not necessarily the palette.
+const brandBlock = config.match(/brand:\s*\{([^}]*#[0-9a-fA-F]{6}[^}]*)\}/);
 if (!brandBlock) {
   problems.push('tailwind.config.js has no theme.extend.colors.brand block.');
 }

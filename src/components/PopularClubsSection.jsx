@@ -42,7 +42,8 @@ export default function PopularClubsSection({ title }) {
                 to={club.href || `/catalog?q=${encodeURIComponent(club.name)}`}
                 className="group flex h-full flex-col rounded-3xl bg-white p-2.5 shadow-card transition-shadow hover:shadow-lift sm:p-3"
               >
-                <span className="flex aspect-square items-center justify-center rounded-[1.125rem] bg-brand-mist">
+                {/* Light in dark mode too: crests like Juventus's are black. */}
+                <span className="flex aspect-square items-center justify-center rounded-[1.125rem] bg-brand-mist dark:bg-slate-100">
                   {club.logo_url && (
                     <img
                       src={club.logo_url}

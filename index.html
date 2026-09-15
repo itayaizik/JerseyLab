@@ -8,6 +8,7 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#FFFFFF" />
+    <script src="/theme-init.js"></script>
     <meta name="application-name" content="JerseyLab" />
     <meta name="apple-mobile-web-app-title" content="JerseyLab" />
     <meta name="robots" content="index, follow" />
@@ -47,6 +48,8 @@
       #prerendered-content { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
       #boot-splash { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #fff; }
       #boot-splash img { height: 48px; width: auto; }
+      html.dark #boot-splash { background: #0D1422; }
+      html.dark #boot-splash img { filter: brightness(0) invert(1); }
     </style>
   </head>
   <body>

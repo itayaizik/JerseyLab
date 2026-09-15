@@ -22,7 +22,7 @@ function LeagueLogo({ src }) {
   if (!src || failed) return <Trophy className="h-9 w-9 text-brand-orange-ink" aria-hidden="true" />;
   return (
     <img src={src} alt="" loading="lazy" onError={() => setFailed(true)}
-      className="max-h-16 max-w-[4rem] object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-110" />
+      className="max-h-16 max-w-[4rem] object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-110 dark:max-h-12 dark:max-w-[3rem] dark:mix-blend-normal" />
   );
 }
 
@@ -50,7 +50,9 @@ export default function LeaguesSection({ title }) {
               to={league.href || `/catalog?q=${encodeURIComponent(league.name)}`}
               className="group flex h-full flex-col items-center gap-3 rounded-3xl bg-brand-mist px-3 py-5 text-center transition hover:bg-brand-mist-dark sm:gap-4 sm:px-4 sm:py-7"
             >
-              <span className="flex h-16 w-16 items-center justify-center">
+              {/* Dark mode: a light plate, since most league logos are dark
+                  artwork that disappears on a dark tile. */}
+              <span className="flex h-16 w-16 items-center justify-center dark:rounded-2xl dark:bg-slate-100">
                 <LeagueLogo src={league.logo_url} />
               </span>
               <span className="text-base font-semibold text-brand-navy">{league.name}</span>

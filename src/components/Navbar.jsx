@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useId } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, Search, Heart, User, ShoppingBag, ChevronDown, ChevronLeft, LogOut, X, ArrowLeft, Shield } from 'lucide-react';
+import { Menu, Search, Heart, User, ShoppingBag, ChevronDown, ChevronLeft, LogOut, X, ArrowLeft, Shield, Moon, Sun } from 'lucide-react';
+import { getTheme, setTheme } from '@/lib/theme';
 import { base44 } from '@/api/base44Client';
 import CartDrawer from '@/components/cart/CartDrawer';
 import SideDrawer from '@/components/shop/SideDrawer';
@@ -245,6 +246,44 @@ function AccountMenuLink({ to, icon: Icon, onNavigate, children }) {
   );
 }
 
+// Light and dark. The icon shows what pressing it gives, the way phones do.
+function useDarkMode() {
+  const [dark, setDark] = useState(() => getTheme() === 'dark');
+  useEffect(() => {
+    const sync = () => setDark(getTheme() === 'dark');
+    window.addEventListener('theme_changed', sync);
+    return () => window.removeEventListener('theme_changed', sync);
+  }, []);
+  return [dark, () => setTheme(dark ? 'light' : 'dark')];
+}
+
+function ThemeButton({ className = '', iconClass }) {
+  const [dark, toggle] = useDarkMode();
+  const Icon = dark ? Sun : Moon;
+  return (
+    <button type="button" onClick={toggle} aria-pressed={dark} aria-label="מצב כהה" title={dark ? 'מעבר למצב בהיר' : 'מעבר למצב כהה'}
+      className={`shop-icon-btn ${className}`}>
+      <Icon className={iconClass} />
+    </button>
+  );
+}
+
+function MobileThemeRow() {
+  const [dark, toggle] = useDarkMode();
+  return (
+    <button type="button" role="switch" aria-checked={dark} onClick={toggle}
+      className="flex min-h-[3.25rem] w-full items-center justify-between rounded-2xl bg-brand-mist px-4 text-[15px] text-brand-navy">
+      <span className="flex items-center gap-2.5">
+        <Moon className="h-4 w-4 text-brand-navy/60" aria-hidden="true" />
+        מצב כהה
+      </span>
+      <span aria-hidden="true" className={`relative h-6 w-11 rounded-full transition-colors ${dark ? 'bg-brand-orange' : 'bg-brand-navy/20'}`}>
+        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[inset-inline-start] ${dark ? 'start-[1.375rem]' : 'start-0.5'}`} />
+      </span>
+    </button>
+  );
+}
+
 // ─── Header ─────────────────────────────────────────────────────────────────
 
 export default function Navbar() {
@@ -399,13 +438,17 @@ export default function Navbar() {
                   <Menu className="h-6 w-6" />
                 </button>
                 <Link to="/" aria-label="JerseyLab - דף הבית" className="flex items-center rounded-lg">
-                  <img src="/logo-navbar-dark.png" alt="JerseyLab" width="391" height="128" className="h-9 w-auto lg:h-11" />
+                  {/* The navy logo on a light header, the white one on a dark header. */}
+                  <img src="/logo-navbar-dark.png" alt="JerseyLab" width="391" height="128" className="h-9 w-auto dark:hidden lg:h-11" />
+                  <img src="/logo-navbar.png" alt="JerseyLab" width="391" height="128" className="hidden h-9 w-auto dark:block lg:h-11" />
                 </Link>
               </div>
 
               <SearchBox className="hidden lg:block" />
 
               <div className="flex items-center justify-end gap-0.5 sm:gap-1">
+                {/* Phones have it in the menu instead: the bar is full there. */}
+                <ThemeButton className="hidden sm:inline-flex" iconClass={iconClass} />
                 {user ? (
                   <div ref={accountRef} className="relative">
                     <button type="button" onClick={() => setAccountOpen(o => !o)} aria-expanded={accountOpen} aria-haspopup="menu" aria-label="החשבון שלי" className="shop-icon-btn">
@@ -568,6 +611,8 @@ export default function Navbar() {
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           </Link>
         </Disclosure>
+
+        <MobileThemeRow />
 
         <ul className="pt-2">
           {SITE_LINKS.map(link => (
