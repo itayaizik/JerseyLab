@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef, useId } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, Search, Heart, User, ShoppingBag, ChevronDown, ChevronLeft, LogOut, X, ArrowLeft, Shield, Moon, Sun } from 'lucide-react';
+import { Menu, Search, Heart, User, ShoppingBag, ChevronDown, ChevronLeft, LogOut, X, ArrowLeft, Shield, Moon, Sun, Languages } from 'lucide-react';
 import { getTheme, setTheme } from '@/lib/theme';
+import { t, isEn, setLang } from '@/lib/i18n';
+import { term, shirtName } from '@/lib/english';
 import { base44 } from '@/api/base44Client';
 import CartDrawer from '@/components/cart/CartDrawer';
 import SideDrawer from '@/components/shop/SideDrawer';
@@ -28,7 +30,7 @@ function loadCatalog() {
 }
 
 function SearchBox({ className = '', onNavigate }) {
-  const [term, setTerm] = useState('');
+  const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [player, setPlayer] = useState(null);
   const [open, setOpen] = useState(false);
@@ -40,19 +42,19 @@ function SearchBox({ className = '', onNavigate }) {
   // The same search the catalogue runs, so what the dropdown suggests and what
   // pressing Enter shows can never disagree.
   useEffect(() => {
-    const query = term.trim();
-    if (query.length < 2) { setResults([]); setPlayer(null); return; }
+    const trimmed = query.trim();
+    if (trimmed.length < 2) { setResults([]); setPlayer(null); return; }
     let cancelled = false;
     const timer = setTimeout(async () => {
       const all = await loadCatalog();
       if (cancelled) return;
-      const found = searchShirts(all, query);
+      const found = searchShirts(all, trimmed);
       setResults(found.results.slice(0, 6));
       setPlayer(found.player);
       setActive(-1);
     }, 250);
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [term]);
+  }, [query]);
 
   useEffect(() => {
     if (!open) return;
@@ -61,14 +63,14 @@ function SearchBox({ className = '', onNavigate }) {
     return () => document.removeEventListener('mousedown', onDown);
   }, [open]);
 
-  const finish = () => { setTerm(''); setResults([]); setOpen(false); onNavigate?.(); };
+  const finish = () => { setQuery(''); setResults([]); setOpen(false); onNavigate?.(); };
 
   const submit = (e) => {
     e?.preventDefault();
-    const query = term.trim();
-    if (!query) return;
+    const trimmed = query.trim();
+    if (!trimmed) return;
     // Logged on the catalogue page, where the number of results is known.
-    navigate(`/catalog?q=${encodeURIComponent(query)}`);
+    navigate(`/catalog?q=${encodeURIComponent(trimmed)}`);
     finish();
   };
 
@@ -82,7 +84,7 @@ function SearchBox({ className = '', onNavigate }) {
     else if (e.key === 'Enter' && active >= 0) { e.preventDefault(); go(results[active]); }
   };
 
-  const showList = open && term.trim().length >= 2 && results.length > 0;
+  const showList = open && query.trim().length >= 2 && results.length > 0;
 
   return (
     <div ref={boxRef} className={`relative ${className}`}>
@@ -92,12 +94,12 @@ function SearchBox({ className = '', onNavigate }) {
           <input
             type="text"
             enterKeyHint="search"
-            value={term}
-            onChange={e => { setTerm(e.target.value); setOpen(true); }}
+            value={query}
+            onChange={e => { setQuery(e.target.value); setOpen(true); }}
             onFocus={() => setOpen(true)}
             onKeyDown={onKeyDown}
-            placeholder="חיפוש חולצה, קבוצה או שחקן"
-            aria-label="חיפוש חולצות"
+            placeholder={t('חיפוש חולצה, קבוצה או שחקן', 'Search shirts, teams or players')}
+            aria-label={t('חיפוש חולצות', 'Search shirts')}
             maxLength={100}
             autoComplete="off"
             role="combobox"
@@ -107,8 +109,8 @@ function SearchBox({ className = '', onNavigate }) {
             aria-activedescendant={showList && active >= 0 ? `${listId}-${active}` : undefined}
             className="min-w-0 flex-1 bg-transparent text-[15px] text-brand-navy placeholder:text-brand-navy/45 focus:outline-none focus-visible:!outline-none"
           />
-          {term && (
-            <button type="button" onClick={() => { setTerm(''); setResults([]); }} aria-label="ניקוי החיפוש"
+          {query && (
+            <button type="button" onClick={() => { setQuery(''); setResults([]); }} aria-label={t('ניקוי החיפוש', 'Clear search')}
               className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-brand-navy/50 transition hover:bg-brand-mist-dark hover:text-brand-navy">
               <X className="h-4 w-4" />
             </button>
@@ -118,8 +120,12 @@ function SearchBox({ className = '', onNavigate }) {
 
       {showList && (
         <div className="absolute inset-x-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-brand-line bg-white shadow-lift">
-          {player && <p className="px-4 pt-3 text-[13px] text-brand-orange-ink">חולצות מהתקופה של {player.label}</p>}
-          <ul id={listId} role="listbox" aria-label="הצעות" className="max-h-[22rem] overflow-y-auto p-2">
+          {player && (
+            <p className="px-4 pt-3 text-[13px] text-brand-orange-ink">
+              {t(`חולצות מהתקופה של ${player.label}`, `Shirts from ${player.typed}'s years`)}
+            </p>
+          )}
+          <ul id={listId} role="listbox" aria-label={t('הצעות', 'Suggestions')} className="max-h-[22rem] overflow-y-auto p-2">
             {results.map((s, i) => (
               <li key={s.id} id={`${listId}-${i}`} role="option" aria-selected={i === active}>
                 <button type="button" tabIndex={-1} onMouseDown={e => e.preventDefault()} onClick={() => go(s)} onMouseEnter={() => setActive(i)}
@@ -128,8 +134,8 @@ function SearchBox({ className = '', onNavigate }) {
                     <ProductImage src={s.main_image} alt="" sizes="48px" className="h-full w-full object-cover" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[15px] font-medium text-brand-navy">{s.name}</span>
-                    <span className="block truncate text-[13px] text-brand-navy/50">{[s.club || s.national_team, s.season].filter(Boolean).join(' · ')}</span>
+                    <span className="block truncate text-[15px] font-medium text-brand-navy">{shirtName(s)}</span>
+                    <span className="block truncate text-[13px] text-brand-navy/50">{[term(s.club || s.national_team), s.season].filter(Boolean).join(' · ')}</span>
                   </span>
                   <span className="flex-shrink-0 text-sm font-semibold tabular-nums text-brand-navy">₪{shirtBasePrice(s)}</span>
                 </button>
@@ -138,7 +144,7 @@ function SearchBox({ className = '', onNavigate }) {
           </ul>
           <button type="button" onMouseDown={e => e.preventDefault()} onClick={submit}
             className="flex w-full items-center justify-between gap-3 border-t border-brand-line px-4 py-3 text-sm font-semibold text-brand-orange-ink transition hover:bg-brand-mist">
-            <span className="truncate">כל התוצאות עבור "{term.trim()}"</span>
+            <span className="truncate">{t(`כל התוצאות עבור "${query.trim()}"`, `All results for "${query.trim()}"`)}</span>
             <ArrowLeft className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
           </button>
         </div>
@@ -194,7 +200,7 @@ function MegaPanel({ menu, onNavigate }) {
       <div className="grid grid-cols-6 gap-6">
         {SHIRTS_MENU.cards.map(card => <MenuColumn key={card.href} item={card} onNavigate={onNavigate} />)}
         <div className="col-start-6 row-start-1 border-s border-brand-line ps-6">
-          <p className="text-[15px] font-semibold text-brand-navy">עוד בחנות</p>
+          <p className="text-[15px] font-semibold text-brand-navy">{t('עוד בחנות', 'More in the shop')}</p>
           <ul className="mt-4 space-y-1">
             {SHIRTS_MENU.links.map(link => (
               <li key={link.href}>
@@ -221,7 +227,7 @@ function MegaPanel({ menu, onNavigate }) {
       <div className="grid grid-cols-[minmax(0,15rem)_minmax(0,1fr)] gap-10">
         <MenuColumn item={NATIONAL_MENU.card} onNavigate={onNavigate} />
         <div>
-          <p className="text-[15px] font-semibold text-brand-navy">לפי נבחרת</p>
+          <p className="text-[15px] font-semibold text-brand-navy">{t('לפי נבחרת', 'By national team')}</p>
           <ul className="mt-4 grid grid-cols-4 gap-2.5">
             {NATIONAL_MENU.links.map(link => (
               <li key={link.href}>
@@ -246,6 +252,8 @@ function AccountMenuLink({ to, icon: Icon, onNavigate, children }) {
   );
 }
 
+// ─── Theme and language ─────────────────────────────────────────────────────
+
 // Light and dark. The icon shows what pressing it gives, the way phones do.
 function useDarkMode() {
   const [dark, setDark] = useState(() => getTheme() === 'dark');
@@ -261,26 +269,48 @@ function ThemeButton({ className = '', iconClass }) {
   const [dark, toggle] = useDarkMode();
   const Icon = dark ? Sun : Moon;
   return (
-    <button type="button" onClick={toggle} aria-pressed={dark} aria-label="מצב כהה" title={dark ? 'מעבר למצב בהיר' : 'מעבר למצב כהה'}
+    <button type="button" onClick={toggle} aria-pressed={dark} aria-label={t('מצב כהה', 'Dark mode')}
+      title={dark ? t('מעבר למצב בהיר', 'Switch to light mode') : t('מעבר למצב כהה', 'Switch to dark mode')}
       className={`shop-icon-btn ${className}`}>
       <Icon className={iconClass} />
     </button>
   );
 }
 
-function MobileThemeRow() {
-  const [dark, toggle] = useDarkMode();
+// Named in the language it switches to, so someone who cannot read the page
+// can still find their own.
+function LanguageButton({ className = '' }) {
   return (
-    <button type="button" role="switch" aria-checked={dark} onClick={toggle}
-      className="flex min-h-[3.25rem] w-full items-center justify-between rounded-2xl bg-brand-mist px-4 text-[15px] text-brand-navy">
-      <span className="flex items-center gap-2.5">
-        <Moon className="h-4 w-4 text-brand-navy/60" aria-hidden="true" />
-        מצב כהה
-      </span>
-      <span aria-hidden="true" className={`relative h-6 w-11 rounded-full transition-colors ${dark ? 'bg-brand-orange' : 'bg-brand-navy/20'}`}>
-        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[inset-inline-start] ${dark ? 'start-[1.375rem]' : 'start-0.5'}`} />
-      </span>
+    <button type="button" onClick={() => setLang(isEn ? 'he' : 'en')}
+      lang={isEn ? 'he' : 'en'} aria-label={isEn ? 'עברית' : 'English'} title={isEn ? 'עברית' : 'English'}
+      className={`shop-icon-btn text-[13px] font-bold tracking-wide ${className}`}>
+      {isEn ? 'עב' : 'EN'}
     </button>
+  );
+}
+
+function MobilePrefs() {
+  const [dark, toggle] = useDarkMode();
+  const row = 'flex min-h-[3.25rem] w-full items-center justify-between rounded-2xl bg-brand-mist px-4 text-[15px] text-brand-navy';
+  return (
+    <div className="grid gap-2.5">
+      <button type="button" role="switch" aria-checked={dark} onClick={toggle} className={row}>
+        <span className="flex items-center gap-2.5">
+          <Moon className="h-4 w-4 text-brand-navy/60" aria-hidden="true" />
+          {t('מצב כהה', 'Dark mode')}
+        </span>
+        <span aria-hidden="true" className={`relative h-6 w-11 rounded-full transition-colors ${dark ? 'bg-brand-orange' : 'bg-brand-navy/20'}`}>
+          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[inset-inline-start] ${dark ? 'start-[1.375rem]' : 'start-0.5'}`} />
+        </span>
+      </button>
+      <button type="button" onClick={() => setLang(isEn ? 'he' : 'en')} lang={isEn ? 'he' : 'en'} className={row}>
+        <span className="flex items-center gap-2.5">
+          <Languages className="h-4 w-4 text-brand-navy/60" aria-hidden="true" />
+          {isEn ? 'עברית' : 'English'}
+        </span>
+        <span aria-hidden="true" className="text-[13px] font-bold text-brand-navy/50">{isEn ? 'עב' : 'EN'}</span>
+      </button>
+    </div>
   );
 }
 
@@ -408,7 +438,9 @@ export default function Navbar() {
   const closeAll = () => { setOpenMenu(null); setMobileOpen(false); setAccountOpen(false); };
   const handleLogout = async () => { await base44.auth.logout('/'); };
 
-  const cartLabel = cartCount === 1 ? 'סל הקניות, פריט אחד' : `סל הקניות, ${cartCount} פריטים`;
+  const cartLabel = cartCount === 1
+    ? t('סל הקניות, פריט אחד', 'Cart, 1 item')
+    : t(`סל הקניות, ${cartCount} פריטים`, `Cart, ${cartCount} items`);
   const iconClass = 'h-[1.35rem] w-[1.35rem]';
 
   return (
@@ -434,10 +466,10 @@ export default function Navbar() {
           <div className="shop-container">
             <div className="flex h-16 items-center justify-between gap-3 lg:grid lg:h-[5.25rem] lg:grid-cols-[minmax(0,1fr)_minmax(0,36rem)_minmax(0,1fr)] lg:gap-8">
               <div className="flex items-center gap-1">
-                <button type="button" onClick={() => setMobileOpen(true)} aria-label="פתיחת התפריט" className="shop-icon-btn -ms-2 lg:hidden">
+                <button type="button" onClick={() => setMobileOpen(true)} aria-label={t('פתיחת התפריט', 'Open menu')} className="shop-icon-btn -ms-2 lg:hidden">
                   <Menu className="h-6 w-6" />
                 </button>
-                <Link to="/" aria-label="JerseyLab - דף הבית" className="flex items-center rounded-lg">
+                <Link to="/" aria-label={t('JerseyLab - דף הבית', 'JerseyLab - Home')} className="flex items-center rounded-lg">
                   {/* The navy logo on a light header, the white one on a dark header. */}
                   <img src="/logo-navbar-dark.png" alt="JerseyLab" width="391" height="128" className="h-9 w-auto dark:hidden lg:h-11" />
                   <img src="/logo-navbar.png" alt="JerseyLab" width="391" height="128" className="hidden h-9 w-auto dark:block lg:h-11" />
@@ -447,35 +479,36 @@ export default function Navbar() {
               <SearchBox className="hidden lg:block" />
 
               <div className="flex items-center justify-end gap-0.5 sm:gap-1">
-                {/* Phones have it in the menu instead: the bar is full there. */}
+                {/* Phones have these in the menu instead: the bar is full there. */}
+                <LanguageButton className="hidden sm:inline-flex" />
                 <ThemeButton className="hidden sm:inline-flex" iconClass={iconClass} />
                 {user ? (
                   <div ref={accountRef} className="relative">
-                    <button type="button" onClick={() => setAccountOpen(o => !o)} aria-expanded={accountOpen} aria-haspopup="menu" aria-label="החשבון שלי" className="shop-icon-btn">
+                    <button type="button" onClick={() => setAccountOpen(o => !o)} aria-expanded={accountOpen} aria-haspopup="menu" aria-label={t('החשבון שלי', 'My account')} className="shop-icon-btn">
                       <User className={iconClass} />
                     </button>
                     {accountOpen && (
                       <div role="menu" className="absolute end-0 top-full z-50 mt-2 w-60 rounded-2xl border border-brand-line bg-white p-2 shadow-lift">
                         <p className="truncate px-3 pb-2 pt-1 text-[13px] text-brand-navy/50">{user.full_name || user.email}</p>
-                        <AccountMenuLink to="/profile" icon={User} onNavigate={closeAll}>החשבון שלי</AccountMenuLink>
-                        <AccountMenuLink to="/wishlist" icon={Heart} onNavigate={closeAll}>מועדפים</AccountMenuLink>
+                        <AccountMenuLink to="/profile" icon={User} onNavigate={closeAll}>{t('החשבון שלי', 'My account')}</AccountMenuLink>
+                        <AccountMenuLink to="/wishlist" icon={Heart} onNavigate={closeAll}>{t('מועדפים', 'Wishlist')}</AccountMenuLink>
                         {isAdmin && <AccountMenuLink to="/admin" icon={Shield} onNavigate={closeAll}>ניהול האתר</AccountMenuLink>}
                         <button role="menuitem" type="button" onClick={handleLogout}
                           className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-[15px] text-red-600 transition hover:bg-red-50">
                           <LogOut className="h-4 w-4" aria-hidden="true" />
-                          התנתקות
+                          {t('התנתקות', 'Log out')}
                         </button>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <Link to="/login" aria-label="התחברות" className="shop-icon-btn">
+                  <Link to="/login" aria-label={t('התחברות', 'Log in')} className="shop-icon-btn">
                     <User className={iconClass} />
                   </Link>
                 )}
 
                 {user && (
-                  <Link to="/wishlist" aria-label="מועדפים" className="shop-icon-btn hidden sm:inline-flex">
+                  <Link to="/wishlist" aria-label={t('מועדפים', 'Wishlist')} className="shop-icon-btn hidden sm:inline-flex">
                     <Heart className={iconClass} />
                   </Link>
                 )}
@@ -498,7 +531,7 @@ export default function Navbar() {
             )}
 
             {!floating && (
-              <nav aria-label="תפריט ראשי" className="hidden lg:block">
+              <nav aria-label={t('תפריט ראשי', 'Main menu')} className="hidden lg:block">
                 <ul className="-mt-1 flex items-center justify-center gap-1 xl:gap-3">
                   {NAV_ITEMS.map(item => {
                     if (item.menu) {
@@ -554,21 +587,21 @@ export default function Navbar() {
         open={mobileOpen}
         onOpenChange={setMobileOpen}
         side="start"
-        label="תפריט"
+        label={t('תפריט', 'Menu')}
         bodyClassName="space-y-2.5"
         footer={user ? (
           <div className="grid grid-cols-2 gap-2.5">
-            <Link to="/profile" onClick={closeAll} className="shop-btn-secondary">החשבון שלי</Link>
-            <button type="button" onClick={handleLogout} className="shop-btn-secondary text-red-600">התנתקות</button>
+            <Link to="/profile" onClick={closeAll} className="shop-btn-secondary">{t('החשבון שלי', 'My account')}</Link>
+            <button type="button" onClick={handleLogout} className="shop-btn-secondary text-red-600">{t('התנתקות', 'Log out')}</button>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2.5">
-            <Link to="/login" onClick={closeAll} className="shop-btn-dark">התחברות</Link>
-            <Link to="/register" onClick={closeAll} className="shop-btn-secondary">הרשמה</Link>
+            <Link to="/login" onClick={closeAll} className="shop-btn-dark">{t('התחברות', 'Log in')}</Link>
+            <Link to="/register" onClick={closeAll} className="shop-btn-secondary">{t('הרשמה', 'Sign up')}</Link>
           </div>
         )}
       >
-        <Disclosure title="חולצות" defaultOpen>
+        <Disclosure title={t('חולצות', 'Shirts')} defaultOpen>
           <ul className="grid grid-cols-2 gap-3">
             {SHIRTS_MENU.cards.map(card => (
               <li key={card.href}>
@@ -581,7 +614,7 @@ export default function Navbar() {
           </ul>
         </Disclosure>
 
-        <Disclosure title="קבוצות">
+        <Disclosure title={t('קבוצות', 'Teams')}>
           <div className="space-y-5">
             {CLUBS_MENU.map(group => (
               <div key={group.label}>
@@ -598,7 +631,7 @@ export default function Navbar() {
           </div>
         </Disclosure>
 
-        <Disclosure title="נבחרות">
+        <Disclosure title={t('נבחרות', 'National teams')}>
           <ul className="flex flex-wrap gap-2">
             {NATIONAL_MENU.links.map(link => (
               <li key={link.href}>
@@ -607,12 +640,12 @@ export default function Navbar() {
             ))}
           </ul>
           <Link to={NATIONAL_MENU.card.href} onClick={closeAll} className="shop-link mt-4 text-sm">
-            כל הנבחרות
+            {t('כל הנבחרות', 'All national teams')}
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           </Link>
         </Disclosure>
 
-        <MobileThemeRow />
+        <MobilePrefs />
 
         <ul className="pt-2">
           {SITE_LINKS.map(link => (

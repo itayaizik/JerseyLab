@@ -12,8 +12,10 @@ import OrderSummary from '@/components/configurator/OrderSummary';
 import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurator/recommendations';
 import { hasLocalStockForSize } from '@/components/ShippingBadge';
 import { itemsForSize, stockPrint } from '@/lib/localStock';
-import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
+import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { allowsPlayerVersion, allowsPatches, allowsLongSleeve, allowsShorts } from '@/lib/shirtOptions';
+import { t } from '@/lib/i18n';
+import { shirtName, shirtNameEn } from '@/lib/english';
 
 // Adding a shirt straight from a product card, one question at a time. The
 // product page asks the same questions all at once; this is the short path for
@@ -77,10 +79,10 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   ];
   const currentIndex = flow.indexOf(step);
   const stepLabels = [
-    'מידה',
-    ...(sizeHasLocalStock ? ['בחירה'] : []),
-    ...(buyingExact ? [] : [...(playerAllowed ? ['גרסה'] : []), 'הדפסה', ...(addName === 'yes' ? ['שם ומספר'] : [])]),
-    'סיכום',
+    t('מידה', 'Size'),
+    ...(sizeHasLocalStock ? [t('בחירה', 'Choice')] : []),
+    ...(buyingExact ? [] : [...(playerAllowed ? [t('גרסה', 'Version')] : []), t('הדפסה', 'Print'), ...(addName === 'yes' ? [t('שם ומספר', 'Name')] : [])]),
+    t('סיכום', 'Summary'),
   ];
 
   const reset = () => {
@@ -110,7 +112,8 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   // customer sees where the shirt went.
   const handleAdd = () => {
     addToCart({
-      shirtId: shirt.id, shirtName: shirt.name, image: shirt.main_image,
+      // The Hebrew name goes into the order; the English one is for the cart.
+      shirtId: shirt.id, shirtName: shirt.name, shirtNameEn: shirtNameEn(shirt), image: shirt.main_image,
       size: selectedSize, basePrice,
       addName: buyingExact ? !!stockPrint(stockItem) : addName === 'yes',
       customName: buyingExact ? stockPrint(stockItem) : (addName === 'yes' ? `${customName} ${customNumber}`.trim() : ''),
@@ -141,25 +144,26 @@ export default function QuickAddModal({ shirt, open, onClose }) {
     </label>
   );
   // Patches are offered for a shirt from stock as well as one made up.
-  const patchesToggle = patchesAllowed && toggle('patches', `${PATCHES_LABEL} של הליגה`, 'לפי החולצה', EXTRA_PRICES.patches, patches, setPatches);
+  const patchesToggle = patchesAllowed && toggle('patches', t("פאצ'ים של הליגה", 'League patches'), t('לפי החולצה', 'To match the shirt'), EXTRA_PRICES.patches, patches, setPatches);
   const sleeveAndShortsToggles = (
     <>
-      {longSleeveAllowed && toggle('longSleeve', LONG_SLEEVE_LABEL, 'אותה חולצה עם שרוול ארוך', EXTRA_PRICES.longSleeve, longSleeve, setLongSleeve)}
-      {shortsAllowed && toggle('shorts', SHORTS_LABEL, 'של אותה חולצה, באותה מידה', EXTRA_PRICES.shorts, shorts, setShorts)}
+      {longSleeveAllowed && toggle('longSleeve', t(LONG_SLEEVE_LABEL, 'Long sleeve'), t('אותה חולצה עם שרוול ארוך', 'The same shirt with long sleeves'), EXTRA_PRICES.longSleeve, longSleeve, setLongSleeve)}
+      {shortsAllowed && toggle('shorts', t(SHORTS_LABEL, 'Shorts'), t('של אותה חולצה, באותה מידה', 'Matching this shirt, in the same size'), EXTRA_PRICES.shorts, shorts, setShorts)}
     </>
   );
 
   if (!shirt) return null;
+  const name = shirtName(shirt);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto text-right">
-        <DialogTitle className="sr-only">הוספה לסל - {shirt.name}</DialogTitle>
+      <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto text-start">
+        <DialogTitle className="sr-only">{t('הוספה לסל', 'Add to cart')} - {name}</DialogTitle>
 
         <div className="mb-1 flex items-center gap-3 pe-10">
           {shirt.main_image && <img src={shirt.main_image} alt="" className="h-14 w-14 flex-shrink-0 rounded-xl object-cover" />}
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[15px] font-semibold leading-tight text-brand-navy">{shirt.name}</p>
+            <p className="truncate text-[15px] font-semibold leading-tight text-brand-navy">{name}</p>
             <p className="mt-0.5 text-[15px] font-semibold tabular-nums text-brand-navy/70">₪{basePrice}</p>
           </div>
         </div>
@@ -169,16 +173,18 @@ export default function QuickAddModal({ shirt, open, onClose }) {
         <AnimatePresence mode="wait">
           {step === 'size' && (
             <motion.div key="size" {...stepMotion}>
-              <h3 className="mb-1 text-lg font-semibold text-brand-navy">איזו מידה?</h3>
-              <p className="mb-4 text-sm text-brand-navy/55">בחרו את המידה שמתאימה לכם.</p>
+              <h3 className="mb-1 text-lg font-semibold text-brand-navy">{t('איזו מידה?', 'Which size?')}</h3>
+              <p className="mb-4 text-sm text-brand-navy/55">{t('בחרו את המידה שמתאימה לכם.', 'Choose the size that fits you.')}</p>
               <SizeSelector shirt={shirt} value={selectedSize} onChange={(s) => { setSelectedSize(s); setBuyMode(''); setStockItemId(''); }} />
             </motion.div>
           )}
           {step === 'exactOrCustom' && (
             <motion.div key="exactOrCustom" {...stepMotion}>
-              <h3 className="mb-1 text-lg font-semibold text-brand-navy">יש לנו את זו במלאי בארץ</h3>
+              <h3 className="mb-1 text-lg font-semibold text-brand-navy">{t('יש לנו את זו במלאי בארץ', 'We have this one in stock in Israel')}</h3>
               <p className="mb-4 text-sm text-brand-navy/55">
-                {sizeStockItems.length > 1 ? 'יש אצלנו כמה חולצות במידה הזו. אפשר לקנות אחת מהן כמו שהיא, או להזמין גרסה משלכם.' : 'אפשר לקנות את החולצה שכבר נמצאת בארץ, או להזמין גרסה משלכם.'}
+                {sizeStockItems.length > 1
+                  ? t('יש אצלנו כמה חולצות במידה הזו. אפשר לקנות אחת מהן כמו שהיא, או להזמין גרסה משלכם.', 'We have several shirts in this size. Buy one of them as it is, or order your own version.')
+                  : t('אפשר לקנות את החולצה שכבר נמצאת בארץ, או להזמין גרסה משלכם.', 'Buy the shirt that is already in Israel, or order your own version.')}
               </p>
               <ExactOrCustomChoice items={sizeStockItems} value={buyMode} itemId={stockItemId}
                 onChange={(mode, id) => { setBuyMode(mode); setStockItemId(id || ''); }} />
@@ -186,29 +192,29 @@ export default function QuickAddModal({ shirt, open, onClose }) {
           )}
           {step === 'shirtType' && (
             <motion.div key="shirtType" {...stepMotion}>
-              <h3 className="mb-2 text-lg font-semibold text-brand-navy">איזו גרסה?</h3>
+              <h3 className="mb-2 text-lg font-semibold text-brand-navy">{t('איזו גרסה?', 'Which version?')}</h3>
               <Tip>{getShirtTypeTip()}</Tip>
               <ShirtTypeChoice value={shirtType} onChange={setShirtType} />
             </motion.div>
           )}
           {step === 'addName' && (
             <motion.div key="addName" {...stepMotion}>
-              <h3 className="mb-2 text-lg font-semibold text-brand-navy">שם ומספר על הגב?</h3>
+              <h3 className="mb-2 text-lg font-semibold text-brand-navy">{t('שם ומספר על הגב?', 'A name and number on the back?')}</h3>
               <Tip>{getPersonalizationTip(shirt)}</Tip>
               <PersonalizationChoice value={addName} onChange={handleAddNameChange} />
             </motion.div>
           )}
           {step === 'nameDetails' && (
             <motion.div key="nameDetails" {...stepMotion}>
-              <h3 className="mb-1 text-lg font-semibold text-brand-navy">מה להדפיס?</h3>
-              <p className="mb-4 text-sm text-brand-navy/55">באותיות לועזיות, כמו שיודפס על הגב.</p>
+              <h3 className="mb-1 text-lg font-semibold text-brand-navy">{t('מה להדפיס?', 'What should we print?')}</h3>
+              <p className="mb-4 text-sm text-brand-navy/55">{t('באותיות לועזיות, כמו שיודפס על הגב.', 'In English letters, as it will be printed on the back.')}</p>
               <NameNumberInput customName={customName} customNumber={customNumber}
                 onChange={(field, val) => field === 'customName' ? setCustomName(val) : setCustomNumber(val)} />
             </motion.div>
           )}
           {step === 'summary' && (
             <motion.div key="summary" {...stepMotion}>
-              <h3 className="mb-4 text-lg font-semibold text-brand-navy">הכל מוכן</h3>
+              <h3 className="mb-4 text-lg font-semibold text-brand-navy">{t('הכל מוכן', 'All set')}</h3>
               {buyingExact ? (
                 <>
                   {patchesToggle}
@@ -237,25 +243,25 @@ export default function QuickAddModal({ shirt, open, onClose }) {
           {step !== 'size' && !added && (
             <button type="button" onClick={goBack} className="shop-btn-secondary px-4">
               <ChevronRight className="h-4 w-4" aria-hidden="true" />
-              חזרה
+              {t('חזרה', 'Back')}
             </button>
           )}
           {!added && step !== 'summary' && (
             <button type="button" onClick={goNext} disabled={!canProceed()} className="shop-btn-dark flex-1">
-              המשך
+              {t('המשך', 'Continue')}
               <ChevronLeft className="h-4 w-4" aria-hidden="true" />
             </button>
           )}
           {!added && step === 'summary' && (
             <button type="button" onClick={handleAdd} className="shop-btn flex-1">
               <ShoppingBag className="h-4 w-4" aria-hidden="true" />
-              הוספה לסל
+              {t('הוספה לסל', 'Add to cart')}
             </button>
           )}
           {added && (
             <div role="status" className="flex min-h-[3.25rem] flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-600 text-[15px] font-semibold text-white">
               <Check className="h-4 w-4" aria-hidden="true" />
-              נוספה לסל
+              {t('נוספה לסל', 'Added to cart')}
             </div>
           )}
         </div>

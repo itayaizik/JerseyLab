@@ -13,6 +13,7 @@ import Honeypot, { isBot } from '@/components/ui/Honeypot';
 import CollectionHero from '@/components/catalog/CollectionHero';
 import Breadcrumb from '@/components/shop/Breadcrumb';
 import FormField, { fieldClass } from '@/components/shop/FormField';
+import { t } from '@/lib/i18n';
 
 // "I want a shirt you don't stock." The catalogue can never hold every kit
 // ever made, so this is the way in for everything it doesn't: the customer
@@ -98,13 +99,13 @@ export default function RequestShirt() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-      setErrors(p => ({ ...p, image: 'אפשר להעלות תמונה בלבד' }));
+      setErrors(p => ({ ...p, image: t('אפשר להעלות תמונה בלבד', 'Only images can be uploaded') }));
       return;
     }
     // Checked here rather than after upload: the storage bucket rejects an
     // oversized file with an opaque error the customer cannot act on.
     if (file.size > MAX_IMAGE_BYTES) {
-      setErrors(p => ({ ...p, image: 'התמונה גדולה מדי (מקסימום 8MB)' }));
+      setErrors(p => ({ ...p, image: t('התמונה גדולה מדי (מקסימום 8MB)', 'The image is too large (8MB at most)') }));
       return;
     }
     setErrors(p => ({ ...p, image: undefined }));
@@ -119,20 +120,21 @@ export default function RequestShirt() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = {};
-    if (!form.full_name.trim()) errs.full_name = 'שדה חובה';
-    if (!form.phone.trim()) errs.phone = 'שדה חובה';
-    if (!form.email.trim()) errs.email = 'שדה חובה';
-    else if (!isValidEmail(form.email.trim())) errs.email = 'נא להזין כתובת אימייל תקינה';
-    if (!form.contact_channel) errs.contact_channel = 'בחרו איך נחזור אליכם';
+    const required = t('שדה חובה', 'Required');
+    if (!form.full_name.trim()) errs.full_name = required;
+    if (!form.phone.trim()) errs.phone = required;
+    if (!form.email.trim()) errs.email = required;
+    else if (!isValidEmail(form.email.trim())) errs.email = t('נא להזין כתובת אימייל תקינה', 'Please enter a valid email address');
+    if (!form.contact_channel) errs.contact_channel = t('בחרו איך נחזור אליכם', 'Choose how we should get back to you');
     if (form.contact_channel === 'instagram' && !form.instagram_handle.trim()) {
-      errs.instagram_handle = 'שדה חובה';
+      errs.instagram_handle = required;
     }
     // A photo on its own is a valid request - plenty of people have the picture
     // but not the words - so a description is only required when there is none.
     if (!form.shirt_description.trim() && !image) {
-      errs.shirt_description = 'תארו את החולצה או צרפו תמונה';
+      errs.shirt_description = t('תארו את החולצה או צרפו תמונה', 'Describe the shirt or attach a photo');
     }
-    if (!privacyOk) errs.privacy = 'יש לאשר את מדיניות הפרטיות';
+    if (!privacyOk) errs.privacy = t('יש לאשר את מדיניות הפרטיות', 'Please accept the privacy policy');
     if (isBot(trap)) { setSubmitted(true); return; }
     if (Object.keys(errs).length) { setErrors(errs); return; }
 
@@ -175,7 +177,7 @@ export default function RequestShirt() {
 
       setSubmitted(true);
     } catch (err) {
-      setSubmitError(friendlyError(err, 'שליחת הבקשה נכשלה. נסו שוב בעוד רגע.'));
+      setSubmitError(friendlyError(err, t('שליחת הבקשה נכשלה. נסו שוב בעוד רגע.', "We couldn't send your request. Please try again in a moment.")));
     } finally {
       setSubmitting(false);
     }
@@ -188,12 +190,13 @@ export default function RequestShirt() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-card">
             <Check className="h-8 w-8 text-emerald-600" aria-hidden="true" />
           </div>
-          <h1 className="mt-5 text-2xl font-semibold text-brand-navy">הבקשה נשלחה</h1>
+          <h1 className="mt-5 text-2xl font-semibold text-brand-navy">{t('הבקשה נשלחה', 'Request sent')}</h1>
           <p className="mx-auto mt-2 max-w-sm text-[15px] leading-relaxed text-brand-navy/60">
-            נבדוק אם אפשר להשיג את החולצה ונחזור אליכם
-            ב{form.contact_channel === 'instagram' ? 'אינסטגרם' : 'וואטסאפ'} עם תשובה ומחיר.
+            {form.contact_channel === 'instagram'
+              ? t('נבדוק אם אפשר להשיג את החולצה ונחזור אליכם באינסטגרם עם תשובה ומחיר.', "We'll check whether we can get the shirt and get back to you on Instagram with an answer and a price.")
+              : t('נבדוק אם אפשר להשיג את החולצה ונחזור אליכם בוואטסאפ עם תשובה ומחיר.', "We'll check whether we can get the shirt and get back to you on WhatsApp with an answer and a price.")}
           </p>
-          <Link to="/catalog" className="shop-btn mt-6">בינתיים, לחולצות</Link>
+          <Link to="/catalog" className="shop-btn mt-6">{t('בינתיים, לחולצות', 'Meanwhile, see the shirts')}</Link>
         </div>
       </div>
     );
@@ -202,45 +205,45 @@ export default function RequestShirt() {
   return (
     <div>
       <Seo
-        title="מחפשים חולצה שאין באתר? - JerseyLab"
-        description="לא מצאתם את החולצה בקטלוג? שלחו לנו בקשה עם תמונה או תיאור, ונבדוק אם אפשר להשיג אותה ובאיזה מחיר."
+        title={t('מחפשים חולצה שאין באתר? - JerseyLab', "Looking for a shirt we don't have? - JerseyLab")}
+        description={t('לא מצאתם את החולצה בקטלוג? שלחו לנו בקשה עם תמונה או תיאור, ונבדוק אם אפשר להשיג אותה ובאיזה מחיר.', "Couldn't find the shirt in the catalog? Send us a request with a photo or a description, and we'll check whether we can get it and at what price.")}
         canonicalPath="/request-shirt"
       />
 
       <CollectionHero
-        breadcrumb={<Breadcrumb trail={[{ label: 'בקשת חולצה' }]} />}
-        title="מחפשים חולצה שאין באתר?"
-        description="הקטלוג הוא לא הכל. שלחו לנו תמונה או תיאור של החולצה שאתם מחפשים, ונחזור אליכם עם תשובה ומחיר."
+        breadcrumb={<Breadcrumb trail={[{ label: t('בקשת חולצה', 'Request a shirt') }]} />}
+        title={t('מחפשים חולצה שאין באתר?', "Looking for a shirt we don't have?")}
+        description={t('הקטלוג הוא לא הכל. שלחו לנו תמונה או תיאור של החולצה שאתם מחפשים, ונחזור אליכם עם תשובה ומחיר.', "The catalog isn't everything. Send us a photo or a description of the shirt you're after, and we'll get back to you with an answer and a price.")}
       />
 
       <div className="shop-container">
         <form onSubmit={handleSubmit} noValidate className="shop-card mx-auto mt-8 max-w-2xl space-y-8 p-6 sm:p-10">
           {/* ── What they are after ── */}
-          <Section number={1} title="איזו חולצה?">
-            <FormField id="rs-desc" label="תיאור החולצה" error={errors.shirt_description}>
+          <Section number={1} title={t('איזו חולצה?', 'Which shirt?')}>
+            <FormField id="rs-desc" label={t('תיאור החולצה', 'Describe the shirt')} error={errors.shirt_description}>
               <textarea id="rs-desc" value={form.shirt_description} rows={3} maxLength={600}
                 onChange={e => setField('shirt_description', e.target.value)}
-                placeholder="למשל: חולצת בית של אינטר 2009/10, עם השם של מיליטו מאחורה"
+                placeholder={t('למשל: חולצת בית של אינטר 2009/10, עם השם של מיליטו מאחורה', "For example: Inter's 2009/10 home shirt, with Milito's name on the back")}
                 className={`${fieldClass(errors.shirt_description)} resize-none py-3`} />
             </FormField>
 
             <div className="grid grid-cols-2 gap-3">
-              <FormField id="rs-club" label="קבוצה / נבחרת">
+              <FormField id="rs-club" label={t('קבוצה / נבחרת', 'Team / national team')}>
                 <input id="rs-club" value={form.club} maxLength={100}
                   onChange={e => setField('club', e.target.value)}
-                  placeholder="אינטר מילאן" className={fieldClass()} />
+                  placeholder={t('אינטר מילאן', 'Inter Milan')} className={fieldClass()} />
               </FormField>
-              <FormField id="rs-season" label="עונה">
+              <FormField id="rs-season" label={t('עונה', 'Season')}>
                 <input id="rs-season" value={form.season} maxLength={40} dir="ltr"
                   onChange={e => setField('season', e.target.value)}
-                  placeholder="2009/10" className={`${fieldClass()} text-right`} />
+                  placeholder="2009/10" className={`${fieldClass()} text-start`} />
               </FormField>
             </div>
 
-            <FormField id="rs-size" label="מידה">
+            <FormField id="rs-size" label={t('מידה', 'Size')}>
               <select id="rs-size" value={form.wanted_size} onChange={e => setField('wanted_size', e.target.value)}
                 className={`${fieldClass()} cursor-pointer`}>
-                <option value="">עדיין לא יודעים</option>
+                <option value="">{t('עדיין לא יודעים', "Don't know yet")}</option>
                 {SIZE_ORDER.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </FormField>
@@ -248,11 +251,11 @@ export default function RequestShirt() {
             {/* The photo. Easily the most useful field on this form - a picture
                 identifies a kit far faster than any description of it. */}
             <div>
-              <p className="mb-1.5 text-sm font-medium text-brand-navy/70">תמונה של החולצה</p>
+              <p className="mb-1.5 text-sm font-medium text-brand-navy/70">{t('תמונה של החולצה', 'A photo of the shirt')}</p>
               {imagePreview ? (
                 <div className="relative inline-block">
-                  <img src={imagePreview} alt="התמונה שצירפתם" className="h-32 w-32 rounded-2xl object-cover" />
-                  <button type="button" onClick={clearImage} aria-label="הסרת התמונה"
+                  <img src={imagePreview} alt={t('התמונה שצירפתם', 'The photo you attached')} className="h-32 w-32 rounded-2xl object-cover" />
+                  <button type="button" onClick={clearImage} aria-label={t('הסרת התמונה', 'Remove the photo')}
                     className="absolute -end-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-brand-navy shadow-card transition hover:bg-red-600 hover:text-white">
                     <X className="h-4 w-4" />
                   </button>
@@ -262,9 +265,9 @@ export default function RequestShirt() {
                   <ImageIcon className="h-8 w-8 text-brand-navy/35" aria-hidden="true" />
                   <span className="flex items-center gap-1.5 text-[15px] font-medium text-brand-navy/75">
                     <Upload className="h-4 w-4" aria-hidden="true" />
-                    צירוף תמונה
+                    {t('צירוף תמונה', 'Attach a photo')}
                   </span>
-                  <span className="text-xs text-brand-navy/45">צילום מסך מאינסטגרם או מגוגל עובד מצוין</span>
+                  <span className="text-xs text-brand-navy/45">{t('צילום מסך מאינסטגרם או מגוגל עובד מצוין', 'A screenshot from Instagram or Google works great')}</span>
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImagePick} className="hidden" />
                 </label>
               )}
@@ -275,20 +278,20 @@ export default function RequestShirt() {
           <div className="h-px bg-brand-line" />
 
           {/* ── How to reach them ── */}
-          <Section number={2} title="איך נחזור אליכם?">
-            <FormField id="rs-name" label="שם מלא" required error={errors.full_name}>
+          <Section number={2} title={t('איך נחזור אליכם?', 'How should we get back to you?')}>
+            <FormField id="rs-name" label={t('שם מלא', 'Full name')} required error={errors.full_name}>
               <input id="rs-name" value={form.full_name} maxLength={100} autoComplete="name"
                 onChange={e => setField('full_name', e.target.value)} className={fieldClass(errors.full_name)} />
             </FormField>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <FormField id="rs-phone" label="טלפון" required error={errors.phone}>
+              <FormField id="rs-phone" label={t('טלפון', 'Phone')} required error={errors.phone}>
                 <input id="rs-phone" value={form.phone} type="tel" dir="ltr" maxLength={20} autoComplete="tel"
-                  onChange={e => setField('phone', e.target.value)} className={`${fieldClass(errors.phone)} text-right`} />
+                  onChange={e => setField('phone', e.target.value)} className={`${fieldClass(errors.phone)} text-start`} />
               </FormField>
-              <FormField id="rs-email" label="אימייל" required error={errors.email}>
+              <FormField id="rs-email" label={t('אימייל', 'Email')} required error={errors.email}>
                 <input id="rs-email" value={form.email} type="email" dir="ltr" maxLength={254} autoComplete="email"
-                  onChange={e => setField('email', e.target.value)} className={`${fieldClass(errors.email)} text-right`} />
+                  onChange={e => setField('email', e.target.value)} className={`${fieldClass(errors.email)} text-start`} />
               </FormField>
             </div>
 
@@ -299,16 +302,16 @@ export default function RequestShirt() {
             />
 
             {form.contact_channel === 'instagram' && (
-              <FormField id="rs-ig" label="שם משתמש באינסטגרם" required error={errors.instagram_handle}>
+              <FormField id="rs-ig" label={t('שם משתמש באינסטגרם', 'Instagram username')} required error={errors.instagram_handle}>
                 <input id="rs-ig" value={form.instagram_handle} dir="ltr" maxLength={60} placeholder="@username"
-                  onChange={e => setField('instagram_handle', e.target.value)} className={`${fieldClass(errors.instagram_handle)} text-right`} />
+                  onChange={e => setField('instagram_handle', e.target.value)} className={`${fieldClass(errors.instagram_handle)} text-start`} />
               </FormField>
             )}
 
-            <FormField id="rs-notes" label="משהו נוסף שכדאי שנדע?" optional>
+            <FormField id="rs-notes" label={t('משהו נוסף שכדאי שנדע?', 'Anything else we should know?')} optional>
               <textarea id="rs-notes" value={form.notes} rows={2} maxLength={500}
                 onChange={e => setField('notes', e.target.value)}
-                placeholder="תקציב, עד מתי אתם צריכים אותה, גרסת שחקן או אוהד…"
+                placeholder={t('תקציב, עד מתי אתם צריכים אותה, גרסת שחקן או אוהד…', 'Budget, when you need it by, player or fan version…')}
                 className={`${fieldClass()} resize-none py-3`} />
             </FormField>
           </Section>
@@ -324,10 +327,10 @@ export default function RequestShirt() {
           <div>
             <button type="submit" disabled={submitting} className="shop-btn min-h-[3.75rem] w-full text-base">
               {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
-              {submitting ? 'שולח…' : 'שליחת הבקשה'}
+              {submitting ? t('שולח…', 'Sending…') : t('שליחת הבקשה', 'Send request')}
             </button>
             <p className="mt-2 text-center text-xs text-brand-navy/50">
-              בלי התחייבות ובלי תשלום, בקשה בלבד.
+              {t('בלי התחייבות ובלי תשלום, בקשה בלבד.', 'No commitment and no payment - just a request.')}
             </p>
           </div>
         </form>

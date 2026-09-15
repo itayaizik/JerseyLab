@@ -134,6 +134,8 @@
   @media (min-width: 768px) {
     html { font-size: 110%; }
   }
+  /* English. The layout uses start/end throughout, so it mirrors by itself. */
+  html[dir="ltr"] { direction: ltr; }
   body {
     @apply bg-white text-brand-navy font-body antialiased;
     font-family: 'Heebo', system-ui, sans-serif;
@@ -216,6 +218,14 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* English: arrows drawn pointing left - "onward" in Hebrew - are turned round.
+   Outside the Tailwind layers, which drop selectors for class names they do
+   not find in the source (these come from the icon library). None of these
+   icons is rotated anywhere, so the transform is free to use. */
+html[dir="ltr"] svg:is(.lucide-chevron-left, .lucide-chevron-right, .lucide-arrow-left, .lucide-arrow-right) {
+  transform: scaleX(-1);
 }
 
 /* Custom scrollbar */

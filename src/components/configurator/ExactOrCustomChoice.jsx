@@ -1,6 +1,7 @@
 import React from 'react';
 import { PackageCheck, Wand2 } from 'lucide-react';
 import { stockPrint } from '@/lib/localStock';
+import { t } from '@/lib/i18n';
 
 // "Buy exactly this one" or "make me my own".
 //
@@ -18,9 +19,9 @@ export default function ExactOrCustomChoice({ items = [], value, itemId, onChang
         key: `exact-${item.id}`,
         mode: 'exact',
         id: item.id,
-        label: print ? `החולצה שבמלאי · ${print}` : 'החולצה שבמלאי',
-        desc: [item.player_version ? 'גרסת שחקן' : 'גרסה רגילה', !print && 'בלי הדפסה'].filter(Boolean).join(' · '),
-        shipping: 'מגיעה עד שבוע או באיסוף מקריית אונו',
+        label: print ? `${t('החולצה שבמלאי', 'The shirt in stock')} · ${print}` : t('החולצה שבמלאי', 'The shirt in stock'),
+        desc: [item.player_version ? t('גרסת שחקן', 'Player version') : t('גרסה רגילה', 'Regular version'), !print && t('בלי הדפסה', 'No print')].filter(Boolean).join(' · '),
+        shipping: t('מגיעה עד שבוע או באיסוף מקריית אונו', 'Arrives within a week, or pick it up in Kiryat Ono'),
         local: true,
         icon: PackageCheck,
       };
@@ -29,9 +30,9 @@ export default function ExactOrCustomChoice({ items = [], value, itemId, onChang
       key: 'custom',
       mode: 'custom',
       id: '',
-      label: 'הזמנה אישית',
-      desc: 'בוחרים גרסה, שם ומספר משלכם',
-      shipping: 'מגיעה עד 3 שבועות',
+      label: t('הזמנה אישית', 'Made to order'),
+      desc: t('בוחרים גרסה, שם ומספר משלכם', 'Choose your own version, name and number'),
+      shipping: t('מגיעה עד 3 שבועות', 'Arrives within 3 weeks'),
       local: false,
       icon: Wand2,
     },

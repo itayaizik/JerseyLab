@@ -15,9 +15,14 @@ import { toast } from '@/components/ui/use-toast';
 import { shirtSizes, sortSizes } from '@/lib/sizes';
 import { searchShirts, formatEra, toDisplay } from '@/lib/search';
 import { sortShirts } from '@/lib/sortShirts';
-import { COLLECTIONS } from '@/lib/collections';
+import { COLLECTIONS, localizeCollection } from '@/lib/collections';
 import { withStock } from '@/lib/catalogFacets';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
+import { t, isEn } from '@/lib/i18n';
+import { term } from '@/lib/english';
+
+// "2004–2021", or "2023–present" for a player still at the club.
+const era = (team) => (isEn && team.to == null ? `${team.from}–present` : formatEra(team));
 
 // Says how a search was read, so results that do not literally contain the
 // words typed do not look like a mistake. Someone who typed "מסי" and gets a
@@ -25,28 +30,37 @@ import { SITE_ORIGIN } from '@/lib/siteUrl';
 function SearchExplanation({ info }) {
   const notes = [];
   if (info.player) {
+    // The player list is written in Hebrew; the English site names the player
+    // the way the customer typed them.
+    const player = isEn ? info.player.typed : info.player.label;
     notes.push(
       <p key="player">
         {info.eraFallback
-          ? <>לא מצאנו חולצה מהעונות ש<strong className="font-semibold text-brand-navy">{info.player.label}</strong> שיחק בהן, אז אלה חולצות של הקבוצות שלו מתקופות אחרות.</>
-          : <>חולצות מהקבוצות ומהעונות של <strong className="font-semibold text-brand-navy">{info.player.label}</strong>:</>}
+          ? t(
+            <>לא מצאנו חולצה מהעונות ש<strong className="font-semibold text-brand-navy">{player}</strong> שיחק בהן, אז אלה חולצות של הקבוצות שלו מתקופות אחרות.</>,
+            <>We found no shirt from the seasons <strong className="font-semibold text-brand-navy">{player}</strong> played, so these are shirts of his teams from other years.</>,
+          )
+          : t(
+            <>חולצות מהקבוצות ומהעונות של <strong className="font-semibold text-brand-navy">{player}</strong>:</>,
+            <>Shirts from <strong className="font-semibold text-brand-navy">{player}</strong>&apos;s teams and seasons:</>,
+          )}
         {' '}
-        <span className="text-brand-navy/60">{info.player.teams.map(t => `${t.team} ${formatEra(t)}`).join(' · ')}</span>
+        <span className="text-brand-navy/60">{info.player.teams.map(team => `${term(team.team)} ${era(team)}`).join(' · ')}</span>
       </p>
     );
   }
   if (info.corrections.length) {
     notes.push(
       <p key="fix">
-        מציג תוצאות עבור{' '}
+        {t('מציג תוצאות עבור', 'Showing results for')}{' '}
         {info.corrections.map((c, i) => (
           <span key={c.from}>{i > 0 && ', '}<strong className="font-semibold text-brand-navy">{toDisplay(c.to)}</strong></span>
         ))}
-        {' '}(חיפשת: {info.corrections.map(c => toDisplay(c.from)).join(', ')})
+        {' '}({t('חיפשת:', 'you searched:')} {info.corrections.map(c => toDisplay(c.from)).join(', ')})
       </p>
     );
   }
-  if (info.relaxed) notes.push(<p key="relaxed">אין חולצה שמתאימה לכל המילים שחיפשת, אז אלה הקרובות ביותר.</p>);
+  if (info.relaxed) notes.push(<p key="relaxed">{t('אין חולצה שמתאימה לכל המילים שחיפשת, אז אלה הקרובות ביותר.', 'No shirt matches every word you searched, so these are the closest.')}</p>);
   if (!notes.length) return null;
   return (
     <div className="mt-5 max-w-2xl space-y-1.5 rounded-2xl bg-brand-mist px-4 py-3 text-[15px] leading-relaxed text-brand-navy/75">
@@ -56,15 +70,15 @@ function SearchExplanation({ info }) {
 }
 
 const quickFilters = [
-  { label: 'הכל', params: {} },
-  { label: 'חדשים', params: { new: 'true' }, title: 'חדשים באתר', description: 'החולצות שהגיעו לאחרונה לאתר.' },
-  { label: 'רטרו', params: { tag: 'retro' }, title: 'רטרו', description: 'עונות קלאסיות ודגמים שכבר לא מייצרים.' },
-  { label: 'סייל', params: { sale: 'true' }, title: 'סייל', description: 'חולצות במחיר מוזל, לזמן מוגבל.' },
-  { label: 'נבחרות', params: { type: 'national' }, title: 'נבחרות', description: 'חולצות של נבחרות לאומיות, בית וחוץ.' },
-  { label: 'שחקנים', params: { type: 'player' }, title: 'שחקנים', description: 'חולצות עם שם ומספר של שחקן.' },
-  { label: 'NBA', params: { sport: 'basketball' }, title: 'NBA', description: 'חולצות כדורסל מה-NBA.' },
-  { label: 'ילדים', params: { gender: 'kids' }, title: 'ילדים', description: 'חולצות במידות ילדים.' },
-  { label: 'מלאי בארץ', params: { fast: 'true' }, title: 'מלאי בארץ', description: 'חולצות שכבר נמצאות בארץ ומגיעות עד שבוע.' },
+  { label: t('הכל', 'All'), params: {} },
+  { label: t('חדשים', 'New'), params: { new: 'true' }, title: t('חדשים באתר', 'New arrivals'), description: t('החולצות שהגיעו לאחרונה לאתר.', 'The shirts that most recently arrived on the site.') },
+  { label: t('רטרו', 'Retro'), params: { tag: 'retro' }, title: t('רטרו', 'Retro'), description: t('עונות קלאסיות ודגמים שכבר לא מייצרים.', 'Classic seasons and designs no longer made.') },
+  { label: t('סייל', 'Sale'), params: { sale: 'true' }, title: t('סייל', 'Sale'), description: t('חולצות במחיר מוזל, לזמן מוגבל.', 'Shirts at a reduced price, for a limited time.') },
+  { label: t('נבחרות', 'National teams'), params: { type: 'national' }, title: t('נבחרות', 'National teams'), description: t('חולצות של נבחרות לאומיות, בית וחוץ.', 'National team shirts, home and away.') },
+  { label: t('שחקנים', 'Players'), params: { type: 'player' }, title: t('שחקנים', 'Players'), description: t('חולצות עם שם ומספר של שחקן.', "Shirts with a player's name and number.") },
+  { label: 'NBA', params: { sport: 'basketball' }, title: 'NBA', description: t('חולצות כדורסל מה-NBA.', 'Basketball jerseys from the NBA.') },
+  { label: t('ילדים', 'Kids'), params: { gender: 'kids' }, title: t('ילדים', 'Kids'), description: t('חולצות במידות ילדים.', "Shirts in kids' sizes.") },
+  { label: t('מלאי בארץ', 'In stock in Israel'), params: { fast: 'true' }, title: t('מלאי בארץ', 'In stock in Israel'), description: t('חולצות שכבר נמצאות בארץ ומגיעות עד שבוע.', 'Shirts already in Israel that arrive within a week.') },
 ];
 
 // "הכל" has no query string and always stays; the rest are dropped when the
@@ -79,9 +93,12 @@ const quickFilterHref = (qf) => {
   return params ? `/catalog?${params}` : '/catalog';
 };
 
-const DEFAULT_DESCRIPTION = 'כל החולצות באתר במקום אחד: קבוצות, נבחרות ורטרו. אפשר לסנן לפי מידה, ליגה ומחיר.';
+const DEFAULT_DESCRIPTION = t(
+  'כל החולצות באתר במקום אחד: קבוצות, נבחרות ורטרו. אפשר לסנן לפי מידה, ליגה ומחיר.',
+  'Every shirt on the site in one place: clubs, national teams and retro. Filter by size, league and price.',
+);
 const EMPTY_FILTERS = { condition: '', minPrice: '', maxPrice: '', league: '', national_team: '', size: '' };
-const CONDITION_LABELS = { new: 'חדש', like_new: 'כמו חדש', used: 'משומש' };
+const CONDITION_LABELS = { new: t('חדש', 'New'), like_new: t('כמו חדש', 'Like new'), used: t('משומש', 'Used') };
 const PAGE_SIZE = 24;
 
 export default function Catalog() {
@@ -202,11 +219,11 @@ export default function Catalog() {
       const items = await base44.entities.Wishlist.filter({ user_id: user.id, shirt_id: shirtId });
       if (items[0]) await base44.entities.Wishlist.delete(items[0].id);
       setWishlistIds(p => p.filter(id => id !== shirtId));
-      toast({ title: 'הוסרה מהמועדפים' });
+      toast({ title: t('הוסרה מהמועדפים', 'Removed from your wishlist') });
     } else {
       await base44.entities.Wishlist.create({ user_id: user.id, shirt_id: shirtId });
       setWishlistIds(p => [...p, shirtId]);
-      toast({ title: 'נוספה למועדפים' });
+      toast({ title: t('נוספה למועדפים', 'Added to your wishlist') });
     }
   }, [user, navigate]);
 
@@ -232,15 +249,15 @@ export default function Catalog() {
   }) ?? null;
 
   const pageTitle = () => {
-    if (q) return `תוצאות: "${q}"`;
-    if (searchParams.get('best') === 'true') return 'הנמכרים ביותר';
-    if (searchParams.get('gender') === 'men') return 'גברים';
+    if (q) return t(`תוצאות: "${q}"`, `Results: "${q}"`);
+    if (searchParams.get('best') === 'true') return t('הנמכרים ביותר', 'Best sellers');
+    if (searchParams.get('gender') === 'men') return t('גברים', 'Men');
     if (activeQuickFilter?.title) return activeQuickFilter.title;
-    return 'כל החולצות';
+    return t('כל החולצות', 'All shirts');
   };
 
   const heroDescription = searchParams.get('best') === 'true'
-    ? 'החולצות המבוקשות ביותר אצלנו.'
+    ? t('החולצות המבוקשות ביותר אצלנו.', 'Our most wanted shirts.')
     : activeQuickFilter?.description || DEFAULT_DESCRIPTION;
 
   const heroChips = stockedQuickFilters.map(qf => ({
@@ -252,9 +269,9 @@ export default function Catalog() {
   const heroImages = shirts.filter(s => s.main_image).slice(0, 3).map(s => s.main_image);
 
   const activePills = [
-    filters.size && { key: 'size', label: <>מידה <span dir="ltr">{filters.size}</span></> },
-    filters.league && { key: 'league', label: filters.league },
-    filters.national_team && { key: 'national_team', label: filters.national_team },
+    filters.size && { key: 'size', label: <>{t('מידה', 'Size')} <span dir="ltr">{filters.size}</span></> },
+    filters.league && { key: 'league', label: term(filters.league) },
+    filters.national_team && { key: 'national_team', label: term(filters.national_team) },
     filters.condition && { key: 'condition', label: CONDITION_LABELS[filters.condition] || filters.condition },
     (filters.minPrice || filters.maxPrice) && { key: 'price', label: `₪${filters.minPrice || 0}–${filters.maxPrice || '∞'}` },
   ].filter(Boolean);
@@ -271,12 +288,15 @@ export default function Catalog() {
   const featureFirst = !q && sort === 'featured' && shirts.length >= 7;
 
   const seoTitle = `${pageTitle()} - JerseyLab`;
-  const seoDesc = `קטלוג חולצות כדורגל: ${pageTitle()}. חולצות של קבוצות, נבחרות ושחקנים במחירים טובים.`;
+  const seoDesc = t(
+    `קטלוג חולצות כדורגל: ${pageTitle()}. חולצות של קבוצות, נבחרות ושחקנים במחירים טובים.`,
+    `Football shirt catalog: ${pageTitle()}. Club, national team and player shirts.`,
+  );
   const origin = SITE_ORIGIN;
   const catalogJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "CollectionPage", name: pageTitle(), description: seoDesc, url: origin + "/catalog", inLanguage: "he-IL" },
+      { "@type": "CollectionPage", name: pageTitle(), description: seoDesc, url: origin + "/catalog", inLanguage: isEn ? "en" : "he-IL" },
       { "@type": "BreadcrumbList", itemListElement: [
         { "@type": "ListItem", position: 1, name: "דף הבית", item: origin + "/" },
         { "@type": "ListItem", position: 2, name: "קטלוג", item: origin + "/catalog" }
@@ -290,13 +310,13 @@ export default function Catalog() {
 
       <CollectionHero
         breadcrumb={(
-          <nav aria-label="נתיב ניווט" className="shop-eyebrow mb-3">
-            <Link to="/" className="transition hover:text-brand-navy">דף הבית</Link>
+          <nav aria-label={t('נתיב ניווט', 'Breadcrumb')} className="shop-eyebrow mb-3">
+            <Link to="/" className="transition hover:text-brand-navy">{t('דף הבית', 'Home')}</Link>
             <span className="mx-2" aria-hidden="true">/</span>
-            <span className="text-brand-navy/70">קטלוג</span>
+            <span className="text-brand-navy/70">{t('קטלוג', 'Catalog')}</span>
           </nav>
         )}
-        title={q ? <>תוצאות עבור <span className="text-brand-orange-ink">"{q}"</span></> : pageTitle()}
+        title={q ? <>{t('תוצאות עבור', 'Results for')} <span className="text-brand-orange-ink">"{q}"</span></> : pageTitle()}
         description={q ? null : heroDescription}
         chips={q ? [] : heroChips}
         images={heroImages}
@@ -310,7 +330,7 @@ export default function Catalog() {
           <button type="button" onClick={() => setFiltersOpen(true)}
             className="inline-flex min-h-[3.25rem] items-center gap-2.5 rounded-2xl border border-brand-line bg-white px-5 text-[15px] font-medium text-brand-navy transition hover:border-brand-navy/30 sm:min-h-[3.5rem] sm:px-6 sm:text-base">
             <SlidersHorizontal className="h-5 w-5 text-brand-orange-ink" aria-hidden="true" />
-            סינון
+            {t('סינון', 'Filter')}
             {activePills.length > 0 && (
               <span className="flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-brand-orange px-1.5 text-xs font-bold text-white">
                 {activePills.length}
@@ -323,7 +343,7 @@ export default function Catalog() {
         {!loadError && (
           <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 sm:mt-8">
             <h2 className="text-2xl font-bold text-brand-navy sm:text-[1.75rem]" aria-live="polite">
-              {loading ? ' ' : shirts.length === 1 ? 'חולצה אחת' : `${shirts.length} חולצות`}
+              {loading ? ' ' : shirts.length === 1 ? t('חולצה אחת', '1 shirt') : t(`${shirts.length} חולצות`, `${shirts.length} shirts`)}
             </h2>
             {activePills.length > 0 && (
               <ul className="flex flex-wrap items-center gap-2">
@@ -332,12 +352,12 @@ export default function Catalog() {
                     <button type="button" onClick={() => removePill(pill.key)} className="shop-chip min-h-[2.25rem] gap-1.5 px-3.5 text-[13px]">
                       {pill.label}
                       <X className="h-3.5 w-3.5" aria-hidden="true" />
-                      <span className="sr-only">הסרת הסינון</span>
+                      <span className="sr-only">{t('הסרת הסינון', 'Remove filter')}</span>
                     </button>
                   </li>
                 ))}
                 <li>
-                  <button type="button" onClick={() => setFilters(EMPTY_FILTERS)} className="shop-link px-2 text-[13px]">ניקוי הכל</button>
+                  <button type="button" onClick={() => setFilters(EMPTY_FILTERS)} className="shop-link px-2 text-[13px]">{t('ניקוי הכל', 'Clear all')}</button>
                 </li>
               </ul>
             )}
@@ -348,9 +368,9 @@ export default function Catalog() {
           <EmptyState
             className="mt-6"
             icon={Search}
-            title="לא הצלחנו לטעון את הקטלוג"
-            description="בדקו את החיבור לאינטרנט ונסו שוב."
-            actionLabel="לנסות שוב"
+            title={t('לא הצלחנו לטעון את הקטלוג', "We couldn't load the catalog")}
+            description={t('בדקו את החיבור לאינטרנט ונסו שוב.', 'Check your internet connection and try again.')}
+            actionLabel={t('לנסות שוב', 'Try again')}
             onAction={loadShirts}
           />
         ) : loading ? (
@@ -376,9 +396,9 @@ export default function Catalog() {
             </ul>
             {visibleCount < shirts.length && (
               <div className="mt-10 flex flex-col items-center gap-3">
-                <p className="text-sm text-brand-navy/55">מוצגות {visibleCount} מתוך {shirts.length} חולצות</p>
+                <p className="text-sm text-brand-navy/55">{t(`מוצגות ${visibleCount} מתוך ${shirts.length} חולצות`, `Showing ${visibleCount} of ${shirts.length} shirts`)}</p>
                 <button type="button" onClick={() => setVisibleCount(c => c + PAGE_SIZE)} className="shop-btn-secondary rounded-full px-8">
-                  הצגת עוד חולצות
+                  {t('הצגת עוד חולצות', 'Show more shirts')}
                 </button>
               </div>
             )}
@@ -387,23 +407,24 @@ export default function Catalog() {
           <div className="mt-6 space-y-4">
             <EmptyState
               icon={Search}
-              title="לא נמצאו חולצות"
-              description="נסו לחפש משהו אחר או לשנות את הסינון."
-              actionLabel="ניקוי הסינון"
+              title={t('לא נמצאו חולצות', 'No shirts found')}
+              description={t('נסו לחפש משהו אחר או לשנות את הסינון.', 'Try searching for something else or changing the filters.')}
+              actionLabel={t('ניקוי הסינון', 'Clear filters')}
               onAction={clearEverything}
             />
             {/* The best moment on the whole site to offer this: someone just
                 searched for a shirt and we did not have it. */}
             <div className="flex flex-col items-start justify-between gap-5 rounded-3xl bg-brand-navy p-7 text-white sm:flex-row sm:items-center sm:p-9">
               <div>
-                <p className="text-xl font-semibold">אנחנו יכולים להשיג אותה</p>
+                <p className="text-xl font-semibold">{t('אנחנו יכולים להשיג אותה', 'We can get it for you')}</p>
                 <p className="mt-1.5 max-w-lg text-[15px] leading-relaxed text-white/70">
-                  הקטלוג הוא לא הכל. שלחו לנו תמונה או תיאור של החולצה שחיפשתם, ונבדוק אם אפשר להביא אותה.
+                  {t('הקטלוג הוא לא הכל. שלחו לנו תמונה או תיאור של החולצה שחיפשתם, ונבדוק אם אפשר להביא אותה.',
+                    "The catalog isn't everything. Send us a photo or a description of the shirt you were looking for, and we'll check whether we can bring it in.")}
                 </p>
               </div>
               <Link to="/request-shirt" className="shop-btn flex-shrink-0">
                 <PackageSearch className="h-5 w-5" aria-hidden="true" />
-                בקשת חולצה
+                {t('בקשת חולצה', 'Request a shirt')}
               </Link>
             </div>
           </div>
@@ -413,9 +434,9 @@ export default function Catalog() {
             change a query string - each of these is a real page about one
             subject, which is what search engines rank and people share. */}
         <nav aria-labelledby="catalog-collections" className="mt-16 border-t border-brand-line pt-10">
-          <h2 id="catalog-collections" className="text-xl font-semibold text-brand-navy">קטגוריות</h2>
+          <h2 id="catalog-collections" className="text-xl font-semibold text-brand-navy">{t('קטגוריות', 'Categories')}</h2>
           <ul className="mt-4 flex flex-wrap gap-2.5">
-            {withStock(COLLECTIONS.map(c => ({ ...c, href: `/collections/${c.slug}` }))).map(c => (
+            {withStock(COLLECTIONS.map(c => ({ ...localizeCollection(c, isEn), href: `/collections/${c.slug}` }))).map(c => (
               <li key={c.slug}>
                 <Link to={c.href} className="shop-chip px-5">{c.name}</Link>
               </li>

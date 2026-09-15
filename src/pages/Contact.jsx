@@ -12,11 +12,12 @@ import CollectionHero from '@/components/catalog/CollectionHero';
 import Breadcrumb from '@/components/shop/Breadcrumb';
 import FormField, { fieldClass } from '@/components/shop/FormField';
 import { SHOP_PHONE, WHATSAPP_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/contact';
+import { t } from '@/lib/i18n';
 
 const HOURS = [
-  { day: 'ימים א׳–ה׳', time: '9:00–21:00' },
-  { day: 'שישי', time: '9:00–14:00' },
-  { day: 'שבת', time: 'סגור' },
+  { day: t('ימים א׳–ה׳', 'Sunday–Thursday'), time: '9:00–21:00' },
+  { day: t('שישי', 'Friday'), time: '9:00–14:00' },
+  { day: t('שבת', 'Saturday'), time: t('סגור', 'Closed') },
 ];
 
 export default function Contact() {
@@ -36,8 +37,8 @@ export default function Contact() {
   }, []);
 
   const channels = [
-    { href: whatsappLink || WHATSAPP_URL, icon: MessageCircle, label: 'וואטסאפ', sub: 'הדרך הכי מהירה לפנות אלינו', value: SHOP_PHONE },
-    { href: INSTAGRAM_URL, icon: Instagram, label: 'אינסטגרם', sub: 'שלחו לנו הודעה', value: `@${INSTAGRAM_HANDLE}` },
+    { href: whatsappLink || WHATSAPP_URL, icon: MessageCircle, label: t('וואטסאפ', 'WhatsApp'), sub: t('הדרך הכי מהירה לפנות אלינו', 'The fastest way to reach us'), value: SHOP_PHONE },
+    { href: INSTAGRAM_URL, icon: Instagram, label: t('אינסטגרם', 'Instagram'), sub: t('שלחו לנו הודעה', 'Send us a message'), value: `@${INSTAGRAM_HANDLE}` },
   ];
 
   const handleChange = (field, value) => {
@@ -50,15 +51,16 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = {};
-    if (!form.name.trim()) errs.name = 'שדה חובה';
-    if (form.name.length > 100) errs.name = 'שם ארוך מדי (מקסימום 100 תווים)';
-    if (!form.email.trim() || !validateEmail(form.email)) errs.email = 'נא להזין כתובת אימייל תקינה';
-    if (form.email.length > 254) errs.email = 'כתובת אימייל ארוכה מדי';
-    if (form.phone.length > 20) errs.phone = 'מספר טלפון ארוך מדי (מקסימום 20 תווים)';
-    if (form.subject.length > 200) errs.subject = 'נושא ארוך מדי (מקסימום 200 תווים)';
-    if (!form.message.trim()) errs.message = 'שדה חובה';
-    if (form.message.length > 2000) errs.message = 'הודעה ארוכה מדי (מקסימום 2000 תווים)';
-    if (!privacyOk) errs.privacy = 'יש לאשר את מדיניות הפרטיות';
+    const required = t('שדה חובה', 'Required');
+    if (!form.name.trim()) errs.name = required;
+    if (form.name.length > 100) errs.name = t('שם ארוך מדי (מקסימום 100 תווים)', 'Name is too long (100 characters at most)');
+    if (!form.email.trim() || !validateEmail(form.email)) errs.email = t('נא להזין כתובת אימייל תקינה', 'Please enter a valid email address');
+    if (form.email.length > 254) errs.email = t('כתובת אימייל ארוכה מדי', 'Email address is too long');
+    if (form.phone.length > 20) errs.phone = t('מספר טלפון ארוך מדי (מקסימום 20 תווים)', 'Phone number is too long (20 characters at most)');
+    if (form.subject.length > 200) errs.subject = t('נושא ארוך מדי (מקסימום 200 תווים)', 'Subject is too long (200 characters at most)');
+    if (!form.message.trim()) errs.message = required;
+    if (form.message.length > 2000) errs.message = t('הודעה ארוכה מדי (מקסימום 2000 תווים)', 'Message is too long (2000 characters at most)');
+    if (!privacyOk) errs.privacy = t('יש לאשר את מדיניות הפרטיות', 'Please accept the privacy policy');
     // Silently accepted and dropped: telling a bot it was detected only helps
     // whoever wrote it.
     if (isBot(trap)) { setSubmitted(true); return; }
@@ -82,7 +84,7 @@ export default function Contact() {
       });
       setSubmitted(true);
     } catch (err) {
-      setSubmitError(friendlyError(err, 'שליחת ההודעה נכשלה. נסו שוב בעוד רגע.'));
+      setSubmitError(friendlyError(err, t('שליחת ההודעה נכשלה. נסו שוב בעוד רגע.', "We couldn't send your message. Please try again in a moment.")));
     } finally {
       setSubmitting(false);
     }
@@ -95,9 +97,9 @@ export default function Contact() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-card">
             <Check className="h-8 w-8 text-emerald-600" aria-hidden="true" />
           </div>
-          <h1 className="mt-5 text-2xl font-semibold text-brand-navy">ההודעה נשלחה</h1>
-          <p className="mt-2 text-[15px] text-brand-navy/60">נחזור אליכם בהקדם האפשרי.</p>
-          <Link to="/catalog" className="shop-btn mt-6">בינתיים, לחולצות</Link>
+          <h1 className="mt-5 text-2xl font-semibold text-brand-navy">{t('ההודעה נשלחה', 'Message sent')}</h1>
+          <p className="mt-2 text-[15px] text-brand-navy/60">{t('נחזור אליכם בהקדם האפשרי.', "We'll get back to you as soon as we can.")}</p>
+          <Link to="/catalog" className="shop-btn mt-6">{t('בינתיים, לחולצות', 'Meanwhile, see the shirts')}</Link>
         </div>
       </div>
     );
@@ -105,12 +107,17 @@ export default function Contact() {
 
   return (
     <div>
-      <Seo title="צור קשר - JerseyLab" description="צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ בוואטסאפ ואינסטגרם. מענה מהיר ושירות אישי." canonicalPath="/contact" jsonLd={{ "@context": "https://schema.org", "@type": "WebPage", name: "צור קשר - JerseyLab", description: "צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ.", url: (SITE_ORIGIN) + "/contact", inLanguage: "he-IL" }} />
+      <Seo
+        title={t('צור קשר - JerseyLab', 'Contact - JerseyLab')}
+        description={t('צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ בוואטסאפ ואינסטגרם. מענה מהיר ושירות אישי.', 'Contact JerseyLab with questions, orders and advice on WhatsApp and Instagram. Fast, personal service.')}
+        canonicalPath="/contact"
+        jsonLd={{ "@context": "https://schema.org", "@type": "WebPage", name: "צור קשר - JerseyLab", description: "צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ.", url: (SITE_ORIGIN) + "/contact", inLanguage: "he-IL" }}
+      />
 
       <CollectionHero
-        breadcrumb={<Breadcrumb trail={[{ label: 'צור קשר' }]} />}
-        title="צור קשר"
-        description="שאלה על מידה, זמינות או הזמנה מיוחדת? הכי מהיר בוואטסאפ, ואפשר גם להשאיר הודעה כאן."
+        breadcrumb={<Breadcrumb trail={[{ label: t('צור קשר', 'Contact') }]} />}
+        title={t('צור קשר', 'Contact us')}
+        description={t('שאלה על מידה, זמינות או הזמנה מיוחדת? הכי מהיר בוואטסאפ, ואפשר גם להשאיר הודעה כאן.', 'A question about a size, availability or a special order? WhatsApp is fastest, or you can leave a message here.')}
       />
 
       <div className="shop-container">
@@ -125,16 +132,16 @@ export default function Contact() {
                 <span className="min-w-0 flex-1">
                   <span className="block text-base font-semibold text-brand-navy">{label}</span>
                   <span className="block text-[13px] text-brand-navy/55">{sub}</span>
-                  <span dir="ltr" className="mt-0.5 block text-right text-sm font-medium text-brand-navy/80">{value}</span>
+                  <span dir="ltr" className="mt-0.5 block text-start text-sm font-medium text-brand-navy/80">{value}</span>
                 </span>
-                <ArrowLeft className="h-5 w-5 flex-shrink-0 text-brand-navy/30 transition group-hover:-translate-x-1 group-hover:text-brand-orange-ink" aria-hidden="true" />
+                <ArrowLeft className="h-5 w-5 flex-shrink-0 text-brand-navy/30 transition group-hover:text-brand-orange-ink" aria-hidden="true" />
               </a>
             ))}
 
             <div className="rounded-3xl bg-brand-navy p-6 text-white">
               <p className="flex items-center gap-2 text-sm font-semibold text-brand-gold">
                 <Clock className="h-4 w-4" aria-hidden="true" />
-                שעות פעילות
+                {t('שעות פעילות', 'Opening hours')}
               </p>
               <dl className="mt-4 space-y-2 text-[15px]">
                 {HOURS.map(row => (
@@ -148,30 +155,30 @@ export default function Contact() {
           </div>
 
           <form onSubmit={handleSubmit} noValidate className="shop-card space-y-4 p-6 sm:p-8">
-            <h2 className="text-xl font-semibold text-brand-navy">שליחת הודעה</h2>
+            <h2 className="text-xl font-semibold text-brand-navy">{t('שליחת הודעה', 'Send a message')}</h2>
 
-            <FormField id="contact-name" label="שם מלא" required error={errors.name}>
+            <FormField id="contact-name" label={t('שם מלא', 'Full name')} required error={errors.name}>
               <input id="contact-name" value={form.name} onChange={e => handleChange('name', e.target.value)} maxLength={100} autoComplete="name"
                 aria-invalid={!!errors.name} className={fieldClass(errors.name)} />
             </FormField>
 
-            <FormField id="contact-email" label="אימייל" required error={errors.email}>
+            <FormField id="contact-email" label={t('אימייל', 'Email')} required error={errors.email}>
               <input id="contact-email" value={form.email} onChange={e => handleChange('email', e.target.value)} type="email" dir="ltr" maxLength={254} autoComplete="email"
-                aria-invalid={!!errors.email} className={`${fieldClass(errors.email)} text-right`} />
+                aria-invalid={!!errors.email} className={`${fieldClass(errors.email)} text-start`} />
             </FormField>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField id="contact-phone" label="טלפון" optional error={errors.phone}>
+              <FormField id="contact-phone" label={t('טלפון', 'Phone')} optional error={errors.phone}>
                 <input id="contact-phone" value={form.phone} onChange={e => handleChange('phone', e.target.value)} type="tel" dir="ltr" maxLength={20} autoComplete="tel"
-                  className={`${fieldClass(errors.phone)} text-right`} />
+                  className={`${fieldClass(errors.phone)} text-start`} />
               </FormField>
-              <FormField id="contact-subject" label="נושא" optional error={errors.subject}>
+              <FormField id="contact-subject" label={t('נושא', 'Subject')} optional error={errors.subject}>
                 <input id="contact-subject" value={form.subject} onChange={e => handleChange('subject', e.target.value)} maxLength={200}
                   className={fieldClass(errors.subject)} />
               </FormField>
             </div>
 
-            <FormField id="contact-message" label="הודעה" required error={errors.message}>
+            <FormField id="contact-message" label={t('הודעה', 'Message')} required error={errors.message}>
               <textarea id="contact-message" value={form.message} onChange={e => handleChange('message', e.target.value)} maxLength={2000}
                 rows={5} aria-invalid={!!errors.message} className={`${fieldClass(errors.message)} resize-none py-3`} />
             </FormField>
@@ -186,7 +193,7 @@ export default function Contact() {
 
             <button type="submit" disabled={submitting} className="shop-btn w-full">
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
-              {submitting ? 'שולח...' : 'שליחת ההודעה'}
+              {submitting ? t('שולח...', 'Sending...') : t('שליחת ההודעה', 'Send message')}
             </button>
           </form>
         </div>

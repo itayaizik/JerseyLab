@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '@/lib/i18n';
 
 // Bot trap for the forms anyone can submit.
 //
@@ -38,7 +39,7 @@ export const HONEYPOT_NAME = 'company_website';
 export default function Honeypot({ value, onChange }) {
   return (
     <div aria-hidden="true" style={HIDDEN}>
-      <label htmlFor={HONEYPOT_NAME}>אל תמלא שדה זה</label>
+      <label htmlFor={HONEYPOT_NAME}>{t('אל תמלא שדה זה', 'Leave this field empty')}</label>
       <input
         id={HONEYPOT_NAME}
         name={HONEYPOT_NAME}

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Trophy } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import SectionHeader from '@/components/shop/SectionHeader';
+import { t } from '@/lib/i18n';
+import { term } from '@/lib/english';
 
 const DEFAULT_LEAGUES = [
   { name: 'ליגת העל', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/9/9d/Ligat_ha%27Al_logo.svg/200px-Ligat_ha%27Al_logo.svg.png', href: `/catalog?q=${encodeURIComponent('ליגת העל')}` },
@@ -40,7 +42,7 @@ export default function LeaguesSection({ title }) {
 
   return (
     <section className="shop-container mt-16 sm:mt-24" aria-labelledby="leagues-heading">
-      <SectionHeader id="leagues-heading" title={title || 'ליגות וטורנירים'} />
+      <SectionHeader id="leagues-heading" title={title || t('ליגות וטורנירים', 'Leagues and tournaments')} />
       {/* A row that scrolls sideways on a phone - ten tiles two to a row were
           more than a screen of scrolling - and a grid from a tablet up. */}
       <ul className="scrollbar-hide -mx-4 mt-8 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 pb-2 sm:mx-0 sm:mt-10 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-5">
@@ -55,9 +57,9 @@ export default function LeaguesSection({ title }) {
               <span className="flex h-16 w-16 items-center justify-center dark:rounded-2xl dark:bg-slate-100">
                 <LeagueLogo src={league.logo_url} />
               </span>
-              <span className="text-base font-semibold text-brand-navy">{league.name}</span>
+              <span className="text-base font-semibold text-brand-navy">{term(league.name)}</span>
               <span className="mt-auto inline-flex min-h-[2.25rem] items-center rounded-full border border-brand-navy/15 bg-white px-4 text-[13px] font-medium text-brand-navy/75 transition group-hover:border-brand-orange group-hover:text-brand-orange-ink">
-                לחולצות
+                {t('לחולצות', 'Shop')}
               </span>
             </Link>
           </li>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { t, isEn } from '@/lib/i18n';
 
 // The strip above the header.
 //
@@ -34,11 +35,14 @@ export default function PromoBar() {
         const map = {};
         rows.forEach(r => { map[r.key] = r.value; });
         if (map[SETTING_KEYS.active] !== 'yes') return;
-        const text = (map[SETTING_KEYS.text] || '').trim();
+        // The English site shows the strip only if it was also written in
+        // English (the same settings with _en).
+        const key = (name) => (isEn ? `${SETTING_KEYS[name]}_en` : SETTING_KEYS[name]);
+        const text = (map[key('text')] || '').trim();
         if (!text) return;
         setPromo({
           text,
-          linkText: (map[SETTING_KEYS.linkText] || '').trim(),
+          linkText: (map[key('linkText')] || '').trim(),
           linkHref: (map[SETTING_KEYS.linkHref] || '').trim(),
         });
         try {
@@ -73,7 +77,7 @@ export default function PromoBar() {
             </>
           )}
         </p>
-        <button type="button" onClick={close} aria-label="סגירת ההודעה"
+        <button type="button" onClick={close} aria-label={t('סגירת ההודעה', 'Close this notice')}
           className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition hover:bg-white/15">
           <X className="h-3.5 w-3.5" />
         </button>

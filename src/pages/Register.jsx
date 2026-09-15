@@ -11,15 +11,16 @@ import OtpStep from '@/components/register/OtpStep';
 import RegisterSuccess from '@/components/register/RegisterSuccess';
 import { friendlyError } from '@/lib/errorMessages';
 import { toast } from '@/components/ui/use-toast';
+import { t } from '@/lib/i18n';
 
 const STEP_KEYS = ['basics', 'fitting', 'preferences', 'otp'];
-const STEP_LABELS = ['פרטים', 'מידות', 'העדפות', 'אימות'];
+const STEP_LABELS = [t('פרטים', 'Details'), t('מידות', 'Sizes'), t('העדפות', 'Preferences'), t('אימות', 'Verify')];
 
 const META = {
-  basics: { title: 'יצירת חשבון', subtitle: 'שלב 1 מתוך 4 - בוא נכיר אותך' },
-  fitting: { title: 'התאמת מידות', subtitle: 'שלב 2 מתוך 4 - נתאים לך חולצות בדיוק' },
-  preferences: { title: 'העדפות כדורגל', subtitle: 'שלב 3 מתוך 4 - נדייק עבורך' },
-  otp: { title: 'אימות אימייל', subtitle: 'שלב 4 מתוך 4 - כמעט סיימנו' },
+  basics: { title: t('יצירת חשבון', 'Create an account'), subtitle: t('שלב 1 מתוך 4 - בוא נכיר אותך', "Step 1 of 4 - let's get to know you") },
+  fitting: { title: t('התאמת מידות', 'Your size'), subtitle: t('שלב 2 מתוך 4 - נתאים לך חולצות בדיוק', 'Step 2 of 4 - so shirts fit you just right') },
+  preferences: { title: t('העדפות כדורגל', 'Football preferences'), subtitle: t('שלב 3 מתוך 4 - נדייק עבורך', 'Step 3 of 4 - so we can tailor things for you') },
+  otp: { title: t('אימות אימייל', 'Verify your email'), subtitle: t('שלב 4 מתוך 4 - כמעט סיימנו', 'Step 4 of 4 - almost done') },
 };
 
 const DEFAULT_FITTING = { height: '', weight: '', body_build: '', usual_size: '', fit_preference: 'regular' };
@@ -66,9 +67,9 @@ export default function Register() {
     } catch (err) {
       const msg = (err?.message || '').toLowerCase();
       if (msg.includes('already') || msg.includes('exist') || msg.includes('registered') || msg.includes('duplicate')) {
-        setError('כתובת האימייל כבר רשומה. נסה להתחבר או להשתמש באימייל אחר.');
+        setError(t('כתובת האימייל כבר רשומה. נסה להתחבר או להשתמש באימייל אחר.', 'This email is already registered. Try logging in, or use another email.'));
       } else {
-        setError(friendlyError(err, 'ההרשמה נכשלה. נסה שוב בעוד רגע.'));
+        setError(friendlyError(err, t('ההרשמה נכשלה. נסה שוב בעוד רגע.', "We couldn't sign you up. Please try again in a moment.")));
       }
     } finally {
       setLoading(false);
@@ -88,7 +89,7 @@ export default function Register() {
       }
       setStep('success');
     } catch (err) {
-      setError(friendlyError(err, 'קוד האימות שגוי או פג תוקף. נסה שוב או בקש קוד חדש.'));
+      setError(friendlyError(err, t('קוד האימות שגוי או פג תוקף. נסה שוב או בקש קוד חדש.', 'The code is wrong or has expired. Try again or ask for a new code.')));
     } finally {
       setLoading(false);
     }
@@ -110,10 +111,10 @@ export default function Register() {
     setError('');
     try {
       await base44.auth.resendOtp(basics.email);
-      toast({ title: 'הקוד נשלח', description: 'בדוק את תיבת האימייל שלך' });
+      toast({ title: t('הקוד נשלח', 'Code sent'), description: t('בדוק את תיבת האימייל שלך', 'Check your inbox') });
       startCooldown();
     } catch (err) {
-      setError(friendlyError(err, 'שליחת הקוד נכשלה. נסה שוב בעוד רגע.'));
+      setError(friendlyError(err, t('שליחת הקוד נכשלה. נסה שוב בעוד רגע.', "We couldn't send the code. Please try again in a moment.")));
     }
   };
 
@@ -121,7 +122,7 @@ export default function Register() {
 
   if (step === 'success') {
     return (
-      <AuthLayout title="ברוך הבא!" subtitle="החשבון שלך מוכן">
+      <AuthLayout title={t('ברוך הבא!', 'Welcome!')} subtitle={t('החשבון שלך מוכן', 'Your account is ready')}>
         <RegisterSuccess onDone={finishRedirect} />
       </AuthLayout>
     );
@@ -136,8 +137,8 @@ export default function Register() {
       subtitle={meta.subtitle}
       footer={showFooter ? (
         <>
-          כבר יש לך חשבון?{' '}
-          <Link to="/login" className="shop-link">התחברות</Link>
+          {t('כבר יש לך חשבון?', 'Already have an account?')}{' '}
+          <Link to="/login" className="shop-link">{t('התחברות', 'Log in')}</Link>
         </>
       ) : null}
     >

@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { Lock, Loader2, AlertTriangle } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import { friendlyError } from "@/lib/errorMessages";
+import { t } from "@/lib/i18n";
 
 function PasswordField({ id, label, value, onChange, autoFocus, disabled }) {
   return (
@@ -59,11 +60,11 @@ export default function ResetPassword() {
     e.preventDefault();
     setError("");
     if (newPassword !== confirmPassword) {
-      setError("הסיסמאות אינן תואמות");
+      setError(t("הסיסמאות אינן תואמות", "The passwords don't match"));
       return;
     }
     if (newPassword.length < 8) {
-      setError("הסיסמה חייבת להכיל לפחות 8 תווים");
+      setError(t("הסיסמה חייבת להכיל לפחות 8 תווים", "The password must be at least 8 characters"));
       return;
     }
     setLoading(true);
@@ -72,7 +73,7 @@ export default function ResetPassword() {
       if (updateError) throw updateError;
       window.location.href = "/login";
     } catch (err) {
-      setError(friendlyError(err, "איפוס הסיסמה נכשל. הקישור עשוי להיות שגוי או פג תוקף - נסו שוב."));
+      setError(friendlyError(err, t("איפוס הסיסמה נכשל. הקישור עשוי להיות שגוי או פג תוקף - נסו שוב.", "We couldn't reset your password. The link may be wrong or expired - please try again.")));
     } finally {
       setLoading(false);
     }
@@ -82,28 +83,28 @@ export default function ResetPassword() {
     return (
       <AuthLayout
         icon={AlertTriangle}
-        title="קישור לא תקין"
-        subtitle="קישור האיפוס חסר או שפג תוקפו"
-        footer={<Link to="/forgot-password" className="shop-link">בקשת קישור חדש</Link>}
+        title={t("קישור לא תקין", "Invalid link")}
+        subtitle={t("קישור האיפוס חסר או שפג תוקפו", "The reset link is missing or has expired")}
+        footer={<Link to="/forgot-password" className="shop-link">{t("בקשת קישור חדש", "Request a new link")}</Link>}
       >
         <p className="text-center text-[15px] leading-relaxed text-brand-navy/70">
-          הקישור שבו השתמשתם נראה חלקי או שפג תוקפו. בקשו קישור איפוס סיסמה חדש.
+          {t("הקישור שבו השתמשתם נראה חלקי או שפג תוקפו. בקשו קישור איפוס סיסמה חדש.", "The link you used looks incomplete or has expired. Request a new password reset link.")}
         </p>
       </AuthLayout>
     );
   }
 
   return (
-    <AuthLayout icon={Lock} title="סיסמה חדשה" subtitle="הזינו את הסיסמה החדשה שלכם">
+    <AuthLayout icon={Lock} title={t("סיסמה חדשה", "New password")} subtitle={t("הזינו את הסיסמה החדשה שלכם", "Enter your new password")}>
       {error && (
         <div role="alert" className="mb-4 rounded-2xl bg-red-50 p-3 text-sm text-red-700">{error}</div>
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <PasswordField id="reset-new" label="סיסמה חדשה" value={newPassword} onChange={setNewPassword} autoFocus disabled={!ready} />
-        <PasswordField id="reset-confirm" label="אימות סיסמה" value={confirmPassword} onChange={setConfirmPassword} disabled={!ready} />
+        <PasswordField id="reset-new" label={t("סיסמה חדשה", "New password")} value={newPassword} onChange={setNewPassword} autoFocus disabled={!ready} />
+        <PasswordField id="reset-confirm" label={t("אימות סיסמה", "Confirm password")} value={confirmPassword} onChange={setConfirmPassword} disabled={!ready} />
         <button type="submit" className="shop-btn w-full" disabled={loading || !ready}>
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
-          {loading ? 'מאפס...' : 'איפוס הסיסמה'}
+          {loading ? t('מאפס...', 'Resetting...') : t('איפוס הסיסמה', 'Reset password')}
         </button>
       </form>
     </AuthLayout>

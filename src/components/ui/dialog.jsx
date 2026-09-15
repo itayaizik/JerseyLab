@@ -5,6 +5,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { t } from "@/lib/i18n"
 
 const Dialog = DialogPrimitive.Root
 
@@ -46,10 +47,10 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
           It also gets a real hit area. The icon is 16px, which was the whole
           target; 40px is a button someone can actually press on a phone. */}
       <DialogPrimitive.Close
-        aria-label="סגירה"
+        aria-label={t('סגירה', 'Close')}
         className="absolute end-3 top-3 flex h-10 w-10 items-center justify-center rounded-xl text-brand-navy/60 transition-colors hover:bg-brand-mist hover:text-brand-navy focus-visible:outline-none disabled:pointer-events-none">
         <X className="h-4 w-4" />
-        <span className="sr-only">סגירה</span>
+        <span className="sr-only">{t('סגירה', 'Close')}</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPortal>

@@ -5,20 +5,24 @@ import MysteryBoxInfo from '@/components/MysteryBoxInfo';
 import MysteryBoxConfigurator from '@/components/MysteryBoxConfigurator';
 import CollectionHero from '@/components/catalog/CollectionHero';
 import Breadcrumb from '@/components/shop/Breadcrumb';
+import { t } from '@/lib/i18n';
 
 export default function MysteryBox() {
   return (
     <div>
       <Seo
-        title="מיסטרי בוקס - JerseyLab"
-        description="מיסטרי בוקס של JerseyLab: חולצת כדורגל מפתיעה לפי סגנון ומידה שתבחר. רגיל ₪70, רטרו ₪80, מונדיאל ₪70. אפשר לסמן קבוצות וצבעים שלא תרצה לקבל."
+        title={t('מיסטרי בוקס - JerseyLab', 'Mystery Box - JerseyLab')}
+        description={t(
+          'מיסטרי בוקס של JerseyLab: חולצת כדורגל מפתיעה לפי סגנון ומידה שתבחר. רגיל ₪70, רטרו ₪80, מונדיאל ₪70. אפשר לסמן קבוצות וצבעים שלא תרצה לקבל.',
+          "JerseyLab's Mystery Box: a surprise football shirt in the style and size you choose. Regular ₪70, retro ₪80, World Cup ₪70. Rule out teams and colours you don't want.",
+        )}
         canonicalPath="/mystery-box"
       />
 
       <CollectionHero
-        breadcrumb={<Breadcrumb trail={[{ label: 'מיסטרי בוקס' }]} />}
-        title="מיסטרי בוקס"
-        description="אתם בוחרים סגנון ומידה, והחולצה יוצאת אקראית. אותה איכות ואותו מחיר כמו בקטלוג, רק בהפתעה."
+        breadcrumb={<Breadcrumb trail={[{ label: t('מיסטרי בוקס', 'Mystery Box') }]} />}
+        title={t('מיסטרי בוקס', 'Mystery Box')}
+        description={t('אתם בוחרים סגנון ומידה, והחולצה יוצאת אקראית. אותה איכות ואותו מחיר כמו בקטלוג, רק בהפתעה.', 'You choose the style and size, and the shirt comes out at random. The same quality and price as the catalog, just as a surprise.')}
       />
 
       {/* The configurator is the page. It gets the wider column and the top of

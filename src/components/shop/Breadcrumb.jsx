@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { t } from '@/lib/i18n';
 
 // "דף הבית / קטלוג / ..." above a page title. The home page is always first,
 // and the last entry is the page itself, so it is never a link.
 export default function Breadcrumb({ trail = [] }) {
-  const items = [{ label: 'דף הבית', to: '/' }, ...trail];
+  const items = [{ label: t('דף הבית', 'Home'), to: '/' }, ...trail];
   return (
-    <nav aria-label="נתיב ניווט" className="shop-eyebrow mb-3">
+    <nav aria-label={t('נתיב ניווט', 'Breadcrumb')} className="shop-eyebrow mb-3">
       {items.map((item, i) => (
         <React.Fragment key={`${item.label}-${i}`}>
           {i > 0 && <span className="mx-2" aria-hidden="true">/</span>}

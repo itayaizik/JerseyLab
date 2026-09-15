@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '@/lib/i18n';
 
 // A labelled form field with its error or hint underneath, for the contact,
 // request and account forms.
@@ -14,7 +15,7 @@ export default function FormField({ id, label, required = false, optional = fals
         <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-brand-navy/70">
           {label}
           {required && <span className="text-brand-orange-ink"> *</span>}
-          {optional && <span className="font-normal text-brand-navy/40"> (לא חובה)</span>}
+          {optional && <span className="font-normal text-brand-navy/40"> {t('(לא חובה)', '(optional)')}</span>}
         </label>
       )}
       {children}

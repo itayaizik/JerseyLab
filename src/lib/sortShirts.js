@@ -1,13 +1,14 @@
 import { shirtBasePrice } from '@/lib/cart';
+import { t } from '@/lib/i18n';
 
 // The orders a list of shirts can be shown in, shared by the catalogue and the
 // collection pages.
 
 export const SORT_OPTIONS = [
-  { value: 'featured', label: 'מומלצות' },
-  { value: 'newest', label: 'חדשות באתר' },
-  { value: 'price-asc', label: 'מחיר: מהנמוך לגבוה' },
-  { value: 'price-desc', label: 'מחיר: מהגבוה לנמוך' },
+  { value: 'featured', label: t('מומלצות', 'Recommended') },
+  { value: 'newest', label: t('חדשות באתר', 'Newest') },
+  { value: 'price-asc', label: t('מחיר: מהנמוך לגבוה', 'Price: low to high') },
+  { value: 'price-desc', label: t('מחיר: מהגבוה לנמוך', 'Price: high to low') },
 ];
 
 // `keepOrder` is for lists that arrive already in the order that matters - a

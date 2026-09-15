@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Plus } from 'lucide-react';
+import { t } from '@/lib/i18n';
 
 export default function ChipsInput({ values = [], onChange, placeholder }) {
   const [text, setText] = useState('');
@@ -19,7 +20,7 @@ export default function ChipsInput({ values = [], onChange, placeholder }) {
           {values.map(v => (
             <span key={v} className="inline-flex items-center gap-1.5 rounded-full bg-brand-navy py-1.5 pe-2 ps-3 text-[13px] text-white">
               {v}
-              <button type="button" onClick={() => remove(v)} className="flex h-5 w-5 items-center justify-center rounded-full opacity-70 transition hover:bg-white/15 hover:opacity-100" aria-label={`הסרת ${v}`}>
+              <button type="button" onClick={() => remove(v)} className="flex h-5 w-5 items-center justify-center rounded-full opacity-70 transition hover:bg-white/15 hover:opacity-100" aria-label={t(`הסרת ${v}`, `Remove ${v}`)}>
                 <X className="h-3 w-3" />
               </button>
             </span>
@@ -31,7 +32,7 @@ export default function ChipsInput({ values = [], onChange, placeholder }) {
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(); } }}
           placeholder={placeholder}
           className="shop-field flex-1" />
-        <button type="button" onClick={add} aria-label="הוספה"
+        <button type="button" onClick={add} aria-label={t('הוספה', 'Add')}
           className="flex h-[3.25rem] w-[3.25rem] flex-shrink-0 items-center justify-center rounded-2xl bg-brand-mist text-brand-navy transition hover:bg-brand-navy hover:text-white">
           <Plus className="h-5 w-5" />
         </button>

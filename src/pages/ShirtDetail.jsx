@@ -15,22 +15,25 @@ import { shirtSizes } from '@/lib/sizes';
 import { shirtBasePrice } from '@/lib/cart';
 import { BUSINESS, detail } from '@/lib/business';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
+import { t, isEn } from '@/lib/i18n';
+import { term, shirtName, shirtDescription } from '@/lib/english';
 
-const conditionLabels = { new: 'חדש', like_new: 'כמו חדש', used: 'משומש' };
+const conditionLabels = { new: t('חדש', 'New'), like_new: t('כמו חדש', 'Like new'), used: t('משומש', 'Used') };
 
 function ProductDescription({ shirt }) {
+  const description = shirtDescription(shirt);
   const facts = [
-    [shirt.national_team && !shirt.club ? 'נבחרת' : 'קבוצה', shirt.club || shirt.national_team],
-    ['ליגה', shirt.league],
-    ['עונה', shirt.season],
-    ['שחקן', shirt.player_name],
-    ['מצב', conditionLabels[shirt.condition]],
-    ['מידות', shirtSizes(shirt).join(', ')],
+    [shirt.national_team && !shirt.club ? t('נבחרת', 'National team') : t('קבוצה', 'Team'), term(shirt.club || shirt.national_team)],
+    [t('ליגה', 'League'), term(shirt.league)],
+    [t('עונה', 'Season'), shirt.season],
+    [t('שחקן', 'Player'), shirt.player_name],
+    [t('מצב', 'Condition'), conditionLabels[shirt.condition]],
+    [t('מידות', 'Sizes'), shirtSizes(shirt).join(', ')],
   ].filter(([, value]) => value);
 
   return (
     <div className="space-y-4 text-[15px] leading-relaxed text-brand-navy/75">
-      {shirt.description && <p className="whitespace-pre-line">{shirt.description}</p>}
+      {description && <p className="whitespace-pre-line">{description}</p>}
       {facts.length > 0 && (
         <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-2 text-sm">
           {facts.map(([label, value]) => (
@@ -41,7 +44,8 @@ function ProductDescription({ shirt }) {
           ))}
         </dl>
       )}
-      {shirt.tags?.length > 0 && (
+      {/* The tags are Hebrew search words; the English site leaves them out. */}
+      {!isEn && shirt.tags?.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {shirt.tags.map(tag => (
             <Link key={tag} to={`/catalog?q=${encodeURIComponent(tag)}`} className="shop-chip min-h-[2.25rem] px-3.5 text-[13px]">
@@ -55,9 +59,23 @@ function ProductDescription({ shirt }) {
 }
 
 // The shipping terms as the business has set them in lib/business, so this row
-// and the shipping policy page always say the same thing.
+// and the shipping policy page always say the same thing. Those values are
+// written in Hebrew, so the English site says the same terms in its own words.
 function ShippingDetails() {
   const s = BUSINESS.shipping;
+  if (isEn) {
+    return (
+      <ul className="space-y-3 text-[15px] leading-relaxed text-brand-navy/75">
+        <li><span className="font-semibold text-brand-navy">In stock in Israel: </span>arrives within a week, or pick it up in Kiryat Ono by arrangement.</li>
+        <li><span className="font-semibold text-brand-navy">Made to order: </span>arrives within 3 weeks.</li>
+        <li><span className="font-semibold text-brand-navy">Shipping: </span>the cost is confirmed with you together with the order.</li>
+        <li>
+          Cancellations and returns under Israeli consumer protection law.{' '}
+          <Link to="/legal/shipping" className="shop-link">Full details</Link>
+        </li>
+      </ul>
+    );
+  }
   return (
     <ul className="space-y-3 text-[15px] leading-relaxed text-brand-navy/75">
       <li>
@@ -186,11 +204,11 @@ export default function ShirtDetail() {
       const items = await base44.entities.Wishlist.filter({ user_id: user.id, shirt_id: id });
       if (items[0]) await base44.entities.Wishlist.delete(items[0].id);
       setIsWishlisted(false);
-      toast({ title: 'הוסרה מהמועדפים' });
+      toast({ title: t('הוסרה מהמועדפים', 'Removed from your wishlist') });
     } else {
       await base44.entities.Wishlist.create({ user_id: user.id, shirt_id: id });
       setIsWishlisted(true);
-      toast({ title: 'נוספה למועדפים' });
+      toast({ title: t('נוספה למועדפים', 'Added to your wishlist') });
     }
   };
 
@@ -199,12 +217,12 @@ export default function ShirtDetail() {
   const handleShare = async () => {
     const url = window.location.href;
     if (navigator.share) {
-      try { await navigator.share({ title: shirt.name, url }); } catch { /* dismissed */ }
+      try { await navigator.share({ title: shirtName(shirt), url }); } catch { /* dismissed */ }
       return;
     }
     try {
       await navigator.clipboard.writeText(url);
-      toast({ title: 'הקישור הועתק' });
+      toast({ title: t('הקישור הועתק', 'Link copied') });
     } catch { /* clipboard unavailable */ }
   };
 
@@ -276,11 +294,11 @@ export default function ShirtDetail() {
       <div className="shop-container py-10">
         <EmptyState
           icon={Shirt}
-          title="לא הצלחנו לטעון את החולצה"
-          description="בדקו את החיבור לאינטרנט ונסו שוב, או חזרו לקטלוג."
-          actionLabel="לנסות שוב"
+          title={t('לא הצלחנו לטעון את החולצה', "We couldn't load this shirt")}
+          description={t('בדקו את החיבור לאינטרנט ונסו שוב, או חזרו לקטלוג.', 'Check your internet connection and try again, or go back to the catalog.')}
+          actionLabel={t('לנסות שוב', 'Try again')}
           onAction={() => window.location.reload()}
-          secondaryLabel="לקטלוג"
+          secondaryLabel={t('לקטלוג', 'To the catalog')}
           secondaryTo="/catalog"
         />
       </div>
@@ -292,16 +310,17 @@ export default function ShirtDetail() {
       <div className="shop-container py-10">
         <EmptyState
           icon={Shirt}
-          title="החולצה לא נמצאה"
-          description="ייתכן שהחולצה כבר לא זמינה או שהקישור אינו תקין."
-          actionLabel="לקטלוג"
+          title={t('החולצה לא נמצאה', 'Shirt not found')}
+          description={t('ייתכן שהחולצה כבר לא זמינה או שהקישור אינו תקין.', 'The shirt may no longer be available, or the link may be broken.')}
+          actionLabel={t('לקטלוג', 'To the catalog')}
           actionTo="/catalog"
         />
       </div>
     );
   }
 
-  const seoTitle = `${shirt.name} - JerseyLab`;
+  const name = shirtName(shirt);
+  const seoTitle = `${name} - JerseyLab`;
   const seoDesc = shirt.description
     ? shirt.description.slice(0, 155)
     : `${shirt.name} - ${shirt.club || shirt.national_team || ''} ${shirt.season || ''} ${shirt.player_name || ''}`.trim();
@@ -316,12 +335,12 @@ export default function ShirtDetail() {
       <Seo title={seoTitle} description={seoDesc} image={shirt.main_image} type="product" canonicalPath={`/shirt/${shirt.id}`} jsonLd={productJsonLd} />
 
       <div className="shop-container pb-12 pt-5 lg:pb-16 lg:pt-8">
-        <nav aria-label="נתיב ניווט" className="mb-5 flex min-w-0 items-center gap-1.5 text-sm text-brand-navy/50 lg:mb-8">
-          <Link to="/" className="flex-shrink-0 transition hover:text-brand-navy">דף הבית</Link>
+        <nav aria-label={t('נתיב ניווט', 'Breadcrumb')} className="mb-5 flex min-w-0 items-center gap-1.5 text-sm text-brand-navy/50 lg:mb-8">
+          <Link to="/" className="flex-shrink-0 transition hover:text-brand-navy">{t('דף הבית', 'Home')}</Link>
           <ChevronLeft className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
-          <Link to="/catalog" className="flex-shrink-0 transition hover:text-brand-navy">קטלוג</Link>
+          <Link to="/catalog" className="flex-shrink-0 transition hover:text-brand-navy">{t('קטלוג', 'Catalog')}</Link>
           <ChevronLeft className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
-          <span className="truncate text-brand-navy/75">{shirt.name}</span>
+          <span className="truncate text-brand-navy/75">{name}</span>
         </nav>
 
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,33rem)] xl:gap-16">
@@ -332,10 +351,10 @@ export default function ShirtDetail() {
               overlay={(
                 <div className="absolute end-4 top-4 flex flex-col gap-2">
                   <button type="button" onClick={toggleWishlist} aria-pressed={isWishlisted}
-                    aria-label={isWishlisted ? 'הסרה מהמועדפים' : 'הוספה למועדפים'} className={roundButton}>
+                    aria-label={isWishlisted ? t('הסרה מהמועדפים', 'Remove from wishlist') : t('הוספה למועדפים', 'Add to wishlist')} className={roundButton}>
                     <Heart className={`h-5 w-5 ${isWishlisted ? 'fill-brand-orange text-brand-orange' : ''}`} />
                   </button>
-                  <button type="button" onClick={handleShare} aria-label="שיתוף החולצה" className={roundButton}>
+                  <button type="button" onClick={handleShare} aria-label={t('שיתוף החולצה', 'Share this shirt')} className={roundButton}>
                     <Share2 className="h-5 w-5" />
                   </button>
                 </div>
@@ -353,13 +372,13 @@ export default function ShirtDetail() {
             />
 
             <div className="mt-4 space-y-2.5">
-              <Disclosure title="תיאור המוצר">
+              <Disclosure title={t('תיאור המוצר', 'Product description')}>
                 <ProductDescription shirt={shirt} />
               </Disclosure>
-              <Disclosure title="משלוחים והחזרות">
+              <Disclosure title={t('משלוחים והחזרות', 'Shipping & returns')}>
                 <ShippingDetails />
               </Disclosure>
-              <Disclosure title="ביקורות" meta={reviewsMeta}>
+              <Disclosure title={t('ביקורות', 'Reviews')} meta={reviewsMeta}>
                 <ShirtReviews shirtId={id} user={user} onSummary={setReviewSummary} />
               </Disclosure>
             </div>
@@ -370,9 +389,9 @@ export default function ShirtDetail() {
       {related.length > 0 && (
         <section className="shop-container" aria-labelledby="related-heading">
           <div className="rounded-[2rem] bg-gradient-to-b from-brand-mist to-white px-4 pb-2 pt-10 sm:px-8 sm:pt-14 lg:px-12">
-            <h2 id="related-heading" className="shop-title text-center">אולי יעניין אתכם גם</h2>
+            <h2 id="related-heading" className="shop-title text-center">{t('אולי יעניין אתכם גם', 'You might also like')}</h2>
             <div className="mt-8 sm:mt-10">
-              <ProductRail shirts={related} user={user} label="חולצות נוספות" />
+              <ProductRail shirts={related} user={user} label={t('חולצות נוספות', 'More shirts')} />
             </div>
           </div>
         </section>
@@ -381,7 +400,7 @@ export default function ShirtDetail() {
       <SizeGuideDrawer
         open={sizeGuide.open}
         onOpenChange={(open) => setSizeGuide(g => ({ ...g, open }))}
-        shirtName={shirt.name}
+        shirtName={name}
         defaultTab={sizeGuide.tab}
       />
 
@@ -394,11 +413,11 @@ export default function ShirtDetail() {
         >
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-brand-navy">{shirt.name}</p>
+              <p className="truncate text-sm font-semibold text-brand-navy">{name}</p>
               <p className="text-sm font-semibold tabular-nums text-brand-navy/65">₪{shirtBasePrice(shirt)}</p>
             </div>
             <button type="button" tabIndex={ctaPosition === 'below' ? 0 : -1} onClick={() => setAttention(a => a + 1)} className="shop-btn min-h-[3rem] px-6">
-              להזמנה
+              {t('להזמנה', 'Order')}
             </button>
           </div>
         </div>

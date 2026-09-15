@@ -1,13 +1,16 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { t } from '@/lib/i18n';
 
 export default function OtpStep({ email, otpCode, setOtpCode, onVerify, onResend, loading, error, resendCooldown = 0 }) {
   return (
     <div>
-      <h3 className="text-lg font-semibold text-brand-navy">אימות אימייל</h3>
+      <h3 className="text-lg font-semibold text-brand-navy">{t('אימות אימייל', 'Verify your email')}</h3>
       <p className="mb-6 mt-1 text-sm leading-relaxed text-brand-navy/55">
-        שלחנו קוד בן 6 ספרות ל־<span dir="ltr" className="font-medium text-brand-navy">{email}</span>. הזינו אותו כאן.
+        {t('שלחנו קוד בן 6 ספרות ל־', 'We sent a 6-digit code to ')}
+        <span dir="ltr" className="font-medium text-brand-navy">{email}</span>
+        {t('. הזינו אותו כאן.', '. Enter it here.')}
       </p>
 
       <div className="mb-5 flex justify-center" dir="ltr">
@@ -26,13 +29,13 @@ export default function OtpStep({ email, otpCode, setOtpCode, onVerify, onResend
       {error && <p role="alert" className="mb-3 text-center text-sm text-red-600">{error}</p>}
 
       <button type="button" onClick={onVerify} disabled={loading || otpCode.length < 6} className="shop-btn w-full">
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'אימות וסיום'}
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('אימות וסיום', 'Verify and finish')}
       </button>
 
       <p className="mt-4 text-center text-sm text-brand-navy/55">
-        לא קיבלתם קוד?{' '}
+        {t('לא קיבלתם קוד?', "Didn't get a code?")}{' '}
         <button type="button" onClick={onResend} disabled={resendCooldown > 0} className="shop-link disabled:cursor-not-allowed disabled:no-underline disabled:opacity-40">
-          {resendCooldown > 0 ? `שליחה חוזרת (${resendCooldown})` : 'שליחה חוזרת'}
+          {resendCooldown > 0 ? t(`שליחה חוזרת (${resendCooldown})`, `Resend (${resendCooldown})`) : t('שליחה חוזרת', 'Resend')}
         </button>
       </p>
     </div>

@@ -4,9 +4,14 @@
 // Clubs link to their collection page when there is one and to a search
 // otherwise. Every entry is checked against the stock counted at build time
 // (lib/catalogFacets), so a menu never offers a page with nothing on it.
+//
+// Labels are in the site's language (lib/i18n); searches stay in Hebrew,
+// because that is what the shirts are stored in.
 
 import { COLLECTIONS } from '@/lib/collections';
 import { linkHasStock, withStock } from '@/lib/catalogFacets';
+import { t } from '@/lib/i18n';
+import { term } from '@/lib/english';
 
 const collectionHref = (slug) => `/collections/${slug}`;
 const searchHref = (query) => `/catalog?q=${encodeURIComponent(query)}`;
@@ -15,13 +20,13 @@ const searchHref = (query) => `/catalog?q=${encodeURIComponent(query)}`;
 // when it differs from the label a customer reads ("צ׳לסי" is stored "צלסי").
 function club(label, { slug, query } = {}) {
   const hasPage = slug && COLLECTIONS.some(c => c.slug === slug);
-  return { label, href: hasPage ? collectionHref(slug) : searchHref(query || label) };
+  return { label: term(label), href: hasPage ? collectionHref(slug) : searchHref(query || label) };
 }
 
 // Clubs grouped by league, most stocked first within each.
 const CLUB_GROUPS = [
   {
-    label: 'לה ליגה', href: collectionHref('la-liga'), image: 'collection:la-liga',
+    label: term('לה ליגה'), href: collectionHref('la-liga'), image: 'collection:la-liga',
     links: [
       club('ריאל מדריד', { slug: 'real-madrid' }),
       club('ברצלונה', { slug: 'barcelona' }),
@@ -31,7 +36,7 @@ const CLUB_GROUPS = [
     ],
   },
   {
-    label: 'פרמייר ליג', href: collectionHref('premier-league'), image: 'collection:premier-league',
+    label: term('פרמייר ליג'), href: collectionHref('premier-league'), image: 'collection:premier-league',
     links: [
       club('צ׳לסי', { slug: 'chelsea' }),
       club('טוטנהאם'),
@@ -43,7 +48,7 @@ const CLUB_GROUPS = [
     ],
   },
   {
-    label: 'סרייה א', href: collectionHref('serie-a'), image: 'collection:serie-a',
+    label: term('סרייה א'), href: collectionHref('serie-a'), image: 'collection:serie-a',
     links: [
       club('מילאן', { slug: 'milan' }),
       club('אינטר', { slug: 'inter' }),
@@ -53,7 +58,7 @@ const CLUB_GROUPS = [
     ],
   },
   {
-    label: 'ליגת העל', href: collectionHref('israeli-league'), image: 'collection:israeli-league',
+    label: term('ליגת העל'), href: collectionHref('israeli-league'), image: 'collection:israeli-league',
     links: [
       club('הפועל תל אביב', { slug: 'hapoel-tel-aviv' }),
       club('ביתר ירושלים', { slug: 'beitar-jerusalem' }),
@@ -63,7 +68,7 @@ const CLUB_GROUPS = [
     ],
   },
   {
-    label: 'עוד מהעולם', href: '/catalog', image: 'collection:psg',
+    label: term('עוד מהעולם'), href: '/catalog', image: 'collection:psg',
     links: [
       club('פריז סן ז׳רמן', { slug: 'psg' }),
       club('אינטר מיאמי', { slug: 'inter-miami' }),
@@ -87,47 +92,47 @@ const NATIONAL_TEAMS = [
 ];
 
 export const NATIONAL_MENU = {
-  card: { label: 'כל הנבחרות', href: collectionHref('national-teams'), image: 'collection:national-teams' },
-  links: NATIONAL_TEAMS.map(name => ({ label: name, href: searchHref(name) })),
+  card: { label: t('כל הנבחרות', 'All national teams'), href: collectionHref('national-teams'), image: 'collection:national-teams' },
+  links: NATIONAL_TEAMS.map(name => ({ label: term(name), href: searchHref(name) })),
 };
 
 export const SHIRTS_MENU = {
   cards: withStock([
-    { label: 'חדשים באתר', href: '/catalog?new=true', image: 'new=true' },
-    { label: 'נבחרות', href: collectionHref('national-teams'), image: 'collection:national-teams' },
-    { label: 'רטרו', href: collectionHref('retro'), image: 'collection:retro' },
-    { label: 'ליגת האלופות', href: collectionHref('champions-league'), image: 'collection:champions-league' },
-    { label: 'הנמכרים ביותר', href: '/catalog?best=true', image: 'best=true' },
+    { label: t('חדשים באתר', 'New arrivals'), href: '/catalog?new=true', image: 'new=true' },
+    { label: t('נבחרות', 'National teams'), href: collectionHref('national-teams'), image: 'collection:national-teams' },
+    { label: t('רטרו', 'Retro'), href: collectionHref('retro'), image: 'collection:retro' },
+    { label: t('ליגת האלופות', 'Champions League'), href: collectionHref('champions-league'), image: 'collection:champions-league' },
+    { label: t('הנמכרים ביותר', 'Best sellers'), href: '/catalog?best=true', image: 'best=true' },
   ]).slice(0, 5),
   links: withStock([
-    { label: 'כל החולצות', href: '/catalog' },
-    { label: 'מלאי בארץ', href: '/catalog?fast=true' },
-    { label: 'מיסטרי בוקס', href: '/mystery-box' },
-    { label: 'לא מצאתם? בקשו חולצה', href: '/request-shirt' },
-    { label: 'מדריך מידות', href: '/size-guide' },
+    { label: t('כל החולצות', 'All shirts'), href: '/catalog' },
+    { label: t('מלאי בארץ', 'In stock in Israel'), href: '/catalog?fast=true' },
+    { label: t('מיסטרי בוקס', 'Mystery Box'), href: '/mystery-box' },
+    { label: t('לא מצאתם? בקשו חולצה', "Can't find it? Request a shirt"), href: '/request-shirt' },
+    { label: t('מדריך מידות', 'Size guide'), href: '/size-guide' },
   ]),
 };
 
 // The row under the header. Items with a `menu` open a panel; the rest are
 // plain links.
 export const NAV_ITEMS = [
-  { id: 'shirts', label: 'חולצות', menu: 'shirts' },
-  { id: 'clubs', label: 'קבוצות', menu: 'clubs' },
-  { id: 'national', label: 'נבחרות', menu: 'national' },
-  { id: 'retro', label: 'רטרו', href: collectionHref('retro') },
-  { id: 'fast', label: 'מלאי בארץ', href: '/catalog?fast=true' },
-  { id: 'mystery', label: 'מיסטרי בוקס', href: '/mystery-box' },
-  { id: 'request', label: 'בקשת חולצה', href: '/request-shirt' },
+  { id: 'shirts', label: t('חולצות', 'Shirts'), menu: 'shirts' },
+  { id: 'clubs', label: t('קבוצות', 'Teams'), menu: 'clubs' },
+  { id: 'national', label: t('נבחרות', 'National teams'), menu: 'national' },
+  { id: 'retro', label: t('רטרו', 'Retro'), href: collectionHref('retro') },
+  { id: 'fast', label: t('מלאי בארץ', 'In stock in Israel'), href: '/catalog?fast=true' },
+  { id: 'mystery', label: t('מיסטרי בוקס', 'Mystery Box'), href: '/mystery-box' },
+  { id: 'request', label: t('בקשת חולצה', 'Request a shirt'), href: '/request-shirt' },
 ].filter(item => item.menu || linkHasStock(item.href));
 
 // The plain links at the foot of the mobile menu.
 export const SITE_LINKS = withStock([
-  { label: 'כל החולצות', href: '/catalog' },
-  { label: 'רטרו', href: collectionHref('retro') },
-  { label: 'מלאי בארץ', href: '/catalog?fast=true' },
-  { label: 'מיסטרי בוקס', href: '/mystery-box' },
-  { label: 'בקשת חולצה', href: '/request-shirt' },
-  { label: 'מדריך מידות', href: '/size-guide' },
-  { label: 'שאלות ותשובות', href: '/faq' },
-  { label: 'צור קשר', href: '/contact' },
+  { label: t('כל החולצות', 'All shirts'), href: '/catalog' },
+  { label: t('רטרו', 'Retro'), href: collectionHref('retro') },
+  { label: t('מלאי בארץ', 'In stock in Israel'), href: '/catalog?fast=true' },
+  { label: t('מיסטרי בוקס', 'Mystery Box'), href: '/mystery-box' },
+  { label: t('בקשת חולצה', 'Request a shirt'), href: '/request-shirt' },
+  { label: t('מדריך מידות', 'Size guide'), href: '/size-guide' },
+  { label: t('שאלות ותשובות', 'FAQ'), href: '/faq' },
+  { label: t('צור קשר', 'Contact'), href: '/contact' },
 ]);

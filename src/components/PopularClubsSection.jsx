@@ -4,6 +4,8 @@ import { ArrowLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import SectionHeader from '@/components/shop/SectionHeader';
 import ScrollRow from '@/components/shop/ScrollRow';
+import { t } from '@/lib/i18n';
+import { term } from '@/lib/english';
 
 const DEFAULT_CLUBS = [
   { name: 'ליברפול', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/c/cd/Liverpool_FC.svg/200px-Liverpool_FC.svg.png', href: `/catalog?q=${encodeURIComponent('ליברפול')}` },
@@ -33,9 +35,9 @@ export default function PopularClubsSection({ title }) {
   return (
     <section className="mt-16 sm:mt-24" aria-labelledby="clubs-heading">
       <div className="shop-container">
-        <SectionHeader id="clubs-heading" title={title || 'קנו לפי קבוצה'} />
+        <SectionHeader id="clubs-heading" title={title || t('קנו לפי קבוצה', 'Shop by team')} />
         <div className="mt-10">
-          <ScrollRow label="קבוצות" itemClassName="w-[44%] sm:w-[30%] md:w-[23%] lg:w-[18%] xl:w-[15.2%]">
+          <ScrollRow label={t('קבוצות', 'Teams')} itemClassName="w-[44%] sm:w-[30%] md:w-[23%] lg:w-[18%] xl:w-[15.2%]">
             {clubs.map(club => (
               <Link
                 key={club.id || club.name}
@@ -55,8 +57,8 @@ export default function PopularClubsSection({ title }) {
                   )}
                 </span>
                 <span className="flex items-center justify-between gap-2 px-1.5 pb-1 pt-3.5">
-                  <span className="min-w-0 truncate text-[15px] font-semibold text-brand-navy">{club.name}</span>
-                  <span aria-hidden="true" className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-brand-orange to-brand-orange-dark text-white transition-transform duration-200 group-hover:-translate-x-0.5">
+                  <span className="min-w-0 truncate text-[15px] font-semibold text-brand-navy">{term(club.name)}</span>
+                  <span aria-hidden="true" className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-brand-orange to-brand-orange-dark text-white transition-transform duration-200 group-hover:-translate-x-0.5 rtl:group-hover:-translate-x-0.5 ltr:group-hover:translate-x-0.5">
                     <ArrowLeft className="h-4 w-4" />
                   </span>
                 </span>

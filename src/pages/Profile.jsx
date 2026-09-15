@@ -8,21 +8,34 @@ import Breadcrumb from '@/components/shop/Breadcrumb';
 import { WHATSAPP_URL, INSTAGRAM_URL } from '@/lib/contact';
 import { formatDate } from '@/lib/dates';
 import { shirtBasePrice } from '@/lib/cart';
+import { BOX_TYPES } from '@/lib/mysteryBox';
+import { t, isEn } from '@/lib/i18n';
+import { shirtName } from '@/lib/english';
 
 // An order moves through these three states; the badge alone did not tell a
 // customer whether anything was still going to happen.
-const STATUS_STEPS = ['נשלחה', 'יצרנו קשר', 'הושלמה'];
+const STATUS_STEPS = [t('נשלחה', 'Sent'), t('יצרנו קשר', 'Contacted'), t('הושלמה', 'Completed')];
 const STATUS_STEP = { new: 0, contacted: 1, closed: 2 };
 const STATUS_STYLE = {
   new: 'bg-brand-orange-soft text-brand-orange-ink',
   contacted: 'bg-amber-100 text-amber-900',
   closed: 'bg-emerald-50 text-emerald-700',
 };
-const STATUS_LABELS = { new: 'חדשה', contacted: 'נוצר קשר', closed: 'הושלמה' };
+const STATUS_LABELS = { new: t('חדשה', 'New'), contacted: t('נוצר קשר', 'Contacted'), closed: t('הושלמה', 'Completed') };
 
 // Short, readable handle for an order - what a customer quotes to us in chat.
 function orderRef(request) {
   return `#${String(request.order_id || request.id).slice(-6).toUpperCase()}`;
+}
+
+// Orders store the Hebrew name. A catalogue shirt gets its English name from
+// the shirt itself; a mystery box ("מיסטרי בוקס — רטרו") from its box type.
+function requestName(request, shirt) {
+  if (shirt) return shirtName(shirt);
+  const name = request.shirt_name || t('חולצה', 'Shirt');
+  if (!isEn || !name.startsWith('מיסטרי בוקס')) return name;
+  const box = BOX_TYPES.find(b => name.endsWith(b.label));
+  return box ? `Mystery Box — ${box.labelEn}` : 'Mystery Box';
 }
 
 export default function Profile() {
@@ -80,9 +93,9 @@ export default function Profile() {
       <div className="shop-container py-16">
         <EmptyState
           icon={Package}
-          title="לא הצלחנו לטעון את החשבון"
-          description="בדקו את החיבור לאינטרנט ונסו שוב."
-          actionLabel="לנסות שוב"
+          title={t('לא הצלחנו לטעון את החשבון', "We couldn't load your account")}
+          description={t('בדקו את החיבור לאינטרנט ונסו שוב.', 'Check your internet connection and try again.')}
+          actionLabel={t('לנסות שוב', 'Try again')}
           onAction={() => window.location.reload()}
         />
       </div>
@@ -104,7 +117,7 @@ export default function Profile() {
 
   return (
     <div className="shop-container py-8 lg:py-12">
-      <Breadcrumb trail={[{ label: 'החשבון שלי' }]} />
+      <Breadcrumb trail={[{ label: t('החשבון שלי', 'My account') }]} />
 
       <div className="shop-card flex flex-wrap items-center justify-between gap-5 p-6 sm:p-8">
         <div className="flex min-w-0 items-center gap-4">
@@ -112,13 +125,13 @@ export default function Profile() {
             {user?.full_name?.[0]?.toUpperCase() || '?'}
           </div>
           <div className="min-w-0">
-            <h1 className="truncate text-2xl font-bold text-brand-navy sm:text-3xl">{user?.full_name || 'החשבון שלי'}</h1>
-            <p dir="ltr" className="truncate text-right text-[15px] text-brand-navy/55">{user?.email}</p>
+            <h1 className="truncate text-2xl font-bold text-brand-navy sm:text-3xl">{user?.full_name || t('החשבון שלי', 'My account')}</h1>
+            <p dir="ltr" className="truncate text-start text-[15px] text-brand-navy/55">{user?.email}</p>
           </div>
         </div>
         <button type="button" onClick={handleLogout} className="shop-btn-secondary">
           <LogOut className="h-4 w-4" aria-hidden="true" />
-          התנתקות
+          {t('התנתקות', 'Log out')}
         </button>
       </div>
 
@@ -126,7 +139,7 @@ export default function Profile() {
         <Link to="/wishlist" className="group rounded-3xl bg-brand-mist p-6 transition hover:bg-brand-mist-dark">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-brand-navy/55">מועדפים</p>
+              <p className="text-sm text-brand-navy/55">{t('מועדפים', 'Wishlist')}</p>
               <p className="mt-1 text-3xl font-bold tabular-nums text-brand-navy">{wishlistCount}</p>
             </div>
             <Heart className="h-6 w-6 text-brand-orange-ink transition-transform group-hover:scale-110" aria-hidden="true" />
@@ -136,14 +149,14 @@ export default function Profile() {
         <a href="#requests" className="group rounded-3xl bg-brand-mist p-6 transition hover:bg-brand-mist-dark">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-brand-navy/55">הזמנות ובקשות</p>
+              <p className="text-sm text-brand-navy/55">{t('הזמנות ובקשות', 'Orders and requests')}</p>
               <p className="mt-1 text-3xl font-bold tabular-nums text-brand-navy">{requests.length}</p>
             </div>
             <MessageCircle className="h-6 w-6 text-brand-navy transition-transform group-hover:scale-110" aria-hidden="true" />
           </div>
           {newRequests > 0 && (
             <span className="mt-3 inline-flex rounded-full bg-brand-orange px-2.5 py-1 text-xs font-semibold text-white">
-              {newRequests} חדשות
+              {t(`${newRequests} חדשות`, `${newRequests} new`)}
             </span>
           )}
         </a>
@@ -151,8 +164,8 @@ export default function Profile() {
         <Link to="/catalog" className="group rounded-3xl bg-brand-navy p-6 text-white transition hover:bg-brand-navy-light">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-white/60">מחפשים עוד?</p>
-              <p className="mt-2 text-lg font-semibold">לכל החולצות</p>
+              <p className="text-sm text-white/60">{t('מחפשים עוד?', 'Looking for more?')}</p>
+              <p className="mt-2 text-lg font-semibold">{t('לכל החולצות', 'All shirts')}</p>
             </div>
             <Package className="h-6 w-6 text-brand-gold transition-transform group-hover:scale-110" aria-hidden="true" />
           </div>
@@ -161,9 +174,9 @@ export default function Profile() {
 
       <section id="requests" className="mt-12 scroll-mt-28" aria-labelledby="requests-heading">
         <div className="mb-6 flex items-center justify-between">
-          <h2 id="requests-heading" className="text-2xl font-bold text-brand-navy sm:text-[1.75rem]">ההזמנות שלי</h2>
+          <h2 id="requests-heading" className="text-2xl font-bold text-brand-navy sm:text-[1.75rem]">{t('ההזמנות שלי', 'My orders')}</h2>
           {requestGroups.length > 0 && (
-            <span className="text-sm text-brand-navy/55">סה״כ {requestGroups.length}</span>
+            <span className="text-sm text-brand-navy/55">{t('סה״כ', 'Total')} {requestGroups.length}</span>
           )}
         </div>
 
@@ -176,7 +189,7 @@ export default function Profile() {
               const channel = first.contact_channel === 'instagram' ? 'instagram' : 'whatsapp';
               const askUrl = channel === 'instagram'
                 ? INSTAGRAM_URL
-                : `${WHATSAPP_URL}?text=${encodeURIComponent(`היי, לגבי הזמנה ${ref}`)}`;
+                : `${WHATSAPP_URL}?text=${encodeURIComponent(t(`היי, לגבי הזמנה ${ref}`, `Hi, about order ${ref}`))}`;
 
               return (
                 <article key={first.order_id || first.id} className="overflow-hidden rounded-3xl border border-brand-line bg-white">
@@ -184,10 +197,10 @@ export default function Profile() {
                       actually needs when they message us about this order. */}
                   <div className="flex items-center justify-between gap-3 px-5 py-4">
                     <div className="min-w-0">
-                      <p dir="ltr" className="text-right text-base font-semibold tabular-nums text-brand-navy">{ref}</p>
+                      <p dir="ltr" className="text-start text-base font-semibold tabular-nums text-brand-navy">{ref}</p>
                       <p className="mt-0.5 text-[13px] text-brand-navy/55">
-                        {formatDate(first.created_date, 'ללא תאריך')}
-                        {group.length > 1 && ` · ${group.length} פריטים`}
+                        {formatDate(first.created_date, t('ללא תאריך', 'No date'))}
+                        {group.length > 1 && ` · ${t(`${group.length} פריטים`, `${group.length} items`)}`}
                       </p>
                     </div>
                     <span className={`flex-shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${STATUS_STYLE[first.status] || 'bg-brand-mist text-brand-navy'}`}>
@@ -228,14 +241,14 @@ export default function Profile() {
                           <div className="min-w-0 flex-1">
                             <Thumb {...thumbProps}
                               className={`line-clamp-2 text-[15px] font-semibold text-brand-navy ${shirt ? 'transition hover:text-brand-orange-ink' : ''}`}>
-                              {r.shirt_name || 'חולצה'}
+                              {requestName(r, shirt)}
                             </Thumb>
                             <div className="mt-1.5 flex flex-wrap gap-1.5">
                               {r.wanted_size && (
                                 <span dir="ltr" className="rounded-full bg-brand-mist px-2.5 py-0.5 text-xs font-semibold text-brand-navy">{r.wanted_size}</span>
                               )}
                               {r.message?.includes('גרסת שחקן') && (
-                                <span className="rounded-full bg-brand-orange-soft px-2.5 py-0.5 text-xs font-semibold text-brand-orange-ink">גרסת שחקן</span>
+                                <span className="rounded-full bg-brand-orange-soft px-2.5 py-0.5 text-xs font-semibold text-brand-orange-ink">{t('גרסת שחקן', 'Player version')}</span>
                               )}
                             </div>
                           </div>
@@ -249,8 +262,8 @@ export default function Profile() {
 
                   {first.message && !first.message.includes('סל קניות') && (
                     <div className="mx-5 mb-4 rounded-2xl bg-brand-mist p-4">
-                      <p className="text-xs text-brand-navy/50">הערה שצירפתם</p>
-                      <p className="mt-1 text-sm text-brand-navy">{first.message}</p>
+                      <p className="text-xs text-brand-navy/50">{t('הערה שצירפתם', 'Your note')}</p>
+                      <p dir="auto" className="mt-1 text-start text-sm text-brand-navy">{first.message}</p>
                     </div>
                   )}
 
@@ -259,11 +272,15 @@ export default function Profile() {
                       named in the message. */}
                   <div className="flex flex-wrap items-center justify-between gap-3 bg-brand-mist/70 px-5 py-3">
                     <p className="text-[13px] text-brand-navy/60">
-                      {first.status === 'closed' ? 'ההזמנה הושלמה.' : `נחזור אליכם ב${channel === 'instagram' ? 'אינסטגרם' : 'וואטסאפ'}.`}
+                      {first.status === 'closed'
+                        ? t('ההזמנה הושלמה.', 'This order is complete.')
+                        : channel === 'instagram'
+                          ? t('נחזור אליכם באינסטגרם.', "We'll get back to you on Instagram.")
+                          : t('נחזור אליכם בוואטסאפ.', "We'll get back to you on WhatsApp.")}
                     </p>
                     <a href={askUrl} target="_blank" rel="noopener noreferrer" className="shop-btn-dark min-h-[2.75rem] px-4 text-sm">
                       <MessageCircle className="h-4 w-4" aria-hidden="true" />
-                      שאלה על ההזמנה
+                      {t('שאלה על ההזמנה', 'Ask about this order')}
                     </a>
                   </div>
                 </article>
@@ -273,11 +290,11 @@ export default function Profile() {
         ) : (
           <EmptyState
             icon={MessageCircle}
-            title="עדיין לא שלחתם הזמנות"
-            description="כשתשלחו הזמנה היא תופיע כאן, עם מספר סימוכין ומעקב אחרי הסטטוס."
-            actionLabel="לכל החולצות"
+            title={t('עדיין לא שלחתם הזמנות', "You haven't sent any orders yet")}
+            description={t('כשתשלחו הזמנה היא תופיע כאן, עם מספר סימוכין ומעקב אחרי הסטטוס.', 'When you send an order it will appear here, with a reference number and its status.')}
+            actionLabel={t('לכל החולצות', 'All shirts')}
             actionTo="/catalog"
-            secondaryLabel="בקשת חולצה שאין באתר"
+            secondaryLabel={t('בקשת חולצה שאין באתר', "Request a shirt we don't have")}
             secondaryTo="/request-shirt"
           />
         )}

@@ -5,6 +5,7 @@ import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { friendlyError } from "@/lib/errorMessages";
+import { t } from "@/lib/i18n";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -20,7 +21,7 @@ export default function Login() {
       await base44.auth.loginViaEmailPassword(email, password);
       window.location.href = "/";
     } catch (err) {
-      setError(friendlyError(err, "אימייל או סיסמה שגויים. בדקו את הפרטים ונסו שוב."));
+      setError(friendlyError(err, t("אימייל או סיסמה שגויים. בדקו את הפרטים ונסו שוב.", "Wrong email or password. Check your details and try again.")));
     } finally {
       setLoading(false);
     }
@@ -33,23 +34,23 @@ export default function Login() {
   return (
     <AuthLayout
       icon={LogIn}
-      title="ברוכים השבים"
-      subtitle="התחברו לחשבון שלכם"
+      title={t("ברוכים השבים", "Welcome back")}
+      subtitle={t("התחברו לחשבון שלכם", "Log in to your account")}
       footer={
         <>
-          אין לכם חשבון?{" "}
-          <Link to="/register" className="shop-link">הרשמה</Link>
+          {t("אין לכם חשבון?", "Don't have an account?")}{" "}
+          <Link to="/register" className="shop-link">{t("הרשמה", "Sign up")}</Link>
         </>
       }
     >
       <button type="button" onClick={handleGoogle} className="shop-btn-secondary w-full">
         <GoogleIcon className="h-5 w-5" />
-        המשך עם Google
+        {t("המשך עם Google", "Continue with Google")}
       </button>
 
       <div className="my-6 flex items-center gap-3" aria-hidden="true">
         <span className="h-px flex-1 bg-brand-line" />
-        <span className="text-sm text-brand-navy/40">או</span>
+        <span className="text-sm text-brand-navy/40">{t("או", "or")}</span>
         <span className="h-px flex-1 bg-brand-line" />
       </div>
 
@@ -59,7 +60,7 @@ export default function Login() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-brand-navy/70">אימייל</label>
+          <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-brand-navy/70">{t("אימייל", "Email")}</label>
           <div className="relative">
             <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-navy/35" aria-hidden="true" />
             <input
@@ -79,8 +80,8 @@ export default function Login() {
         </div>
         <div>
           <div className="mb-1.5 flex items-center justify-between">
-            <label htmlFor="login-password" className="text-sm font-medium text-brand-navy/70">סיסמה</label>
-            <Link to="/forgot-password" className="shop-link text-[13px]">שכחתם סיסמה?</Link>
+            <label htmlFor="login-password" className="text-sm font-medium text-brand-navy/70">{t("סיסמה", "Password")}</label>
+            <Link to="/forgot-password" className="shop-link text-[13px]">{t("שכחתם סיסמה?", "Forgot your password?")}</Link>
           </div>
           <div className="relative">
             <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-navy/35" aria-hidden="true" />
@@ -100,7 +101,7 @@ export default function Login() {
         </div>
         <button type="submit" className="shop-btn w-full" disabled={loading}>
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
-          {loading ? 'מתחבר...' : 'התחברות'}
+          {loading ? t('מתחבר...', 'Logging in...') : t('התחברות', 'Log in')}
         </button>
       </form>
     </AuthLayout>

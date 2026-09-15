@@ -7,6 +7,8 @@
 // main.jsx before the first paint, so a visitor who asked for large text does
 // not see the page small for a moment on every visit.
 
+import { t } from './i18n.js';
+
 export const A11Y_KEY = 'jl_a11y';
 export const A11Y_HIDDEN_KEY = 'jl_a11y_hidden';
 export const OPEN_A11Y_EVENT = 'open_a11y_menu';
@@ -15,13 +17,13 @@ export const OPEN_A11Y_EVENT = 'open_a11y_menu';
 export const TEXT_STEPS = [1, 1.1, 1.2, 1.35];
 
 export const LEVELS = {
-  contrast: ['ניגודיות גבוהה', 'מצב כהה', 'מצב בהיר'],
+  contrast: [t('ניגודיות גבוהה', 'High contrast'), t('מצב כהה', 'Inverted'), t('מצב בהיר', 'Light')],
   text: ['110%', '120%', '135%'],
-  spacing: ['ריווח קל', 'ריווח בינוני', 'ריווח רחב'],
-  lineHeight: ['גובה שורה 1.5', 'גובה שורה 1.8', 'גובה שורה 2'],
-  align: ['יישור לימין', 'יישור למרכז', 'יישור לשמאל', 'יישור מלא'],
-  saturation: ['רוויה נמוכה', 'רוויה גבוהה', 'שחור-לבן'],
-  cursor: ['סמן גדול', 'מדריך קריאה', 'מסכת קריאה'],
+  spacing: [t('ריווח קל', 'Light spacing'), t('ריווח בינוני', 'Medium spacing'), t('ריווח רחב', 'Wide spacing')],
+  lineHeight: [t('גובה שורה 1.5', 'Line height 1.5'), t('גובה שורה 1.8', 'Line height 1.8'), t('גובה שורה 2', 'Line height 2')],
+  align: [t('יישור לימין', 'Align right'), t('יישור למרכז', 'Align center'), t('יישור לשמאל', 'Align left'), t('יישור מלא', 'Justify')],
+  saturation: [t('רוויה נמוכה', 'Low saturation'), t('רוויה גבוהה', 'High saturation'), t('שחור-לבן', 'Black and white')],
+  cursor: [t('סמן גדול', 'Big cursor'), t('מדריך קריאה', 'Reading guide'), t('מסכת קריאה', 'Reading mask')],
 };
 
 export const DEFAULT_PREFS = {

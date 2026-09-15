@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { t, isEn } from '@/lib/i18n';
 
 // The first thing on the home page: one photograph in a rounded banner with a
 // narrow white card over it on the left. Everything is
@@ -15,6 +16,14 @@ export const HERO_DEFAULTS = {
   link: '/catalog',
 };
 
+// The card in English. The admin's texts are Hebrew, so the English site uses
+// these unless English versions were saved (homepage_hero_*_en).
+const HERO_DEFAULTS_EN = {
+  title: 'Season 26/27|is here',
+  subtitle: "Time for something new. Get your new shirt before it's gone.",
+  button: 'Shop the catalog',
+};
+
 function Title({ text }) {
   const lines = text.split('|').map(line => line.trim()).filter(Boolean);
   return lines.map((line, i) => (
@@ -27,6 +36,7 @@ function Title({ text }) {
 const HERO_KEYS = [
   'homepage_hero_image', 'homepage_hero_image_mobile', 'homepage_hero_link', 'homepage_hero_card',
   'homepage_hero_title', 'homepage_hero_subtitle', 'homepage_hero_button_text',
+  'homepage_hero_title_en', 'homepage_hero_subtitle_en', 'homepage_hero_button_text_en',
 ];
 const CACHE_KEY = 'jl_home_hero';
 
@@ -57,12 +67,12 @@ export default function HomeHero({ settings = {}, ready = true }) {
   const mobile = s.homepage_hero_image_mobile || (s.homepage_hero_image ? desktop : HERO_DEFAULTS.mobile);
   const link = s.homepage_hero_link || HERO_DEFAULTS.link;
   const showCard = s.homepage_hero_card !== 'no';
-  const title = s.homepage_hero_title || HERO_DEFAULTS.title;
-  const subtitle = s.homepage_hero_subtitle ?? HERO_DEFAULTS.subtitle;
-  const button = s.homepage_hero_button_text || HERO_DEFAULTS.button;
+  const title = isEn ? (s.homepage_hero_title_en || HERO_DEFAULTS_EN.title) : (s.homepage_hero_title || HERO_DEFAULTS.title);
+  const subtitle = isEn ? (s.homepage_hero_subtitle_en || HERO_DEFAULTS_EN.subtitle) : (s.homepage_hero_subtitle ?? HERO_DEFAULTS.subtitle);
+  const button = isEn ? (s.homepage_hero_button_text_en || HERO_DEFAULTS_EN.button) : (s.homepage_hero_button_text || HERO_DEFAULTS.button);
 
   return (
-    <section className="shop-container pt-3 sm:pt-6" aria-label="באנר ראשי">
+    <section className="shop-container pt-3 sm:pt-6" aria-label={t('באנר ראשי', 'Main banner')}>
       {/* Inside the page margins with rounded corners, a fixed shape rather than
           the height of the screen, so the shirts below start in view. */}
       <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-brand-navy sm:aspect-[16/10] sm:rounded-[2rem] md:aspect-[2/1] lg:aspect-[2.3/1]">

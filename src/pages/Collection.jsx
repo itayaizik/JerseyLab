@@ -11,9 +11,10 @@ import Seo from '@/components/Seo';
 import PageNotFound from '@/lib/PageNotFound';
 import { toast } from '@/components/ui/use-toast';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
-import { COLLECTIONS, findCollection, collectionShirts } from '@/lib/collections';
+import { COLLECTIONS, findCollection, collectionShirts, localizeCollection } from '@/lib/collections';
 import { sortShirts } from '@/lib/sortShirts';
 import { withStock } from '@/lib/catalogFacets';
+import { t, isEn } from '@/lib/i18n';
 
 // A landing page per subject - "חולצות רטרו", "חולצות ברצלונה" - rather than a
 // query string on /catalog. Same grid as the catalogue, but with a title, an
@@ -23,6 +24,8 @@ import { withStock } from '@/lib/catalogFacets';
 export default function Collection() {
   const { slug } = useParams();
   const collection = findCollection(slug);
+  // The copy in the site's language; matching still uses the Hebrew entry.
+  const copy = localizeCollection(collection, isEn);
 
   const [shirts, setShirts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,11 +69,11 @@ export default function Collection() {
       const items = await base44.entities.Wishlist.filter({ user_id: user.id, shirt_id: shirtId });
       if (items[0]) await base44.entities.Wishlist.delete(items[0].id);
       setWishlistIds(p => p.filter(id => id !== shirtId));
-      toast({ title: 'הוסרה מהמועדפים' });
+      toast({ title: t('הוסרה מהמועדפים', 'Removed from your wishlist') });
     } else {
       await base44.entities.Wishlist.create({ user_id: user.id, shirt_id: shirtId });
       setWishlistIds(p => [...p, shirtId]);
-      toast({ title: 'נוספה למועדפים' });
+      toast({ title: t('נוספה למועדפים', 'Added to your wishlist') });
     }
   }, [user, navigate]);
 
@@ -84,15 +87,15 @@ export default function Collection() {
 
   const url = `${SITE_ORIGIN}/collections/${collection.slug}`;
   const others = withStock(
-    COLLECTIONS.filter(c => c.slug !== collection.slug).map(c => ({ ...c, href: `/collections/${c.slug}` })),
+    COLLECTIONS.filter(c => c.slug !== collection.slug).map(c => ({ ...localizeCollection(c, isEn), href: `/collections/${c.slug}` })),
   );
   const featureFirst = sort === 'featured' && sorted.length >= 7;
 
   return (
     <div>
       <Seo
-        title={collection.title}
-        description={collection.description}
+        title={copy.title}
+        description={copy.description}
         canonicalPath={`/collections/${collection.slug}`}
         jsonLd={{
           '@context': 'https://schema.org',
@@ -118,14 +121,14 @@ export default function Collection() {
 
       <CollectionHero
         breadcrumb={(
-          <nav aria-label="נתיב ניווט" className="shop-eyebrow mb-3">
-            <Link to="/" className="transition hover:text-brand-navy">דף הבית</Link>
+          <nav aria-label={t('נתיב ניווט', 'Breadcrumb')} className="shop-eyebrow mb-3">
+            <Link to="/" className="transition hover:text-brand-navy">{t('דף הבית', 'Home')}</Link>
             <span className="mx-2" aria-hidden="true">/</span>
-            <Link to="/catalog" className="transition hover:text-brand-navy">קטלוג</Link>
+            <Link to="/catalog" className="transition hover:text-brand-navy">{t('קטלוג', 'Catalog')}</Link>
           </nav>
         )}
-        title={collection.h1}
-        description={collection.intro}
+        title={copy.h1}
+        description={copy.intro}
         chips={others.slice(0, 6).map(c => ({ label: c.name, href: c.href }))}
         images={sorted.filter(s => s.main_image).slice(0, 3).map(s => s.main_image)}
         loading={loading}
@@ -134,7 +137,7 @@ export default function Collection() {
       <div className="shop-container">
         <div className="mt-6 flex items-center justify-between gap-3 sm:mt-8">
           <h2 className="text-2xl font-bold text-brand-navy sm:text-[1.75rem]" aria-live="polite">
-            {loading ? ' ' : sorted.length === 1 ? 'חולצה אחת' : `${sorted.length} חולצות`}
+            {loading ? ' ' : sorted.length === 1 ? t('חולצה אחת', '1 shirt') : t(`${sorted.length} חולצות`, `${sorted.length} shirts`)}
           </h2>
           {sorted.length > 1 && <SortSelect value={sort} onChange={setSort} />}
         </div>
@@ -162,12 +165,12 @@ export default function Collection() {
         ) : (
           <div className="mt-6 flex flex-col items-start justify-between gap-5 rounded-3xl bg-brand-navy p-7 text-white sm:flex-row sm:items-center sm:p-9">
             <div>
-              <p className="text-xl font-semibold">אין כרגע מלאי בקטגוריה הזו</p>
-              <p className="mt-1.5 max-w-lg text-[15px] leading-relaxed text-white/70">אבל אנחנו יכולים להשיג. שלחו לנו בקשה ונבדוק.</p>
+              <p className="text-xl font-semibold">{t('אין כרגע מלאי בקטגוריה הזו', 'Nothing in stock in this category right now')}</p>
+              <p className="mt-1.5 max-w-lg text-[15px] leading-relaxed text-white/70">{t('אבל אנחנו יכולים להשיג. שלחו לנו בקשה ונבדוק.', "But we can get it. Send us a request and we'll check.")}</p>
             </div>
             <Link to="/request-shirt" className="shop-btn flex-shrink-0">
               <PackageSearch className="h-5 w-5" aria-hidden="true" />
-              בקשת חולצה
+              {t('בקשת חולצה', 'Request a shirt')}
             </Link>
           </div>
         )}
@@ -175,7 +178,7 @@ export default function Collection() {
         {/* Internal links between collections: they give crawlers a path from any
             one landing page to the rest, instead of each sitting isolated. */}
         <nav aria-labelledby="more-collections" className="mt-16 border-t border-brand-line pt-10">
-          <h2 id="more-collections" className="text-xl font-semibold text-brand-navy">קטגוריות נוספות</h2>
+          <h2 id="more-collections" className="text-xl font-semibold text-brand-navy">{t('קטגוריות נוספות', 'More categories')}</h2>
           <ul className="mt-4 flex flex-wrap gap-2.5">
             {others.map(c => (
               <li key={c.slug}>

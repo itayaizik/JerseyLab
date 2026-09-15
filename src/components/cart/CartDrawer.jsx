@@ -12,11 +12,16 @@ import { notifyNewOrder } from '@/lib/adminNotify';
 import { SHOP_PHONE, WHATSAPP_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/contact';
 import { getCart, setCart, cartItemTotal, cartTotal, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { MYSTERY_BOX_ID } from '@/lib/mysteryBox';
+import { t } from '@/lib/i18n';
 
 // The cart, as a drawer from the side of the screen: the bag, then the contact
 // details, then the confirmation. There is no payment on the site, so "checkout"
 // is sending a request; every order becomes one InterestRequest row per item,
 // sharing an order_id.
+//
+// The order that is saved stays in Hebrew whatever language the customer
+// browses in - it is read by the shop, and the admin panel and the supplier
+// text parse its wording. Only what the customer sees here is translated.
 
 // Contact details are remembered between orders so a returning customer isn't
 // retyping them; the account supplies name/email when the customer is logged in.
@@ -27,16 +32,16 @@ function getSavedContact() {
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-const itemCountLabel = (n) => (n === 1 ? 'פריט אחד' : `${n} פריטים`);
+const itemCountLabel = (n) => (n === 1 ? t('פריט אחד', '1 item') : t(`${n} פריטים`, `${n} items`));
 
 // Shown before and after submitting: an order still needs a human on our side,
 // so customers who want it moving quickly are nudged to reach out directly.
 function FastHandlingNote() {
   return (
     <div className="rounded-2xl border border-brand-line p-4">
-      <p className="text-[15px] font-semibold text-brand-navy">רוצים טיפול מהיר יותר?</p>
+      <p className="text-[15px] font-semibold text-brand-navy">{t('רוצים טיפול מהיר יותר?', 'Want it handled faster?')}</p>
       <p className="mt-1 text-[13px] leading-relaxed text-brand-navy/60">
-        שלחו לנו הודעה ישירות, ונסגור את ההזמנה מהר יותר.
+        {t('שלחו לנו הודעה ישירות, ונסגור את ההזמנה מהר יותר.', "Message us directly and we'll finalise your order sooner.")}
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
         <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="shop-chip min-h-[2.5rem]">
@@ -54,8 +59,11 @@ function FastHandlingNote() {
 
 function CartItem({ item, onRemove }) {
   const total = cartItemTotal(item);
-  const delivery = item.deliveryNote
-    || (item.isExactStockItem ? 'מלאי בארץ · עד שבוע או איסוף מקריית אונו' : 'הזמנה מיוחדת · עד 3 שבועות');
+  const name = t(item.shirtName, item.shirtNameEn);
+  const delivery = t(item.deliveryNote, item.deliveryNoteEn)
+    || (item.isExactStockItem
+      ? t('מלאי בארץ · עד שבוע או איסוף מקריית אונו', 'In stock in Israel · up to a week, or pick up in Kiryat Ono')
+      : t('הזמנה מיוחדת · עד 3 שבועות', 'Made to order · up to 3 weeks'));
 
   return (
     <li className="overflow-hidden rounded-3xl border border-brand-line">
@@ -68,20 +76,20 @@ function CartItem({ item, onRemove }) {
             alt="" sizes="96px" className="h-full w-full object-cover" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="line-clamp-2 text-[15px] font-semibold leading-snug text-brand-navy">{item.shirtName}</p>
+          <p className="line-clamp-2 text-[15px] font-semibold leading-snug text-brand-navy">{name}</p>
           <div className="mt-1 space-y-0.5 text-[13px] text-brand-navy/60">
-            {item.size && <p>מידה: <span dir="ltr" className="font-medium text-brand-navy">{item.size}</span></p>}
-            {item.playerVersion && <p>גרסת שחקן (+₪{EXTRA_PRICES.player})</p>}
-            {item.addName && <p>הדפסה: <span dir="ltr" className="font-medium text-brand-navy">{item.customName}</span> (+₪{EXTRA_PRICES.name})</p>}
-            {item.longSleeve && <p>{`${LONG_SLEEVE_LABEL} (+₪${EXTRA_PRICES.longSleeve})`}</p>}
-            {item.shorts && <p>{`${SHORTS_LABEL} במידה ${item.size} (+₪${EXTRA_PRICES.shorts})`}</p>}
-            {item.patches && <p>{`${PATCHES_LABEL} (+₪${EXTRA_PRICES.patches})`}</p>}
+            {item.size && <p>{t('מידה:', 'Size:')} <span dir="ltr" className="font-medium text-brand-navy">{item.size}</span></p>}
+            {item.playerVersion && <p>{t('גרסת שחקן', 'Player version')} (+₪{EXTRA_PRICES.player})</p>}
+            {item.addName && <p>{t('הדפסה:', 'Printing:')} <span dir="ltr" className="font-medium text-brand-navy">{item.customName}</span> (+₪{EXTRA_PRICES.name})</p>}
+            {item.longSleeve && <p>{`${t(LONG_SLEEVE_LABEL, 'Long sleeve')} (+₪${EXTRA_PRICES.longSleeve})`}</p>}
+            {item.shorts && <p>{`${t(`${SHORTS_LABEL} במידה ${item.size}`, `Shorts, size ${item.size}`)} (+₪${EXTRA_PRICES.shorts})`}</p>}
+            {item.patches && <p>{`${t(PATCHES_LABEL, 'Patches')} (+₪${EXTRA_PRICES.patches})`}</p>}
             {/* Items that price themselves (the mystery box) describe their own
                 add-ons rather than the fixed ones above. */}
-            {item.extras?.map(x => <p key={x.label}>{x.label} (+₪{x.price})</p>)}
+            {item.extras?.map(x => <p key={x.label}>{t(x.label, x.labelEn)} (+₪{x.price})</p>)}
             {/* Unpriced preferences, shown so the customer can check them. */}
             {item.details?.map(d => (
-              <p key={d.label}><span className="font-medium text-brand-navy/80">{d.label}:</span> {d.value}</p>
+              <p key={d.label}><span className="font-medium text-brand-navy/80">{t(d.label, d.labelEn)}:</span> {t(d.value, d.valueEn)}</p>
             ))}
           </div>
           <p className={`mt-1.5 text-[13px] font-medium ${item.isExactStockItem ? 'text-emerald-700' : 'text-brand-navy/50'}`}>{delivery}</p>
@@ -90,9 +98,9 @@ function CartItem({ item, onRemove }) {
         </div>
       </div>
       <div className="flex justify-end bg-brand-mist/70 px-4 py-1.5">
-        <button type="button" onClick={onRemove} aria-label={`הסרת ${item.shirtName} מהסל`}
+        <button type="button" onClick={onRemove} aria-label={t(`הסרת ${name} מהסל`, `Remove ${name} from the cart`)}
           className="inline-flex min-h-[2.5rem] items-center gap-1.5 text-sm font-semibold text-brand-orange-ink hover:underline">
-          הסרה
+          {t('הסרה', 'Remove')}
           <Trash2 className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
@@ -175,20 +183,22 @@ export default function CartDrawer({ open, onClose, user }) {
 
   // The cart is emptied on success but contactForm isn't, so the confirmation
   // screen can still name the channel the customer picked.
-  const submittedChannelLabel = contactForm.contact_channel === 'instagram' ? 'אינסטגרם' : 'וואטסאפ';
+  const submittedChannelLabel = contactForm.contact_channel === 'instagram' ? t('אינסטגרם', 'Instagram') : t('וואטסאפ', 'WhatsApp');
+
+  const required = t('שדה חובה', 'Required');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = {};
-    if (!contactForm.full_name.trim()) errs.full_name = 'שדה חובה';
-    if (!contactForm.phone.trim()) errs.phone = 'שדה חובה';
-    if (!contactForm.email.trim()) errs.email = 'שדה חובה';
-    else if (!isValidEmail(contactForm.email.trim())) errs.email = 'נא להזין כתובת אימייל תקינה';
-    if (!contactForm.contact_channel) errs.contact_channel = 'בחרו איך נחזור אליכם';
+    if (!contactForm.full_name.trim()) errs.full_name = required;
+    if (!contactForm.phone.trim()) errs.phone = required;
+    if (!contactForm.email.trim()) errs.email = required;
+    else if (!isValidEmail(contactForm.email.trim())) errs.email = t('נא להזין כתובת אימייל תקינה', 'Please enter a valid email address');
+    if (!contactForm.contact_channel) errs.contact_channel = t('בחרו איך נחזור אליכם', 'Choose how we should get back to you');
     if (contactForm.contact_channel === 'instagram' && !contactForm.instagram_handle.trim()) {
-      errs.instagram_handle = 'שדה חובה';
+      errs.instagram_handle = required;
     }
-    if (!acknowledged) errs.acknowledged = 'צריך לאשר שקראתם איך ההזמנה עובדת';
+    if (!acknowledged) errs.acknowledged = t('צריך לאשר שקראתם איך ההזמנה עובדת', 'Please confirm you have read how ordering works');
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setSubmitting(true);
     setErrors({});
@@ -255,7 +265,7 @@ export default function CartDrawer({ open, onClose, user }) {
       setAcknowledged(false);
       setSubmitted(true);
     } catch (err) {
-      setCartError(friendlyError(err, 'שליחת הבקשה נכשלה. נסו שוב בעוד רגע.'));
+      setCartError(friendlyError(err, t('שליחת הבקשה נכשלה. נסו שוב בעוד רגע.', "We couldn't send your order. Please try again in a moment.")));
     } finally {
       setSubmitting(false);
     }
@@ -268,18 +278,20 @@ export default function CartDrawer({ open, onClose, user }) {
   let footer = null;
 
   if (submitted) {
-    title = 'ההזמנה התקבלה';
+    title = t('ההזמנה התקבלה', 'Order received');
     body = (
       <div className="pb-2 pt-4">
         <div className="text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
             <Check className="h-8 w-8 text-emerald-600" aria-hidden="true" />
           </div>
-          <h3 className="mt-4 text-2xl font-semibold text-brand-navy">תודה, קיבלנו את ההזמנה!</h3>
-          <p className="mt-2 text-[15px] text-brand-navy/65">נחזור אליכם ב{submittedChannelLabel} בהקדם עם כל הפרטים.</p>
+          <h3 className="mt-4 text-2xl font-semibold text-brand-navy">{t('תודה, קיבלנו את ההזמנה!', 'Thank you, we have your order!')}</h3>
+          <p className="mt-2 text-[15px] text-brand-navy/65">
+            {t(`נחזור אליכם ב${submittedChannelLabel} בהקדם עם כל הפרטים.`, `We'll get back to you on ${submittedChannelLabel} soon with all the details.`)}
+          </p>
           <p className="mt-1.5 flex items-center justify-center gap-1.5 text-[13px] text-brand-navy/55">
             <Mail className="h-4 w-4" aria-hidden="true" />
-            אישור נשלח לאימייל שלכם
+            {t('אישור נשלח לאימייל שלכם', 'A confirmation was sent to your email')}
           </p>
         </div>
         {/* Repeated here on purpose: this is the screen a customer is most
@@ -290,25 +302,25 @@ export default function CartDrawer({ open, onClose, user }) {
         </div>
       </div>
     );
-    footer = <button type="button" onClick={onClose} className="shop-btn-dark w-full">סגירה</button>;
+    footer = <button type="button" onClick={onClose} className="shop-btn-dark w-full">{t('סגירה', 'Close')}</button>;
   } else if (count === 0) {
-    title = 'הסל שלך';
+    title = t('הסל שלך', 'Your cart');
     body = (
       <div className="pt-4">
         <EmptyState
           compact
           icon={ShoppingBag}
-          title="הסל ריק"
-          description="הוסיפו חולצות מהקטלוג, או בנו מיסטרי בוקס ונבחר עבורכם."
-          actionLabel="לכל החולצות"
+          title={t('הסל ריק', 'Your cart is empty')}
+          description={t('הוסיפו חולצות מהקטלוג, או בנו מיסטרי בוקס ונבחר עבורכם.', 'Add shirts from the catalog, or build a Mystery Box for a surprise.')}
+          actionLabel={t('לכל החולצות', 'All shirts')}
           actionTo="/catalog"
-          secondaryLabel="מיסטרי בוקס"
+          secondaryLabel={t('מיסטרי בוקס', 'Mystery Box')}
           secondaryTo="/mystery-box"
         />
       </div>
     );
   } else if (view === 'bag') {
-    title = `הסל שלך | ${itemCountLabel(count)}`;
+    title = `${t('הסל שלך', 'Your cart')} | ${itemCountLabel(count)}`;
     body = (
       <ul className="space-y-3 pt-1">
         {cart.map((item, idx) => <CartItem key={idx} item={item} onRemove={() => removeItem(idx)} />)}
@@ -316,41 +328,41 @@ export default function CartDrawer({ open, onClose, user }) {
     );
     footer = (
       <div>
-        <p className="text-[13px] text-brand-navy/55">המשלוח והתשלום מתואמים איתכם אחרי ההזמנה. באתר לא מתבצע תשלום.</p>
+        <p className="text-[13px] text-brand-navy/55">{t('המשלוח והתשלום מתואמים איתכם אחרי ההזמנה. באתר לא מתבצע תשלום.', 'Shipping and payment are arranged with you after you order. Nothing is charged on the site.')}</p>
         <div className="mt-3 flex items-baseline justify-between border-t border-brand-line pt-3">
-          <span className="text-xl font-bold text-brand-navy">סה״כ</span>
+          <span className="text-xl font-bold text-brand-navy">{t('סה״כ', 'Total')}</span>
           <span className="text-xl font-bold tabular-nums text-brand-navy">₪{total}</span>
         </div>
         <div className="mt-4 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4">
-          <button type="button" onClick={onClose} className="shop-link px-2 text-[15px]">המשך בקניות</button>
-          <button type="button" onClick={() => setView('details')} className="shop-btn w-full">להמשך ההזמנה</button>
+          <button type="button" onClick={onClose} className="shop-link px-2 text-[15px]">{t('המשך בקניות', 'Keep shopping')}</button>
+          <button type="button" onClick={() => setView('details')} className="shop-btn w-full">{t('להמשך ההזמנה', 'Continue')}</button>
         </div>
       </div>
     );
   } else {
-    title = 'פרטים לחזרה אליכם';
+    title = t('פרטים לחזרה אליכם', 'Your contact details');
     body = (
       <form id="cart-details-form" onSubmit={handleSubmit} noValidate className="space-y-4 pt-1">
         <button type="button" onClick={() => setView('bag')} className="shop-link text-sm">
           <ChevronRight className="h-4 w-4" aria-hidden="true" />
-          חזרה לסל
+          {t('חזרה לסל', 'Back to cart')}
         </button>
 
-        <Field id="cart-name" label="שם מלא" error={errors.full_name}>
+        <Field id="cart-name" label={t('שם מלא', 'Full name')} error={errors.full_name}>
           <input id="cart-name" value={contactForm.full_name} onChange={e => setField('full_name', e.target.value)} maxLength={100} autoComplete="name"
             aria-invalid={!!errors.full_name} className={inputClass('full_name')} />
         </Field>
-        <Field id="cart-phone" label="טלפון" error={errors.phone}>
+        <Field id="cart-phone" label={t('טלפון', 'Phone')} error={errors.phone}>
           <input id="cart-phone" value={contactForm.phone} onChange={e => setField('phone', e.target.value)} type="tel" dir="ltr" maxLength={20} autoComplete="tel"
-            aria-invalid={!!errors.phone} className={`${inputClass('phone')} text-right`} />
+            aria-invalid={!!errors.phone} className={`${inputClass('phone')} text-start`} />
         </Field>
-        <Field id="cart-email" label="אימייל" error={errors.email} hint="לשם נשלח אישור ההזמנה.">
+        <Field id="cart-email" label={t('אימייל', 'Email')} error={errors.email} hint={t('לשם נשלח אישור ההזמנה.', "We'll send the order confirmation here.")}>
           <input id="cart-email" value={contactForm.email} onChange={e => setField('email', e.target.value)} type="email" dir="ltr" maxLength={254} autoComplete="email"
-            aria-invalid={!!errors.email} className={`${inputClass('email')} text-right`} />
+            aria-invalid={!!errors.email} className={`${inputClass('email')} text-start`} />
         </Field>
 
         <div>
-          <p className="mb-1.5 text-sm font-medium text-brand-navy/70">איך נוח שנחזור אליכם?</p>
+          <p className="mb-1.5 text-sm font-medium text-brand-navy/70">{t('איך נוח שנחזור אליכם?', 'How should we get back to you?')}</p>
           <ContactChannelChoice
             value={contactForm.contact_channel}
             onChange={v => setField('contact_channel', v)}
@@ -359,9 +371,9 @@ export default function CartDrawer({ open, onClose, user }) {
         </div>
 
         {contactForm.contact_channel === 'instagram' && (
-          <Field id="cart-ig" label="שם המשתמש שלכם באינסטגרם" error={errors.instagram_handle}>
+          <Field id="cart-ig" label={t('שם המשתמש שלכם באינסטגרם', 'Your Instagram username')} error={errors.instagram_handle}>
             <input id="cart-ig" value={contactForm.instagram_handle} onChange={e => setField('instagram_handle', e.target.value)} dir="ltr" maxLength={60} placeholder="@username"
-              aria-invalid={!!errors.instagram_handle} className={`${inputClass('instagram_handle')} text-right`} />
+              aria-invalid={!!errors.instagram_handle} className={`${inputClass('instagram_handle')} text-start`} />
           </Field>
         )}
 
@@ -374,7 +386,9 @@ export default function CartDrawer({ open, onClose, user }) {
               onChange={e => { setAcknowledged(e.target.checked); setErrors(p => ({ ...p, acknowledged: undefined })); }}
               className="mt-0.5 h-4 w-4 flex-shrink-0 accent-brand-orange" />
             <span className="text-[13px] leading-relaxed text-brand-navy">
-              קראתי והבנתי: <span className="font-semibold">התשלום לא מתבצע באתר</span>, אלא מולכם ישירות אחרי שתחזרו אליי.
+              {t('קראתי והבנתי:', 'I have read and understood:')}{' '}
+              <span className="font-semibold">{t('התשלום לא מתבצע באתר', 'payment is not made on the site')}</span>
+              {t(', אלא מולכם ישירות אחרי שתחזרו אליי.', ', but directly with you after you get back to me.')}
             </span>
           </label>
           {errors.acknowledged && <p className="mt-1 text-xs text-red-600">{errors.acknowledged}</p>}
@@ -388,12 +402,12 @@ export default function CartDrawer({ open, onClose, user }) {
     footer = (
       <div>
         <div className="flex items-baseline justify-between">
-          <span className="text-lg font-semibold text-brand-navy">סה״כ ({itemCountLabel(count)})</span>
+          <span className="text-lg font-semibold text-brand-navy">{t('סה״כ', 'Total')} ({itemCountLabel(count)})</span>
           <span className="text-lg font-bold tabular-nums text-brand-navy">₪{total}</span>
         </div>
         <button type="submit" form="cart-details-form" disabled={submitting} className="shop-btn mt-3 w-full">
           {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingBag className="h-4 w-4" />}
-          {submitting ? 'שולח...' : 'שליחת ההזמנה'}
+          {submitting ? t('שולח...', 'Sending...') : t('שליחת ההזמנה', 'Send order')}
         </button>
       </div>
     );

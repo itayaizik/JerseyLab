@@ -1,17 +1,18 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import { SORT_OPTIONS } from '@/lib/sortShirts';
+import { t } from '@/lib/i18n';
 
 // A native select dressed as a line of accent text: the phone's own picker on
 // touch, the keyboard behaviour everyone already knows everywhere else.
 export default function SortSelect({ value, onChange }) {
   return (
     <label className="relative inline-flex items-center gap-1.5 text-[15px] text-brand-orange-ink sm:text-base">
-      <span className="hidden sm:inline">מיון:</span>
+      <span className="hidden sm:inline">{t('מיון:', 'Sort:')}</span>
       <select
         value={value}
         onChange={e => onChange(e.target.value)}
-        aria-label="מיון החולצות"
+        aria-label={t('מיון החולצות', 'Sort shirts')}
         className="cursor-pointer appearance-none rounded-xl bg-transparent py-2 pe-8 ps-1 font-semibold text-brand-orange-ink focus:outline-none"
       >
         {SORT_OPTIONS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}

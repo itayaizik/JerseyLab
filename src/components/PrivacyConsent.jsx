@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { t } from '@/lib/i18n';
 
 // Consent checkbox for any form that collects personal details.
 //
@@ -10,6 +11,7 @@ import { Link } from 'react-router-dom';
 // small print saying that submitting implies agreement.
 
 export default function PrivacyConsent({ checked, onChange, error, id = 'privacy-consent' }) {
+  const linkClass = 'font-semibold text-brand-orange-ink hover:underline';
   return (
     <div>
       <label htmlFor={id} className={`flex cursor-pointer items-start gap-3 rounded-2xl p-4 transition ${error ? 'bg-red-50 ring-1 ring-red-300' : 'bg-brand-mist'}`}>
@@ -23,15 +25,15 @@ export default function PrivacyConsent({ checked, onChange, error, id = 'privacy
           className="mt-0.5 h-4 w-4 flex-shrink-0 accent-brand-orange"
         />
         <span className="text-[13px] leading-relaxed text-brand-navy/75">
-          קראתי ואני מאשר/ת את{' '}
-          <Link to="/legal/privacy" target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-orange-ink hover:underline">
-            מדיניות הפרטיות
+          {t('קראתי ואני מאשר/ת את', 'I have read and accept the')}{' '}
+          <Link to="/legal/privacy" target="_blank" rel="noopener noreferrer" className={linkClass}>
+            {t('מדיניות הפרטיות', 'privacy policy')}
           </Link>
-          {' '}ואת{' '}
-          <Link to="/legal/terms" target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-orange-ink hover:underline">
-            תנאי השימוש
+          {' '}{t('ואת', 'and the')}{' '}
+          <Link to="/legal/terms" target="_blank" rel="noopener noreferrer" className={linkClass}>
+            {t('תנאי השימוש', 'terms of use')}
           </Link>
-          , והשימוש בפרטיי ליצירת קשר בנוגע לפנייה זו.
+          {t(', והשימוש בפרטיי ליצירת קשר בנוגע לפנייה זו.', ', and the use of my details to contact me about this enquiry.')}
         </span>
       </label>
       {error && <p id={`${id}-error`} className="mt-1 text-xs text-red-600">{error}</p>}

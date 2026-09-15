@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProductImage from '@/components/ui/ProductImage';
+import { t } from '@/lib/i18n';
 
 // The top of a catalogue or collection page: a white card with the title, a
 // short introduction and links to related categories, beside a panel of shirts
@@ -39,7 +40,7 @@ export default function CollectionHero({ breadcrumb, title, description, chips =
                 {longText && (
                   <button type="button" onClick={() => setExpanded(e => !e)} aria-expanded={expanded}
                     className="mt-2 text-[15px] font-medium text-brand-navy/55 transition hover:text-brand-navy">
-                    {expanded ? 'הצגת פחות' : 'קריאה נוספת'}
+                    {expanded ? t('הצגת פחות', 'Show less') : t('קריאה נוספת', 'Read more')}
                   </button>
                 )}
               </div>
@@ -48,7 +49,7 @@ export default function CollectionHero({ breadcrumb, title, description, chips =
             {children}
 
             {chips.length > 0 && (
-              <nav aria-label="קטגוריות קשורות" className="mt-7">
+              <nav aria-label={t('קטגוריות קשורות', 'Related categories')} className="mt-7">
                 <ul className="flex flex-wrap gap-2.5 sm:gap-3">
                   {chips.map(chip => (
                     <li key={chip.href}>

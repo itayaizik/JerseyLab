@@ -7,6 +7,7 @@ import {
 import {
   loadPrefs, savePrefs, applyPrefs, pageIsDefault, resetPage, LEVELS, A11Y_HIDDEN_KEY, OPEN_A11Y_EVENT,
 } from '@/lib/accessibilityPrefs';
+import { t, isEn } from '@/lib/i18n';
 
 // The accessibility menu: a tab at the edge of every shop page that opens a
 // panel of display adjustments. It is an addition to the site's own
@@ -21,19 +22,19 @@ import {
 // never leaves a visitor without a way back in.
 
 const TILES = [
-  { key: 'contrast', label: 'ניגודיות', icon: Contrast },
-  { key: 'links', label: 'הדגשת קישורים', icon: Link2 },
-  { key: 'text', label: 'טקסט גדול', icon: ALargeSmall },
-  { key: 'spacing', label: 'ריווח טקסט', icon: MoveHorizontal },
-  { key: 'noMotion', label: 'ביטול הנפשות', icon: Pause },
-  { key: 'hideImages', label: 'הסתרת תמונות', icon: ImageOff },
-  { key: 'dyslexia', label: 'תמיכה בדיסלקציה', icon: BookOpenText },
-  { key: 'cursor', label: 'סמן', icon: MousePointer2 },
-  { key: 'tooltips', label: 'תיאורים', icon: MessageSquareText },
-  { key: 'lineHeight', label: 'גובה שורה', icon: UnfoldVertical },
-  { key: 'align', label: 'יישור טקסט', icon: AlignJustify },
-  { key: 'saturation', label: 'רוויה', icon: Droplet },
-  { key: 'headings', label: 'הדגשת כותרות', icon: Heading },
+  { key: 'contrast', label: t('ניגודיות', 'Contrast'), icon: Contrast },
+  { key: 'links', label: t('הדגשת קישורים', 'Highlight links'), icon: Link2 },
+  { key: 'text', label: t('טקסט גדול', 'Bigger text'), icon: ALargeSmall },
+  { key: 'spacing', label: t('ריווח טקסט', 'Text spacing'), icon: MoveHorizontal },
+  { key: 'noMotion', label: t('ביטול הנפשות', 'Stop animations'), icon: Pause },
+  { key: 'hideImages', label: t('הסתרת תמונות', 'Hide images'), icon: ImageOff },
+  { key: 'dyslexia', label: t('תמיכה בדיסלקציה', 'Dyslexia friendly'), icon: BookOpenText },
+  { key: 'cursor', label: t('סמן', 'Cursor'), icon: MousePointer2 },
+  { key: 'tooltips', label: t('תיאורים', 'Tooltips'), icon: MessageSquareText },
+  { key: 'lineHeight', label: t('גובה שורה', 'Line height'), icon: UnfoldVertical },
+  { key: 'align', label: t('יישור טקסט', 'Text align'), icon: AlignJustify },
+  { key: 'saturation', label: t('רוויה', 'Saturation'), icon: Droplet },
+  { key: 'headings', label: t('הדגשת כותרות', 'Highlight headings'), icon: Heading },
 ];
 
 function readHidden() {
@@ -58,7 +59,7 @@ function Tile({ tile, prefs, onPress, big }) {
 
   return (
     <button type="button" onClick={onPress} aria-pressed={active}
-      aria-label={levels ? `${label}: ${active ? levels[value - 1] : 'כבוי'}` : label}
+      aria-label={levels ? `${label}: ${active ? levels[value - 1] : t('כבוי', 'off')}` : label}
       className={`flex flex-col items-center justify-center gap-1.5 rounded-2xl border p-3 text-center font-medium transition ${big ? 'min-h-[6.5rem] text-[15px]' : 'min-h-[5.25rem] text-[13px]'} ${active ? 'border-brand-orange bg-brand-orange-soft text-brand-navy' : 'border-brand-line text-brand-navy/75 hover:border-brand-navy/30'}`}>
       <Icon className={`${big ? 'h-7 w-7' : 'h-5 w-5'} ${active ? 'text-brand-orange-ink' : ''}`} aria-hidden="true" />
       <span className="leading-tight">{caption}</span>
@@ -181,9 +182,12 @@ export default function AccessibilityMenu() {
     setHidden(false);
   };
 
-  // In a right-to-left page 'end' is the left edge and 'start' the right.
-  const edge = onLeft ? 'end-0 rounded-s-2xl' : 'start-0 rounded-e-2xl';
-  const panelEdge = onLeft ? 'end-3' : 'start-3';
+  // The side is a physical one - the visitor chose left or right - so it is
+  // written as left and right rather than start and end, which swap with the
+  // language.
+  const edge = onLeft ? 'left-0 rounded-r-2xl' : 'right-0 rounded-l-2xl';
+  const panelEdge = onLeft ? 'left-3' : 'right-3';
+  const dir = isEn ? 'ltr' : 'rtl';
 
   return (
     <>
@@ -194,8 +198,8 @@ export default function AccessibilityMenu() {
           onClick={() => setOpen(o => !o)}
           aria-expanded={open}
           aria-controls="a11y-panel"
-          aria-label="תפריט נגישות (Ctrl+U)"
-          title="תפריט נגישות (Ctrl+U)"
+          aria-label={t('תפריט נגישות (Ctrl+U)', 'Accessibility menu (Ctrl+U)')}
+          title={t('תפריט נגישות (Ctrl+U)', 'Accessibility menu (Ctrl+U)')}
           className={`fixed top-1/2 z-[90] flex h-12 w-11 -translate-y-1/2 items-center justify-center bg-brand-navy text-white shadow-float transition-[width,background-color] hover:w-12 hover:bg-brand-navy-light focus-visible:w-12 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-orange ${edge}`}
         >
           <Accessibility className="h-6 w-6" aria-hidden="true" />
@@ -219,7 +223,7 @@ export default function AccessibilityMenu() {
 
       {/* Descriptions. */}
       {prefs.tooltips && tip && (
-        <div role="tooltip" dir="rtl"
+        <div role="tooltip" dir={dir}
           className="pointer-events-none fixed z-[96] max-w-[16rem] -translate-x-1/2 rounded-xl bg-brand-navy-dark px-3 py-2 text-sm font-medium text-white shadow-lift"
           style={{ left: Math.min(Math.max(tip.x, 140), window.innerWidth - 140), top: Math.min(tip.y + 18, window.innerHeight - 60) }}>
           {tip.text}
@@ -233,23 +237,23 @@ export default function AccessibilityMenu() {
           role="dialog"
           aria-modal="false"
           aria-labelledby="a11y-title"
-          dir="rtl"
+          dir={dir}
           className={`fixed top-1/2 z-[95] max-h-[90vh] -translate-y-1/2 overflow-y-auto rounded-3xl bg-white p-5 text-brand-navy shadow-lift ring-1 ring-brand-line ${panelEdge} ${big ? 'w-[min(30rem,calc(100vw-1.5rem))]' : 'w-[min(23rem,calc(100vw-1.5rem))]'}`}
         >
           <div className="flex items-center justify-between gap-3">
             <h2 id="a11y-title" className={`flex items-center gap-2 font-semibold ${big ? 'text-xl' : 'text-lg'}`}>
               <Accessibility className="h-5 w-5 text-brand-orange-ink" aria-hidden="true" />
-              תפריט נגישות
+              {t('תפריט נגישות', 'Accessibility menu')}
               <span className="text-xs font-normal text-brand-navy/50" dir="ltr">(Ctrl+U)</span>
             </h2>
-            <button type="button" onClick={() => { setOpen(false); buttonRef.current?.focus(); }} aria-label="סגירת תפריט הנגישות"
+            <button type="button" onClick={() => { setOpen(false); buttonRef.current?.focus(); }} aria-label={t('סגירת תפריט הנגישות', 'Close the accessibility menu')}
               className="flex h-10 w-10 items-center justify-center rounded-xl text-brand-navy/55 transition hover:bg-brand-mist hover:text-brand-navy">
               <X className="h-5 w-5" aria-hidden="true" />
             </button>
           </div>
 
           <label className="mt-4 flex cursor-pointer items-center justify-between gap-3 rounded-2xl bg-brand-mist px-4 py-3">
-            <span className="text-sm font-medium">יישומון גדול</span>
+            <span className="text-sm font-medium">{t('יישומון גדול', 'Large menu')}</span>
             <input type="checkbox" role="switch" checked={big} onChange={e => set('bigWidget', e.target.checked)}
               className="h-5 w-5 accent-brand-orange" />
           </label>
@@ -263,40 +267,41 @@ export default function AccessibilityMenu() {
           <button type="button" onClick={() => setPrefs(p => resetPage(p))} disabled={!changed}
             className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-navy px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-navy-light disabled:opacity-40">
             <RotateCcw className="h-4 w-4" aria-hidden="true" />
-            איפוס כל הגדרות הנגישות
+            {t('איפוס כל הגדרות הנגישות', 'Reset all accessibility settings')}
           </button>
 
           <div className="mt-4 border-t border-brand-line pt-4">
-            <p className="mb-2 text-sm font-medium text-brand-navy/70">מיקום הכפתור</p>
+            <p className="mb-2 text-sm font-medium text-brand-navy/70">{t('מיקום הכפתור', 'Button position')}</p>
             <div className="grid grid-cols-3 gap-2 text-[13px]">
               <button type="button" aria-pressed={onLeft} onClick={() => set('side', 'left')}
                 className={`flex items-center justify-center gap-1.5 rounded-xl border px-2 py-2 font-medium ${onLeft ? 'border-brand-orange bg-brand-orange-soft' : 'border-brand-line text-brand-navy/75'}`}>
-                <PanelLeft className="h-4 w-4" aria-hidden="true" /> שמאל
+                <PanelLeft className="h-4 w-4" aria-hidden="true" /> {t('שמאל', 'Left')}
               </button>
               <button type="button" aria-pressed={!onLeft} onClick={() => set('side', 'right')}
                 className={`flex items-center justify-center gap-1.5 rounded-xl border px-2 py-2 font-medium ${!onLeft ? 'border-brand-orange bg-brand-orange-soft' : 'border-brand-line text-brand-navy/75'}`}>
-                <PanelRight className="h-4 w-4" aria-hidden="true" /> ימין
+                <PanelRight className="h-4 w-4" aria-hidden="true" /> {t('ימין', 'Right')}
               </button>
               {hidden ? (
                 <button type="button" onClick={showTab}
                   className="flex items-center justify-center gap-1.5 rounded-xl border border-brand-orange bg-brand-orange-soft px-2 py-2 font-medium">
-                  <Accessibility className="h-4 w-4" aria-hidden="true" /> הצגה
+                  <Accessibility className="h-4 w-4" aria-hidden="true" /> {t('הצגה', 'Show')}
                 </button>
               ) : (
                 <button type="button" onClick={hideTab}
                   className="flex items-center justify-center gap-1.5 rounded-xl border border-brand-line px-2 py-2 font-medium text-brand-navy/75">
-                  <EyeOff className="h-4 w-4" aria-hidden="true" /> הסתרה
+                  <EyeOff className="h-4 w-4" aria-hidden="true" /> {t('הסתרה', 'Hide')}
                 </button>
               )}
             </div>
             <p className="mt-2 text-xs leading-relaxed text-brand-navy/50">
-              הסתרה מסתירה את הכפתור עד שתסגרו את הדפדפן. אפשר לפתוח את התפריט תמיד ב-Ctrl+U או מהקישור בתחתית העמוד.
+              {t('הסתרה מסתירה את הכפתור עד שתסגרו את הדפדפן. אפשר לפתוח את התפריט תמיד ב-Ctrl+U או מהקישור בתחתית העמוד.',
+                'Hiding removes the button until you close the browser. You can always open the menu with Ctrl+U or from the link at the bottom of the page.')}
             </p>
           </div>
 
           <div className="mt-4 flex items-center justify-between gap-3 border-t border-brand-line pt-4">
-            <Link to="/legal/accessibility" className="shop-link text-sm">הצהרת נגישות</Link>
-            <p className="text-xs text-brand-navy/50">ההגדרות נשמרות בדפדפן הזה.</p>
+            <Link to="/legal/accessibility" className="shop-link text-sm">{t('הצהרת נגישות', 'Accessibility statement')}</Link>
+            <p className="text-xs text-brand-navy/50">{t('ההגדרות נשמרות בדפדפן הזה.', 'Settings are saved in this browser.')}</p>
           </div>
         </div>
       )}

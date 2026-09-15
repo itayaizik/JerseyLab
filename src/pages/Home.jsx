@@ -19,6 +19,8 @@ import { hasLocalStock } from '@/components/ShippingBadge';
 import { toast } from '@/components/ui/use-toast';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
 import { WHATSAPP_URL, INSTAGRAM_URL } from '@/lib/contact';
+import { t, isEn, tSetting } from '@/lib/i18n';
+import { FAQ_EN } from '@/lib/faqEnglish';
 
 // Shown when the matching setting is empty. Everything below is editable from
 // ניהול > הגדרות אתר without touching code.
@@ -26,13 +28,17 @@ const DEFAULT_ABOUT = `אנחנו אתר שמתמחה בחולצות כדורג�
 המטרה שלנו היא לתת מקום פשוט, נוח ואמין למצוא חולצות יפות בלי להסתבך.
 אנחנו נגישים בוואטסאפ ובאינסטגרם ועונים מהר לכל שאלה.`;
 
+const DEFAULT_ABOUT_EN = `We're a shop that specializes in football shirts: clubs, national teams and special editions for fans and collectors.
+Our aim is a simple, easy and reliable place to find great shirts without the hassle.
+You can reach us on WhatsApp and Instagram, and we answer every question fast.`;
+
 const WHY_US = [
-  { title: 'חולצות נבדקות', desc: 'כל חולצה נבדקת לפני שהיא יוצאת אליכם.', icon: ShieldCheck },
-  { title: 'בדיקת זמינות', desc: 'אפשר לבדוק זמינות לפי מידה לפני שמזמינים.', icon: Ruler },
-  { title: 'תמונות ברורות', desc: 'רואים בדיוק איך החולצה נראית.', icon: Camera },
-  { title: 'מענה מהיר', desc: 'עונים בוואטסאפ ובאינסטגרם תוך זמן קצר.', icon: Zap },
-  { title: 'כל העונות', desc: 'מהעונה החדשה ועד הקלאסיקות.', icon: Star },
-  { title: 'חולצות מיוחדות', desc: 'רטרו ודגמים שקשה למצוא.', icon: Sparkles },
+  { title: t('חולצות נבדקות', 'Checked shirts'), desc: t('כל חולצה נבדקת לפני שהיא יוצאת אליכם.', 'Every shirt is checked before it goes out to you.'), icon: ShieldCheck },
+  { title: t('בדיקת זמינות', 'Availability check'), desc: t('אפשר לבדוק זמינות לפי מידה לפני שמזמינים.', 'Check availability by size before you order.'), icon: Ruler },
+  { title: t('תמונות ברורות', 'Clear photos'), desc: t('רואים בדיוק איך החולצה נראית.', 'See exactly what the shirt looks like.'), icon: Camera },
+  { title: t('מענה מהיר', 'Fast replies'), desc: t('עונים בוואטסאפ ובאינסטגרם תוך זמן קצר.', 'We answer on WhatsApp and Instagram in no time.'), icon: Zap },
+  { title: t('כל העונות', 'Every season'), desc: t('מהעונה החדשה ועד הקלאסיקות.', 'From the new season back to the classics.'), icon: Star },
+  { title: t('חולצות מיוחדות', 'Special shirts'), desc: t('רטרו ודגמים שקשה למצוא.', 'Retro and hard-to-find designs.'), icon: Sparkles },
 ];
 
 export default function Home() {
@@ -108,30 +114,42 @@ export default function Home() {
       const items = await base44.entities.Wishlist.filter({ user_id: user.id, shirt_id: shirtId });
       if (items[0]) await base44.entities.Wishlist.delete(items[0].id);
       setWishlistIds((p) => p.filter((id) => id !== shirtId));
-      toast({ title: 'הוסרה מהמועדפים' });
+      toast({ title: t('הוסרה מהמועדפים', 'Removed from your wishlist') });
     } else {
       await base44.entities.Wishlist.create({ user_id: user.id, shirt_id: shirtId });
       setWishlistIds((p) => [...p, shirtId]);
-      toast({ title: 'נוספה למועדפים' });
+      toast({ title: t('נוספה למועדפים', 'Added to your wishlist') });
     }
   }, [user, navigate]);
 
   // The picks under the hero, one tab per list that has anything in it.
   const tabs = [
-    { id: 'new', label: 'חדשים באתר', shirts: newShirts, href: '/catalog?new=true', more: 'לכל החדשים' },
-    { id: 'best', label: 'הנמכרים ביותר', shirts: bestSellers.length ? bestSellers : featuredShirts, href: bestSellers.length ? '/catalog?best=true' : '/catalog', more: 'לכל החולצות' },
-    { id: 'fast', label: 'מלאי בארץ', shirts: fastShippingShirts, href: '/catalog?fast=true', more: 'לכל המלאי בארץ' },
+    { id: 'new', label: t('חדשים באתר', 'New arrivals'), shirts: newShirts, href: '/catalog?new=true', more: t('לכל החדשים', 'All new arrivals') },
+    { id: 'best', label: t('הנמכרים ביותר', 'Best sellers'), shirts: bestSellers.length ? bestSellers : featuredShirts, href: bestSellers.length ? '/catalog?best=true' : '/catalog', more: t('לכל החולצות', 'All shirts') },
+    { id: 'fast', label: t('מלאי בארץ', 'In stock in Israel'), shirts: fastShippingShirts, href: '/catalog?fast=true', more: t('לכל המלאי בארץ', 'All shirts in stock') },
   ].filter(tab => tab.shirts.length > 0);
   if (!tabs.length && catalogShirts.length) {
-    tabs.push({ id: 'all', label: 'החולצות שלנו', shirts: catalogShirts.slice(0, 12), href: '/catalog', more: 'לכל החולצות' });
+    tabs.push({ id: 'all', label: t('החולצות שלנו', 'Our shirts'), shirts: catalogShirts.slice(0, 12), href: '/catalog', more: t('לכל החולצות', 'All shirts') });
   }
   const activeTab = tabs.find(tab => tab.id === pickTab) || tabs[0];
+
+  // The questions are typed into the admin in Hebrew; the English site has its
+  // own translated set (lib/faqEnglish.js).
+  const shownFaqs = isEn ? FAQ_EN.slice(0, 5) : faqs;
+  const aboutText = tSetting(siteSettings, 'about_us_text', DEFAULT_ABOUT, DEFAULT_ABOUT_EN);
+  // A setting's title only in Hebrew: the section's own English title is used.
+  const sectionTitle = (key) => (isEn ? siteSettings[`${key}_en`] : siteSettings[key]);
+  // A promo banner typed in Hebrew only is not shown on the English site.
+  const promoActive = siteSettings.promo_banner_active === 'yes' && (!isEn || !!siteSettings.promo_banner_title_en);
 
   return (
     <div>
       <Seo
-        title="JerseyLab - חולצות כדורגל נדירות לאספנים ואוהדים"
-        description="חולצות כדורגל איכותיות ונדירות לאספנים ואוהדים. מצא חולצות של קבוצות, נבחרות ושחקנים אהובים - חדשות, רטרו ומהדורות מיוחדות במחירים טובים."
+        title={t('JerseyLab - חולצות כדורגל נדירות לאספנים ואוהדים', 'JerseyLab - Football shirts for fans and collectors')}
+        description={t(
+          'חולצות כדורגל איכותיות ונדירות לאספנים ואוהדים. מצא חולצות של קבוצות, נבחרות ושחקנים אהובים - חדשות, רטרו ומהדורות מיוחדות במחירים טובים.',
+          'Football shirts for fans and collectors. Clubs, national teams and favourite players - new, retro and special editions.',
+        )}
         canonicalPath="/"
         jsonLd={{
           "@context": "https://schema.org",
@@ -162,9 +180,9 @@ export default function Home() {
       {loadError ? (
         <div className="shop-container py-16">
           <div className="mx-auto max-w-lg rounded-3xl bg-brand-mist px-6 py-14 text-center">
-            <p className="text-2xl font-semibold text-brand-navy">לא הצלחנו לטעון את הדף</p>
-            <p className="mt-2 text-[15px] text-brand-navy/60">בדקו את החיבור לאינטרנט ונסו שוב.</p>
-            <button type="button" onClick={() => window.location.reload()} className="shop-btn mt-6">לנסות שוב</button>
+            <p className="text-2xl font-semibold text-brand-navy">{t('לא הצלחנו לטעון את הדף', "We couldn't load the page")}</p>
+            <p className="mt-2 text-[15px] text-brand-navy/60">{t('בדקו את החיבור לאינטרנט ונסו שוב.', 'Check your internet connection and try again.')}</p>
+            <button type="button" onClick={() => window.location.reload()} className="shop-btn mt-6">{t('לנסות שוב', 'Try again')}</button>
           </div>
         </div>
       ) : (
@@ -176,9 +194,9 @@ export default function Home() {
           {(loading || tabs.length > 0) && (
             <section className="mt-16 sm:mt-24" aria-labelledby="picks-heading">
               <div className="shop-container">
-                <SectionHeader id="picks-heading" title="החולצות שלנו" />
+                <SectionHeader id="picks-heading" title={t('החולצות שלנו', 'Our shirts')} />
                 {tabs.length > 1 && (
-                  <div role="tablist" aria-label="בחירת רשימה" className="mt-6 flex flex-wrap justify-center gap-2">
+                  <div role="tablist" aria-label={t('בחירת רשימה', 'Choose a list')} className="mt-6 flex flex-wrap justify-center gap-2">
                     {tabs.map(tab => (
                       <button key={tab.id} type="button" role="tab" id={`pick-tab-${tab.id}`} aria-selected={activeTab?.id === tab.id} aria-controls="pick-panel"
                         onClick={() => setPickTab(tab.id)}
@@ -210,31 +228,31 @@ export default function Home() {
             </section>
           )}
 
-          <PopularClubsSection title={siteSettings.popular_clubs_title} />
+          <PopularClubsSection title={sectionTitle('popular_clubs_title')} />
 
           <MysteryBoxPromo />
 
-          <LeaguesSection title={siteSettings.leagues_title} />
+          <LeaguesSection title={sectionTitle('leagues_title')} />
 
-          <CategoryCardsSection title={siteSettings.category_cards_title} />
+          <CategoryCardsSection title={sectionTitle('category_cards_title')} />
 
           <PromoBanner
-            active={siteSettings.promo_banner_active === 'yes'}
-            title={siteSettings.promo_banner_title}
-            subtitle={siteSettings.promo_banner_subtitle}
-            buttonText={siteSettings.promo_banner_button_text}
+            active={promoActive}
+            title={isEn ? siteSettings.promo_banner_title_en : siteSettings.promo_banner_title}
+            subtitle={isEn ? siteSettings.promo_banner_subtitle_en : siteSettings.promo_banner_subtitle}
+            buttonText={isEn ? siteSettings.promo_banner_button_text_en : siteSettings.promo_banner_button_text}
             buttonLink={siteSettings.promo_banner_button_link}
             imageUrl={siteSettings.promo_banner_image}
           />
 
-          <ChatProofsSection title={siteSettings.chat_proofs_title} />
+          <ChatProofsSection title={sectionTitle('chat_proofs_title')} />
 
           {/* ===== WHY US + ABOUT ===== */}
           <section className="shop-container mt-16 sm:mt-24" aria-labelledby="why-heading">
             {/* On a phone the two panels are rows that open, instead of close to
                 two screens of cards to scroll past on the way down the page. */}
             <div className="space-y-2.5 lg:hidden">
-              <Disclosure title="למה לקנות אצלנו">
+              <Disclosure title={t('למה לקנות אצלנו', 'Why shop with us')}>
                 <ul className="space-y-3.5">
                   {WHY_US.map(({ title, desc, icon: Icon }) => (
                     <li key={title} className="flex items-start gap-3">
@@ -249,19 +267,19 @@ export default function Home() {
                   ))}
                 </ul>
               </Disclosure>
-              <Disclosure title="מי אנחנו">
+              <Disclosure title={t('מי אנחנו', 'About us')}>
                 <p className="whitespace-pre-line text-[15px] leading-relaxed text-brand-navy/75">
-                  {siteSettings.about_us_text || DEFAULT_ABOUT}
+                  {aboutText}
                 </p>
                 <Link to="/contact" className="shop-link mt-3">
-                  דברו איתנו
+                  {t('דברו איתנו', 'Talk to us')}
                   <ArrowLeft className="h-4 w-4" aria-hidden="true" />
                 </Link>
               </Disclosure>
             </div>
             <div className="hidden gap-4 lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
               <div className="rounded-[2rem] bg-brand-mist p-6 sm:p-10">
-                <h2 id="why-heading" className="shop-title">למה לקנות אצלנו</h2>
+                <h2 id="why-heading" className="shop-title">{t('למה לקנות אצלנו', 'Why shop with us')}</h2>
                 <ul className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {WHY_US.map(({ title, desc, icon: Icon }) => (
                     <li key={title} className="rounded-3xl bg-white p-5 shadow-card">
@@ -276,13 +294,13 @@ export default function Home() {
               </div>
               <div className="flex flex-col justify-between gap-8 rounded-[2rem] bg-brand-navy p-7 text-white sm:p-10">
                 <div>
-                  <p className="text-sm font-semibold text-brand-gold">מי אנחנו</p>
+                  <p className="text-sm font-semibold text-brand-gold">{t('מי אנחנו', 'About us')}</p>
                   <p className="mt-4 whitespace-pre-line text-[15px] leading-loose text-white/80">
-                    {siteSettings.about_us_text || DEFAULT_ABOUT}
+                    {aboutText}
                   </p>
                 </div>
                 <Link to="/contact" className="inline-flex items-center gap-2 self-start text-[15px] font-semibold text-white underline-offset-4 hover:underline">
-                  דברו איתנו
+                  {t('דברו איתנו', 'Talk to us')}
                   <ArrowLeft className="h-4 w-4" aria-hidden="true" />
                 </Link>
               </div>
@@ -292,17 +310,18 @@ export default function Home() {
           {/* ===== REVIEWS ===== */}
           {reviews.length > 0 && (
             <section className="shop-container mt-16 sm:mt-24" aria-labelledby="reviews-heading">
-              <SectionHeader id="reviews-heading" title="מה אומרים עלינו" />
+              <SectionHeader id="reviews-heading" title={t('מה אומרים עלינו', 'What customers say')} />
               <ul className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {reviews.map(r => (
                   <li key={r.id} className="shop-card p-6">
-                    <div className="flex gap-0.5" aria-label={`${r.rating} מתוך 5`}>
+                    <div className="flex gap-0.5" aria-label={t(`${r.rating} מתוך 5`, `${r.rating} out of 5`)}>
                       {[1, 2, 3, 4, 5].map(s => (
                         <Star key={s} className={`h-4 w-4 ${s <= r.rating ? 'fill-brand-orange text-brand-orange' : 'text-brand-line'}`} aria-hidden="true" />
                       ))}
                     </div>
-                    <p className="mt-3 text-[15px] leading-relaxed text-brand-navy/80">"{r.comment}"</p>
-                    <p className="mt-4 text-sm font-semibold text-brand-navy/60">{r.is_anonymous ? 'אנונימי' : (r.reviewer_name || r.name)}</p>
+                    {/* Written by customers, in Hebrew. */}
+                    <p lang="he" dir="rtl" className="mt-3 text-start text-[15px] leading-relaxed text-brand-navy/80">"{r.comment}"</p>
+                    <p className="mt-4 text-sm font-semibold text-brand-navy/60">{r.is_anonymous ? t('אנונימי', 'Anonymous') : (r.reviewer_name || r.name)}</p>
                   </li>
                 ))}
               </ul>
@@ -310,12 +329,12 @@ export default function Home() {
           )}
 
           {/* ===== FAQ ===== */}
-          {faqs.length > 0 && (
+          {shownFaqs.length > 0 && (
             <section className="shop-container mt-16 sm:mt-24" aria-labelledby="faq-heading">
               <div className="mx-auto max-w-3xl">
-                <SectionHeader id="faq-heading" title="שאלות נפוצות" />
+                <SectionHeader id="faq-heading" title={t('שאלות נפוצות', 'Frequently asked questions')} />
                 <div className="mt-10 space-y-2.5">
-                  {faqs.map(f => (
+                  {shownFaqs.map(f => (
                     <Disclosure key={f.id} title={f.question}>
                       <p className="whitespace-pre-line text-[15px] leading-relaxed text-brand-navy/75">{f.answer}</p>
                     </Disclosure>
@@ -323,7 +342,7 @@ export default function Home() {
                 </div>
                 <div className="mt-6 text-center">
                   <Link to="/faq" className="shop-link">
-                    לכל השאלות והתשובות
+                    {t('לכל השאלות והתשובות', 'All questions and answers')}
                     <ArrowLeft className="h-4 w-4" aria-hidden="true" />
                   </Link>
                 </div>
@@ -331,23 +350,23 @@ export default function Home() {
             </section>
           )}
 
-          <InstagramSection title={siteSettings.instagram_section_title} instagramHandle={siteSettings.instagram_handle || 'Jerseylabil'} />
+          <InstagramSection title={sectionTitle('instagram_section_title')} instagramHandle={siteSettings.instagram_handle || 'Jerseylabil'} />
 
           {/* ===== CONTACT ===== */}
           <section className="shop-container mt-16 sm:mt-24" aria-labelledby="contact-heading">
             <div className="rounded-[2rem] bg-brand-mist px-6 py-12 text-center sm:py-16">
-              <h2 id="contact-heading" className="shop-title">רוצים לדבר איתנו?</h2>
+              <h2 id="contact-heading" className="shop-title">{t('רוצים לדבר איתנו?', 'Want to talk to us?')}</h2>
               <p className="mx-auto mt-3 max-w-md text-base leading-relaxed text-brand-navy/60 sm:text-lg">
-                שאלות על מידות, זמינות או הזמנה מיוחדת. עונים מהר בוואטסאפ ובאינסטגרם.
+                {t('שאלות על מידות, זמינות או הזמנה מיוחדת. עונים מהר בוואטסאפ ובאינסטגרם.', 'Questions about sizes, availability or a special order? We answer fast on WhatsApp and Instagram.')}
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-3">
                 <a href={siteSettings.whatsapp_link || WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="shop-btn px-8">
                   <MessageCircle className="h-5 w-5" aria-hidden="true" />
-                  וואטסאפ
+                  {t('וואטסאפ', 'WhatsApp')}
                 </a>
                 <a href={siteSettings.instagram_link || INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="shop-btn-secondary px-8">
                   <Instagram className="h-5 w-5" aria-hidden="true" />
-                  אינסטגרם
+                  {t('אינסטגרם', 'Instagram')}
                 </a>
               </div>
             </div>

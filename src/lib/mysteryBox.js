@@ -1,25 +1,34 @@
 // Mystery box pricing, in one place. The home page shows the price list and
 // the configurator charges it; if these were two lists the site would sooner
 // or later advertise one price and bill another.
+//
+// `label` is Hebrew on purpose: it is what goes into the order the owner reads.
+// The English site shows `labelEn` and `blurbEn`.
 
 export const BOX_TYPES = [
   {
     id: 'regular',
     label: 'רגיל',
+    labelEn: 'Regular',
     price: 70,
     blurb: 'חולצת מועדון מהעונות האחרונות - ליגות אירופה או ישראל.',
+    blurbEn: 'A club shirt from recent seasons - European or Israeli leagues.',
   },
   {
     id: 'retro',
     label: 'רטרו',
+    labelEn: 'Retro',
     price: 80,
     blurb: 'חולצה קלאסית מהארכיון. עונות ישנות ודגמים שכבר לא מייצרים.',
+    blurbEn: 'A classic from the archive. Old seasons and designs no longer made.',
   },
   {
     id: 'mundial',
     label: 'מונדיאל',
+    labelEn: 'World Cup',
     price: 70,
     blurb: 'חולצת נבחרת - מונדיאל או יורו, בית או חוץ.',
+    blurbEn: 'A national team shirt - World Cup or Euro, home or away.',
   },
 ];
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Instagram, ExternalLink } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import SectionHeader from '@/components/shop/SectionHeader';
+import { t } from '@/lib/i18n';
 
 // Posts from the shop's Instagram, managed from ניהול > אינסטגרם. Hidden when
 // there are none.
@@ -23,7 +24,7 @@ export default function InstagramSection({ title, instagramHandle = 'Jerseylabil
     <section className="shop-container mt-16 sm:mt-24" aria-labelledby="instagram-heading">
       <SectionHeader
         id="instagram-heading"
-        title={title || 'עקבו אחרינו באינסטגרם'}
+        title={title || t('עקבו אחרינו באינסטגרם', 'Follow us on Instagram')}
         subtitle={<a href={profileUrl} target="_blank" rel="noopener noreferrer" className="shop-link" dir="ltr">@{instagramHandle}</a>}
       />
 
@@ -35,7 +36,7 @@ export default function InstagramSection({ title, instagramHandle = 'Jerseylabil
           : posts.map(post => (
             <li key={post.id}>
               <a href={post.post_url} target="_blank" rel="noopener noreferrer"
-                aria-label={post.caption ? `פוסט באינסטגרם: ${post.caption}` : 'פוסט באינסטגרם'}
+                aria-label={post.caption ? t(`פוסט באינסטגרם: ${post.caption}`, `Instagram post: ${post.caption}`) : t('פוסט באינסטגרם', 'Instagram post')}
                 className="group relative block aspect-square overflow-hidden rounded-3xl bg-brand-mist">
                 <img src={post.image_url} alt="" loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -51,7 +52,7 @@ export default function InstagramSection({ title, instagramHandle = 'Jerseylabil
       <div className="mt-8 text-center">
         <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="shop-btn-secondary rounded-full px-8">
           <Instagram className="h-5 w-5" aria-hidden="true" />
-          לעמוד שלנו באינסטגרם
+          {t('לעמוד שלנו באינסטגרם', 'See us on Instagram')}
         </a>
       </div>
     </section>

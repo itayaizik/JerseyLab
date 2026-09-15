@@ -6,18 +6,20 @@ import { hasLocalStock } from '@/components/ShippingBadge';
 import ProductImage, { IMAGE_SIZES } from '@/components/ui/ProductImage';
 import { shirtSizes, isSizeAvailable } from '@/lib/sizes';
 import { shirtBasePrice } from '@/lib/cart';
+import { t } from '@/lib/i18n';
+import { shirtName } from '@/lib/english';
 
 // One badge at most, the one that matters most. A card carrying "חדש", "רטרו"
 // and a shipping label at once says nothing louder than any of them alone,
 // and nearly every shirt is new, so that one is not a badge at all.
 function cardBadge(shirt) {
-  if (shirt.status === 'sold') return { label: 'נמכר', className: 'bg-brand-navy text-white' };
-  if (shirt.status === 'reserved') return { label: 'שמור', className: 'bg-amber-100 text-amber-900' };
-  if (shirt.sale_price && shirt.sale_price < shirt.price) return { label: 'סייל', className: 'bg-red-600 text-white' };
-  if (hasLocalStock(shirt)) return { label: 'במלאי בארץ', className: 'bg-brand-gold text-brand-navy' };
-  if (shirt.limited_stock) return { label: 'מלאי מוגבל', className: 'bg-white text-red-700' };
-  if (shirt.is_retro) return { label: 'רטרו', className: 'bg-white text-brand-navy' };
-  if (shirt.is_rare) return { label: 'נדיר', className: 'bg-white text-brand-navy' };
+  if (shirt.status === 'sold') return { label: t('נמכר', 'Sold'), className: 'bg-brand-navy text-white' };
+  if (shirt.status === 'reserved') return { label: t('שמור', 'Reserved'), className: 'bg-amber-100 text-amber-900' };
+  if (shirt.sale_price && shirt.sale_price < shirt.price) return { label: t('סייל', 'Sale'), className: 'bg-red-600 text-white' };
+  if (hasLocalStock(shirt)) return { label: t('במלאי בארץ', 'In stock in Israel'), className: 'bg-brand-gold text-brand-navy' };
+  if (shirt.limited_stock) return { label: t('מלאי מוגבל', 'Limited stock'), className: 'bg-white text-red-700' };
+  if (shirt.is_retro) return { label: t('רטרו', 'Retro'), className: 'bg-white text-brand-navy' };
+  if (shirt.is_rare) return { label: t('נדיר', 'Rare'), className: 'bg-white text-brand-navy' };
   return null;
 }
 
@@ -40,6 +42,7 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false,
   const onSale = shirt.sale_price && shirt.sale_price < shirt.price;
   const local = hasLocalStock(shirt);
   const range = sizeRange(shirt);
+  const name = shirtName(shirt);
 
   return (
     <article className={`group relative flex h-full flex-col rounded-3xl bg-white shadow-card transition-shadow duration-300 hover:shadow-lift ${featured ? 'p-3 sm:p-4' : 'p-2.5 sm:p-3'}`}>
@@ -62,7 +65,9 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false,
           <button
             type="button"
             onClick={() => onToggleWishlist(shirt.id)}
-            aria-label={isWishlisted ? `הסרת ${shirt.name} מהמועדפים` : `הוספת ${shirt.name} למועדפים`}
+            aria-label={isWishlisted
+              ? t(`הסרת ${name} מהמועדפים`, `Remove ${name} from your wishlist`)
+              : t(`הוספת ${name} למועדפים`, `Add ${name} to your wishlist`)}
             aria-pressed={!!isWishlisted}
             className="absolute end-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-brand-navy shadow-sm backdrop-blur transition hover:scale-105"
           >
@@ -74,7 +79,7 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false,
           <button
             type="button"
             onClick={() => setQuickAddOpen(true)}
-            aria-label={`הוספה מהירה לסל: ${shirt.name}`}
+            aria-label={t(`הוספה מהירה לסל: ${name}`, `Quick add to cart: ${name}`)}
             className="absolute bottom-3 end-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-brand-navy shadow-card transition hover:bg-brand-orange hover:text-white focus-visible:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
           >
             <Plus className="h-5 w-5" />
@@ -88,7 +93,7 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false,
             to={`/shirt/${shirt.id}`}
             className="before:absolute before:inset-0 before:rounded-3xl before:content-[''] focus-visible:!outline-none focus-visible:before:ring-2 focus-visible:before:ring-brand-orange"
           >
-            {shirt.name}
+            {name}
           </Link>
         </h3>
 
@@ -99,7 +104,9 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false,
             {onSale && <span className="text-sm tabular-nums text-brand-navy/40 line-through">₪{shirt.price}</span>}
           </p>
           <p className={`mt-1 truncate text-[13px] ${local ? 'font-medium text-emerald-700' : 'text-brand-navy/50'}`}>
-            {local ? 'במלאי בארץ · מגיעה עד שבוע' : range ? <>מידות <span dir="ltr">{range}</span></> : ' '}
+            {local
+              ? t('במלאי בארץ · מגיעה עד שבוע', 'In stock in Israel · arrives within a week')
+              : range ? <>{t('מידות', 'Sizes')} <span dir="ltr">{range}</span></> : ' '}
           </p>
         </div>
       </div>

@@ -1,10 +1,11 @@
 import React from 'react';
+import { t } from '@/lib/i18n';
 
 const statusConfig = {
-  available: { label: 'זמין', className: 'bg-emerald-50 text-emerald-700' },
-  reserved: { label: 'שמור', className: 'bg-amber-100 text-amber-900' },
-  sold: { label: 'נמכר', className: 'bg-brand-navy text-white' },
-  hidden: { label: 'מוסתר', className: 'bg-brand-navy/50 text-white' },
+  available: { label: t('זמין', 'Available'), className: 'bg-emerald-50 text-emerald-700' },
+  reserved: { label: t('שמור', 'Reserved'), className: 'bg-amber-100 text-amber-900' },
+  sold: { label: t('נמכר', 'Sold'), className: 'bg-brand-navy text-white' },
+  hidden: { label: t('מוסתר', 'Hidden'), className: 'bg-brand-navy/50 text-white' },
 };
 
 export default function StatusBadge({ status, className = '' }) {

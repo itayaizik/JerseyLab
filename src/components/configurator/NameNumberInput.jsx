@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '@/lib/i18n';
 
 export const NAME_MAX = 20;
 export const NUMBER_MAX = 3;
@@ -15,21 +16,21 @@ export default function NameNumberInput({ customName, customNumber, onChange, in
   return (
     <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,9rem)] gap-2.5">
       <label className={fieldClass}>
-        <span className="flex-shrink-0 text-[15px] text-brand-navy/55">שם</span>
+        <span className="flex-shrink-0 text-[15px] text-brand-navy/55">{t('שם', 'Name')}</span>
         <input
           value={customName}
           onChange={e => onChange('customName', e.target.value.slice(0, NAME_MAX).replace(/[^a-zA-Z0-9 -]/g, ''))}
-          placeholder="MESSI" dir="ltr" maxLength={NAME_MAX} autoComplete="off" aria-label="שם להדפסה"
+          placeholder="MESSI" dir="ltr" maxLength={NAME_MAX} autoComplete="off" aria-label={t('שם להדפסה', 'Name to print')}
           className={inputClass}
         />
         <span dir="ltr" className="flex-shrink-0 text-xs tabular-nums text-brand-navy/40">{customName.length}/{NAME_MAX}</span>
       </label>
       <label className={fieldClass}>
-        <span className="flex-shrink-0 text-[15px] text-brand-navy/55">מספר</span>
+        <span className="flex-shrink-0 text-[15px] text-brand-navy/55">{t('מספר', 'Number')}</span>
         <input
           value={customNumber}
           onChange={e => onChange('customNumber', e.target.value.slice(0, NUMBER_MAX).replace(/[^0-9]/g, ''))}
-          placeholder="10" type="text" inputMode="numeric" dir="ltr" maxLength={NUMBER_MAX} autoComplete="off" aria-label="מספר להדפסה"
+          placeholder="10" type="text" inputMode="numeric" dir="ltr" maxLength={NUMBER_MAX} autoComplete="off" aria-label={t('מספר להדפסה', 'Number to print')}
           className={inputClass}
         />
       </label>

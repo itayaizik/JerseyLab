@@ -1,10 +1,11 @@
 import React from 'react';
 import { ShieldCheck, BadgeCheck, MessageCircle } from 'lucide-react';
+import { t } from '@/lib/i18n';
 
 const items = [
-  { icon: ShieldCheck, label: 'נבדקת לפני שליחה' },
-  { icon: BadgeCheck, label: 'איכות 1:1' },
-  { icon: MessageCircle, label: 'מענה מהיר בוואטסאפ' },
+  { icon: ShieldCheck, label: t('נבדקת לפני שליחה', 'Checked before shipping') },
+  { icon: BadgeCheck, label: t('איכות 1:1', '1:1 quality') },
+  { icon: MessageCircle, label: t('מענה מהיר בוואטסאפ', 'Fast replies on WhatsApp') },
 ];
 
 export default function TrustBar({ className = '' }) {

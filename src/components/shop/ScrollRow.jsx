@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { t, isEn } from '@/lib/i18n';
 
 // A row of cards that scrolls sideways: swiped on a phone, stepped with round
 // arrow buttons on a desktop. Used for product rows, clubs and the customer
 // chat screenshots.
 //
-// The page is right-to-left, where the browser counts scrollLeft from zero at
-// the start down into negative numbers towards the end, so positions are read
-// as distances and "next" scrolls towards the left.
+// In Hebrew the page is right-to-left, where the browser counts scrollLeft from
+// zero at the start down into negative numbers towards the end, so positions
+// are read as distances and "next" scrolls towards the left. In English
+// "next" scrolls right.
 
 function ArrowButton({ direction, onClick }) {
   const next = direction === 'next';
@@ -15,9 +17,10 @@ function ArrowButton({ direction, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      aria-label={next ? 'הבא' : 'הקודם'}
-      className={`absolute top-[40%] z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-brand-navy shadow-lift transition hover:scale-105 lg:flex ${next ? '-left-6' : '-right-6'}`}
+      aria-label={next ? t('הבא', 'Next') : t('הקודם', 'Previous')}
+      className={`absolute top-[40%] z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-brand-navy shadow-lift transition hover:scale-105 lg:flex ${next ? '-end-6' : '-start-6'}`}
     >
+      {/* Drawn for right-to-left; index.css turns the chevrons round in English. */}
       {next ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
     </button>
   );
@@ -52,7 +55,8 @@ export default function ScrollRow({ label, itemClassName = '', children }) {
     const el = scroller.current;
     if (!el) return;
     const distance = el.clientWidth * 0.85;
-    el.scrollBy({ left: direction === 'next' ? -distance : distance, behavior: 'smooth' });
+    const forward = isEn ? distance : -distance;
+    el.scrollBy({ left: direction === 'next' ? forward : -forward, behavior: 'smooth' });
   };
 
   return (

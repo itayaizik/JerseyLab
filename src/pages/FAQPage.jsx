@@ -8,12 +8,16 @@ import HowItWorksNotice from '@/components/HowItWorksNotice';
 import CollectionHero from '@/components/catalog/CollectionHero';
 import Breadcrumb from '@/components/shop/Breadcrumb';
 import Disclosure from '@/components/shop/Disclosure';
+import { t, isEn } from '@/lib/i18n';
+import { FAQ_EN } from '@/lib/faqEnglish';
 
 export default function FAQPage() {
   const [faqs, setFaqs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!isEn);
 
   useEffect(() => {
+    // The admin's questions are Hebrew; the English site has its own set.
+    if (isEn) return;
     (async () => {
       try {
         setFaqs(await base44.entities.FAQ.filter({ active: true }, 'sort_order', 50));
@@ -23,6 +27,8 @@ export default function FAQPage() {
       }
     })();
   }, []);
+
+  const shownFaqs = isEn ? FAQ_EN : faqs;
 
   // Mirrors the HowItWorksNotice block so the no-payment-on-site answer is the
   // one search engines surface too; it is always present, unlike the DB rows.
@@ -50,12 +56,17 @@ export default function FAQPage() {
 
   return (
     <div>
-      <Seo title="שאלות ותשובות - JerseyLab" description="שאלות ותשובות נפוצות על רכישת חולצות כדורגל ב-JerseyLab: משלוחים, מידות, זמינות ופרטי הזמנה." canonicalPath="/faq" jsonLd={faqJsonLd} />
+      <Seo
+        title={t('שאלות ותשובות - JerseyLab', 'FAQ - JerseyLab')}
+        description={t('שאלות ותשובות נפוצות על רכישת חולצות כדורגל ב-JerseyLab: משלוחים, מידות, זמינות ופרטי הזמנה.', 'Common questions about buying football shirts at JerseyLab: shipping, sizes, availability and ordering.')}
+        canonicalPath="/faq"
+        jsonLd={faqJsonLd}
+      />
 
       <CollectionHero
-        breadcrumb={<Breadcrumb trail={[{ label: 'שאלות ותשובות' }]} />}
-        title="שאלות ותשובות"
-        description="כל מה שצריך לדעת לפני שמזמינים: משלוחים, מידות, זמינות ואיך ההזמנה עובדת."
+        breadcrumb={<Breadcrumb trail={[{ label: t('שאלות ותשובות', 'FAQ') }]} />}
+        title={t('שאלות ותשובות', 'Questions and answers')}
+        description={t('כל מה שצריך לדעת לפני שמזמינים: משלוחים, מידות, זמינות ואיך ההזמנה עובדת.', 'Everything to know before you order: shipping, sizes, availability and how ordering works.')}
       />
 
       <div className="shop-container">
@@ -68,16 +79,16 @@ export default function FAQPage() {
             <div className="space-y-2.5" aria-busy="true">
               {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-[3.75rem] rounded-2xl skeleton" />)}
             </div>
-          ) : faqs.length === 0 ? (
+          ) : shownFaqs.length === 0 ? (
             <EmptyState
               compact
               icon={HelpCircle}
-              title="אין שאלות ותשובות כרגע"
-              description="יש לכם שאלה? כתבו לנו ונשמח לעזור."
+              title={t('אין שאלות ותשובות כרגע', 'No questions and answers yet')}
+              description={t('יש לכם שאלה? כתבו לנו ונשמח לעזור.', "Have a question? Write to us and we'll gladly help.")}
             />
           ) : (
             <div className="space-y-2.5">
-              {faqs.map(f => (
+              {shownFaqs.map(f => (
                 <Disclosure key={f.id} title={f.question}>
                   <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-brand-navy/75">{f.answer}</p>
                 </Disclosure>
@@ -87,10 +98,10 @@ export default function FAQPage() {
 
           <div className="flex flex-col items-start justify-between gap-5 rounded-3xl bg-brand-navy p-7 text-white sm:flex-row sm:items-center sm:p-9">
             <div>
-              <p className="text-xl font-semibold">לא מצאתם תשובה?</p>
-              <p className="mt-1.5 text-[15px] leading-relaxed text-white/70">כתבו לנו ונחזור אליכם מהר.</p>
+              <p className="text-xl font-semibold">{t('לא מצאתם תשובה?', "Didn't find an answer?")}</p>
+              <p className="mt-1.5 text-[15px] leading-relaxed text-white/70">{t('כתבו לנו ונחזור אליכם מהר.', "Write to us and we'll get back to you fast.")}</p>
             </div>
-            <Link to="/contact" className="shop-btn flex-shrink-0">צרו קשר</Link>
+            <Link to="/contact" className="shop-btn flex-shrink-0">{t('צרו קשר', 'Contact us')}</Link>
           </div>
         </div>
       </div>

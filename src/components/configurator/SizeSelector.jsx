@@ -1,5 +1,6 @@
 import React from 'react';
 import { shirtSizes, sizeQty, isSizeAvailable } from '@/lib/sizes';
+import { t } from '@/lib/i18n';
 
 const FALLBACK_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 
@@ -17,7 +18,7 @@ export default function SizeSelector({ shirt, value, onChange, showNote = true, 
 
   return (
     <div>
-      <div role="group" aria-label="מידה" className="flex flex-wrap gap-2">
+      <div role="group" aria-label={t('מידה', 'Size')} className="flex flex-wrap gap-2">
         {allSizes.map(size => {
           const available = isSizeAvailable(shirt, size);
           const local = isLocal(size);
@@ -28,7 +29,7 @@ export default function SizeSelector({ shirt, value, onChange, showNote = true, 
               type="button"
               disabled={!available}
               aria-pressed={isSelected}
-              aria-label={!available ? `${size} - אזל` : local ? `${size} - במלאי בארץ` : size}
+              aria-label={!available ? `${size} - ${t('אזל', 'sold out')}` : local ? `${size} - ${t('במלאי בארץ', 'in stock in Israel')}` : size}
               onClick={() => onChange(size)}
               className={`shop-chip relative min-w-[3.5rem] px-4 font-semibold tabular-nums ${
                 !available
@@ -51,15 +52,15 @@ export default function SizeSelector({ shirt, value, onChange, showNote = true, 
         sizeQty(shirt?.local_stock_sizes, value) > 0 ? (
           <p className="mt-3 flex items-center gap-2 text-[13px] font-medium text-emerald-700">
             <span className="h-2 w-2 flex-shrink-0 rounded-full bg-emerald-500" aria-hidden="true" />
-            במלאי בארץ · מגיעה עד שבוע או באיסוף מקריית אונו
+            {t('במלאי בארץ · מגיעה עד שבוע או באיסוף מקריית אונו', 'In stock in Israel · arrives within a week, or pick it up in Kiryat Ono')}
           </p>
         ) : (
-          <p className="mt-3 text-[13px] text-brand-navy/55">הזמנה מיוחדת · מגיעה עד 3 שבועות</p>
+          <p className="mt-3 text-[13px] text-brand-navy/55">{t('הזמנה מיוחדת · מגיעה עד 3 שבועות', 'Made to order · arrives within 3 weeks')}</p>
         )
       ) : anyLocal && (
         <p className="mt-3 flex items-center gap-2 text-[13px] text-brand-navy/55">
           <span className="h-2 w-2 flex-shrink-0 rounded-full bg-emerald-500" aria-hidden="true" />
-          מידה עם נקודה ירוקה נמצאת במלאי בארץ
+          {t('מידה עם נקודה ירוקה נמצאת במלאי בארץ', 'Sizes with a green dot are in stock in Israel')}
         </p>
       ))}
     </div>

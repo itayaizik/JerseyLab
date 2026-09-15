@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { t } from "@/lib/i18n";
 
 // The frame around the sign-in, registration and password pages: the logo, a
 // title, and one white card on a soft grey ground.
@@ -8,8 +9,10 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-brand-mist to-white px-4 py-10">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <Link to="/" aria-label="JerseyLab - דף הבית" className="inline-block rounded-lg">
-            <img src="/logo-navbar-dark.png" alt="JerseyLab" width="391" height="128" className="mx-auto h-12 w-auto" />
+          <Link to="/" aria-label={t("JerseyLab - דף הבית", "JerseyLab - Home")} className="inline-block rounded-lg">
+            {/* The navy logo on a light page, the white one in dark mode. */}
+            <img src="/logo-navbar-dark.png" alt="JerseyLab" width="391" height="128" className="mx-auto h-12 w-auto dark:hidden" />
+            <img src="/logo-navbar.png" alt="JerseyLab" width="391" height="128" className="mx-auto hidden h-12 w-auto dark:block" />
           </Link>
           {Icon && (
             <span className="mx-auto mt-6 flex h-14 w-14 items-center justify-center rounded-full bg-brand-orange-soft text-brand-orange-ink">
