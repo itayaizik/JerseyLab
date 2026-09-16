@@ -25,11 +25,11 @@ export const MYSTERY_BOX_PANELS = [
     title: t('מה מקבלים', 'What you get'),
     items: [
       t('חולצה אחת, במידה שבחרת, מהסגנון שבחרת.', 'One shirt, in the size and style you chose.'),
-      t('מזמינים עם חברים? בוחרים כמה בוקסים בכל מידה ומוסיפים את כולם בלחיצה אחת.', 'Ordering with friends? Choose how many boxes you want in each size and add them all at once.'),
+      t('מזמינים עם חברים? לכל בוקס סגנון, מידה, תוספות ושם משלו, וכולם נכנסים לסל בלחיצה אחת.', 'Ordering with friends? Every box gets its own style, size, extras and name, and they all go into the cart in one tap.'),
       t('הקבוצה, העונה והדגם יוצאים אקראית - זה מה שהופך את זה למיסטרי.', 'The team, season and design come out at random - that is what makes it a mystery.'),
       t('אפשר להוסיף שרוול ארוך או מכנס קצר תואם, כמו בכל חולצה.', 'You can add long sleeves or matching shorts, as with any shirt.'),
       t('הוספת שם ומספר? גם הם הפתעה - נדפיס את השחקן שמתאים לחולצה שתצא.', 'Added a name and number? Those are a surprise too - we print a player who fits the shirt that comes out.'),
-      t('נעדכן אותך בדיוק איזו חולצה יצאה לפני שהיא נשלחת.', "We'll tell you exactly which shirt came out before it ships."),
+      t('מה יצא? את זה מגלים רק כשפותחים את הבוקס.', "What's inside? You only find out when you open the box."),
     ],
   },
   {
@@ -51,10 +51,10 @@ export const MYSTERY_BOX_PANELS = [
   {
     id: 'dislike',
     icon: ShieldCheck,
-    title: t('אם לא אהבת', "If you don't like it"),
+    title: t('הפתעה עד הפתיחה', 'A surprise until you open it'),
     paragraphs: [
-      t('לפני שהחולצה נשלחת אנחנו מראים לך מה יצא. אם זה לא מתאים - כתוב לנו ונחליף לסגנון אחר, בלי ויכוח. אחרי שהחולצה כבר בדרך אליך אי אפשר להחליף, כי היא כבר הוקצתה עבורך.',
-        "Before the shirt ships we show you what came out. If it doesn't suit you, write to us and we'll swap it for another style, no argument. Once the shirt is on its way it can't be swapped, because it has already been set aside for you."),
+      t('אנחנו לא מגלים מראש איזו חולצה יצאה - לא לפני המשלוח ולא בדרך. לכן כדאי לבחור מידה בזהירות ולסמן מראש קבוצות וצבעים שלא מתאימים.',
+        "We don't reveal which shirt came out - not before it ships and not on the way. So choose the size carefully, and rule out teams and colours that don't suit you in advance."),
     ],
   },
   {
@@ -81,7 +81,7 @@ export const MYSTERY_BOX_PANELS = [
 export const MYSTERY_BOX_HIGHLIGHTS = [
   t('אתה בוחר סגנון ומידה - החולצה יוצאת אקראית', 'You choose the style and size - the shirt comes out at random'),
   t('אפשר לפסול קבוצות וצבעים שלא תרצה לקבל', "Rule out teams and colours you don't want"),
-  t('רואה מה יצא לפני המשלוח, ואפשר להחליף', 'See what came out before it ships, and swap if you like'),
+  t('מגלים מה יצא רק כשפותחים את הבוקס', 'You find out what you got only when you open the box'),
 ];
 
 export default function MysteryBoxInfo({ compact = false }) {
