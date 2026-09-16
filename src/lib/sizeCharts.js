@@ -32,6 +32,10 @@ export const ADULT_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 // an average build takes the larger of the two; a fuller or broader build one
 // size more. The fit then adds nothing for snug, one size for regular and two
 // for loose, because a shirt cut to the table sits close.
+// The shirts run long, so build and fit may not take a short customer far past
+// their height: at most three sizes above it, or one above what the weight
+// alone asks for, whichever is bigger. A 170 cm customer tops out at XL
+// unless their weight calls for more.
 // 173 cm / 61 kg, average, regular -> L. 178 cm / 70 kg, average, regular -> XL.
 const upperBound = (range) => Number(String(range).split('-').pop());
 
@@ -63,6 +67,7 @@ export function recommendSize(height, weight, tab = 'fan', body = 'average', fit
   let index = body === 'slim' ? byHeight : Math.max(byHeight, byWeight);
   if (body === 'full' || body === 'broad') index += 1;
   index += FIT_TYPES.find(f => f.id === fit)?.step ?? 1;
+  index = Math.min(index, Math.max(byHeight + 3, byWeight + 1));
   return ADULT_SIZES[Math.min(Math.max(index, 0), ADULT_SIZES.length - 1)];
 }
 export const WOMEN_SIZES = ['S', 'M', 'L', 'XL'];
