@@ -2,16 +2,37 @@ import React, { useState } from 'react';
 import {
   FAN_ROWS, PLAYER_ROWS, WOMEN_ROWS, KIDS_ROWS, KIDS_COLUMNS,
   ADULT_SIZES, WOMEN_SIZES, SIZE_TIPS, SIZE_TABS, recommendSize,
+  BODY_TYPES, FIT_TYPES,
 } from '@/lib/sizeCharts';
 
-// Height and weight in, a size out. Only for the fan and player tables, the
-// two that list both measures.
+// Height, weight, build and preferred fit in, a size out. Only for the fan and
+// player tables, the two that list both measures.
+function ChoiceGroup({ name, legend, options, value, onChange }) {
+  return (
+    <fieldset className="mt-4">
+      <legend className="text-sm font-medium text-brand-navy/70">{legend}</legend>
+      <div className="mt-1.5 flex flex-wrap gap-2">
+        {options.map(option => (
+          <label key={option.id}
+            className="cursor-pointer rounded-full border border-brand-line bg-white px-4 py-2 text-sm text-brand-navy transition has-[:checked]:border-brand-navy has-[:checked]:bg-brand-navy has-[:checked]:text-white has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-orange">
+            <input type="radio" name={name} value={option.id} checked={value === option.id}
+              onChange={() => onChange(option.id)} className="sr-only" />
+            {option.label}
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
 export function SizeCalculator({ tab }) {
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
+  const [body, setBody] = useState('average');
+  const [fit, setFit] = useState('regular');
   if (tab !== 'fan' && tab !== 'player') return null;
 
-  const size = recommendSize(height, weight, tab);
+  const size = recommendSize(height, weight, tab, body, fit);
   const field = (id, label, unit, value, onChange) => (
     <label htmlFor={id} className="flex min-w-0 flex-1 flex-col gap-1.5">
       <span className="text-sm font-medium text-brand-navy/70">{label}</span>
@@ -27,14 +48,16 @@ export function SizeCalculator({ tab }) {
   return (
     <div className="rounded-3xl bg-brand-mist p-5 sm:p-6">
       <h3 className="text-base font-semibold text-brand-navy">מחשבון מידה</h3>
-      <p className="mt-1 text-sm text-brand-navy/60">הכניסו גובה ומשקל ונמליץ לכם על מידה.</p>
+      <p className="mt-1 text-sm text-brand-navy/60">ספרו לנו קצת עליכם ונמליץ על מידה.</p>
       <div className="mt-4 flex gap-3">
         {field('size-calc-height', 'גובה', 'ס"מ', height, setHeight)}
         {field('size-calc-weight', 'משקל', 'ק"ג', weight, setWeight)}
       </div>
-      <div aria-live="polite" className="mt-4 min-h-[3rem]">
+      <ChoiceGroup name="size-calc-body" legend="מבנה גוף" options={BODY_TYPES} value={body} onChange={setBody} />
+      <ChoiceGroup name="size-calc-fit" legend="איך אתם אוהבים שהחולצה יושבת?" options={FIT_TYPES} value={fit} onChange={setFit} />
+      <div aria-live="polite" className="mt-5 min-h-[3rem]">
         {size ? (
-          <p className="flex items-center gap-3 text-brand-navy">
+          <p className="flex flex-wrap items-center gap-3 text-brand-navy">
             <span>המידה המומלצת {tab === 'player' ? 'בגרסת שחקן' : 'בגרסת אוהד'}:</span>
             <span dir="ltr" className="rounded-xl bg-brand-navy px-4 py-2 text-lg font-bold text-white">{size}</span>
           </p>
