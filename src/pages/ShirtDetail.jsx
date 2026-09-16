@@ -66,8 +66,7 @@ function ShippingDetails() {
   if (isEn) {
     return (
       <ul className="space-y-3 text-[15px] leading-relaxed text-brand-navy/75">
-        <li><span className="font-semibold text-brand-navy">In stock in Israel: </span>arrives within a week, or pick it up in Kiryat Ono by arrangement.</li>
-        <li><span className="font-semibold text-brand-navy">Made to order: </span>arrives within 3 weeks.</li>
+        <li><span className="font-semibold text-brand-navy">Delivery: </span>within 3 weeks of confirming your order.</li>
         <li><span className="font-semibold text-brand-navy">Shipping: </span>the cost is confirmed with you together with the order.</li>
         <li>
           Cancellations and returns under Israeli consumer protection law.{' '}
@@ -79,11 +78,7 @@ function ShippingDetails() {
   return (
     <ul className="space-y-3 text-[15px] leading-relaxed text-brand-navy/75">
       <li>
-        <span className="font-semibold text-brand-navy">מלאי בארץ: </span>
-        {detail(s.localStockDays)}, או איסוף עצמי מ{detail(s.pickupLocation)} בתיאום מראש.
-      </li>
-      <li>
-        <span className="font-semibold text-brand-navy">הזמנה מיוחדת: </span>
+        <span className="font-semibold text-brand-navy">זמן אספקה: </span>
         {detail(s.specialOrderWeeks)}.
       </li>
       {s.carrier && s.price && (

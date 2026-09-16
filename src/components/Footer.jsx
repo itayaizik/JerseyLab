@@ -23,7 +23,6 @@ const FOOTER_COLLECTIONS = withStock(
 const SHOP_LINKS = withStock([
   { label: t('כל החולצות', 'All shirts'), href: '/catalog' },
   { label: t('חדשים באתר', 'New arrivals'), href: '/catalog?new=true' },
-  { label: t('מלאי בארץ', 'In stock in Israel'), href: '/catalog?fast=true' },
   { label: t('מיסטרי בוקס', 'Mystery Box'), href: '/mystery-box' },
   { label: t('בקשת חולצה', 'Request a shirt'), href: '/request-shirt' },
 ]);

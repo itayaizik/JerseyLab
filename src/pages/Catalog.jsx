@@ -10,7 +10,7 @@ import CollectionHero from '@/components/catalog/CollectionHero';
 import FilterDrawer from '@/components/catalog/FilterDrawer';
 import SortSelect from '@/components/catalog/SortSelect';
 import Seo from '@/components/Seo';
-import { hasLocalStock } from '@/components/ShippingBadge';
+import { showsLocalStock } from '@/components/ShippingBadge';
 import { toast } from '@/components/ui/use-toast';
 import { shirtSizes, sortSizes } from '@/lib/sizes';
 import { searchShirts, formatEra, toDisplay } from '@/lib/search';
@@ -78,7 +78,6 @@ const quickFilters = [
   { label: t('שחקנים', 'Players'), params: { type: 'player' }, title: t('שחקנים', 'Players'), description: t('חולצות עם שם ומספר של שחקן.', "Shirts with a player's name and number.") },
   { label: 'NBA', params: { sport: 'basketball' }, title: 'NBA', description: t('חולצות כדורסל מה-NBA.', 'Basketball jerseys from the NBA.') },
   { label: t('ילדים', 'Kids'), params: { gender: 'kids' }, title: t('ילדים', 'Kids'), description: t('חולצות במידות ילדים.', "Shirts in kids' sizes.") },
-  { label: t('מלאי בארץ', 'In stock in Israel'), params: { fast: 'true' }, title: t('מלאי בארץ', 'In stock in Israel'), description: t('חולצות שכבר נמצאות בארץ ומגיעות עד שבוע.', 'Shirts already in Israel that arrive within a week.') },
 ];
 
 // "הכל" has no query string and always stays; the rest are dropped when the
@@ -173,7 +172,7 @@ export default function Catalog() {
     if (tag === 'retro') result = result.filter(s => s.is_retro);
     if (type === 'national' || type === 'נבחרות') result = result.filter(s => s.national_team);
     if (type === 'player') result = result.filter(s => s.player_name);
-    if (fast === 'true') result = result.filter(hasLocalStock);
+    if (fast === 'true') result = result.filter(showsLocalStock);
     if (best === 'true') result = result.filter(s => s.best_seller === true);
     if (league) result = result.filter(s => s.league && s.league.toLowerCase().includes(league.toLowerCase()));
 

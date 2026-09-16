@@ -25,6 +25,7 @@ export const MYSTERY_BOX_PANELS = [
     title: t('מה מקבלים', 'What you get'),
     items: [
       t('חולצה אחת, במידה שבחרת, מהסגנון שבחרת.', 'One shirt, in the size and style you chose.'),
+      t('מזמינים עם חברים? בוחרים כמה בוקסים בכל מידה ומוסיפים את כולם בלחיצה אחת.', 'Ordering with friends? Choose how many boxes you want in each size and add them all at once.'),
       t('הקבוצה, העונה והדגם יוצאים אקראית - זה מה שהופך את זה למיסטרי.', 'The team, season and design come out at random - that is what makes it a mystery.'),
       t('אפשר להוסיף שרוול ארוך או מכנס קצר תואם, כמו בכל חולצה.', 'You can add long sleeves or matching shorts, as with any shirt.'),
       t('הוספת שם ומספר? גם הם הפתעה - נדפיס את השחקן שמתאים לחולצה שתצא.', 'Added a name and number? Those are a surprise too - we print a player who fits the shirt that comes out.'),

@@ -9,7 +9,7 @@ import { SHIRT_TYPE_OPTIONS } from '@/components/configurator/ShirtTypeChoice';
 import TagBadge from '@/components/ui/TagBadge';
 import ProductImage from '@/components/ui/ProductImage';
 import TrustBar from '@/components/TrustBar';
-import { hasLocalStock, hasLocalStockForSize } from '@/components/ShippingBadge';
+import { showsLocalStock, showsLocalStockForSize } from '@/components/ShippingBadge';
 import { itemsForSize, stockPrint } from '@/lib/localStock';
 import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { allowsPlayerVersion, allowsPatches, allowsLongSleeve, allowsShorts } from '@/lib/shirtOptions';
@@ -39,7 +39,7 @@ function Section({ id, title, aside, sectionRef, className = '', children }) {
 // site's language.
 function shirtTags(shirt) {
   const tags = [];
-  if (hasLocalStock(shirt)) tags.push('מלאי בארץ');
+  if (showsLocalStock(shirt)) tags.push('מלאי בארץ');
   if (shirt.sale_price && shirt.sale_price < shirt.price) tags.push('סייל');
   if (shirt.is_retro) tags.push('רטרו');
   if (shirt.is_rare) tags.push('נדיר');
@@ -93,7 +93,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
   // A size with shirts physically in Israel offers those shirts as they are,
   // next to ordering one made up. Legacy rows can mark a size as stocked
   // without listing the shirts; there is nothing to choose between then.
-  const stockItems = size && hasLocalStockForSize(shirt, size) ? itemsForSize(shirt, size) : [];
+  const stockItems = size && showsLocalStockForSize(shirt, size) ? itemsForSize(shirt, size) : [];
   const needsStockChoice = stockItems.length > 0;
   const buyingExact = needsStockChoice && buyMode === 'exact';
   const stockItem = buyingExact ? stockItems.find(item => item.id === stockItemId) || null : null;

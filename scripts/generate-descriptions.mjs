@@ -122,9 +122,9 @@ function playerSentence(shirt) {
 
 function stockSentence(shirt) {
   const local = localStockSizes(shirt);
-  if (local.length) {
-    return `יש מלאי בארץ במידות ${local.join(', ')}, עם משלוח תוך כשבוע או איסוף מקריית אונו.`;
-  }
+  // Local stock is no longer mentioned to customers (see
+  // src/components/ShippingBadge.jsx), so a stocked shirt says nothing here.
+  if (local.length) return null;
   return 'ההזמנה מיוחדת ומגיעה תוך כשלושה שבועות.';
 }
 

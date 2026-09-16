@@ -2,7 +2,7 @@ import React, { useState, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Plus } from 'lucide-react';
 import QuickAddModal from '@/components/QuickAddModal';
-import { hasLocalStock } from '@/components/ShippingBadge';
+import { showsLocalStock } from '@/components/ShippingBadge';
 import ProductImage, { IMAGE_SIZES } from '@/components/ui/ProductImage';
 import { shirtSizes, isSizeAvailable } from '@/lib/sizes';
 import { shirtBasePrice } from '@/lib/cart';
@@ -16,7 +16,7 @@ function cardBadge(shirt) {
   if (shirt.status === 'sold') return { label: t('נמכר', 'Sold'), className: 'bg-brand-navy text-white' };
   if (shirt.status === 'reserved') return { label: t('שמור', 'Reserved'), className: 'bg-amber-100 text-amber-900' };
   if (shirt.sale_price && shirt.sale_price < shirt.price) return { label: t('סייל', 'Sale'), className: 'bg-red-600 text-white' };
-  if (hasLocalStock(shirt)) return { label: t('במלאי בארץ', 'In stock in Israel'), className: 'bg-brand-gold text-brand-navy' };
+  if (showsLocalStock(shirt)) return { label: t('במלאי בארץ', 'In stock in Israel'), className: 'bg-brand-gold text-brand-navy' };
   if (shirt.limited_stock) return { label: t('מלאי מוגבל', 'Limited stock'), className: 'bg-white text-red-700' };
   if (shirt.is_retro) return { label: t('רטרו', 'Retro'), className: 'bg-white text-brand-navy' };
   if (shirt.is_rare) return { label: t('נדיר', 'Rare'), className: 'bg-white text-brand-navy' };
@@ -40,7 +40,7 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false,
   const badge = cardBadge(shirt);
   const price = shirtBasePrice(shirt);
   const onSale = shirt.sale_price && shirt.sale_price < shirt.price;
-  const local = hasLocalStock(shirt);
+  const local = showsLocalStock(shirt);
   const range = sizeRange(shirt);
   const name = shirtName(shirt);
 

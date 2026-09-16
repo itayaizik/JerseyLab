@@ -10,7 +10,7 @@ import PersonalizationChoice from '@/components/configurator/PersonalizationChoi
 import NameNumberInput from '@/components/configurator/NameNumberInput';
 import OrderSummary from '@/components/configurator/OrderSummary';
 import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurator/recommendations';
-import { hasLocalStockForSize } from '@/components/ShippingBadge';
+import { showsLocalStockForSize } from '@/components/ShippingBadge';
 import { itemsForSize, stockPrint } from '@/lib/localStock';
 import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { allowsPlayerVersion, allowsPatches, allowsLongSleeve, allowsShorts } from '@/lib/shirtOptions';
@@ -54,7 +54,7 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   const basePrice = shirtBasePrice(shirt);
 
   const sizeStockItems = selectedSize ? itemsForSize(shirt, selectedSize) : [];
-  const sizeHasLocalStock = !!selectedSize && hasLocalStockForSize(shirt, selectedSize) && sizeStockItems.length > 0;
+  const sizeHasLocalStock = !!selectedSize && showsLocalStockForSize(shirt, selectedSize) && sizeStockItems.length > 0;
   const buyingExact = sizeHasLocalStock && buyMode === 'exact';
   const stockItem = buyingExact ? sizeStockItems.find(item => item.id === stockItemId) || null : null;
 

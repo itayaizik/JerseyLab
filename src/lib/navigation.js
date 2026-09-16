@@ -106,7 +106,6 @@ export const SHIRTS_MENU = {
   ]).slice(0, 5),
   links: withStock([
     { label: t('כל החולצות', 'All shirts'), href: '/catalog' },
-    { label: t('מלאי בארץ', 'In stock in Israel'), href: '/catalog?fast=true' },
     { label: t('מיסטרי בוקס', 'Mystery Box'), href: '/mystery-box' },
     { label: t('לא מצאתם? בקשו חולצה', "Can't find it? Request a shirt"), href: '/request-shirt' },
     { label: t('מדריך מידות', 'Size guide'), href: '/size-guide' },
@@ -120,7 +119,6 @@ export const NAV_ITEMS = [
   { id: 'clubs', label: t('קבוצות', 'Teams'), menu: 'clubs' },
   { id: 'national', label: t('נבחרות', 'National teams'), menu: 'national' },
   { id: 'retro', label: t('רטרו', 'Retro'), href: collectionHref('retro') },
-  { id: 'fast', label: t('מלאי בארץ', 'In stock in Israel'), href: '/catalog?fast=true' },
   { id: 'mystery', label: t('מיסטרי בוקס', 'Mystery Box'), href: '/mystery-box' },
   { id: 'request', label: t('בקשת חולצה', 'Request a shirt'), href: '/request-shirt' },
 ].filter(item => item.menu || linkHasStock(item.href));
@@ -129,7 +127,6 @@ export const NAV_ITEMS = [
 export const SITE_LINKS = withStock([
   { label: t('כל החולצות', 'All shirts'), href: '/catalog' },
   { label: t('רטרו', 'Retro'), href: collectionHref('retro') },
-  { label: t('מלאי בארץ', 'In stock in Israel'), href: '/catalog?fast=true' },
   { label: t('מיסטרי בוקס', 'Mystery Box'), href: '/mystery-box' },
   { label: t('בקשת חולצה', 'Request a shirt'), href: '/request-shirt' },
   { label: t('מדריך מידות', 'Size guide'), href: '/size-guide' },

@@ -15,7 +15,6 @@ import ChatProofsSection from '@/components/ChatProofsSection';
 import MysteryBoxPromo from '@/components/MysteryBoxPromo';
 import Seo from '@/components/Seo';
 import HomeHero from '@/components/HomeHero';
-import { hasLocalStock } from '@/components/ShippingBadge';
 import { toast } from '@/components/ui/use-toast';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
 import { WHATSAPP_URL, INSTAGRAM_URL } from '@/lib/contact';
@@ -46,7 +45,6 @@ export default function Home() {
   const [newShirts, setNewShirts] = useState([]);
   const [featuredShirts, setFeaturedShirts] = useState([]);
   const [bestSellers, setBestSellers] = useState([]);
-  const [fastShippingShirts, setFastShippingShirts] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [faqs, setFaqs] = useState([]);
   const [siteSettings, setSiteSettings] = useState({});
@@ -89,7 +87,6 @@ export default function Home() {
       setNewShirts(allShirts.filter(s => s.is_new).slice(0, 12));
       setFeaturedShirts(allShirts.filter(s => s.featured).slice(0, 12));
       setBestSellers([...allShirts].filter(s => s.best_seller).sort((a, b) => (b.interest_count || 0) - (a.interest_count || 0)).slice(0, 12));
-      setFastShippingShirts(allShirts.filter(hasLocalStock).slice(0, 12));
       setReviews(revs);
       setFaqs(faqList);
       setLoading(false);
@@ -126,7 +123,6 @@ export default function Home() {
   const tabs = [
     { id: 'new', label: t('חדשים באתר', 'New arrivals'), shirts: newShirts, href: '/catalog?new=true', more: t('לכל החדשים', 'All new arrivals') },
     { id: 'best', label: t('הנמכרים ביותר', 'Best sellers'), shirts: bestSellers.length ? bestSellers : featuredShirts, href: bestSellers.length ? '/catalog?best=true' : '/catalog', more: t('לכל החולצות', 'All shirts') },
-    { id: 'fast', label: t('מלאי בארץ', 'In stock in Israel'), shirts: fastShippingShirts, href: '/catalog?fast=true', more: t('לכל המלאי בארץ', 'All shirts in stock') },
   ].filter(tab => tab.shirts.length > 0);
   if (!tabs.length && catalogShirts.length) {
     tabs.push({ id: 'all', label: t('החולצות שלנו', 'Our shirts'), shirts: catalogShirts.slice(0, 12), href: '/catalog', more: t('לכל החולצות', 'All shirts') });

@@ -2,27 +2,34 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Gift, Check, ShoppingBag, Shirt, Sparkles, Ban, MessageSquare,
-  ChevronLeft, ChevronRight, Pencil,
+  ChevronLeft, ChevronRight, Pencil, Minus, Plus, CheckCircle2,
 } from 'lucide-react';
 import { addToCart, openCart, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { BOX_TYPES, SIZES, NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 import { t } from '@/lib/i18n';
 
-// Building a mystery box, one question at a time.
+// Building mystery boxes, one question at a time.
 //
 // It asks one question per step, in the order a person actually decides: what
-// kind of shirt, then what size, then anything extra, then anything to rule
+// kind of shirt, then what sizes, then anything extra, then anything to rule
 // out. Answered steps collapse into a one-line summary with an edit mark, so
 // what you already chose stays visible and changeable; the total updates with
 // each answer, so the price is never a surprise at the end.
+//
+// Many people order together with friends, so the size step takes a count per
+// size - two M and one XL is three boxes - and adding keeps the builder as it
+// is, ready for the next round in another style.
 //
 // Steps 1 and 2 are required; 3 and 4 are optional and say so.
 //
 // What goes into the cart stays in Hebrew, since it becomes the order the
 // owner reads; the English words travel beside it (labelEn) for the cart to
-// show.
+// show. Each box is its own cart item, exactly as if it were added alone.
 
 const TYPE_ICONS = { regular: Shirt, retro: Sparkles, mundial: Gift };
+
+// A group of friends, not a warehouse order.
+const MAX_PER_SIZE = 20;
 
 // Swatches rather than a text field: picking from a list is one tap, and it
 // keeps the answers consistent enough for us to actually act on them.
@@ -46,7 +53,7 @@ const colorName = (label) => t(label, COLORS.find(c => c.label === label)?.en);
 
 const STEPS = [
   { id: 'type', title: t('איזה סגנון?', 'Which style?'), required: true },
-  { id: 'size', title: t('איזו מידה?', 'Which size?'), required: true },
+  { id: 'size', title: t('כמה ובאילו מידות?', 'How many, in which sizes?'), required: true },
   { id: 'extras', title: t('תוספות', 'Extras'), required: false },
   { id: 'exclude', title: t('מה לא לשלוח', 'What not to send'), required: false },
 ];
@@ -54,12 +61,20 @@ const STEPS = [
 const LONG_SLEEVE_TEXT = t(LONG_SLEEVE_LABEL, 'Long sleeve');
 const SHORTS_TEXT = t(SHORTS_LABEL, 'Shorts');
 
+// "M ×2 · XL" - the chosen sizes in size order.
+const sizesSummary = (counts) => SIZES
+  .filter(s => counts[s] > 0)
+  .map(s => (counts[s] > 1 ? `${s} ×${counts[s]}` : s))
+  .join(' · ');
+
+const boxesLabel = (n) => (n === 1 ? t('בוקס אחד', '1 box') : t(`${n} בוקסים`, `${n} boxes`));
+
 export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = '', headerAction = null, size: scale = 'md' }) {
   const lg = scale === 'lg';
 
   const [step, setStep] = useState(0);
   const [type, setType] = useState('regular');
-  const [size, setSize] = useState('');
+  const [counts, setCounts] = useState({});
   const [addName, setAddName] = useState(false);
   const [patches, setPatches] = useState(false);
   const [longSleeve, setLongSleeve] = useState(false);
@@ -68,27 +83,47 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   const [excludeColors, setExcludeColors] = useState([]);
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
+  // What the last press of the button put in the cart, shown until the next
+  // change so it is clear the boxes went in and more can follow.
+  const [lastAdded, setLastAdded] = useState(null);
 
   const selected = BOX_TYPES.find(b => b.id === type);
   const selectedLabel = t(selected.label, selected.labelEn);
   // Same rule as a catalogue shirt: retro comes without shorts.
   const shortsAllowed = type !== 'retro';
   const wantsShorts = shorts && shortsAllowed;
-  const total = selected.price + (addName ? NAME_PRICE : 0) + (patches ? PATCHES_PRICE : 0)
+  const boxCount = Object.values(counts).reduce((sum, n) => sum + n, 0);
+  const perBox = selected.price + (addName ? NAME_PRICE : 0) + (patches ? PATCHES_PRICE : 0)
     + (longSleeve ? EXTRA_PRICES.longSleeve : 0) + (wantsShorts ? EXTRA_PRICES.shorts : 0);
+  const total = perBox * boxCount;
 
   // Two of these can be on the page at once, so field ids are per instance.
   const fid = (name) => `${idPrefix}-${name}`;
 
+  // Any change starts a new round, so the note about the last one goes away.
+  const touched = () => setLastAdded(null);
+
+  const changeCount = (size, delta) => {
+    touched();
+    setError('');
+    setCounts(prev => {
+      const next = Math.min(MAX_PER_SIZE, Math.max(0, (prev[size] || 0) + delta));
+      const copy = { ...prev };
+      if (next) copy[size] = next; else delete copy[size];
+      return copy;
+    });
+  };
+
   const toggleColor = (label) => {
+    touched();
     setExcludeColors(prev => prev.includes(label) ? prev.filter(c => c !== label) : [...prev, label]);
   };
 
-  const sizeError = t('בחרו מידה כדי להמשיך', 'Choose a size to continue');
+  const sizeError = t('בחרו לפחות מידה אחת', 'Choose at least one size');
 
   // A step can only be left once its required answer exists. Returning to an
   // earlier step is always allowed.
-  const canLeave = (index) => (index === 1 ? !!size : true);
+  const canLeave = (index) => (index === 1 ? boxCount > 0 : true);
 
   const goNext = () => {
     if (!canLeave(step)) { setError(sizeError); return; }
@@ -103,15 +138,18 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   };
 
   const handleAdd = () => {
-    if (!size) { setError(t('בחרו מידה', 'Choose a size')); setStep(1); return; }
+    if (!boxCount) { setError(sizeError); setStep(1); return; }
     setError('');
 
-    const extras = [];
-    if (addName) extras.push({ label: 'שם ומספר מאחורה (לבחירתנו)', labelEn: 'Name and number on the back (our pick)', price: NAME_PRICE });
-    if (patches) extras.push({ label: 'כל הפאצ\'ים', labelEn: 'All patches', price: PATCHES_PRICE });
-    // The same words a catalogue shirt uses, so the supplier text reads them.
-    if (longSleeve) extras.push({ label: LONG_SLEEVE_LABEL, labelEn: 'Long sleeve', price: EXTRA_PRICES.longSleeve });
-    if (wantsShorts) extras.push({ label: `${SHORTS_LABEL} במידה ${size}`, labelEn: `Shorts, size ${size}`, price: EXTRA_PRICES.shorts });
+    const extrasFor = (size) => {
+      const extras = [];
+      if (addName) extras.push({ label: 'שם ומספר מאחורה (לבחירתנו)', labelEn: 'Name and number on the back (our pick)', price: NAME_PRICE });
+      if (patches) extras.push({ label: 'כל הפאצ\'ים', labelEn: 'All patches', price: PATCHES_PRICE });
+      // The same words a catalogue shirt uses, so the supplier text reads them.
+      if (longSleeve) extras.push({ label: LONG_SLEEVE_LABEL, labelEn: 'Long sleeve', price: EXTRA_PRICES.longSleeve });
+      if (wantsShorts) extras.push({ label: `${SHORTS_LABEL} במידה ${size}`, labelEn: `Shorts, size ${size}`, price: EXTRA_PRICES.shorts });
+      return extras;
+    };
 
     // Preferences carry no price, so they travel separately from `extras` —
     // but they still have to reach the order, or asking was theatre.
@@ -126,28 +164,35 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     }
     if (notes.trim()) details.push({ label: 'הערות', labelEn: 'Notes', value: notes.trim() });
 
-    addToCart({
-      shirtId: MYSTERY_BOX_ID,
-      shirtName: `מיסטרי בוקס — ${selected.label}`,
-      shirtNameEn: `Mystery Box — ${selected.labelEn}`,
-      size,
-      basePrice: selected.price,
-      unitPrice: total,
-      extras,
-      details,
-      deliveryNote: 'מיסטרי בוקס — נעדכן מה יצא לפני המשלוח',
-      deliveryNoteEn: "Mystery Box — we'll tell you what came out before it ships",
+    SIZES.forEach(size => {
+      for (let i = 0; i < (counts[size] || 0); i++) {
+        addToCart({
+          shirtId: MYSTERY_BOX_ID,
+          shirtName: `מיסטרי בוקס — ${selected.label}`,
+          shirtNameEn: `Mystery Box — ${selected.labelEn}`,
+          size,
+          basePrice: selected.price,
+          unitPrice: perBox,
+          extras: extrasFor(size),
+          details,
+          deliveryNote: 'מיסטרי בוקס — נעדכן מה יצא לפני המשלוח',
+          deliveryNoteEn: "Mystery Box — we'll tell you what came out before it ships",
+        });
+      }
     });
 
-    // The cart drawer opens on the spot, so the customer sees the box went in
-    // and can send the request from there.
-    openCart();
+    // The builder stays as it is, so the next round - another style, other
+    // sizes - is a couple of taps; only the sizes are cleared, so the same
+    // boxes are not added twice by accident.
+    setLastAdded({ count: boxCount, label: selectedLabel, sizes: sizesSummary(counts) });
+    setCounts({});
+    setStep(0);
   };
 
   // One-line recap of an answered step, shown when it is collapsed.
   const summaryOf = (id) => {
     if (id === 'type') return `${selectedLabel} · ₪${selected.price}`;
-    if (id === 'size') return size || t('טרם נבחרה', 'Not chosen yet');
+    if (id === 'size') return boxCount ? `${boxesLabel(boxCount)} · ${sizesSummary(counts)}` : t('טרם נבחרו', 'None chosen yet');
     if (id === 'extras') {
       const on = [
         addName && t('שם ומספר', 'Name and number'),
@@ -191,6 +236,23 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         ))}
       </div>
 
+      {lastAdded && (
+        <div role="status" className={`mt-4 ${pad}`}>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl bg-emerald-50 px-4 py-3 text-[14px] text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <CheckCircle2 className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+            <span className="min-w-0 flex-1">
+              {t(
+                `נוספו לסל ${boxesLabel(lastAdded.count)} ${lastAdded.label} (${lastAdded.sizes}). רוצים עוד? בחרו סגנון ומידות והוסיפו.`,
+                `Added ${boxesLabel(lastAdded.count)} ${lastAdded.label} (${lastAdded.sizes}) to your cart. Want more? Pick a style and sizes and add again.`,
+              )}
+            </span>
+            <button type="button" onClick={openCart} className="font-semibold underline underline-offset-2">
+              {t('לסל', 'View cart')}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className={`space-y-2.5 py-6 ${pad}`}>
         {STEPS.map((s, i) => {
           const open = i === step;
@@ -226,7 +288,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                         const Icon = TYPE_ICONS[box.id];
                         return (
                           <button key={box.id} type="button"
-                            onClick={() => { setType(box.id); setStep(1); }}
+                            onClick={() => { setType(box.id); touched(); setStep(1); }}
                             aria-pressed={active}
                             className={`w-full rounded-2xl border text-start transition ${lg ? 'p-5' : 'p-4'} ${
                               active
@@ -250,37 +312,75 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
                   {s.id === 'size' && (
                     <>
-                      <div className={`grid gap-2 ${lg ? 'grid-cols-3 sm:grid-cols-6' : 'grid-cols-3'}`}>
-                        {SIZES.map(v => (
-                          <button key={v} type="button"
-                            onClick={() => { setSize(v); setError(''); setStep(2); }}
-                            aria-pressed={size === v}
-                            className={`shop-chip font-semibold tabular-nums ${lg ? 'min-h-[3rem] text-base' : ''} ${size === v ? 'shop-chip-active' : ''}`}>
-                            <span dir="ltr">{v}</span>
-                          </button>
-                        ))}
+                      <p className="mb-3 text-[13px] leading-relaxed text-brand-navy/55">
+                        {t('מזמינים לכמה אנשים? בחרו כמה בוקסים בכל מידה. כל בוקס הוא חולצה אחרת.', 'Ordering for a few people? Choose how many boxes in each size. Every box is a different shirt.')}
+                      </p>
+                      {/* One size per row on a phone: a count and two buttons do not fit in
+                          half the width of a small screen. */}
+                      <div className={`grid gap-2 ${lg ? 'grid-cols-1 min-[440px]:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 min-[440px]:grid-cols-2'}`}>
+                        {SIZES.map(v => {
+                          const n = counts[v] || 0;
+                          return (
+                            <div key={v}
+                              className={`flex items-center justify-between gap-2 rounded-2xl border p-1.5 transition ${n ? 'border-brand-orange bg-brand-orange-soft' : 'border-brand-line bg-white'}`}>
+                              <button type="button" onClick={() => changeCount(v, 1)}
+                                aria-label={t(`הוספת בוקס במידה ${v}`, `Add a box in size ${v}`)}
+                                className="flex min-h-[2.75rem] min-w-0 flex-1 items-center gap-2 rounded-xl px-2.5 text-start">
+                                <span dir="ltr" className="text-base font-bold tabular-nums text-brand-navy">{v}</span>
+                                {n > 0 && (
+                                  <span className="rounded-full bg-brand-orange px-2 py-0.5 text-xs font-bold tabular-nums text-white">×{n}</span>
+                                )}
+                              </button>
+                              <span className="flex items-center gap-1">
+                                <button type="button" onClick={() => changeCount(v, -1)} disabled={!n}
+                                  aria-label={t(`הורדת בוקס במידה ${v}`, `Remove a box in size ${v}`)}
+                                  className="flex h-9 w-9 items-center justify-center rounded-xl text-brand-navy transition hover:bg-white disabled:opacity-25">
+                                  <Minus className="h-4 w-4" aria-hidden="true" />
+                                </button>
+                                <button type="button" onClick={() => changeCount(v, 1)} disabled={n >= MAX_PER_SIZE}
+                                  aria-label={t(`הוספת בוקס במידה ${v}`, `Add a box in size ${v}`)}
+                                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-navy text-white transition hover:bg-brand-navy-light disabled:opacity-25">
+                                  <Plus className="h-4 w-4" aria-hidden="true" />
+                                </button>
+                              </span>
+                            </div>
+                          );
+                        })}
                       </div>
-                      <Link to="/size-guide" className="shop-link mt-3 text-sm">{t('לא בטוחים? מדריך המידות', 'Not sure? See the size guide')}</Link>
+                      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                        <Link to="/size-guide" className="shop-link text-sm">{t('לא בטוחים? מדריך המידות', 'Not sure? See the size guide')}</Link>
+                        {boxCount > 0 && (
+                          <button type="button" onClick={() => { setCounts({}); touched(); }} className="text-sm text-brand-navy/55 underline-offset-2 hover:underline">
+                            {t('איפוס', 'Clear')}
+                          </button>
+                        )}
+                      </div>
                     </>
                   )}
 
                   {s.id === 'extras' && (
-                    <div className={lg ? 'grid grid-cols-1 gap-3 sm:grid-cols-2' : 'space-y-2.5'}>
-                      {/* The name add-on has no text field on purpose: the shirt
-                          is the surprise, so the print is too. */}
-                      <Extra checked={addName} onChange={setAddName} label={t('שם ומספר מאחורה', 'Name and number on the back')} price={NAME_PRICE}
-                        hint={t('שחקן שמתאים לחולצה שתצא - גם הוא הפתעה', 'A player to match the shirt that comes out - a surprise too')} />
-                      <Extra checked={patches} onChange={setPatches} label={t("כל הפאצ'ים", 'All patches')} price={PATCHES_PRICE}
-                        hint={t("פאצ'ים של הליגה והטורניר, לפי החולצה", 'League and tournament patches, to match the shirt')} />
-                      <Extra checked={longSleeve} onChange={setLongSleeve} label={LONG_SLEEVE_TEXT} price={EXTRA_PRICES.longSleeve}
-                        hint={t('אותה חולצה, עם שרוולים ארוכים', 'The same shirt, with long sleeves')} />
-                      {shortsAllowed && (
-                        <Extra checked={shorts} onChange={setShorts} label={SHORTS_TEXT} price={EXTRA_PRICES.shorts}
-                          hint={size
-                            ? t(`מכנס תואם לחולצה, במידה ${size}`, `Matching shorts, size ${size}`)
-                            : t('מכנס תואם לחולצה, באותה מידה', 'Matching shorts, in the same size')} />
+                    <>
+                      {boxCount > 1 && (
+                        <p className="mb-3 text-[13px] text-brand-navy/55">
+                          {t(`התוספות חלות על כל ${boxCount} הבוקסים. רוצים תוספות שונות? הוסיפו לסל ובנו עוד סבב.`,
+                            `Extras apply to all ${boxCount} boxes. Want different extras? Add these to the cart and build another round.`)}
+                        </p>
                       )}
-                    </div>
+                      <div className={lg ? 'grid grid-cols-1 gap-3 sm:grid-cols-2' : 'space-y-2.5'}>
+                        {/* The name add-on has no text field on purpose: the shirt
+                            is the surprise, so the print is too. */}
+                        <Extra checked={addName} onChange={v => { setAddName(v); touched(); }} label={t('שם ומספר מאחורה', 'Name and number on the back')} price={NAME_PRICE}
+                          hint={t('שחקן שמתאים לחולצה שתצא - גם הוא הפתעה', 'A player to match the shirt that comes out - a surprise too')} />
+                        <Extra checked={patches} onChange={v => { setPatches(v); touched(); }} label={t("כל הפאצ'ים", 'All patches')} price={PATCHES_PRICE}
+                          hint={t("פאצ'ים של הליגה והטורניר, לפי החולצה", 'League and tournament patches, to match the shirt')} />
+                        <Extra checked={longSleeve} onChange={v => { setLongSleeve(v); touched(); }} label={LONG_SLEEVE_TEXT} price={EXTRA_PRICES.longSleeve}
+                          hint={t('אותה חולצה, עם שרוולים ארוכים', 'The same shirt, with long sleeves')} />
+                        {shortsAllowed && (
+                          <Extra checked={shorts} onChange={v => { setShorts(v); touched(); }} label={SHORTS_TEXT} price={EXTRA_PRICES.shorts}
+                            hint={t('מכנס תואם לחולצה, באותה מידה של כל בוקס', 'Matching shorts, in the same size as each box')} />
+                        )}
+                      </div>
+                    </>
                   )}
 
                   {s.id === 'exclude' && (
@@ -294,7 +394,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                         {t('קבוצות שלא תרצו לקבל', "Teams you don't want")}
                       </label>
                       <input id={fid('clubs')} value={excludeClubs} maxLength={200}
-                        onChange={e => setExcludeClubs(e.target.value)}
+                        onChange={e => { setExcludeClubs(e.target.value); touched(); }}
                         placeholder={t('למשל: ברצלונה, מכבי תל אביב', 'For example: Barcelona, Maccabi Tel Aviv')}
                         className="shop-field" />
 
@@ -326,7 +426,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                         {t('הערות', 'Notes')}
                       </label>
                       <textarea id={fid('notes')} value={notes} maxLength={500} rows={3}
-                        onChange={e => setNotes(e.target.value)}
+                        onChange={e => { setNotes(e.target.value); touched(); }}
                         placeholder={t('ליגה שאתם מעדיפים, שחקן שתשמחו לקבל, מתנה למישהו. כל דבר שחשוב לכם.', "A league you prefer, a player you'd love, a gift for someone. Anything that matters to you.")}
                         className="shop-field resize-none py-3" />
                       <p dir="ltr" className="mt-1 text-right text-[11px] tabular-nums text-brand-navy/40">{notes.length}/500</p>
@@ -364,20 +464,25 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           {patches && <Row label={t("כל הפאצ'ים", 'All patches')} value={PATCHES_PRICE} />}
           {longSleeve && <Row label={LONG_SLEEVE_TEXT} value={EXTRA_PRICES.longSleeve} />}
           {wantsShorts && <Row label={SHORTS_TEXT} value={EXTRA_PRICES.shorts} />}
-          {size && <Row label={t('מידה', 'Size')} text={size} />}
+          {boxCount > 1 && <Row label={t('לבוקס', 'Per box')} value={perBox} />}
+          {boxCount > 0 && <Row label={t('כמות', 'Boxes')} text={`${boxCount} · ${sizesSummary(counts)}`} />}
         </div>
 
         <div className="mt-3 flex items-baseline justify-between border-t border-brand-line pt-3">
           <span className={`font-semibold text-brand-navy ${lg ? 'text-lg' : ''}`}>{t('סה״כ', 'Total')}</span>
-          <span className={`font-bold tabular-nums text-brand-navy ${lg ? 'text-3xl' : 'text-2xl'}`}>₪{total}</span>
+          <span className={`font-bold tabular-nums text-brand-navy ${lg ? 'text-3xl' : 'text-2xl'}`}>₪{boxCount ? total : perBox}</span>
         </div>
 
         {error && <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
 
         <button type="button" onClick={handleAdd}
-          className={`shop-btn mt-4 w-full ${lg ? 'min-h-[3.75rem] text-base' : ''} ${size ? '' : 'opacity-60 shadow-none'}`}>
+          className={`shop-btn mt-4 w-full ${lg ? 'min-h-[3.75rem] text-base' : ''} ${boxCount ? '' : 'opacity-60 shadow-none'}`}>
           <ShoppingBag className={lg ? 'h-5 w-5' : 'h-4 w-4'} aria-hidden="true" />
-          {size ? t('הוספה לסל', 'Add to cart') : sizeError}
+          {boxCount === 0
+            ? t('בחרו מידות כדי להמשיך', 'Choose sizes to continue')
+            : boxCount === 1
+              ? t('הוספה לסל', 'Add to cart')
+              : t(`הוספת ${boxCount} בוקסים לסל`, `Add ${boxCount} boxes to cart`)}
         </button>
         <p className="mt-2 text-center text-xs text-brand-navy/50">
           {t('בלי תשלום באתר, שליחת בקשה בלבד.', 'No payment on the site - you only send a request.')}
@@ -407,7 +512,7 @@ function Extra({ checked, onChange, label, price, hint }) {
 
 function Row({ label, value, text }) {
   return (
-    <div className="flex items-center justify-between text-brand-navy/70">
+    <div className="flex items-center justify-between gap-3 text-brand-navy/70">
       <span>{label}</span>
       <span dir={text ? 'ltr' : undefined} className="font-semibold tabular-nums text-brand-navy">{text ?? `₪${value}`}</span>
     </div>

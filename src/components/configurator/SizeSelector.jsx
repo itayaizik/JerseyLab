@@ -1,6 +1,7 @@
 import React from 'react';
-import { shirtSizes, sizeQty, isSizeAvailable } from '@/lib/sizes';
+import { shirtSizes, isSizeAvailable } from '@/lib/sizes';
 import { t } from '@/lib/i18n';
+import { showsLocalStockForSize } from '@/components/ShippingBadge';
 
 const FALLBACK_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 
@@ -13,7 +14,7 @@ const FALLBACK_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 export default function SizeSelector({ shirt, value, onChange, showNote = true, invalid = false }) {
   const fromShirt = shirtSizes(shirt);
   const allSizes = fromShirt.length > 0 ? fromShirt : FALLBACK_SIZES;
-  const isLocal = (size) => isSizeAvailable(shirt, size) && sizeQty(shirt?.local_stock_sizes, size) > 0;
+  const isLocal = (size) => isSizeAvailable(shirt, size) && showsLocalStockForSize(shirt, size);
   const anyLocal = allSizes.some(isLocal);
 
   return (
@@ -49,7 +50,7 @@ export default function SizeSelector({ shirt, value, onChange, showNote = true, 
       </div>
 
       {showNote && (value ? (
-        sizeQty(shirt?.local_stock_sizes, value) > 0 ? (
+        showsLocalStockForSize(shirt, value) ? (
           <p className="mt-3 flex items-center gap-2 text-[13px] font-medium text-emerald-700">
             <span className="h-2 w-2 flex-shrink-0 rounded-full bg-emerald-500" aria-hidden="true" />
             {t('במלאי בארץ · מגיעה עד שבוע או באיסוף מקריית אונו', 'In stock in Israel · arrives within a week, or pick it up in Kiryat Ono')}
