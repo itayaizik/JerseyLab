@@ -57,7 +57,8 @@ function itemRow(item: OrderItem): string {
   if (item.long_sleeve) extras.push('שרוול ארוך');
   if (item.shorts) extras.push('מכנס קצר');
   if (item.patches) extras.push("פאצ'ים");
-  const eta = item.local_stock ? 'מלאי בארץ - עד שבוע' : 'משלוח מהיר - עד 3 שבועות';
+  // The shop no longer sells from local stock, so every item ships the same way.
+  const eta = 'משלוח מהיר - עד 3 שבועות';
   // Mystery box exclusions and free-text notes. Echoing them back is the only
   // written record the customer has that we took the request down correctly.
   const notes = (item.notes || '').trim();

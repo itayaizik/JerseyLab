@@ -162,4 +162,6 @@ export const emailItem = (draft) => ({
   long_sleeve: !!draft.longSleeve,
   shorts: !!draft.shorts,
   price: priceOf(draft),
+  // A mystery box keeps who it is for, its add-ons and its note here.
+  notes: (draft.other || []).join(" | "),
 });

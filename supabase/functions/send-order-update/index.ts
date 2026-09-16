@@ -50,6 +50,7 @@ interface OrderItem {
   patches?: boolean;
   long_sleeve?: boolean;
   shorts?: boolean;
+  notes?: string;
   price?: number;
 }
 
@@ -73,6 +74,7 @@ function itemRow(item: OrderItem): string {
   if (item.long_sleeve) extras.push('שרוול ארוך');
   if (item.shorts) extras.push('מכנס קצר');
   if (item.patches) extras.push("פאצ'ים");
+  const notes = (item.notes || '').trim();
   return `
     <tr>
       <td style="padding:12px 0; border-bottom:1px solid #E3E7EE;">
@@ -80,6 +82,7 @@ function itemRow(item: OrderItem): string {
         <p style="margin:2px 0 0; ${font} font-size:12px; color:#6B7280;">
           מידה: ${esc(item.size)}${extras.length ? ' · ' + extras.join(' · ') : ''}
         </p>
+        ${notes ? `<p style="margin:4px 0 0; ${font} font-size:11px; color:#6B7280;">${esc(notes)}</p>` : ''}
       </td>
       <td style="padding:12px 0; border-bottom:1px solid #E3E7EE; text-align:left; white-space:nowrap; vertical-align:top;">
         <span style="${font} font-size:14px; font-weight:700; color:#1B2A4A;">₪${esc(item.price)}</span>
