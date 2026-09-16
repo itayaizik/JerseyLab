@@ -29,14 +29,14 @@ export const ADULT_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 // The size to recommend from height, weight, build and how the shirt should
 // sit. Each measure picks the first size whose range reaches it. A slim build
 // goes by height alone, since the weight row would only pull the size down;
-// an average build takes the larger of the two; a fuller or broader build one
-// size more. The fit then adds nothing for snug, one size for regular and two
-// for loose, because a shirt cut to the table sits close.
-// The shirts run long, so build and fit may not take a short customer far past
-// their height: at most three sizes above it, or one above what the weight
-// alone asks for, whichever is bigger. A 170 cm customer tops out at XL
-// unless their weight calls for more.
-// 173 cm / 61 kg, average, regular -> L. 178 cm / 70 kg, average, regular -> XL.
+// an average build takes the larger of the two. A fuller or broader build adds
+// a size, and so does the fit: nothing for snug, one for regular, two for
+// loose - but the two together add at most two sizes, since a muscular
+// customer who likes it loose still rarely needs 2XL.
+// The shirts also run long, so a short customer goes at most two sizes past
+// their height, or one past what their weight alone asks for, whichever is
+// bigger.
+// 173 cm / 61 kg, average, regular -> L. 171 cm / 65 kg, broad, loose -> XL.
 const upperBound = (range) => Number(String(range).split('-').pop());
 
 function sizeIndexFor(value, row) {
@@ -64,10 +64,10 @@ export function recommendSize(height, weight, tab = 'fan', body = 'average', fit
   if (!(h >= 120 && h <= 230) || !(w >= 30 && w <= 200)) return null;
   const byHeight = sizeIndexFor(h, rows.find(r => r.measure.startsWith('גובה')));
   const byWeight = sizeIndexFor(w, rows.find(r => r.measure.startsWith('משקל')));
-  let index = body === 'slim' ? byHeight : Math.max(byHeight, byWeight);
-  if (body === 'full' || body === 'broad') index += 1;
-  index += FIT_TYPES.find(f => f.id === fit)?.step ?? 1;
-  index = Math.min(index, Math.max(byHeight + 3, byWeight + 1));
+  const base = body === 'slim' ? byHeight : Math.max(byHeight, byWeight);
+  const bodyStep = body === 'full' || body === 'broad' ? 1 : 0;
+  const fitStep = FIT_TYPES.find(f => f.id === fit)?.step ?? 1;
+  const index = Math.min(base + Math.min(bodyStep + fitStep, 2), Math.max(byHeight + 2, byWeight + 1));
   return ADULT_SIZES[Math.min(Math.max(index, 0), ADULT_SIZES.length - 1)];
 }
 export const WOMEN_SIZES = ['S', 'M', 'L', 'XL'];

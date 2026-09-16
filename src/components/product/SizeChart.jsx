@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   FAN_ROWS, PLAYER_ROWS, WOMEN_ROWS, KIDS_ROWS, KIDS_COLUMNS,
   ADULT_SIZES, WOMEN_SIZES, SIZE_TIPS, SIZE_TABS, recommendSize,
@@ -65,6 +66,13 @@ export function SizeCalculator({ tab }) {
           <p className="text-sm text-brand-navy/60">בדקו שהגובה בס"מ והמשקל בק"ג.</p>
         ) : null}
       </div>
+      <p className="mt-4 border-t border-brand-line pt-4 text-[13px] leading-relaxed text-brand-navy/60">
+        ההמלצה היא הערכה כללית ולא מתאימה בהכרח לכל אחד. לא בטוחים במידה?{' '}
+        <Link to="/contact" className="font-semibold text-brand-navy underline underline-offset-2 hover:text-brand-orange-ink">
+          דברו איתנו
+        </Link>
+        {' '}ונעזור לכם לבחור.
+      </p>
     </div>
   );
 }
