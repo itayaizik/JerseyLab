@@ -41,6 +41,26 @@ export const PATCHES_PRICE = 5;
 
 export const SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 
+// Colours a customer can rule out. Swatches rather than a text field: picking
+// from a list is one tap, and it keeps the answers consistent enough for us to
+// actually act on them.
+//
+// These stay literal hex values on purpose, and are the one exception the brand
+// token check allows. They describe the colour of a shirt, not the colour of the
+// site. 'כתום' being the same orange as the brand accent is a coincidence, and
+// if the brand accent is ever changed, the orange shirt must stay orange.
+export const EXCLUDE_COLORS = [
+  { label: 'אדום', en: 'Red', hex: '#D32F2F' },
+  { label: 'כחול', en: 'Blue', hex: '#1E4FA3' },
+  { label: 'ירוק', en: 'Green', hex: '#2E7D32' },
+  { label: 'צהוב', en: 'Yellow', hex: '#F2C300' },
+  { label: 'שחור', en: 'Black', hex: '#1A1A1A' },
+  { label: 'לבן', en: 'White', hex: '#FFFFFF' },
+  { label: 'כתום', en: 'Orange', hex: '#E8622A' },
+  { label: 'סגול', en: 'Purple', hex: '#6A3DA8' },
+  { label: 'ורוד', en: 'Pink', hex: '#E05A9B' },
+];
+
 // A mystery box has no catalogue row behind it, so it carries a sentinel id.
 // The admin panel and the profile page both fall back to the stored name when
 // no shirt matches, which is what makes this work without a fake DB entry.

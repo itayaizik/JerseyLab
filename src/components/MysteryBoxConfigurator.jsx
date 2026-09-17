@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Gift, Check, ShoppingBag, Shirt, Sparkles, Ban, MessageSquare,
-  Plus, Copy, Trash2, ChevronDown, CheckCircle2, User,
+  Plus, Copy, Trash2, ChevronDown, CheckCircle2, User, Share2, Link2, Users,
 } from 'lucide-react';
 import { addToCart, openCart, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
-import { BOX_TYPES, SIZES, NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID } from '@/lib/mysteryBox';
+import { BOX_TYPES, SIZES, NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID, EXCLUDE_COLORS as COLORS } from '@/lib/mysteryBox';
+import { groupFromLocation, groupLink, MAX_GROUP_BOXES, GROUP_PARAM } from '@/lib/mysteryGroup';
 import { t } from '@/lib/i18n';
 
 // Building mystery boxes - one, or a whole group's worth.
@@ -26,28 +27,14 @@ import { t } from '@/lib/i18n';
 //
 // The shirt is a surprise until the box is opened, so nothing here promises to
 // say what came out.
+//
+// The list can travel: "send to a friend" puts every box into a WhatsApp link,
+// and whoever opens it lands here with the boxes so far and a fresh one of
+// their own to fill in (lib/mysteryGroup).
 
 const TYPE_ICONS = { regular: Shirt, retro: Sparkles, mundial: Gift };
-const MAX_BOXES = 30;
+const MAX_BOXES = MAX_GROUP_BOXES;
 
-// Swatches rather than a text field: picking from a list is one tap, and it
-// keeps the answers consistent enough for us to actually act on them.
-//
-// These stay literal hex values on purpose, and are the one exception the brand
-// token check allows. They describe the colour of a shirt, not the colour of the
-// site. 'כתום' being the same orange as the brand accent is a coincidence, and
-// if the brand accent is ever changed, the orange shirt must stay orange.
-const COLORS = [
-  { label: 'אדום', en: 'Red', hex: '#D32F2F' },
-  { label: 'כחול', en: 'Blue', hex: '#1E4FA3' },
-  { label: 'ירוק', en: 'Green', hex: '#2E7D32' },
-  { label: 'צהוב', en: 'Yellow', hex: '#F2C300' },
-  { label: 'שחור', en: 'Black', hex: '#1A1A1A' },
-  { label: 'לבן', en: 'White', hex: '#FFFFFF' },
-  { label: 'כתום', en: 'Orange', hex: '#E8622A' },
-  { label: 'סגול', en: 'Purple', hex: '#6A3DA8' },
-  { label: 'ורוד', en: 'Pink', hex: '#E05A9B' },
-];
 const colorName = (label) => t(label, COLORS.find(c => c.label === label)?.en);
 
 const LONG_SLEEVE_TEXT = t(LONG_SLEEVE_LABEL, 'Long sleeve');
@@ -94,15 +81,35 @@ function boxSummary(box) {
 
 const boxesLabel = (n) => (n === 1 ? t('בוקס אחד', '1 box') : t(`${n} בוקסים`, `${n} boxes`));
 
+// A box nobody has started on: no name, no size.
+const isBlank = (box) => !box.forWhom.trim() && !box.size;
+
+// The boxes a shared link brought, plus an empty one for whoever opened it -
+// unless the sender's own last box was still empty, which is then theirs.
+function boxesFromGroup(group) {
+  const boxes = group.boxes.map(b => ({ ...b, id: nextId++ }));
+  const last = boxes[boxes.length - 1];
+  if (isBlank(last) || boxes.length >= MAX_BOXES) return { boxes, mine: last.id };
+  const mine = newBox(last);
+  return { boxes: [...boxes, mine], mine: mine.id };
+}
+
 export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = '', headerAction = null, size: scale = 'md' }) {
   const lg = scale === 'lg';
 
-  const [boxes, setBoxes] = useState(() => [newBox()]);
-  const [openId, setOpenId] = useState(() => null);
+  // Opened from a friend's link: start from their list.
+  const [fromLink] = useState(() => {
+    const group = groupFromLocation();
+    return group ? { group, ...boxesFromGroup(group) } : null;
+  });
+  const [boxes, setBoxes] = useState(() => fromLink?.boxes || [newBox()]);
+  const [openId, setOpenId] = useState(() => fromLink?.mine ?? null);
   const [prefsOpen, setPrefsOpen] = useState(false);
-  const [excludeClubs, setExcludeClubs] = useState('');
-  const [excludeColors, setExcludeColors] = useState([]);
-  const [notes, setNotes] = useState('');
+  const [excludeClubs, setExcludeClubs] = useState(fromLink?.group.excludeClubs || '');
+  const [excludeColors, setExcludeColors] = useState(fromLink?.group.excludeColors || []);
+  const [notes, setNotes] = useState(fromLink?.group.notes || '');
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [linkNote, setLinkNote] = useState(!!fromLink);
   const [error, setError] = useState('');
   const [missingSize, setMissingSize] = useState([]);
   // What the last press of the button put in the cart, shown until the next
@@ -149,6 +156,25 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
   const total = boxes.reduce((sum, b) => sum + boxPrice(b), 0);
   const count = boxes.length;
+
+  // Everything filled in so far, as a link. An untouched box at the end is
+  // left for the friend rather than sent as an empty line.
+  const shareUrl = () => {
+    const sent = boxes.length > 1 && isBlank(boxes[boxes.length - 1]) ? boxes.slice(0, -1) : boxes;
+    return groupLink({ boxes: sent, excludeClubs, excludeColors, notes });
+  };
+  const shareText = () => t(
+    'בונים מיסטרי בוקס ביחד 🎁 פתחו את הקישור, הוסיפו בוקס עם השם והמידה שלכם ושלחו לי אותו חזרה:',
+    "We're building Mystery Boxes together 🎁 Open the link, add a box with your name and size, and send it back to me:",
+  );
+  const whatsappHref = () => `https://wa.me/?text=${encodeURIComponent(`${shareText()}\n${shareUrl()}`)}`;
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl());
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2500);
+    } catch { /* no clipboard access - the WhatsApp button still works */ }
+  };
 
   const handleAdd = () => {
     const noSize = boxes.filter(b => !b.size).map(b => b.id);
@@ -209,6 +235,13 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     setBoxes([fresh]);
     setOpenId(fresh.id);
     setMissingSize([]);
+    // A reload must not bring back the list that is already in the cart.
+    if (fromLink) {
+      setLinkNote(false);
+      const url = new URL(window.location.href);
+      url.searchParams.delete(GROUP_PARAM);
+      window.history.replaceState(window.history.state, '', url);
+    }
   };
 
   const pad = lg ? 'px-5 sm:px-8' : 'px-5';
@@ -227,6 +260,20 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         </div>
         {headerAction && <span className="ms-auto">{headerAction}</span>}
       </div>
+
+      {linkNote && (
+        <div role="status" className={`mt-4 ${pad}`}>
+          <div className="flex items-start gap-3 rounded-2xl bg-brand-orange-soft px-4 py-3 text-[14px] leading-relaxed text-brand-navy">
+            <Users className="mt-0.5 h-5 w-5 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
+            <span>
+              {t(
+                `קיבלתם רשימה של בוקסים מחברים. מלאו את הבוקס שלכם (שם ומידה), ואז שלחו את הרשימה הלאה בוואטסאפ, או הוסיפו את כולם לסל כדי להזמין.`,
+                'A friend sent you their boxes. Fill in yours (name and size), then send the list on over WhatsApp, or add them all to the cart to order.',
+              )}
+            </span>
+          </div>
+        </div>
+      )}
 
       {lastAdded && (
         <div role="status" className={`mt-4 ${pad}`}>
@@ -384,6 +431,32 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           </button>
         </li>
       </ol>
+
+      {/* Let each friend fill in their own box. */}
+      <div className={`pb-5 ${pad}`}>
+        <div className="rounded-2xl border border-brand-line p-4">
+          <p className="flex items-center gap-2 text-[15px] font-semibold text-brand-navy">
+            <Share2 className="h-5 w-5 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
+            {t('שהחברים ימלאו בעצמם', 'Let your friends fill in their own')}
+          </p>
+          <p className="mt-1 text-[13px] leading-relaxed text-brand-navy/60">
+            {t('שלחו את הרשימה בוואטסאפ. כל חבר מוסיף בוקס עם השם והמידה שלו ושולח חזרה, ומי שמזמין מוסיף את כולם לסל.',
+              'Send the list on WhatsApp. Each friend adds a box with their name and size and sends it back, and whoever orders adds them all to the cart.')}
+          </p>
+          <div className="mt-3 grid grid-cols-1 gap-2 min-[440px]:grid-cols-2">
+            <a href={whatsappHref()} target="_blank" rel="noopener noreferrer"
+              className="shop-btn min-h-[2.75rem] text-sm">
+              <Share2 className="h-4 w-4" aria-hidden="true" />
+              {t('שליחה בוואטסאפ', 'Send on WhatsApp')}
+            </a>
+            <button type="button" onClick={copyLink} className="shop-btn-secondary min-h-[2.75rem] text-sm">
+              {linkCopied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Link2 className="h-4 w-4" aria-hidden="true" />}
+              {linkCopied ? t('הקישור הועתק', 'Link copied') : t('העתקת קישור', 'Copy link')}
+            </button>
+          </div>
+          <p className="sr-only" aria-live="polite">{linkCopied ? t('הקישור הועתק', 'Link copied') : ''}</p>
+        </div>
+      </div>
 
       {/* What to leave out - once, for the whole order. */}
       <div className={`pb-5 ${pad}`}>
