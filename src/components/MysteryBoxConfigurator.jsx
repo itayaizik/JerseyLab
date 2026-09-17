@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  Gift, Check, ShoppingBag, Shirt, Sparkles, Ban, MessageSquare,
-  Plus, Copy, Trash2, ChevronDown, CheckCircle2, User, Share2, Link2, Users,
+  Gift, Check, ShoppingBag, Ban, MessageSquare,
+  Plus, Copy, Trash2, ChevronDown, CheckCircle2, Share2, Link2, Users, Loader2, RefreshCw, X,
 } from 'lucide-react';
 import { addToCart, openCart, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
-import { BOX_TYPES, SIZES, NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID, EXCLUDE_COLORS as COLORS } from '@/lib/mysteryBox';
-import { groupFromLocation, groupLink, MAX_GROUP_BOXES, GROUP_PARAM } from '@/lib/mysteryGroup';
+import { NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID, EXCLUDE_COLORS as COLORS } from '@/lib/mysteryBox';
+import { newBox, newBoxId, typeOf, wantsShorts, boxPrice, boxSummary, isBlank, cleanBox } from '@/lib/mysteryBoxes';
+import {
+  MAX_GROUP_BOXES, loadDraft, saveDraft, createGroup, fetchGroup, closeGroup, joinLink,
+} from '@/lib/mysteryGroup';
+import MysteryBoxFields from '@/components/mystery/MysteryBoxFields';
 import { t } from '@/lib/i18n';
 
 // Building mystery boxes - one, or a whole group's worth.
@@ -16,6 +19,12 @@ import { t } from '@/lib/i18n';
 // its own card with its own style, size and extras, and a name saying who it
 // is for, which travels with the order. A box can be copied, so ten boxes that
 // differ only in size take ten taps rather than ten forms.
+//
+// Friends can also fill in their own box. The organiser starts a group and
+// sends its link; each friend gets a page with just their box
+// (pages/MysteryBoxJoin), and every box they save shows up here, with a note
+// saying who added it. Everything here is remembered in the browser, so a
+// refresh or a closed tab loses nothing (lib/mysteryGroup).
 //
 // One card is open at a time; the rest collapse to a line with their choices
 // and price. What to leave out (teams, colours, notes) is asked once, for the
@@ -27,94 +36,48 @@ import { t } from '@/lib/i18n';
 //
 // The shirt is a surprise until the box is opened, so nothing here promises to
 // say what came out.
-//
-// The list can travel: "send to a friend" puts every box into a WhatsApp link,
-// and whoever opens it lands here with the boxes so far and a fresh one of
-// their own to fill in (lib/mysteryGroup).
 
-const TYPE_ICONS = { regular: Shirt, retro: Sparkles, mundial: Gift };
 const MAX_BOXES = MAX_GROUP_BOXES;
+const POLL_MS = 15000;
 
 const colorName = (label) => t(label, COLORS.find(c => c.label === label)?.en);
 
-const LONG_SLEEVE_TEXT = t(LONG_SLEEVE_LABEL, 'Long sleeve');
-const SHORTS_TEXT = t(SHORTS_LABEL, 'Shorts');
-
-let nextId = 1;
-const newBox = (from) => ({
-  id: nextId++,
-  forWhom: '',
-  type: from?.type || 'regular',
-  size: '',
-  addName: false,
-  patches: false,
-  longSleeve: false,
-  shorts: false,
-  note: '',
-});
-
-const typeOf = (box) => BOX_TYPES.find(b => b.id === box.type) || BOX_TYPES[0];
-// Same rule as a catalogue shirt: retro comes without shorts.
-const shortsAllowed = (box) => box.type !== 'retro';
-const wantsShorts = (box) => box.shorts && shortsAllowed(box);
-
-const boxPrice = (box) => typeOf(box).price
-  + (box.addName ? NAME_PRICE : 0)
-  + (box.patches ? PATCHES_PRICE : 0)
-  + (box.longSleeve ? EXTRA_PRICES.longSleeve : 0)
-  + (wantsShorts(box) ? EXTRA_PRICES.shorts : 0);
-
 const boxTitle = (box, i) => box.forWhom.trim() || t(`בוקס ${i + 1}`, `Box ${i + 1}`);
-
-// "רגיל · L · שם ומספר · מכנס קצר"
-function boxSummary(box) {
-  const type = typeOf(box);
-  return [
-    t(type.label, type.labelEn),
-    box.size || t('בלי מידה', 'No size yet'),
-    box.addName && t('שם ומספר', 'Name and number'),
-    box.patches && t("פאצ'ים", 'Patches'),
-    box.longSleeve && LONG_SLEEVE_TEXT,
-    wantsShorts(box) && SHORTS_TEXT,
-  ].filter(Boolean).join(' · ');
-}
-
 const boxesLabel = (n) => (n === 1 ? t('בוקס אחד', '1 box') : t(`${n} בוקסים`, `${n} boxes`));
 
-// A box nobody has started on: no name, no size.
-const isBlank = (box) => !box.forWhom.trim() && !box.size;
-
-// The boxes a shared link brought, plus an empty one for whoever opened it -
-// unless the sender's own last box was still empty, which is then theirs.
-function boxesFromGroup(group) {
-  const boxes = group.boxes.map(b => ({ ...b, id: nextId++ }));
-  const last = boxes[boxes.length - 1];
-  if (isBlank(last) || boxes.length >= MAX_BOXES) return { boxes, mine: last.id };
-  const mine = newBox(last);
-  return { boxes: [...boxes, mine], mine: mine.id };
+// Tells the organiser about a friend's box when the tab is in the background,
+// if they allowed notifications when they started the group.
+function notify(text) {
+  try {
+    if (typeof Notification !== 'undefined' && Notification.permission === 'granted' && document.hidden) {
+      new Notification('JerseyLab', { body: text, icon: '/icon-192.png' });
+    }
+  } catch { /* some browsers only allow this from a service worker */ }
 }
 
 export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = '', headerAction = null, size: scale = 'md' }) {
   const lg = scale === 'lg';
 
-  // Opened from a friend's link: start from their list.
-  const [fromLink] = useState(() => {
-    const group = groupFromLocation();
-    return group ? { group, ...boxesFromGroup(group) } : null;
-  });
-  const [boxes, setBoxes] = useState(() => fromLink?.boxes || [newBox()]);
-  const [openId, setOpenId] = useState(() => fromLink?.mine ?? null);
+  const [draft] = useState(() => loadDraft());
+  const [boxes, setBoxes] = useState(() => draft?.boxes || [newBox()]);
+  const [openId, setOpenId] = useState(() => null);
   const [prefsOpen, setPrefsOpen] = useState(false);
-  const [excludeClubs, setExcludeClubs] = useState(fromLink?.group.excludeClubs || '');
-  const [excludeColors, setExcludeColors] = useState(fromLink?.group.excludeColors || []);
-  const [notes, setNotes] = useState(fromLink?.group.notes || '');
-  const [linkCopied, setLinkCopied] = useState(false);
-  const [linkNote, setLinkNote] = useState(!!fromLink);
+  const [excludeClubs, setExcludeClubs] = useState(draft?.excludeClubs || '');
+  const [excludeColors, setExcludeColors] = useState(draft?.excludeColors || []);
+  const [notes, setNotes] = useState(draft?.notes || '');
+  const [group, setGroup] = useState(draft?.group || null);
   const [error, setError] = useState('');
   const [missingSize, setMissingSize] = useState([]);
   // What the last press of the button put in the cart, shown until the next
   // change so it is clear the boxes went in and more can follow.
   const [lastAdded, setLastAdded] = useState(null);
+  // Boxes friends added or changed since the organiser last looked.
+  const [arrivals, setArrivals] = useState([]);
+
+  // Remembered on every change: a refresh brings all of it back.
+  useEffect(() => {
+    saveDraft({ boxes, excludeClubs, excludeColors, notes, group });
+  }, [boxes, excludeClubs, excludeColors, notes, group]);
 
   // The first box starts open.
   const currentOpen = openId ?? boxes[0]?.id;
@@ -134,7 +97,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     if (boxes.length >= MAX_BOXES) return;
     touched();
     const last = boxes[boxes.length - 1];
-    const box = copyOf ? { ...copyOf, id: nextId++, forWhom: '', note: '' } : newBox(last);
+    const box = copyOf ? { ...copyOf, id: newBoxId(), remoteId: undefined, forWhom: '', note: '' } : newBox(last);
     setBoxes(prev => {
       if (!copyOf) return [...prev, box];
       const at = prev.findIndex(b => b.id === copyOf.id);
@@ -145,7 +108,10 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
   const removeBox = (id) => {
     touched();
-    setBoxes(prev => (prev.length > 1 ? prev.filter(b => b.id !== id) : prev));
+    setBoxes(prev => {
+      if (prev.length > 1) return prev.filter(b => b.id !== id);
+      return [newBox(prev[0])];
+    });
     if (currentOpen === id) setOpenId(null);
   };
 
@@ -154,27 +120,101 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     setExcludeColors(prev => prev.includes(label) ? prev.filter(c => c !== label) : [...prev, label]);
   };
 
+  // --- the group -------------------------------------------------------------
+
+  const groupRef = useRef(group);
+  groupRef.current = group;
+  const [syncing, setSyncing] = useState(false);
+  const [groupClosed, setGroupClosed] = useState(false);
+  const syncBusy = useRef(false);
+
+  // Brings in boxes friends saved, and changes to ones already brought in.
+  // `seen` remembers each box's last version, so a box the organiser removed
+  // does not come back, and an edited one is updated rather than added twice.
+  const sync = useCallback(async () => {
+    const g = groupRef.current;
+    if (!g || syncBusy.current) return;
+    syncBusy.current = true;
+    setSyncing(true);
+    const result = await fetchGroup(g.id);
+    setSyncing(false);
+    syncBusy.current = false;
+    if (!result.ok) return;
+    setGroupClosed(result.closed);
+    const seen = { ...(g.seenVersions || {}) };
+    const fresh = [];
+    const changed = [];
+    for (const remote of result.boxes) {
+      const version = remote.updatedDate || remote.createdDate || '1';
+      if (!(remote.remoteId in seen)) fresh.push(remote);
+      else if (seen[remote.remoteId] !== version) changed.push(remote);
+      seen[remote.remoteId] = version;
+    }
+    if (!fresh.length && !changed.length) return;
+    // Marked at once, so a second check running alongside does not add them again.
+    groupRef.current = { ...g, seenVersions: seen };
+
+    setBoxes(prev => {
+      let next = prev.map(b => {
+        const c = changed.find(r => r.remoteId === b.remoteId);
+        return c ? { ...cleanBox(c), id: b.id } : b;
+      });
+      // A blank box left at the end makes way for the friends' boxes.
+      if (fresh.length && next.length && isBlank(next[next.length - 1]) && !next[next.length - 1].remoteId) {
+        next = next.slice(0, -1);
+      }
+      return [...next, ...fresh.map(cleanBox)].slice(0, MAX_BOXES);
+    });
+    const lines = [
+      ...fresh.map(r => t(`${r.forWhom} הוסיף/ה בוקס (${boxSummary(r)})`, `${r.forWhom} added a box (${boxSummary(r)})`)),
+      ...changed.map(r => t(`${r.forWhom} עדכן/ה את הבוקס (${boxSummary(r)})`, `${r.forWhom} updated their box (${boxSummary(r)})`)),
+    ];
+    setArrivals(prev => [...prev, ...lines].slice(-6));
+    setLastAdded(null);
+    lines.forEach(notify);
+    setGroup(prevGroup => (prevGroup && prevGroup.id === g.id ? { ...prevGroup, seenVersions: { ...seen } } : prevGroup));
+  }, []);
+
+  useEffect(() => {
+    if (!group?.id) return undefined;
+    sync();
+    // Keeps checking in the background too, so a notification can say a box arrived.
+    const timer = setInterval(sync, POLL_MS);
+    const onVisible = () => { if (!document.hidden) sync(); };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onVisible);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onVisible);
+    };
+  }, [group?.id, sync]);
+
+  const startGroup = async (ownerName, ownerPhone) => {
+    // Asked here, while the organiser is pressing a button, which is when
+    // browsers allow the question.
+    try {
+      if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission();
+    } catch { /* not supported */ }
+    const result = await createGroup(ownerName, ownerPhone);
+    if (!result.ok) return result;
+    setGroup({ id: result.id, ownerToken: result.owner_token, ownerName, seenVersions: {} });
+    setGroupClosed(false);
+    return result;
+  };
+
+  const endGroup = async () => {
+    if (!group) return;
+    if (!window.confirm(t('לסגור את הקבוצה? חברים לא יוכלו להוסיף עוד בוקסים דרך הקישור.', "Close the group? Friends won't be able to add more boxes through the link."))) return;
+    await closeGroup(group);
+    setGroup(null);
+    setArrivals([]);
+  };
+
+  // --- adding to the cart ------------------------------------------------------
+
   const total = boxes.reduce((sum, b) => sum + boxPrice(b), 0);
   const count = boxes.length;
-
-  // Everything filled in so far, as a link. An untouched box at the end is
-  // left for the friend rather than sent as an empty line.
-  const shareUrl = () => {
-    const sent = boxes.length > 1 && isBlank(boxes[boxes.length - 1]) ? boxes.slice(0, -1) : boxes;
-    return groupLink({ boxes: sent, excludeClubs, excludeColors, notes });
-  };
-  const shareText = () => t(
-    'בונים מיסטרי בוקס ביחד 🎁 פתחו את הקישור, הוסיפו בוקס עם השם והמידה שלכם ושלחו לי אותו חזרה:',
-    "We're building Mystery Boxes together 🎁 Open the link, add a box with your name and size, and send it back to me:",
-  );
-  const whatsappHref = () => `https://wa.me/?text=${encodeURIComponent(`${shareText()}\n${shareUrl()}`)}`;
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(shareUrl());
-      setLinkCopied(true);
-      setTimeout(() => setLinkCopied(false), 2500);
-    } catch { /* no clipboard access - the WhatsApp button still works */ }
-  };
 
   const handleAdd = () => {
     const noSize = boxes.filter(b => !b.size).map(b => b.id);
@@ -229,19 +269,13 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     });
 
     // A fresh start for the next round, in the style used last; the order-wide
-    // preferences stay, since the same group is usually still ordering.
+    // preferences and the group stay, since friends may still be adding.
     const fresh = newBox(boxes[boxes.length - 1]);
     setLastAdded({ count, names: boxes.map(b => b.forWhom.trim()).filter(Boolean) });
+    setArrivals([]);
     setBoxes([fresh]);
     setOpenId(fresh.id);
     setMissingSize([]);
-    // A reload must not bring back the list that is already in the cart.
-    if (fromLink) {
-      setLinkNote(false);
-      const url = new URL(window.location.href);
-      url.searchParams.delete(GROUP_PARAM);
-      window.history.replaceState(window.history.state, '', url);
-    }
   };
 
   const pad = lg ? 'px-5 sm:px-8' : 'px-5';
@@ -261,16 +295,17 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         {headerAction && <span className="ms-auto">{headerAction}</span>}
       </div>
 
-      {linkNote && (
+      {arrivals.length > 0 && (
         <div role="status" className={`mt-4 ${pad}`}>
           <div className="flex items-start gap-3 rounded-2xl bg-brand-orange-soft px-4 py-3 text-[14px] leading-relaxed text-brand-navy">
             <Users className="mt-0.5 h-5 w-5 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
-            <span>
-              {t(
-                `קיבלתם רשימה של בוקסים מחברים. מלאו את הבוקס שלכם (שם ומידה), ואז שלחו את הרשימה הלאה בוואטסאפ, או הוסיפו את כולם לסל כדי להזמין.`,
-                'A friend sent you their boxes. Fill in yours (name and size), then send the list on over WhatsApp, or add them all to the cart to order.',
-              )}
-            </span>
+            <ul className="min-w-0 flex-1 space-y-0.5">
+              {arrivals.map((line, i) => <li key={i}>{line}</li>)}
+            </ul>
+            <button type="button" onClick={() => setArrivals([])} aria-label={t('סגירה', 'Dismiss')}
+              className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-brand-navy/50 hover:bg-white">
+              <X className="h-4 w-4" />
+            </button>
           </div>
         </div>
       )}
@@ -294,7 +329,6 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
       <ol className={`space-y-2.5 py-5 ${pad}`}>
         {boxes.map((box, i) => {
           const open = box.id === currentOpen;
-          const type = typeOf(box);
           const missing = missingSize.includes(box.id);
           return (
             <li key={box.id} className={`overflow-hidden rounded-2xl border transition ${open ? 'border-brand-line ring-1 ring-brand-line' : missing ? 'border-red-300' : 'border-transparent'}`}>
@@ -306,7 +340,12 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                     {i + 1}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[15px] font-semibold text-brand-navy">{boxTitle(box, i)}</span>
+                    <span className="flex items-center gap-1.5 truncate text-[15px] font-semibold text-brand-navy">
+                      {boxTitle(box, i)}
+                      {box.remoteId && (
+                        <span className="rounded-full bg-brand-orange-soft px-2 py-0.5 text-[11px] font-medium text-brand-orange-ink">{t('מילא/ה בעצמו/ה', 'Filled in by them')}</span>
+                      )}
+                    </span>
                     <span className={`block truncate text-[12px] ${missing ? 'text-red-600' : 'text-brand-navy/55'}`}>{boxSummary(box)}</span>
                   </span>
                   <span className="flex-shrink-0 text-[15px] font-semibold tabular-nums text-brand-navy">₪{boxPrice(box)}</span>
@@ -318,7 +357,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                     className="flex h-9 w-9 items-center justify-center rounded-xl text-brand-navy/55 transition hover:bg-brand-mist-dark hover:text-brand-navy disabled:opacity-30">
                     <Copy className="h-4 w-4" aria-hidden="true" />
                   </button>
-                  {count > 1 && (
+                  {(count > 1 || !isBlank(box)) && (
                     <button type="button" onClick={() => removeBox(box.id)}
                       aria-label={t(`הסרת ${boxTitle(box, i)}`, `Remove ${boxTitle(box, i)}`)} title={t('הסרה', 'Remove')}
                       className="flex h-9 w-9 items-center justify-center rounded-xl text-brand-navy/55 transition hover:bg-red-50 hover:text-red-600">
@@ -330,89 +369,8 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
               {open && (
                 <div className="space-y-5 bg-white px-4 pb-5 pt-2">
-                  <div>
-                    <label htmlFor={fid(`who-${box.id}`)} className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-brand-navy/70">
-                      <User className="h-4 w-4 text-brand-orange-ink" aria-hidden="true" />
-                      {t('למי הבוקס?', 'Who is this box for?')}
-                      <span className="font-normal text-brand-navy/40">{t('(לא חובה)', '(optional)')}</span>
-                    </label>
-                    <input id={fid(`who-${box.id}`)} value={box.forWhom} maxLength={40}
-                      onChange={e => update(box.id, { forWhom: e.target.value })}
-                      placeholder={t('למשל: דני', 'For example: Danny')}
-                      className="shop-field" />
-                  </div>
-
-                  <div>
-                    <p className="mb-2 text-sm font-medium text-brand-navy/70">{t('סגנון', 'Style')}</p>
-                    <div role="group" className="grid grid-cols-3 gap-2">
-                      {BOX_TYPES.map(option => {
-                        const active = box.type === option.id;
-                        const Icon = TYPE_ICONS[option.id];
-                        return (
-                          <button key={option.id} type="button" aria-pressed={active}
-                            onClick={() => update(box.id, { type: option.id })}
-                            title={t(option.blurb, option.blurbEn)}
-                            className={`flex flex-col items-center gap-1 rounded-2xl border p-2.5 text-center transition ${
-                              active ? 'border-brand-orange bg-brand-orange-soft ring-1 ring-inset ring-brand-orange' : 'border-brand-line bg-white hover:border-brand-navy/30'
-                            }`}>
-                            <Icon className={`h-5 w-5 ${active ? 'text-brand-orange-ink' : 'text-brand-navy/60'}`} aria-hidden="true" />
-                            <span className="text-[14px] font-semibold text-brand-navy">{t(option.label, option.labelEn)}</span>
-                            <span className="text-[13px] tabular-nums text-brand-navy/60">₪{option.price}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <p className="mt-2 text-[12px] leading-relaxed text-brand-navy/50">{t(type.blurb, type.blurbEn)}</p>
-                  </div>
-
-                  <div>
-                    <div className="mb-2 flex items-baseline justify-between gap-2">
-                      <p className={`text-sm font-medium ${missing ? 'text-red-600' : 'text-brand-navy/70'}`}>
-                        {t('מידה', 'Size')} <span className="text-brand-orange-ink">*</span>
-                      </p>
-                      <Link to="/size-guide" className="shop-link text-[13px]">{t('מדריך מידות', 'Size guide')}</Link>
-                    </div>
-                    <div role="group" className="grid grid-cols-6 gap-1.5">
-                      {SIZES.map(v => (
-                        <button key={v} type="button" aria-pressed={box.size === v}
-                          onClick={() => update(box.id, { size: v })}
-                          className={`shop-chip min-h-[2.75rem] px-0 font-semibold tabular-nums ${box.size === v ? 'shop-chip-active' : missing ? 'border-red-300' : ''}`}>
-                          <span dir="ltr">{v}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="mb-2 text-sm font-medium text-brand-navy/70">{t('תוספות', 'Extras')}</p>
-                    <div className="grid grid-cols-1 gap-2 min-[440px]:grid-cols-2">
-                      <Extra checked={box.addName} onChange={v => update(box.id, { addName: v })}
-                        label={t('שם ומספר מאחורה', 'Name and number')} price={NAME_PRICE}
-                        hint={t('שחקן שמתאים לחולצה - גם הוא הפתעה', 'A player to match the shirt - a surprise too')} />
-                      <Extra checked={box.patches} onChange={v => update(box.id, { patches: v })}
-                        label={t("כל הפאצ'ים", 'All patches')} price={PATCHES_PRICE}
-                        hint={t('של הליגה והטורניר', 'League and tournament')} />
-                      <Extra checked={box.longSleeve} onChange={v => update(box.id, { longSleeve: v })}
-                        label={LONG_SLEEVE_TEXT} price={EXTRA_PRICES.longSleeve}
-                        hint={t('אותה חולצה, שרוול ארוך', 'The same shirt, long sleeved')} />
-                      {shortsAllowed(box) && (
-                        <Extra checked={box.shorts} onChange={v => update(box.id, { shorts: v })}
-                          label={SHORTS_TEXT} price={EXTRA_PRICES.shorts}
-                          hint={box.size ? t(`מכנס תואם במידה ${box.size}`, `Matching shorts, size ${box.size}`) : t('מכנס תואם באותה מידה', 'Matching shorts, same size')} />
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor={fid(`note-${box.id}`)} className="mb-1.5 block text-sm font-medium text-brand-navy/70">
-                      {t('הערה לבוקס הזה', 'A note for this box')} <span className="font-normal text-brand-navy/40">{t('(לא חובה)', '(optional)')}</span>
-                    </label>
-                    <input id={fid(`note-${box.id}`)} value={box.note} maxLength={200}
-                      onChange={e => update(box.id, { note: e.target.value })}
-                      placeholder={t('למשל: אוהד מכבי, בלי הפועל', 'For example: a Liverpool fan, nothing from Everton')}
-                      className="shop-field" />
-                  </div>
-
+                  <MysteryBoxFields box={box} onChange={patch => update(box.id, patch)}
+                    fid={name => fid(`${name}-${box.id}`)} missingSize={missing} />
                   <button type="button" onClick={() => setOpenId(-1)} className="shop-btn-dark min-h-[2.75rem] w-full text-sm">
                     <Check className="h-4 w-4" aria-hidden="true" />
                     {t('הבוקס מוכן', 'Box done')}
@@ -432,30 +390,9 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         </li>
       </ol>
 
-      {/* Let each friend fill in their own box. */}
       <div className={`pb-5 ${pad}`}>
-        <div className="rounded-2xl border border-brand-line p-4">
-          <p className="flex items-center gap-2 text-[15px] font-semibold text-brand-navy">
-            <Share2 className="h-5 w-5 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
-            {t('שהחברים ימלאו בעצמם', 'Let your friends fill in their own')}
-          </p>
-          <p className="mt-1 text-[13px] leading-relaxed text-brand-navy/60">
-            {t('שלחו את הרשימה בוואטסאפ. כל חבר מוסיף בוקס עם השם והמידה שלו ושולח חזרה, ומי שמזמין מוסיף את כולם לסל.',
-              'Send the list on WhatsApp. Each friend adds a box with their name and size and sends it back, and whoever orders adds them all to the cart.')}
-          </p>
-          <div className="mt-3 grid grid-cols-1 gap-2 min-[440px]:grid-cols-2">
-            <a href={whatsappHref()} target="_blank" rel="noopener noreferrer"
-              className="shop-btn min-h-[2.75rem] text-sm">
-              <Share2 className="h-4 w-4" aria-hidden="true" />
-              {t('שליחה בוואטסאפ', 'Send on WhatsApp')}
-            </a>
-            <button type="button" onClick={copyLink} className="shop-btn-secondary min-h-[2.75rem] text-sm">
-              {linkCopied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Link2 className="h-4 w-4" aria-hidden="true" />}
-              {linkCopied ? t('הקישור הועתק', 'Link copied') : t('העתקת קישור', 'Copy link')}
-            </button>
-          </div>
-          <p className="sr-only" aria-live="polite">{linkCopied ? t('הקישור הועתק', 'Link copied') : ''}</p>
-        </div>
+        <GroupPanel group={group} closed={groupClosed} syncing={syncing} fid={fid}
+          onStart={startGroup} onRefresh={sync} onEnd={endGroup} />
       </div>
 
       {/* What to leave out - once, for the whole order. */}
@@ -549,20 +486,116 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   );
 }
 
-function Extra({ checked, onChange, label, price, hint }) {
+// Starting a group, and once there is one, sharing its link.
+function GroupPanel({ group, closed, syncing, fid, onStart, onRefresh, onEnd }) {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const heading = (
+    <p className="flex items-center gap-2 text-[15px] font-semibold text-brand-navy">
+      <Share2 className="h-5 w-5 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
+      {t('שהחברים ימלאו בעצמם', 'Let your friends fill in their own')}
+    </p>
+  );
+
+  if (!group) {
+    const start = async (e) => {
+      e.preventDefault();
+      if (!name.trim()) { setError(t('צריך למלא את השם שלך', 'Please fill in your name')); return; }
+      setBusy(true);
+      setError('');
+      const result = await onStart(name.trim(), phone.trim());
+      setBusy(false);
+      if (!result.ok) setError(result.message);
+    };
+
+    return (
+      <div className="rounded-2xl border border-brand-line p-4">
+        {heading}
+        <p className="mt-1 text-[13px] leading-relaxed text-brand-navy/60">
+          {t('שולחים לחברים קישור, כל אחד ממלא את הבוקס שלו בדף משלו, והבוקסים מופיעים כאן אצלך.',
+            'Send your friends a link; each fills in their own box on a page of their own, and the boxes show up here for you.')}
+        </p>
+        {!open ? (
+          <button type="button" onClick={() => setOpen(true)} className="shop-btn-secondary mt-3 min-h-[2.75rem] w-full text-sm">
+            <Users className="h-4 w-4" aria-hidden="true" />
+            {t('יצירת קישור לחברים', 'Create a link for friends')}
+          </button>
+        ) : (
+          <form onSubmit={start} noValidate className="mt-3 space-y-3">
+            <div>
+              <label htmlFor={fid('owner-name')} className="mb-1.5 block text-sm font-medium text-brand-navy/70">
+                {t('השם שלך', 'Your name')} <span className="text-brand-orange-ink">*</span>
+              </label>
+              <input id={fid('owner-name')} value={name} onChange={e => { setName(e.target.value); setError(''); }} maxLength={40}
+                autoComplete="given-name" placeholder={t('החברים יראו מי הזמין אותם', 'Your friends will see who invited them')} className="shop-field" />
+            </div>
+            <div>
+              <label htmlFor={fid('owner-phone')} className="mb-1.5 block text-sm font-medium text-brand-navy/70">
+                {t('הטלפון שלך', 'Your phone')} <span className="font-normal text-brand-navy/40">{t('(לא חובה)', '(optional)')}</span>
+              </label>
+              <input id={fid('owner-phone')} value={phone} onChange={e => setPhone(e.target.value)} type="tel" dir="ltr" maxLength={20}
+                autoComplete="tel" className="shop-field text-start" />
+              <p className="mt-1 text-[12px] text-brand-navy/50">{t('כדי שחבר שסיים יוכל לעדכן אותך בוואטסאפ בלחיצה.', 'So a friend who is done can let you know on WhatsApp in one tap.')}</p>
+            </div>
+            {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+            <button type="submit" disabled={busy} className="shop-btn min-h-[2.75rem] w-full text-sm">
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" aria-hidden="true" />}
+              {t('יצירת הקישור', 'Create the link')}
+            </button>
+          </form>
+        )}
+      </div>
+    );
+  }
+
+  const link = joinLink(group.id);
+  const message = t(
+    `${group.ownerName} מזמין מיסטרי בוקס 🎁 מלאו כאן את הבוקס שלכם (שם, מידה ותוספות):`,
+    `${group.ownerName} is ordering Mystery Boxes 🎁 Fill in your box here (name, size and extras):`,
+  );
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch { /* no clipboard - the WhatsApp button still works */ }
+  };
+
   return (
-    <label className={`flex cursor-pointer items-start gap-2.5 rounded-2xl border p-3 transition ${
-      checked ? 'border-brand-orange bg-brand-orange-soft ring-1 ring-inset ring-brand-orange' : 'border-brand-line bg-white hover:border-brand-navy/30'
-    }`}>
-      <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)}
-        className="mt-0.5 h-4 w-4 flex-shrink-0 accent-brand-orange" />
-      <span className="min-w-0 flex-1">
-        <span className="flex items-center justify-between gap-2">
-          <span className="text-[14px] font-semibold text-brand-navy">{label}</span>
-          <span className="flex-shrink-0 text-[13px] font-semibold tabular-nums text-brand-orange-ink">+₪{price}</span>
-        </span>
-        <span className="mt-0.5 block text-[12px] text-brand-navy/55">{hint}</span>
-      </span>
-    </label>
+    <div className="rounded-2xl border border-brand-orange/40 bg-brand-orange-soft/40 p-4">
+      {heading}
+      <p className="mt-1 text-[13px] leading-relaxed text-brand-navy/65">
+        {closed
+          ? t('הקבוצה סגורה, אז אי אפשר להוסיף אליה עוד בוקסים.', 'The group is closed, so no more boxes can be added.')
+          : t('שלחו את הקישור. כל בוקס שחבר שומר מופיע כאן אוטומטית, גם אם תצאו ותחזרו.', 'Send the link. Every box a friend saves appears here automatically, even if you leave and come back.')}
+      </p>
+      <p dir="ltr" className="mt-2 truncate rounded-xl bg-white px-3 py-2 text-start text-[13px] text-brand-navy/70">{link}</p>
+      <div className="mt-3 grid grid-cols-1 gap-2 min-[440px]:grid-cols-2">
+        <a href={`https://wa.me/?text=${encodeURIComponent(`${message}\n${link}`)}`} target="_blank" rel="noopener noreferrer"
+          className="shop-btn min-h-[2.75rem] text-sm">
+          <Share2 className="h-4 w-4" aria-hidden="true" />
+          {t('שליחה בוואטסאפ', 'Send on WhatsApp')}
+        </a>
+        <button type="button" onClick={copy} className="shop-btn-secondary min-h-[2.75rem] text-sm">
+          {copied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
+          {copied ? t('הקישור הועתק', 'Link copied') : t('העתקת קישור', 'Copy link')}
+        </button>
+      </div>
+      <p className="sr-only" aria-live="polite">{copied ? t('הקישור הועתק', 'Link copied') : ''}</p>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[13px]">
+        <button type="button" onClick={onRefresh} disabled={syncing} className="shop-link">
+          <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} aria-hidden="true" />
+          {t('בדיקת בוקסים חדשים', 'Check for new boxes')}
+        </button>
+        <button type="button" onClick={onEnd} className="text-brand-navy/55 underline underline-offset-2 hover:text-red-600">
+          {t('סגירת הקבוצה', 'Close the group')}
+        </button>
+      </div>
+    </div>
   );
 }

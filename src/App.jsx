@@ -28,6 +28,7 @@ import Home from '@/pages/Home';
 import Catalog from '@/pages/Catalog';
 import ShirtDetail from '@/pages/ShirtDetail';
 const MysteryBox = lazy(() => import('@/pages/MysteryBox'));
+const MysteryBoxJoin = lazy(() => import('@/pages/MysteryBoxJoin'));
 const RequestShirt = lazy(() => import('@/pages/RequestShirt'));
 const Collection = lazy(() => import('@/pages/Collection'));
 
@@ -109,6 +110,7 @@ const AuthenticatedApp = () => {
         <Route path="/catalog" element={<Catalog />} />
         <Route path="/shirt/:id" element={<ShirtDetail />} />
         <Route path="/mystery-box" element={<MysteryBox />} />
+        <Route path="/mystery-box/join/:groupId" element={<MysteryBoxJoin />} />
         <Route path="/request-shirt" element={<RequestShirt />} />
         <Route path="/collections/:slug" element={<Collection />} />
         <Route path="/legal/terms" element={<LegalTerms />} />

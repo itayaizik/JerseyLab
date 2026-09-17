@@ -1,84 +1,134 @@
-// A group's mystery boxes, carried in a link.
+// Mystery box groups, kept on the server (supabase/mystery_groups.sql).
 //
-// Friends order together, but only one of them is holding the phone. The
-// organiser sends the list so far over WhatsApp; each friend opens it, adds a
-// box with their own name and size, and sends it on or back. Everything lives
-// in the link itself - no account, nothing saved on our side - so it is read
-// back as untrusted input: unknown styles and sizes are dropped, text is cut to
-// the lengths the form allows.
+// Friends order together, but only one of them places the order. The
+// organiser starts a group and sends its link; each friend opens a page of
+// their own, fills in one box and saves it. The organiser's builder picks the
+// new boxes up while it is open and says who added what.
+//
+// The browser remembers both sides, so a refresh or a closed tab loses
+// nothing: the organiser keeps the group and the boxes being built, a friend
+// keeps their box and can come back to change it.
 
-import { BOX_TYPES, SIZES, EXCLUDE_COLORS } from '@/lib/mysteryBox';
+import { supabase } from '@/lib/supabase';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
+import { cleanBox } from '@/lib/mysteryBoxes';
+import { t } from '@/lib/i18n';
 
-export const GROUP_PARAM = 'group';
 export const MAX_GROUP_BOXES = 30;
 
-const text = (value, max) => (typeof value === 'string' ? value.slice(0, max) : '');
+export const joinPath = (groupId) => `/mystery-box/join/${groupId}`;
+export const joinLink = (groupId) => `${SITE_ORIGIN}${joinPath(groupId)}`;
 
-function toBase64Url(str) {
-  const bytes = new TextEncoder().encode(str);
-  let binary = '';
-  bytes.forEach(b => { binary += String.fromCharCode(b); });
-  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
+// --- local memory ----------------------------------------------------------
 
-function fromBase64Url(str) {
-  const b64 = str.replace(/-/g, '+').replace(/_/g, '/');
-  const binary = atob(b64 + '='.repeat((4 - (b64.length % 4)) % 4));
-  return new TextDecoder().decode(Uint8Array.from(binary, c => c.charCodeAt(0)));
-}
-
-// Short keys keep the link short enough for WhatsApp to show it whole.
-export function encodeGroup({ boxes, excludeClubs, excludeColors, notes }) {
-  const data = {
-    b: boxes.map(box => [
-      box.forWhom.trim(), box.type, box.size,
-      (box.addName ? 1 : 0) | (box.patches ? 2 : 0) | (box.longSleeve ? 4 : 0) | (box.shorts ? 8 : 0),
-      box.note.trim(),
-    ]),
-  };
-  if (excludeClubs.trim()) data.c = excludeClubs.trim();
-  if (excludeColors.length) data.k = excludeColors;
-  if (notes.trim()) data.n = notes.trim();
-  return toBase64Url(JSON.stringify(data));
-}
-
-// The group in a link, or null when there is none or it cannot be read.
-export function decodeGroup(value) {
-  if (!value || value.length > 8000) return null;
+const read = (key) => { try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch { return null; } };
+const write = (key, value) => {
   try {
-    const data = JSON.parse(fromBase64Url(value));
-    if (!Array.isArray(data?.b)) return null;
-    const boxes = data.b.slice(0, MAX_GROUP_BOXES).map(entry => {
-      const [forWhom, type, size, flags, note] = Array.isArray(entry) ? entry : [];
-      const f = Number(flags) || 0;
-      return {
-        forWhom: text(forWhom, 40),
-        type: BOX_TYPES.some(b => b.id === type) ? type : BOX_TYPES[0].id,
-        size: SIZES.includes(size) ? size : '',
-        addName: !!(f & 1),
-        patches: !!(f & 2),
-        longSleeve: !!(f & 4),
-        shorts: !!(f & 8),
-        note: text(note, 200),
-      };
-    });
-    if (!boxes.length) return null;
-    return {
-      boxes,
-      excludeClubs: text(data.c, 200),
-      excludeColors: Array.isArray(data.k) ? data.k.filter(c => EXCLUDE_COLORS.some(x => x.label === c)) : [],
-      notes: text(data.n, 500),
-    };
-  } catch {
-    return null;
-  }
+    if (value === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, JSON.stringify(value));
+  } catch { /* private mode - the page still works, it just forgets */ }
+};
+
+// The organiser's builder: the boxes, what to leave out, and the group if one
+// was started. { boxes, excludeClubs, excludeColors, notes, group }
+const DRAFT_KEY = 'jl_mystery_draft';
+
+export function loadDraft() {
+  const draft = read(DRAFT_KEY);
+  if (!draft || !Array.isArray(draft.boxes) || !draft.boxes.length) return null;
+  const g = draft.group;
+  return {
+    boxes: draft.boxes.slice(0, MAX_GROUP_BOXES).map(cleanBox),
+    excludeClubs: typeof draft.excludeClubs === 'string' ? draft.excludeClubs.slice(0, 200) : '',
+    excludeColors: Array.isArray(draft.excludeColors) ? draft.excludeColors.filter(c => typeof c === 'string') : [],
+    notes: typeof draft.notes === 'string' ? draft.notes.slice(0, 500) : '',
+    group: g && typeof g.id === 'string' && typeof g.ownerToken === 'string'
+      ? {
+        id: g.id, ownerToken: g.ownerToken, ownerName: String(g.ownerName || ''),
+        seenVersions: g.seenVersions && typeof g.seenVersions === 'object' ? { ...g.seenVersions } : {},
+      }
+      : null,
+  };
 }
 
-export const groupLink = (group) => `${SITE_ORIGIN}/mystery-box?${GROUP_PARAM}=${encodeGroup(group)}`;
+export function saveDraft(draft) {
+  write(DRAFT_KEY, draft ? {
+    ...draft,
+    boxes: draft.boxes.map(({ id, ...box }) => box), // eslint-disable-line no-unused-vars
+  } : null);
+}
 
-// The group in the address this page was opened with, if any.
-export function groupFromLocation() {
-  if (typeof window === 'undefined') return null;
-  return decodeGroup(new URLSearchParams(window.location.search).get(GROUP_PARAM));
+// A friend's box in one group: { boxId, token, box }.
+const memberKey = (groupId) => `jl_mystery_member_${groupId}`;
+export const loadMember = (groupId) => {
+  const m = read(memberKey(groupId));
+  return m && typeof m.token === 'string' ? { ...m, box: m.box ? cleanBox(m.box) : null } : null;
+};
+export const saveMember = (groupId, member) => write(memberKey(groupId), member);
+
+const newToken = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`).replace(/-/g, '');
+export const ensureMemberToken = (groupId) => loadMember(groupId)?.token || newToken();
+
+// --- the server ------------------------------------------------------------
+
+const REASONS = {
+  not_found: () => t('הקישור לא נמצא. בקשו מהחבר קישור חדש.', "This link wasn't found. Ask your friend for a new one."),
+  closed: () => t('מי שהזמין סגר את הקבוצה, אז אי אפשר להוסיף אליה בוקסים.', 'The organiser has closed this group, so boxes can no longer be added.'),
+  full: () => t('בקבוצה כבר יש את מספר הבוקסים המקסימלי.', 'This group already has the maximum number of boxes.'),
+  name_required: () => t('צריך למלא שם', 'Please fill in a name'),
+  size_required: () => t('צריך לבחור מידה', 'Please choose a size'),
+  unavailable: () => t('משהו השתבש. נסו שוב בעוד רגע.', 'Something went wrong. Please try again in a moment.'),
+};
+export const groupReason = (reason) => (REASONS[reason] || REASONS.unavailable)();
+
+async function call(fn, args) {
+  const { data, error } = await supabase.rpc(fn, args);
+  if (error || !data) return { ok: false, message: groupReason('unavailable') };
+  if (!data.ok) return { ok: false, reason: data.reason, message: groupReason(data.reason) };
+  return data;
+}
+
+export const createGroup = (ownerName, ownerPhone) =>
+  call('create_mystery_group', { p_owner_name: ownerName, p_owner_phone: ownerPhone || null });
+
+// Server box -> the builder's shape.
+const fromServer = (b) => ({
+  remoteId: b.id,
+  createdDate: b.created_date,
+  updatedDate: b.updated_date,
+  forWhom: b.for_whom, type: b.type, size: b.size,
+  addName: b.add_name, patches: b.patches, longSleeve: b.long_sleeve, shorts: b.shorts,
+  note: b.note || '',
+});
+
+export async function fetchGroup(groupId) {
+  const data = await call('get_mystery_group', { p_id: groupId });
+  if (!data.ok) return data;
+  return {
+    ok: true,
+    ownerName: data.owner_name,
+    ownerPhone: data.owner_phone,
+    closed: !!data.closed,
+    boxes: (data.boxes || []).map(fromServer),
+  };
+}
+
+export const saveGroupBox = (groupId, { boxId, token, box }) => call('save_mystery_group_box', {
+  p_group_id: groupId,
+  p_box_id: boxId || null,
+  p_token: token,
+  p_box: {
+    for_whom: box.forWhom.trim(), type: box.type, size: box.size,
+    add_name: box.addName, patches: box.patches, long_sleeve: box.longSleeve, shorts: box.shorts,
+    note: box.note.trim(),
+  },
+});
+
+export const closeGroup = (group) => call('close_mystery_group', { p_id: group.id, p_owner_token: group.ownerToken });
+
+// "050-1234567" -> "972501234567", for a wa.me link.
+export function whatsappNumber(phone) {
+  const digits = String(phone || '').replace(/\D/g, '');
+  if (!digits) return '';
+  return digits.startsWith('0') ? `972${digits.slice(1)}` : digits;
 }
