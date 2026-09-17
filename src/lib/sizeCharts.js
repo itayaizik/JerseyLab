@@ -1,27 +1,29 @@
 // The size tables, shared by the size guide page and the size guide drawer on
 // the product page, so the two can never show different numbers.
 
+import { t } from '@/lib/i18n';
+
 // FAN VERSION - columns: S, M, L, XL, 2XL, 3XL
 export const FAN_ROWS = [
-  { measure: 'אורך (ס"מ)', S: '69-71',   M: '71-73',   L: '73-75',  XL: '75-78',  '2XL': '78-81',  '3XL': '81-83' },
-  { measure: 'רוחב (ס"מ)', S: '53-55',   M: '55-57',   L: '57-58',  XL: '58-60',  '2XL': '60-62',  '3XL': '62-64' },
-  { measure: 'גובה (ס"מ)', S: '162-170', M: '170-176', L: '175-182', XL: '182-190', '2XL': '192-197', '3XL': '197-200' },
-  { measure: 'משקל (ק"ג)', S: '50-62',   M: '62-70',   L: '70-83',  XL: '83-90',  '2XL': '90-97',  '3XL': '97-104' },
+  { key: 'length', measure: t('אורך (ס"מ)', 'Length (cm)'), S: '69-71',   M: '71-73',   L: '73-75',  XL: '75-78',  '2XL': '78-81',  '3XL': '81-83' },
+  { key: 'width', measure: t('רוחב (ס"מ)', 'Width (cm)'), S: '53-55',   M: '55-57',   L: '57-58',  XL: '58-60',  '2XL': '60-62',  '3XL': '62-64' },
+  { key: 'height', measure: t('גובה (ס"מ)', 'Height (cm)'), S: '162-170', M: '170-176', L: '175-182', XL: '182-190', '2XL': '192-197', '3XL': '197-200' },
+  { key: 'weight', measure: t('משקל (ק"ג)', 'Weight (kg)'), S: '50-62',   M: '62-70',   L: '70-83',  XL: '83-90',  '2XL': '90-97',  '3XL': '97-104' },
 ];
 
 // PLAYER VERSION - columns: S, M, L, XL, 2XL, 3XL
 export const PLAYER_ROWS = [
-  { measure: 'אורך (ס"מ)', S: '67-69',   M: '69-71',   L: '71-73',  XL: '75-76',  '2XL': '76-78',  '3XL': '78-79' },
-  { measure: 'רוחב (ס"מ)', S: '49-51',   M: '51-53',   L: '53-55',  XL: '55-57',  '2XL': '57-60',  '3XL': '60-63' },
-  { measure: 'גובה (ס"מ)', S: '162-170', M: '170-176', L: '175-180', XL: '180-185', '2XL': '185-190', '3XL': '190-195' },
-  { measure: 'משקל (ק"ג)', S: '50-62',   M: '62-75',   L: '75-80',  XL: '80-85',  '2XL': '85-90',  '3XL': '90-95' },
+  { key: 'length', measure: t('אורך (ס"מ)', 'Length (cm)'), S: '67-69',   M: '69-71',   L: '71-73',  XL: '75-76',  '2XL': '76-78',  '3XL': '78-79' },
+  { key: 'width', measure: t('רוחב (ס"מ)', 'Width (cm)'), S: '49-51',   M: '51-53',   L: '53-55',  XL: '55-57',  '2XL': '57-60',  '3XL': '60-63' },
+  { key: 'height', measure: t('גובה (ס"מ)', 'Height (cm)'), S: '162-170', M: '170-176', L: '175-180', XL: '180-185', '2XL': '185-190', '3XL': '190-195' },
+  { key: 'weight', measure: t('משקל (ק"ג)', 'Weight (kg)'), S: '50-62',   M: '62-75',   L: '75-80',  XL: '80-85',  '2XL': '85-90',  '3XL': '90-95' },
 ];
 
 // WOMEN'S VERSION - columns: S, M, L, XL
 export const WOMEN_ROWS = [
-  { measure: 'אורך (ס"מ)', S: '61-63',   M: '63-66', L: '66-69',   XL: '69-71' },
-  { measure: 'רוחב (ס"מ)', S: '40-41',   M: '41-44', L: '44-47',   XL: '47-50' },
-  { measure: 'גובה (ס"מ)', S: '150-160', M: '160-165', L: '165-170', XL: '170-175' },
+  { key: 'length', measure: t('אורך (ס"מ)', 'Length (cm)'), S: '61-63',   M: '63-66', L: '66-69',   XL: '69-71' },
+  { key: 'width', measure: t('רוחב (ס"מ)', 'Width (cm)'), S: '40-41',   M: '41-44', L: '44-47',   XL: '47-50' },
+  { key: 'height', measure: t('גובה (ס"מ)', 'Height (cm)'), S: '150-160', M: '160-165', L: '165-170', XL: '170-175' },
 ];
 
 export const ADULT_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
@@ -45,16 +47,16 @@ function sizeIndexFor(value, row) {
 }
 
 export const BODY_TYPES = [
-  { id: 'slim', label: 'רזה' },
-  { id: 'average', label: 'ממוצע' },
-  { id: 'full', label: 'מלא / עם בטן' },
-  { id: 'broad', label: 'רחב / שרירי' },
+  { id: 'slim', label: t('רזה', 'Slim') },
+  { id: 'average', label: t('ממוצע', 'Average') },
+  { id: 'full', label: t('מלא / עם בטן', 'Fuller / some belly') },
+  { id: 'broad', label: t('רחב / שרירי', 'Broad / muscular') },
 ];
 
 export const FIT_TYPES = [
-  { id: 'snug', label: 'צמוד לגוף', step: 0 },
-  { id: 'regular', label: 'רגיל', step: 1 },
-  { id: 'loose', label: 'רפוי / אוברסייז', step: 2 },
+  { id: 'snug', label: t('צמוד לגוף', 'Close to the body'), step: 0 },
+  { id: 'regular', label: t('רגיל', 'Regular'), step: 1 },
+  { id: 'loose', label: t('רפוי / אוברסייז', 'Loose / oversized'), step: 2 },
 ];
 
 export function recommendSize(height, weight, tab = 'fan', body = 'average', fit = 'regular') {
@@ -62,8 +64,8 @@ export function recommendSize(height, weight, tab = 'fan', body = 'average', fit
   const h = Number(height);
   const w = Number(weight);
   if (!(h >= 120 && h <= 230) || !(w >= 30 && w <= 200)) return null;
-  const byHeight = sizeIndexFor(h, rows.find(r => r.measure.startsWith('גובה')));
-  const byWeight = sizeIndexFor(w, rows.find(r => r.measure.startsWith('משקל')));
+  const byHeight = sizeIndexFor(h, rows.find(r => r.key === 'height'));
+  const byWeight = sizeIndexFor(w, rows.find(r => r.key === 'weight'));
   const base = body === 'slim' ? byHeight : Math.max(byHeight, byWeight);
   const bodyStep = body === 'full' || body === 'broad' ? 1 : 0;
   const fitStep = FIT_TYPES.find(f => f.id === fit)?.step ?? 1;
@@ -85,25 +87,25 @@ export const KIDS_ROWS = [
 ];
 
 export const KIDS_COLUMNS = [
-  { key: 'size', label: 'מידה' },
-  { key: 'height', label: 'גובה (ס"מ)' },
-  { key: 'age', label: 'גיל' },
-  { key: 'length', label: 'אורך (ס"מ)' },
-  { key: 'width', label: 'רוחב (ס"מ)' },
-  { key: 'waist', label: 'היקף מותן (ס"מ)' },
+  { key: 'size', label: t('מידה', 'Size') },
+  { key: 'height', label: t('גובה (ס"מ)', 'Height (cm)') },
+  { key: 'age', label: t('גיל', 'Age') },
+  { key: 'length', label: t('אורך (ס"מ)', 'Length (cm)') },
+  { key: 'width', label: t('רוחב (ס"מ)', 'Width (cm)') },
+  { key: 'waist', label: t('היקף מותן (ס"מ)', 'Waist (cm)') },
 ];
 
 export const SIZE_TIPS = [
-  'מודדים אורך מהכתף ועד קצה החולצה בצד האחורי',
-  'רוחב נמדד מבית שחי לבית שחי (מתחת לבית השחי)',
-  'גובה ומשקל מתארים טווח מומלץ לבחירת המידה',
-  'בין שתי מידות? תמיד עדיף לקחת את הגדולה יותר',
-  'מידות עשויות להשתנות בין יצרנים - פנו אלינו לאישור',
+  t('מודדים אורך מהכתף ועד קצה החולצה בצד האחורי', 'Length is measured from the shoulder to the hem, on the back'),
+  t('רוחב נמדד מבית שחי לבית שחי (מתחת לבית השחי)', 'Width is measured from armpit to armpit (just below the armpits)'),
+  t('גובה ומשקל מתארים טווח מומלץ לבחירת המידה', 'Height and weight give a recommended range for choosing a size'),
+  t('בין שתי מידות? תמיד עדיף לקחת את הגדולה יותר', 'Between two sizes? The larger one is always the safer choice'),
+  t('מידות עשויות להשתנות בין יצרנים - פנו אלינו לאישור', 'Sizes can vary between makers - ask us to confirm'),
 ];
 
 export const SIZE_TABS = [
-  { key: 'fan', label: 'גרסת אוהד' },
-  { key: 'player', label: 'גרסת שחקן' },
-  { key: 'women', label: 'נשים' },
-  { key: 'kids', label: 'ילדים' },
+  { key: 'fan', label: t('גרסת אוהד', 'Fan version') },
+  { key: 'player', label: t('גרסת שחקן', 'Player version') },
+  { key: 'women', label: t('נשים', 'Women') },
+  { key: 'kids', label: t('ילדים', 'Kids') },
 ];

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { t } from '@/lib/i18n';
 import {
   FAN_ROWS, PLAYER_ROWS, WOMEN_ROWS, KIDS_ROWS, KIDS_COLUMNS,
   ADULT_SIZES, WOMEN_SIZES, SIZE_TIPS, SIZE_TABS, recommendSize,
@@ -48,30 +49,30 @@ export function SizeCalculator({ tab }) {
 
   return (
     <div className="rounded-3xl bg-brand-mist p-5 sm:p-6">
-      <h3 className="text-base font-semibold text-brand-navy">מחשבון מידה</h3>
-      <p className="mt-1 text-sm text-brand-navy/60">ספרו לנו קצת עליכם ונמליץ על מידה.</p>
+      <h3 className="text-base font-semibold text-brand-navy">{t('מחשבון מידה', 'Size calculator')}</h3>
+      <p className="mt-1 text-sm text-brand-navy/60">{t('ספרו לנו קצת עליכם ונמליץ על מידה.', "Tell us a little about yourself and we'll suggest a size.")}</p>
       <div className="mt-4 flex gap-3">
-        {field('size-calc-height', 'גובה', 'ס"מ', height, setHeight)}
-        {field('size-calc-weight', 'משקל', 'ק"ג', weight, setWeight)}
+        {field('size-calc-height', t('גובה', 'Height'), t('ס"מ', 'cm'), height, setHeight)}
+        {field('size-calc-weight', t('משקל', 'Weight'), t('ק"ג', 'kg'), weight, setWeight)}
       </div>
-      <ChoiceGroup name="size-calc-body" legend="מבנה גוף" options={BODY_TYPES} value={body} onChange={setBody} />
-      <ChoiceGroup name="size-calc-fit" legend="איך אתם אוהבים שהחולצה יושבת?" options={FIT_TYPES} value={fit} onChange={setFit} />
+      <ChoiceGroup name="size-calc-body" legend={t('מבנה גוף', 'Build')} options={BODY_TYPES} value={body} onChange={setBody} />
+      <ChoiceGroup name="size-calc-fit" legend={t('איך אתם אוהבים שהחולצה יושבת?', 'How do you like the shirt to fit?')} options={FIT_TYPES} value={fit} onChange={setFit} />
       <div aria-live="polite" className="mt-5 min-h-[3rem]">
         {size ? (
           <p className="flex flex-wrap items-center gap-3 text-brand-navy">
-            <span>המידה המומלצת {tab === 'player' ? 'בגרסת שחקן' : 'בגרסת אוהד'}:</span>
+            <span>{tab === 'player' ? t('המידה המומלצת בגרסת שחקן:', 'Recommended size, player version:') : t('המידה המומלצת בגרסת אוהד:', 'Recommended size, fan version:')}</span>
             <span dir="ltr" className="rounded-xl bg-brand-navy px-4 py-2 text-lg font-bold text-white">{size}</span>
           </p>
         ) : (height && weight) ? (
-          <p className="text-sm text-brand-navy/60">בדקו שהגובה בס"מ והמשקל בק"ג.</p>
+          <p className="text-sm text-brand-navy/60">{t('בדקו שהגובה בס"מ והמשקל בק"ג.', 'Check that height is in cm and weight in kg.')}</p>
         ) : null}
       </div>
       <p className="mt-4 border-t border-brand-line pt-4 text-[13px] leading-relaxed text-brand-navy/60">
-        ההמלצה היא הערכה כללית ולא מתאימה בהכרח לכל אחד. לא בטוחים במידה?{' '}
+        {t('ההמלצה היא הערכה כללית ולא מתאימה בהכרח לכל אחד. לא בטוחים במידה?', "This is a general estimate and won't suit everyone. Not sure about your size?")}{' '}
         <Link to="/contact" className="font-semibold text-brand-navy underline underline-offset-2 hover:text-brand-orange-ink">
-          דברו איתנו
+          {t('דברו איתנו', 'Talk to us')}
         </Link>
-        {' '}ונעזור לכם לבחור.
+        {' '}{t('ונעזור לכם לבחור.', "and we'll help you choose.")}
       </p>
     </div>
   );
@@ -82,7 +83,7 @@ export function SizeCalculator({ tab }) {
 
 export function SizeChartTabs({ value, onChange }) {
   return (
-    <div role="tablist" aria-label="גרסה" className="flex flex-wrap gap-2">
+    <div role="tablist" aria-label={t('גרסה', 'Version')} className="flex flex-wrap gap-2">
       {SIZE_TABS.map(tab => (
         <button key={tab.key} type="button" role="tab" aria-selected={value === tab.key}
           onClick={() => onChange(tab.key)}
@@ -99,7 +100,7 @@ function MeasureTable({ rows, sizes }) {
     <table className="w-full min-w-[32rem] text-sm">
       <thead>
         <tr className="bg-brand-navy text-white">
-          <th scope="col" className="px-4 py-3.5 text-start font-semibold">מידה</th>
+          <th scope="col" className="px-4 py-3.5 text-start font-semibold">{t('מידה', 'Size')}</th>
           {sizes.map(size => (
             <th key={size} scope="col" dir="ltr" className="px-3 py-3.5 text-center font-semibold">{size}</th>
           ))}
@@ -159,7 +160,7 @@ export function SizeChartTable({ tab }) {
 export function SizeTips({ compact = false }) {
   return (
     <div>
-      <h3 className={`font-semibold text-brand-navy ${compact ? 'text-base' : 'text-lg'}`}>איך מודדים נכון?</h3>
+      <h3 className={`font-semibold text-brand-navy ${compact ? 'text-base' : 'text-lg'}`}>{t('איך מודדים נכון?', 'How to measure')}</h3>
       <ol className="mt-4 space-y-3">
         {SIZE_TIPS.map((tip, i) => (
           <li key={tip} className="flex items-start gap-3 text-[15px] leading-relaxed text-brand-navy/75">

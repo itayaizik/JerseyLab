@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import SideDrawer from '@/components/shop/SideDrawer';
+import { t } from '@/lib/i18n';
 import { SizeChartTabs, SizeChartTable, SizeTips, SizeCalculator } from '@/components/product/SizeChart';
 
 // The size tables without leaving the product page. Opens on the version the
@@ -16,7 +17,7 @@ export default function SizeGuideDrawer({ open, onOpenChange, shirtName, default
       open={open}
       onOpenChange={onOpenChange}
       side="end"
-      label="מדריך מידות"
+      label={t('מדריך מידות', 'Size guide')}
       title={shirtName}
       className="w-[min(96vw,44rem)]"
     >
@@ -33,7 +34,7 @@ export default function SizeGuideDrawer({ open, onOpenChange, shirtName, default
         <SizeTips compact />
       </div>
       <p className="mt-5 text-[13px] text-brand-navy/55">
-        לא בטוחים? <Link to="/contact" className="shop-link">כתבו לנו</Link> ונמליץ על מידה.
+        {t('לא בטוחים?', 'Not sure?')} <Link to="/contact" className="shop-link">{t('כתבו לנו', 'Write to us')}</Link> {t('ונמליץ על מידה.', "and we'll recommend a size.")}
       </p>
     </SideDrawer>
   );
