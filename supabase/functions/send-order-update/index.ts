@@ -10,6 +10,9 @@
 // Unlike the confirmation, this one sends only for a signed-in admin: the
 // caller's session token is checked against Supabase Auth and the admin
 // allowlist, so the endpoint cannot be used to mail arbitrary text to anyone.
+//
+// It looks like the confirmation (send-order-confirmation): navy and orange,
+// Heebo, a white card. Keep the two in step when either changes.
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
@@ -18,9 +21,23 @@ const FROM = Deno.env.get('ORDER_FROM_EMAIL') ?? 'Jersey Lab <noreply@jerseylab.
 const SHOP_PHONE = '050-558-6255';
 const WHATSAPP_URL = 'https://wa.me/972505586255';
 const INSTAGRAM_URL = 'https://instagram.com/Jerseylabil';
+const SITE_URL = 'https://www.jerseylab.co';
 
 // Must match src/lib/adminEmails.js and public.is_admin() in rls_policies.sql.
 const ADMIN_EMAILS = ['itayaizik8@gmail.com', 'itayaizik3@gmail.com'];
+
+const NAVY = '#1B2A4A';
+const ORANGE = '#E8622A';
+const ORANGE_INK = '#C2501C';
+const ORANGE_SOFT = '#FDF1EB';
+const MIST = '#F3F5F8';
+const LINE = '#E3E7EE';
+const MUTED = '#6B7280';
+// Heebo is the shop's font. Clients that load web fonts (Apple Mail, iOS)
+// use it; Gmail never loads them, so the next fonts are the closest ones each
+// system already has.
+const FONT = "font-family:'Heebo','Segoe UI',Roboto,-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;";
+const FONT_CSS = "@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap');";
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -41,6 +58,8 @@ function esc(value: unknown): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
+
+const money = (n: unknown) => `₪${esc(Math.round(Number(n) || 0))}`;
 
 interface OrderItem {
   name?: string;
@@ -65,7 +84,17 @@ async function isAdmin(req: Request): Promise<boolean> {
   return ADMIN_EMAILS.includes(String(user?.email ?? '').toLowerCase());
 }
 
-const font = "font-family:'Heebo',Arial,sans-serif;";
+// "עבור: דני | הערה לבוקס: ..." -> one line each.
+function detailLines(notes: string | undefined): string {
+  return String(notes || '').split(' | ').map(s => s.trim()).filter(Boolean).slice(0, 12).map(part => {
+    const at = part.indexOf(':');
+    const label = at > 0 ? part.slice(0, at).trim() : '';
+    const value = at > 0 ? part.slice(at + 1).trim() : part;
+    return `<p style="margin:3px 0 0; ${FONT} font-size:13px; line-height:1.5; color:${MUTED};">${
+      label ? `<span style="color:${NAVY}; font-weight:500;">${esc(label)}:</span> ` : ''
+    }${esc(value)}</p>`;
+  }).join('');
+}
 
 function itemRow(item: OrderItem): string {
   const extras: string[] = [];
@@ -74,63 +103,120 @@ function itemRow(item: OrderItem): string {
   if (item.long_sleeve) extras.push('שרוול ארוך');
   if (item.shorts) extras.push('מכנס קצר');
   if (item.patches) extras.push("פאצ'ים");
-  const notes = (item.notes || '').trim();
   return `
     <tr>
-      <td style="padding:12px 0; border-bottom:1px solid #E3E7EE;">
-        <p style="margin:0; ${font} font-size:14px; font-weight:700; color:#1B2A4A;">${esc(item.name)}</p>
-        <p style="margin:2px 0 0; ${font} font-size:12px; color:#6B7280;">
-          מידה: ${esc(item.size)}${extras.length ? ' · ' + extras.join(' · ') : ''}
+      <td style="padding:16px 0; border-bottom:1px solid ${LINE}; vertical-align:top;">
+        <p style="margin:0; ${FONT} font-size:15px; font-weight:700; line-height:1.4; color:${NAVY};">${esc(item.name)}</p>
+        <p style="margin:4px 0 0; ${FONT} font-size:13px; line-height:1.5; color:${NAVY};">
+          ${item.size ? `<span style="display:inline-block; background-color:${MIST}; border-radius:6px; padding:1px 8px; font-weight:700;">מידה <span dir="ltr">${esc(item.size)}</span></span>` : ''}
+          ${extras.length ? `<span style="color:${MUTED};">&nbsp;·&nbsp;${extras.join(' · ')}</span>` : ''}
         </p>
-        ${notes ? `<p style="margin:4px 0 0; ${font} font-size:11px; color:#6B7280;">${esc(notes)}</p>` : ''}
+        ${detailLines(item.notes)}
       </td>
-      <td style="padding:12px 0; border-bottom:1px solid #E3E7EE; text-align:left; white-space:nowrap; vertical-align:top;">
-        <span style="${font} font-size:14px; font-weight:700; color:#1B2A4A;">₪${esc(item.price)}</span>
+      <td style="padding:16px 0; border-bottom:1px solid ${LINE}; text-align:left; white-space:nowrap; vertical-align:top; width:80px;">
+        <p style="margin:0; ${FONT} font-size:16px; font-weight:700; color:${NAVY};">${money(item.price)}</p>
       </td>
     </tr>`;
 }
 
 function buildHtml(fullName: string, changes: string[], items: OrderItem[], total: number, orderId: string): string {
+  const firstName = fullName.trim().split(/\s+/)[0] || '';
+  const count = items.length;
   return `<!DOCTYPE html>
 <html dir="rtl" lang="he">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ההזמנה שלך עודכנה</title></head>
-<body style="margin:0; padding:0; background-color:#F3F5F8;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F3F5F8; border-collapse:collapse;">
-    <tr><td align="center" style="padding:40px 16px;">
-      <table role="presentation" width="480" cellpadding="0" cellspacing="0" border="0" style="max-width:480px; width:100%; border-collapse:collapse;">
-        <tr><td align="center" style="background-color:#1B2A4A; padding:18px; border-radius:20px 20px 0 0;">
-          <img src="https://www.jerseylab.co/logo-navbar.png" alt="JERSEY LAB" height="44" style="height:44px; width:auto; display:block; border:0;">
-        </td></tr>
-        <tr><td dir="rtl" style="background-color:#ffffff; padding:32px 28px; text-align:right; border-radius:0 0 20px 20px;">
-          <h1 style="margin:0; ${font} font-size:24px; font-weight:700; color:#1B2A4A;">ההזמנה שלך עודכנה</h1>
-          <p style="margin:6px 0 0; ${font} font-size:14px; line-height:1.7; color:#4B5563;">היי ${esc(fullName)}, עשינו כמה שינויים בהזמנה שלך:</p>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<title>ההזמנה שלך עודכנה</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>${FONT_CSS}</style>
+</head>
+<body style="margin:0; padding:0; background-color:${MIST};">
+  <div style="display:none; max-height:0; overflow:hidden;">עדכנו את ההזמנה שלך: ${esc(changes[0] || '')}</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:${MIST}; border-collapse:collapse;">
+    <tr><td align="center" style="padding:32px 12px;">
+      <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:560px; border-collapse:separate;">
 
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:16px; background-color:#FDF1EB; border-radius:14px; border-collapse:separate;">
-            <tr><td style="padding:14px 16px;">
-              ${changes.map(c => `<p style="margin:0 0 4px; ${font} font-size:13px; line-height:1.6; color:#1B2A4A;">• ${esc(c)}</p>`).join('')}
+        <!-- Header -->
+        <tr><td align="center" style="background-color:${NAVY}; padding:22px 24px; border-radius:24px 24px 0 0;">
+          <a href="${SITE_URL}" style="text-decoration:none;">
+            <img src="${SITE_URL}/logo-navbar.png" alt="JERSEY LAB" height="44" style="height:44px; width:auto; display:block; border:0;">
+          </a>
+        </td></tr>
+        <tr><td style="background-color:${ORANGE}; height:4px; line-height:4px; font-size:0;">&nbsp;</td></tr>
+
+        <!-- Body -->
+        <tr><td dir="rtl" style="background-color:#ffffff; padding:32px 28px 8px; text-align:right;">
+          <div style="display:inline-block; background-color:${ORANGE_SOFT}; color:${ORANGE_INK}; border-radius:999px; padding:4px 12px; ${FONT} font-size:12px; font-weight:700;">✎ עדכון להזמנה</div>
+          <h1 style="margin:14px 0 0; ${FONT} font-size:26px; line-height:1.3; font-weight:800; color:${NAVY};">היי${firstName ? ` ${esc(firstName)}` : ''}, ההזמנה שלך עודכנה</h1>
+          <p style="margin:8px 0 0; ${FONT} font-size:15px; line-height:1.7; color:#4B5563;">
+            עשינו כמה שינויים בהזמנה. הנה מה שהשתנה, וההזמנה כפי שהיא עכשיו.
+          </p>
+
+          <!-- What changed -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:22px; background-color:${ORANGE_SOFT}; border-radius:18px; border-collapse:separate;">
+            <tr><td style="padding:16px 18px;">
+              <p style="margin:0 0 8px; ${FONT} font-size:13px; font-weight:800; color:${ORANGE_INK};">מה השתנה</p>
+              ${changes.map(c => `
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+                <tr>
+                  <td style="width:18px; padding:3px 0; vertical-align:top; ${FONT} font-size:14px; font-weight:800; color:${ORANGE};">•</td>
+                  <td style="padding:3px 0; ${FONT} font-size:14px; line-height:1.6; color:${NAVY};">${esc(c)}</td>
+                </tr>
+              </table>`).join('')}
             </td></tr>
           </table>
 
-          <p style="margin:24px 0 0; ${font} font-size:13px; font-weight:700; color:#1B2A4A;">ההזמנה עכשיו</p>
+          <!-- The order now -->
+          <p style="margin:28px 0 0; ${FONT} font-size:13px; font-weight:800; color:${NAVY};">ההזמנה עכשיו · ${count} ${count === 1 ? 'פריט' : 'פריטים'}</p>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
             ${items.map(itemRow).join('')}
+          </table>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:14px; border-collapse:collapse;">
             <tr>
-              <td style="padding:14px 0 0; ${font} font-size:15px; font-weight:700; color:#1B2A4A;">סה"כ</td>
-              <td style="padding:14px 0 0; text-align:left;"><span style="${font} font-size:20px; font-weight:700; color:#C2501C;">₪${esc(total)}</span></td>
+              <td style="padding:12px 0 0; border-top:2px solid ${NAVY}; ${FONT} font-size:17px; font-weight:800; color:${NAVY};">סה"כ</td>
+              <td style="padding:12px 0 0; border-top:2px solid ${NAVY}; ${FONT} font-size:24px; font-weight:800; color:${ORANGE_INK}; text-align:left;">${money(total)}</td>
             </tr>
           </table>
 
-          <p style="margin:24px 0 0; ${font} font-size:13px; line-height:1.8; color:#4B5563;">
-            אם משהו לא מתאים, דברו איתנו:<br>
-            <a href="${WHATSAPP_URL}" style="color:#1B2A4A; font-weight:700; text-decoration:none;">WhatsApp <span dir="ltr">${SHOP_PHONE}</span></a> ·
-            <a href="${INSTAGRAM_URL}" style="color:#1B2A4A; font-weight:700; text-decoration:none;">Instagram <span dir="ltr">@Jerseylabil</span></a>
-          </p>
-          <p style="margin:20px 0 0; padding-top:14px; border-top:1px solid #E3E7EE; ${font} font-size:11px; color:#9CA3AF;">
+          <!-- Contact -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px; background-color:${NAVY}; border-radius:18px; border-collapse:separate;">
+            <tr><td style="padding:18px 20px; text-align:right;">
+              <p style="margin:0; ${FONT} font-size:15px; font-weight:700; color:#ffffff;">משהו לא מתאים?</p>
+              <p style="margin:4px 0 14px; ${FONT} font-size:13px; line-height:1.6; color:#C9D1DE;">דברו איתנו ונסדר את זה.</p>
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;">
+                <tr>
+                  <td style="background-color:${ORANGE}; border-radius:12px;">
+                    <a href="${WHATSAPP_URL}" style="display:inline-block; padding:10px 16px; ${FONT} font-size:14px; font-weight:700; color:#ffffff; text-decoration:none;">וואטסאפ <span dir="ltr">${SHOP_PHONE}</span></a>
+                  </td>
+                  <td style="width:8px;">&nbsp;</td>
+                  <td style="border:1px solid #4A5874; border-radius:12px;">
+                    <a href="${INSTAGRAM_URL}" style="display:inline-block; padding:9px 16px; ${FONT} font-size:14px; font-weight:700; color:#ffffff; text-decoration:none;">אינסטגרם</a>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+          </table>
+
+          <p style="margin:22px 0 24px; ${FONT} font-size:12px; color:#9CA3AF;">
             מספר הזמנה: <span dir="ltr">${esc(orderId)}</span>
           </p>
         </td></tr>
+
+        <!-- Footer -->
+        <tr><td align="center" style="background-color:#ffffff; border-top:1px solid ${LINE}; padding:16px 24px; border-radius:0 0 24px 24px;">
+          <p style="margin:0; ${FONT} font-size:12px; line-height:1.7; color:${MUTED};">
+            <a href="${SITE_URL}" style="color:${NAVY}; font-weight:700; text-decoration:none;">jerseylab.co</a>
+            &nbsp;·&nbsp;
+            <a href="${SITE_URL}/legal/shipping" style="color:${MUTED}; text-decoration:underline;">משלוחים וביטולים</a>
+            &nbsp;·&nbsp;
+            <a href="${SITE_URL}/contact" style="color:${MUTED}; text-decoration:underline;">צור קשר</a>
+          </p>
+        </td></tr>
+
       </table>
-      <p style="margin:18px 0 0; ${font} font-size:12px; color:#6B7280;">Jersey Lab &middot; jerseylab.co</p>
     </td></tr>
   </table>
 </body>

@@ -28,7 +28,11 @@ const MIST = '#F3F5F8';
 const LINE = '#E3E7EE';
 const MUTED = '#6B7280';
 const GREEN = '#047857';
-const FONT = "font-family:'Heebo',Arial,Helvetica,sans-serif;";
+// Heebo is the shop's font. Clients that load web fonts (Apple Mail, iOS)
+// use it; Gmail never loads them, so the next fonts are the closest ones each
+// system already has.
+const FONT = "font-family:'Heebo','Segoe UI',Roboto,-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;";
+const FONT_CSS = "@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap');";
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -143,6 +147,7 @@ function buildHtml(fullName: string, items: OrderItem[], totals: Totals, orderId
 <meta name="color-scheme" content="light only">
 <title>ההזמנה התקבלה</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>${FONT_CSS}</style>
 </head>
 <body style="margin:0; padding:0; background-color:${MIST};">
   <div style="display:none; max-height:0; overflow:hidden;">קיבלנו את ההזמנה שלך (${count} ${count === 1 ? 'פריט' : 'פריטים'}, ${money(totals.total)}). נחזור אליך בהקדם.</div>
