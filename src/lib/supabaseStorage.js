@@ -59,13 +59,15 @@ export function uploadErrorMessage(err) {
 
 // Same shape as base44.integrations.Core.UploadFile so the admin upload
 // call sites didn't need to change. `bucket` defaults to shirt-images but
-// callers (e.g. review photos) can target a different public bucket.
+// callers (e.g. review photos) can target a different public bucket, and a
+// `folder` inside it when the bucket's rules depend on where the file goes.
 export const integrations = {
   Core: {
-    async UploadFile({ file, bucket = BUCKET }) {
+    async UploadFile({ file, bucket = BUCKET, folder = '' }) {
       const uploadFile = await compressImage(file);
       const ext = uploadFile.name.includes(".") ? uploadFile.name.split(".").pop() : "jpg";
-      const path = `${crypto.randomUUID()}.${ext}`;
+      const dir = folder ? `${folder.replace(/\/+$/, '')}/` : '';
+      const path = `${dir}${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage.from(bucket).upload(path, uploadFile, {
         cacheControl: "3600",
         upsert: false,

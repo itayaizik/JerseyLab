@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Phone, Mail, ExternalLink, Package, Trash2, Copy, Check, Pencil, History, Image as ImageIcon } from 'lucide-react';
+import { MessageCircle, Phone, Mail, ExternalLink, Package, Trash2, Copy, Check, Pencil, History, Image as ImageIcon, Star } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { buildSupplierLine } from '@/lib/supplierText';
 import { formatDate, dateSortValue } from '@/lib/dates';
 import { parseEditLog, parseOrderItem } from '@/lib/orderItems';
 import OrderEditor, { NotifyCustomerPanel } from '@/components/admin/OrderEditor';
+import { inviteForOrder, reviewRequestText } from '@/lib/reviewInvites';
 
 // The order's total from each item's final price, and what coupons took off.
 // A coupon is written into each discounted item as "קופון: CODE (-₪N)".
@@ -61,6 +62,9 @@ export default function ManageRequests() {
   const [notice, setNotice] = useState(null); // { groupKey, payload } after an edit is saved
   const [copiedId, setCopiedId] = useState(null);
   const [copiedImageId, setCopiedImageId] = useState(null);
+  // Review requests already sent, by order.
+  const [invites, setInvites] = useState({});
+  const [inviteError, setInviteError] = useState(null); // { groupKey, message }
 
   const loadRequests = async () => {
     const data = await base44.entities.InterestRequest.list('-created_date', 200);
@@ -78,7 +82,29 @@ export default function ManageRequests() {
       setLoading(false);
     }
     load();
+    base44.entities.ReviewInvite.list('-created_date', 500)
+      .then(rows => setInvites(Object.fromEntries(rows.map(r => [r.order_id, r]))))
+      .catch(() => {});
   }, []);
+
+  // Opens WhatsApp with a message asking for a review, and a link that is
+  // this order's alone. The tab is opened before the invite is fetched, since
+  // browsers block a window opened after waiting on the network.
+  const handleRequestReview = async (groupKey, first) => {
+    setInviteError(null);
+    const win = window.open('', '_blank');
+    try {
+      const invite = invites[groupKey] || await inviteForOrder(groupKey, first.full_name);
+      setInvites(p => ({ ...p, [groupKey]: invite }));
+      const phone = String(first.phone || '').replace(/\D/g, '').replace(/^0/, '972');
+      const text = reviewRequestText({ fullName: first.full_name, inviteId: invite.id });
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+      if (win) win.location.href = url; else window.open(url, '_blank');
+    } catch {
+      win?.close();
+      setInviteError({ groupKey, message: 'לא הצלחנו ליצור קישור. אם עוד לא הרצת את supabase/review_invites.sql, זו הסיבה.' });
+    }
+  };
 
   const handleStatusChange = async (groupItems, status) => {
     const ids = groupItems.map(r => r.id);
@@ -331,6 +357,17 @@ export default function ManageRequests() {
                     {copiedId === groupKey ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                     {copiedId === groupKey ? 'הועתק!' : 'טקסט לספקית'}
                   </button>
+                  <button
+                    onClick={() => handleRequestReview(groupKey, first)}
+                    title="שולח ללקוח בוואטסאפ קישור אישי לכתיבת ביקורת עם תמונה"
+                    className={`flex items-center gap-1 text-xs border px-2 py-1.5 transition-colors ${first.status === 'closed' && !invites[groupKey] ? 'bg-turf text-pitch border-turf' : 'text-turf hover:text-chalk border-turf/40 hover:border-turf'}`}
+                  >
+                    <Star className="w-3 h-3" />
+                    {invites[groupKey]?.used_at ? `התקבלה ביקורת (${invites[groupKey].review_count})` : invites[groupKey] ? 'בקשת ביקורת (שוב)' : 'בקשת ביקורת'}
+                  </button>
+                  {inviteError?.groupKey === groupKey && (
+                    <p role="alert" className="max-w-[12rem] text-[11px] text-red-400">{inviteError.message}</p>
+                  )}
                   <button
                     onClick={() => handleDeleteGroup(items)}
                     className="flex items-center gap-1 text-xs text-varnish hover:text-red-400 border border-white/10 hover:border-red-400/40 px-2 py-1.5 transition-colors"
