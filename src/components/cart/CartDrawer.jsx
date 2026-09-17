@@ -357,7 +357,10 @@ export default function CartDrawer({ open, onClose, user }) {
         Promise.resolve(redeemCoupon({ code: coupon.code, orderId, email, phone, discount: order.discount })).catch(() => {});
       }
 
-      sendOrderConfirmation({ email, fullName, orderId, items: order.items, total: orderTotal })
+      sendOrderConfirmation({
+        email, fullName, orderId, items: order.items, total: orderTotal,
+        discount: order.discount, couponCode: order.discount > 0 ? coupon.code : '',
+      })
         .catch(() => {});
 
       // Same best-effort contract: tells the shop a request came in, so it does
