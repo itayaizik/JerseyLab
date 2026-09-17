@@ -159,6 +159,8 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
       patches: wantsPatches,
       longSleeve: wantsLongSleeve,
       shorts: wantsShorts,
+      // Coupons that do not stack with a sale leave this item out.
+      onSale: Number(shirt.sale_price) > 0 && Number(shirt.sale_price) < Number(shirt.price),
       localStockSizes: shirt.local_stock_sizes || {},
       isExactStockItem: buyingExact,
       // Which physical shirt, so the order says which of two size S shirts

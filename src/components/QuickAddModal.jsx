@@ -121,6 +121,8 @@ export default function QuickAddModal({ shirt, open, onClose }) {
       patches: wantsPatches,
       longSleeve: wantsLongSleeve,
       shorts: wantsShorts,
+      // Coupons that do not stack with a sale leave this item out.
+      onSale: Number(shirt.sale_price) > 0 && Number(shirt.sale_price) < Number(shirt.price),
       localStockSizes: shirt.local_stock_sizes || {},
       isExactStockItem: buyingExact,
       stockItemId: buyingExact ? stockItem?.id || '' : '',

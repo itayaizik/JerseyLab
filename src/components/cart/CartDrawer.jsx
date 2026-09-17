@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Check, Loader2, ShoppingBag, Trash2, MessageCircle, Instagram, Mail, ChevronRight } from 'lucide-react';
+import { Check, Loader2, ShoppingBag, Trash2, MessageCircle, Instagram, Mail, ChevronRight, Ticket, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import SideDrawer from '@/components/shop/SideDrawer';
 import ProductImage from '@/components/ui/ProductImage';
@@ -12,6 +12,7 @@ import { notifyNewOrder } from '@/lib/adminNotify';
 import { SHOP_PHONE, WHATSAPP_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/contact';
 import { getCart, setCart, cartItemTotal, cartTotal, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { MYSTERY_BOX_ID } from '@/lib/mysteryBox';
+import { checkCoupon, redeemCoupon, applyCoupon, normalizeCode } from '@/lib/coupons';
 import { t } from '@/lib/i18n';
 
 // The cart, as a drawer from the side of the screen: the bag, then the contact
@@ -31,6 +32,89 @@ function getSavedContact() {
 }
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+// The coupon field under the bag: a link until it is needed, then a field,
+// then the applied code with what it takes off - or why it takes nothing off.
+function CouponBox({ coupon, pricing, onApply, onRemove }) {
+  const [open, setOpen] = useState(false);
+  const [code, setCode] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  if (coupon) {
+    return (
+      <div className="rounded-2xl bg-brand-mist px-3 py-2.5">
+        <div className="flex items-center gap-2">
+          <Ticket className="h-4 w-4 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
+          <span dir="ltr" className="font-semibold tracking-wide text-brand-navy">{coupon.code}</span>
+          {pricing.discount > 0 && (
+            <span className="text-[13px] font-semibold text-emerald-700 dark:text-emerald-400">-₪{pricing.discount}</span>
+          )}
+          <button type="button" onClick={onRemove} aria-label={t('הסרת הקופון', 'Remove coupon')}
+            className="ms-auto flex h-8 w-8 items-center justify-center rounded-full text-brand-navy/50 transition hover:bg-white hover:text-brand-navy">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        {pricing.message && <p className="mt-1 text-[12px] leading-relaxed text-brand-orange-ink">{pricing.message}</p>}
+      </div>
+    );
+  }
+
+  if (!open) {
+    return (
+      <button type="button" onClick={() => setOpen(true)} className="shop-link text-[13px]">
+        <Ticket className="h-4 w-4" aria-hidden="true" />
+        {t('יש לכם קוד קופון?', 'Have a coupon code?')}
+      </button>
+    );
+  }
+
+  const apply = async (e) => {
+    e.preventDefault();
+    if (!normalizeCode(code)) return;
+    setBusy(true);
+    setError('');
+    const result = await checkCoupon(code);
+    setBusy(false);
+    if (!result.ok) { setError(result.message); return; }
+    setCode('');
+    setOpen(false);
+    onApply(result.coupon);
+  };
+
+  return (
+    <form onSubmit={apply} noValidate>
+      <label htmlFor="cart-coupon" className="mb-1.5 block text-[13px] font-medium text-brand-navy/70">{t('קוד קופון', 'Coupon code')}</label>
+      <div className="flex gap-2">
+        <input id="cart-coupon" value={code} onChange={e => { setCode(e.target.value); setError(''); }}
+          dir="ltr" maxLength={40} autoComplete="off" autoCapitalize="characters" autoFocus
+          aria-invalid={!!error} aria-describedby={error ? 'cart-coupon-error' : undefined}
+          className={`shop-field min-w-0 flex-1 text-start uppercase ${error ? 'border-red-300' : ''}`} />
+        <button type="submit" disabled={busy || !code.trim()} className="shop-btn-dark flex-shrink-0 px-4">
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : t('החלה', 'Apply')}
+        </button>
+      </div>
+      {error && <p id="cart-coupon-error" role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
+    </form>
+  );
+}
+
+// Subtotal and discount above the total, only when a coupon takes something off.
+function DiscountLines({ subtotal, pricing }) {
+  if (!pricing.discount) return null;
+  return (
+    <dl className="space-y-1 text-[14px]">
+      <div className="flex justify-between text-brand-navy/65">
+        <dt>{t('לפני הנחה', 'Before discount')}</dt>
+        <dd className="tabular-nums">₪{subtotal}</dd>
+      </div>
+      <div className="flex justify-between font-semibold text-emerald-700 dark:text-emerald-400">
+        <dt>{t('הנחת קופון', 'Coupon discount')}</dt>
+        <dd className="tabular-nums">-₪{pricing.discount}</dd>
+      </div>
+    </dl>
+  );
+}
 
 const itemCountLabel = (n) => (n === 1 ? t('פריט אחד', '1 item') : t(`${n} פריטים`, `${n} items`));
 
@@ -130,6 +214,8 @@ export default function CartDrawer({ open, onClose, user }) {
   });
   const [errors, setErrors] = useState({});
   const [cartError, setCartError] = useState('');
+  // Kept while the drawer is closed and reopened, cleared once an order is sent.
+  const [coupon, setCoupon] = useState(null);
   // Deliberately not persisted with the rest of the contact details: since there
   // is no payment on the site, every order should re-confirm that the customer
   // knows a request is not a purchase.
@@ -178,7 +264,9 @@ export default function CartDrawer({ open, onClose, user }) {
     if (next.length === 0) setView('bag');
   };
 
-  const total = cartTotal(cart);
+  const subtotal = cartTotal(cart);
+  const pricing = applyCoupon(cart, coupon);
+  const total = cartTotal(pricing.items);
   const count = cart.length;
 
   // The cart is emptied on success but contactForm isn't, so the confirmation
@@ -209,13 +297,29 @@ export default function CartDrawer({ open, onClose, user }) {
     const channel = contactForm.contact_channel;
     // Stored without the leading @ so the admin panel can link straight to it.
     const igHandle = contactForm.instagram_handle.trim().replace(/^@/, '');
+    const phone = contactForm.phone.trim();
+
+    // The code is checked again with the customer's details: it may have run
+    // out since it was applied, or be limited to one use per customer.
+    let order = { items: cart, discount: 0 };
+    if (coupon) {
+      const recheck = await checkCoupon(coupon.code, { email, phone });
+      if (!recheck.ok) {
+        setCoupon(null);
+        setCartError(`${recheck.message}. ${t('הקופון הוסר - בדקו את הסכום ושלחו שוב.', 'The coupon was removed - check the total and send again.')}`);
+        setSubmitting(false);
+        return;
+      }
+      order = applyCoupon(cart, recheck.coupon);
+    }
+    const orderTotal = cartTotal(order.items);
 
     try {
       // Every item from this checkout shares one order_id so the admin
       // panel can show them as a single grouped order instead of N
       // disconnected rows, even though each item is still its own row.
       const orderId = crypto.randomUUID();
-      for (const item of cart) {
+      for (const item of order.items) {
         const extras = (item.extras || []).map(x => `${x.label} (+₪${x.price})`);
         if (item.playerVersion) extras.push(`גרסת שחקן (+₪${EXTRA_PRICES.player})`);
         if (item.addName) extras.push(`הדפסת שם: ${item.customName || ''} (+₪${EXTRA_PRICES.name})`);
@@ -248,7 +352,12 @@ export default function CartDrawer({ open, onClose, user }) {
 
       // Confirmation mail is best-effort: the order is already saved, so a mail
       // outage must not read to the customer as a failed checkout.
-      sendOrderConfirmation({ email, fullName, orderId, items: cart, total })
+      if (order.discount > 0) {
+        // Counts the use; best effort, like the emails below.
+        Promise.resolve(redeemCoupon({ code: coupon.code, orderId, email, phone, discount: order.discount })).catch(() => {});
+      }
+
+      sendOrderConfirmation({ email, fullName, orderId, items: order.items, total: orderTotal })
         .catch(() => {});
 
       // Same best-effort contract: tells the shop a request came in, so it does
@@ -257,11 +366,12 @@ export default function CartDrawer({ open, onClose, user }) {
         orderId, fullName, email,
         phone: contactForm.phone.trim(),
         channel, instagramHandle: channel === 'instagram' ? igHandle : '',
-        items: cart, total,
+        items: order.items, total: orderTotal,
       });
 
       setCart([]);
       setCartState([]);
+      setCoupon(null);
       setAcknowledged(false);
       setSubmitted(true);
     } catch (err) {
@@ -328,8 +438,12 @@ export default function CartDrawer({ open, onClose, user }) {
     );
     footer = (
       <div>
-        <p className="text-[13px] text-brand-navy/55">{t('המשלוח והתשלום מתואמים איתכם אחרי ההזמנה. באתר לא מתבצע תשלום.', 'Shipping and payment are arranged with you after you order. Nothing is charged on the site.')}</p>
-        <div className="mt-3 flex items-baseline justify-between border-t border-brand-line pt-3">
+        <CouponBox coupon={coupon} pricing={pricing} onApply={setCoupon} onRemove={() => setCoupon(null)} />
+        <p className="mt-3 text-[13px] text-brand-navy/55">{t('המשלוח והתשלום מתואמים איתכם אחרי ההזמנה. באתר לא מתבצע תשלום.', 'Shipping and payment are arranged with you after you order. Nothing is charged on the site.')}</p>
+        <div className="mt-3 border-t border-brand-line pt-3">
+          <DiscountLines subtotal={subtotal} pricing={pricing} />
+        </div>
+        <div className="mt-1 flex items-baseline justify-between">
           <span className="text-xl font-bold text-brand-navy">{t('סה״כ', 'Total')}</span>
           <span className="text-xl font-bold tabular-nums text-brand-navy">₪{total}</span>
         </div>
@@ -401,7 +515,8 @@ export default function CartDrawer({ open, onClose, user }) {
     );
     footer = (
       <div>
-        <div className="flex items-baseline justify-between">
+        <DiscountLines subtotal={subtotal} pricing={pricing} />
+        <div className="mt-1 flex items-baseline justify-between">
           <span className="text-lg font-semibold text-brand-navy">{t('סה״כ', 'Total')} ({itemCountLabel(count)})</span>
           <span className="text-lg font-bold tabular-nums text-brand-navy">₪{total}</span>
         </div>
