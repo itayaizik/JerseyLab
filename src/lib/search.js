@@ -231,6 +231,16 @@ const PLAYERS = [
     teams: [['טוטנהאם', 2007, 2012], ['ריאל מדריד', 2013, 2021], ['טוטנהאם', 2020, 2020]] },
   { names: ['דה בראונה', 'de bruyne'], label: 'דה בראונה',
     teams: [['מנצסטר סיטי', 2015, 2024], ['נאפולי', 2025, null], ['בלגיה', 2010, null]] },
+  { names: ['דיבאלה', 'דיבלה', 'dybala', 'paulo dybala'], label: 'דיבאלה',
+    teams: [['יובנטוס', 2015, 2021], ['רומא', 2022, null], ['ארגנטינה', 2015, null]] },
+  { names: ['סלאח', 'מוחמד סלאח', 'salah', 'mo salah'], label: 'סלאח',
+    teams: [['ליברפול', 2017, null], ['רומא', 2015, 2016], ['צלסי', 2013, 2014]] },
+  { names: ['סאקה', 'בוקאיו סאקה', 'saka'], label: 'סאקה',
+    teams: [['ארסנל', 2019, null], ['אנגליה', 2020, null]] },
+  { names: ['ויניסיוס', 'ויני', 'vinicius', 'vini'], label: 'ויניסיוס',
+    teams: [['ריאל מדריד', 2018, null], ['ברזיל', 2019, null]] },
+  { names: ['בלינגהאם', 'בלינגהם', 'bellingham'], label: 'בלינגהאם',
+    teams: [['דורטמונד', 2020, 2022], ['ריאל מדריד', 2023, null], ['אנגליה', 2020, null]] },
   { names: ['הזאר', 'hazard', 'eden hazard'], label: 'הזאר',
     teams: [['צלסי', 2012, 2018], ['ריאל מדריד', 2019, 2022], ['בלגיה', 2008, 2022]] },
 ].map(p => ({
@@ -274,6 +284,21 @@ const allowedEdits = (word) => (word.length <= 3 ? 0 : word.length <= 5 ? 1 : 2)
 // three edits from רונלדו and only two from הולאנד, so it was being read as
 // Haaland. With א, ו and י removed after the first letter they meet at one.
 const skeleton = (word) => word[0] + word.slice(1).replace(/[אוי]/g, '');
+
+// What is left once the vowels are gone is the name's consonants, and those
+// must agree: the same letters, or two neighbours typed the wrong way round
+// (רולאנדו -> רלנד, רונלדו -> רנלד). A different consonant is a different
+// word - ביטון is not בופון, איריס and מארסיי are not סוארס - and allowing one
+// had the search showing Inter Miami for Marseille.
+function skeletonDistance(a, b) {
+  const x = skeleton(a);
+  const y = skeleton(b);
+  if (x === y) return 0;
+  if (x.length !== y.length) return Infinity;
+  const diff = [];
+  for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) diff.push(i);
+  return diff.length === 2 && diff[1] === diff[0] + 1 && x[diff[0]] === y[diff[1]] && x[diff[1]] === y[diff[0]] ? 1 : Infinity;
+}
 
 // Hebrew attaches prepositions to the word: לברצלונה, והפועל, בריאל. Stripping
 // is only ever tried as a second reading - ליברפל and באירן start with those
@@ -396,7 +421,7 @@ function findPlayer(queryText, catalogWords) {
           // words of five letters or more.
           const limit = qw.length >= 4 ? allowedEdits(nw) : 0;
           const skeletonDist = qw.length >= 5 && nw.length >= 5
-            ? editDistance(skeleton(qw), skeleton(nw), limit)
+            ? skeletonDistance(qw, nw)
             : limit + 1;
           const dist = limit ? Math.min(editDistance(qw, nw, limit), skeletonDist) : limit + 1;
           if (dist > limit) ok = false; else distance += dist;
@@ -448,7 +473,7 @@ function parseTerms(text) {
 }
 
 // How strongly one term matches one shirt, 0 for not at all.
-function scoreTerm(term, doc, vocabulary, corrections) {
+function scoreTerm(term, doc, vocabulary, corrections, catalogWords) {
   let best = 0;
 
   for (const [reading, factor] of term.readings) {
@@ -485,7 +510,10 @@ function scoreTerm(term, doc, vocabulary, corrections) {
 
   // Nothing matched as typed: the nearest word the catalogue actually uses,
   // trying the word whole before trying it without a leading preposition.
+  // A word the catalogue already uses is not a typo, and is not stripped
+  // either: בלגיה without its ב is one letter from ליגה.
   const word = term.typed;
+  if (catalogWords?.has(word)) return 0;
   const fixed = correct(word, vocabulary) || (withoutPrefix(word) && correct(withoutPrefix(word), vocabulary));
   if (fixed && doc.words.has(fixed)) {
     corrections.set(word, fixed);
@@ -546,7 +574,7 @@ export function searchShirts(shirts, query) {
     let total = eraScore.get(doc) || 0;
     let matched = 0;
     for (const term of terms) {
-      const s = scoreTerm(term, doc, vocabulary, corrections);
+      const s = scoreTerm(term, doc, vocabulary, corrections, catalogWords);
       if (s) { total += s; matched++; }
     }
     if (matched === terms.length) scored.push({ doc, total });
