@@ -4,8 +4,53 @@ import { MessageCircle, Phone, Mail, ExternalLink, Package, Trash2, Copy, Check,
 import { base44 } from '@/api/base44Client';
 import { buildSupplierLine } from '@/lib/supplierText';
 import { formatDate, dateSortValue } from '@/lib/dates';
-import { parseEditLog } from '@/lib/orderItems';
+import { parseEditLog, parseOrderItem } from '@/lib/orderItems';
 import OrderEditor, { NotifyCustomerPanel } from '@/components/admin/OrderEditor';
+
+// The order's total from each item's final price, and what coupons took off.
+// A coupon is written into each discounted item as "קופון: CODE (-₪N)".
+const COUPON_RE = /^קופון:s*(.+?)s*(-₪s*(d+(?:.d+)?))$/;
+
+function orderSummary(items) {
+  let total = 0;
+  let unpriced = 0;
+  const coupons = new Map();
+  for (const r of items) {
+    const parsed = parseOrderItem(r);
+    if (parsed.price === null) unpriced += 1;
+    else total += parsed.price;
+    for (const part of parsed.other) {
+      const m = part.match(COUPON_RE);
+      if (m) coupons.set(m[1], (coupons.get(m[1]) || 0) + Number(m[2]));
+    }
+  }
+  const discount = [...coupons.values()].reduce((a, b) => a + b, 0);
+  return { total, unpriced, discount, coupons: [...coupons.entries()] };
+}
+
+function OrderSummary({ items }) {
+  const { total, unpriced, discount, coupons } = orderSummary(items);
+  return (
+    <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-white/10 pt-2 text-sm">
+      <span className="font-heading font-bold text-chalk">
+        סה"כ <span className="font-mono text-turf">₪{total}</span>
+      </span>
+      {discount > 0 && (
+        <>
+          <span className="text-xs text-varnish">לפני הנחה <span className="font-mono">₪{total + discount}</span></span>
+          {coupons.map(([code, amount]) => (
+            <span key={code} className="text-xs text-green-400">
+              קופון {code}: <span className="font-mono">-₪{amount}</span>
+            </span>
+          ))}
+        </>
+      )}
+      {unpriced > 0 && (
+        <span className="text-xs text-amber-400">{unpriced === 1 ? 'פריט אחד בלי מחיר' : `${unpriced} פריטים בלי מחיר`}</span>
+      )}
+    </div>
+  );
+}
 
 export default function ManageRequests() {
   const [requests, setRequests] = useState([]);
@@ -211,6 +256,8 @@ export default function ManageRequests() {
                       );
                     })}
                   </div>
+
+                  <OrderSummary items={items} />
 
                   <div className="flex flex-wrap gap-3 text-xs text-varnish items-center">
                     {first.phone && <a href={`tel:${first.phone}`} className="flex items-center gap-1 hover:text-chalk"><Phone className="w-3 h-3" />{first.phone}</a>}
