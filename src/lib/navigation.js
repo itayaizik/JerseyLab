@@ -121,6 +121,9 @@ export const NAV_ITEMS = [
   { id: 'retro', label: t('רטרו', 'Retro'), href: collectionHref('retro') },
   { id: 'mystery', label: t('מיסטרי בוקס', 'Mystery Box'), href: '/mystery-box' },
   { id: 'request', label: t('בקשת חולצה', 'Request a shirt'), href: '/request-shirt' },
+  // Customers looked for these two and could only reach them inside a menu.
+  { id: 'sizes', label: t('מדריך מידות', 'Size guide'), href: '/size-guide' },
+  { id: 'contact', label: t('צור קשר', 'Contact'), href: '/contact' },
 ].filter(item => item.menu || linkHasStock(item.href));
 
 // The plain links at the foot of the mobile menu.

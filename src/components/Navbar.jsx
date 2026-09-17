@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useId } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, Search, Heart, User, ShoppingBag, ChevronDown, ChevronLeft, LogOut, X, ArrowLeft, Shield, Moon, Sun, Languages } from 'lucide-react';
+import { Menu, Search, Heart, User, ShoppingBag, ChevronDown, ChevronLeft, LogOut, X, ArrowLeft, FileText, Shield, Moon, Sun, Languages } from 'lucide-react';
 import { getTheme, setTheme } from '@/lib/theme';
 import { t, isEn, setLang } from '@/lib/i18n';
 import { term, shirtName } from '@/lib/english';
@@ -12,6 +12,7 @@ import PromoBar from '@/components/PromoBar';
 import ProductImage from '@/components/ui/ProductImage';
 import { getCart, shirtBasePrice } from '@/lib/cart';
 import { searchShirts } from '@/lib/search';
+import { matchPages, pageForQuery } from '@/lib/sitePages';
 import { facetImage } from '@/lib/catalogFacets';
 import { NAV_ITEMS, SHIRTS_MENU, CLUBS_MENU, NATIONAL_MENU, SITE_LINKS } from '@/lib/navigation';
 
@@ -32,6 +33,7 @@ function loadCatalog() {
 function SearchBox({ className = '', onNavigate }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
+  const [pages, setPages] = useState([]);
   const [player, setPlayer] = useState(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
@@ -43,13 +45,19 @@ function SearchBox({ className = '', onNavigate }) {
   // pressing Enter shows can never disagree.
   useEffect(() => {
     const trimmed = query.trim();
-    if (trimmed.length < 2) { setResults([]); setPlayer(null); return; }
+    if (trimmed.length < 2) { setResults([]); setPages([]); setPlayer(null); return; }
+    const pageMatches = matchPages(trimmed);
+    setPages(pageMatches);
+    setActive(-1);
     let cancelled = false;
     const timer = setTimeout(async () => {
       const all = await loadCatalog();
       if (cancelled) return;
       const found = searchShirts(all, trimmed);
-      setResults(found.results.slice(0, 6));
+      // "מידות" is a page, not a misspelt team: shirts the search only reached
+      // by correcting the word would be noise under it.
+      const guessed = pageMatches.length > 0 && found.corrections.length > 0;
+      setResults(guessed ? [] : found.results.slice(0, 6));
       setPlayer(found.player);
       setActive(-1);
     }, 250);
@@ -63,28 +71,37 @@ function SearchBox({ className = '', onNavigate }) {
     return () => document.removeEventListener('mousedown', onDown);
   }, [open]);
 
-  const finish = () => { setQuery(''); setResults([]); setOpen(false); onNavigate?.(); };
+  const finish = () => { setQuery(''); setResults([]); setPages([]); setOpen(false); onNavigate?.(); };
 
   const submit = (e) => {
     e?.preventDefault();
     const trimmed = query.trim();
     if (!trimmed) return;
+    // "מידות" or "וואטסאפ" asks for a page, not a shirt: go to the page rather
+    // than to a catalogue of shirts that merely mention the word.
+    const page = pageForQuery(trimmed);
+    if (page) { navigate(page.href); finish(); return; }
     // Logged on the catalogue page, where the number of results is known.
     navigate(`/catalog?q=${encodeURIComponent(trimmed)}`);
     finish();
   };
 
-  const go = (shirt) => { navigate(`/shirt/${shirt.id}`); finish(); };
+  // Pages first, then shirts, as one list the arrow keys walk through.
+  const options = [
+    ...pages.map(page => ({ key: `page-${page.href}`, href: page.href, page })),
+    ...results.map(shirt => ({ key: shirt.id, href: `/shirt/${shirt.id}`, shirt })),
+  ];
+  const go = (option) => { navigate(option.href); finish(); };
 
   const onKeyDown = (e) => {
     if (e.key === 'Escape') { setOpen(false); return; }
-    if (!results.length) return;
-    if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); setActive(i => (i + 1) % results.length); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(i => (i <= 0 ? results.length - 1 : i - 1)); }
-    else if (e.key === 'Enter' && active >= 0) { e.preventDefault(); go(results[active]); }
+    if (!options.length) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); setActive(i => (i + 1) % options.length); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(i => (i <= 0 ? options.length - 1 : i - 1)); }
+    else if (e.key === 'Enter' && active >= 0) { e.preventDefault(); go(options[active]); }
   };
 
-  const showList = open && query.trim().length >= 2 && results.length > 0;
+  const showList = open && query.trim().length >= 2 && options.length > 0;
 
   return (
     <div ref={boxRef} className={`relative ${className}`}>
@@ -98,8 +115,8 @@ function SearchBox({ className = '', onNavigate }) {
             onChange={e => { setQuery(e.target.value); setOpen(true); }}
             onFocus={() => setOpen(true)}
             onKeyDown={onKeyDown}
-            placeholder={t('חיפוש חולצה, קבוצה או שחקן', 'Search shirts, teams or players')}
-            aria-label={t('חיפוש חולצות', 'Search shirts')}
+            placeholder={t('חיפוש חולצה, קבוצה, שחקן או עמוד', 'Search shirts, teams, players or pages')}
+            aria-label={t('חיפוש באתר', 'Search the site')}
             maxLength={100}
             autoComplete="off"
             role="combobox"
@@ -126,9 +143,23 @@ function SearchBox({ className = '', onNavigate }) {
             </p>
           )}
           <ul id={listId} role="listbox" aria-label={t('הצעות', 'Suggestions')} className="max-h-[22rem] overflow-y-auto p-2">
-            {results.map((s, i) => (
-              <li key={s.id} id={`${listId}-${i}`} role="option" aria-selected={i === active}>
-                <button type="button" tabIndex={-1} onMouseDown={e => e.preventDefault()} onClick={() => go(s)} onMouseEnter={() => setActive(i)}
+            {options.map((option, i) => option.page ? (
+              <li key={option.key} id={`${listId}-${i}`} role="option" aria-selected={i === active}>
+                <button type="button" tabIndex={-1} onMouseDown={e => e.preventDefault()} onClick={() => go(option)} onMouseEnter={() => setActive(i)}
+                  className={`flex w-full items-center gap-3 rounded-xl p-2 text-start transition ${i === active ? 'bg-brand-mist' : ''}`}>
+                  <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-brand-orange-soft text-brand-orange-ink">
+                    <FileText className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[15px] font-medium text-brand-navy">{option.page.label}</span>
+                    <span className="block truncate text-[13px] text-brand-navy/50">{t('עמוד באתר', 'Page')}</span>
+                  </span>
+                  <ChevronLeft className="h-4 w-4 flex-shrink-0 text-brand-navy/40" aria-hidden="true" />
+                </button>
+              </li>
+            ) : (() => { const s = option.shirt; return (
+              <li key={option.key} id={`${listId}-${i}`} role="option" aria-selected={i === active}>
+                <button type="button" tabIndex={-1} onMouseDown={e => e.preventDefault()} onClick={() => go(option)} onMouseEnter={() => setActive(i)}
                   className={`flex w-full items-center gap-3 rounded-xl p-2 text-start transition ${i === active ? 'bg-brand-mist' : ''}`}>
                   <span className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-brand-mist">
                     <ProductImage src={s.main_image} alt="" sizes="48px" className="h-full w-full object-cover" />
@@ -140,7 +171,7 @@ function SearchBox({ className = '', onNavigate }) {
                   <span className="flex-shrink-0 text-sm font-semibold tabular-nums text-brand-navy">₪{shirtBasePrice(s)}</span>
                 </button>
               </li>
-            ))}
+            ); })())}
           </ul>
           <button type="button" onMouseDown={e => e.preventDefault()} onClick={submit}
             className="flex w-full items-center justify-between gap-3 border-t border-brand-line px-4 py-3 text-sm font-semibold text-brand-orange-ink transition hover:bg-brand-mist">

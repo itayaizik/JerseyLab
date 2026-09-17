@@ -22,12 +22,10 @@ export default function Shipping() {
     >
       <Section title="זמני אספקה">
         <p>
-          זמן האספקה תלוי בשאלה אם הפריט נמצא במלאי בארץ או מוזמן במיוחד. הסטטוס מופיע
-          על כל חולצה בעמוד המוצר.
+          כל חולצה מוזמנת במיוחד עבורך, כך שזמן האספקה זהה לכל הפריטים באתר.
         </p>
         <dl className="mt-2">
-          <Fact label="מלאי בארץ" value={s.localStockDays} />
-          <Fact label="הזמנה מיוחדת" value={s.specialOrderWeeks} />
+          <Fact label="זמן אספקה" value={s.specialOrderWeeks} />
           <Fact label="איסוף עצמי" value={`בתיאום מראש, ${s.pickupLocation}`} />
         </dl>
         <p>

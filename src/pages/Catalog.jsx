@@ -14,6 +14,7 @@ import { showsLocalStock } from '@/components/ShippingBadge';
 import { toast } from '@/components/ui/use-toast';
 import { shirtSizes, sortSizes } from '@/lib/sizes';
 import { searchShirts, formatEra, toDisplay } from '@/lib/search';
+import { matchPages } from '@/lib/sitePages';
 import { sortShirts } from '@/lib/sortShirts';
 import { COLLECTIONS, localizeCollection } from '@/lib/collections';
 import { withStock } from '@/lib/catalogFacets';
@@ -233,6 +234,7 @@ export default function Catalog() {
   };
 
   const q = searchParams.get('q');
+  const pagesForQuery = useMemo(() => (q ? matchPages(q) : []), [q]);
 
   // Which quick filter the current query string corresponds to.
   //
@@ -361,6 +363,20 @@ export default function Catalog() {
               </ul>
             )}
           </div>
+        )}
+
+        {/* "מידות" typed into the search is someone looking for a page. */}
+        {q && pagesForQuery.length > 0 && (
+          <nav aria-label={t('עמודים מתאימים', 'Matching pages')} className="mt-5 rounded-3xl border border-brand-line p-5 sm:p-6">
+            <p className="text-base font-semibold text-brand-navy">{t('אולי חיפשתם את העמוד הזה?', 'Were you looking for this page?')}</p>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {pagesForQuery.map(page => (
+                <li key={page.href}>
+                  <Link to={page.href} className="shop-btn-secondary rounded-full">{page.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
         )}
 
         {loadError ? (
