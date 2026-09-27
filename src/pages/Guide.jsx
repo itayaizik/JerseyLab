@@ -5,22 +5,22 @@ import Seo from '@/components/Seo';
 import CollectionHero from '@/components/catalog/CollectionHero';
 import Breadcrumb from '@/components/shop/Breadcrumb';
 import PageNotFound from '@/lib/PageNotFound';
-import { GUIDES, findGuide } from '@/lib/guides';
+import { GUIDES, findGuide, localizeGuide } from '@/lib/guides';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
-import { t } from '@/lib/i18n';
+import { t, isEn } from '@/lib/i18n';
 
-// One guide, and at the foot of it the other three. The articles are written
-// in Hebrew (lib/guides), which is what the shop's customers search in, so the
-// English site shows them in Hebrew and says so rather than pretending to a
-// translation that does not exist.
+// One guide, and at the foot of it the other three. Each is written in both
+// languages (lib/guides), so /guides/... and /en/guides/... are the same
+// article rather than Hebrew under an English address.
 
 export default function Guide() {
   const { slug } = useParams();
-  const guide = findGuide(slug);
-  if (!guide) return <PageNotFound />;
+  const found = findGuide(slug);
+  if (!found) return <PageNotFound />;
 
-  const others = GUIDES.filter(g => g.slug !== guide.slug);
-  const path = `/guides/${guide.slug}`;
+  const guide = localizeGuide(found, isEn);
+  const others = GUIDES.filter(g => g.slug !== found.slug).map(g => localizeGuide(g, isEn));
+  const path = `/guides/${found.slug}`;
 
   return (
     <div>
@@ -29,13 +29,12 @@ export default function Guide() {
         description={guide.description}
         canonicalPath={path}
         type="article"
-        hebrewOnly
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'Article',
           headline: guide.h1,
           description: guide.description,
-          inLanguage: 'he-IL',
+          inLanguage: isEn ? 'en' : 'he-IL',
           mainEntityOfPage: SITE_ORIGIN + path,
           publisher: { '@type': 'Organization', name: 'JerseyLab', url: SITE_ORIGIN },
         }}
@@ -48,7 +47,7 @@ export default function Guide() {
       />
 
       <div className="shop-container">
-        <article className="mx-auto mt-8 max-w-2xl lg:mt-12" lang="he" dir="rtl">
+        <article className="mx-auto mt-8 max-w-2xl lg:mt-12">
           {guide.sections.map(section => (
             <section key={section.h2} className="mt-8 first:mt-0">
               <h2 className="text-xl font-semibold text-brand-navy">{section.h2}</h2>

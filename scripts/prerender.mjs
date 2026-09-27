@@ -571,34 +571,49 @@ const guideIndex = {
   h1: 'מדריכים',
 };
 
-{
-  let html = buildHead(TEMPLATE, { ...guideIndex, alternate: false });
+const guideIndexEn = {
+  path: '/guides',
+  title: 'Guides - JerseyLab',
+  description: 'Guides to football shirts: how to tell an original from a replica, fan version against player version, the famous retro shirts, and what to buy a fan.',
+  h1: 'Guides',
+};
+
+for (const lang of ['he', 'en']) {
+  const en = lang === 'en';
+  const index = en ? guideIndexEn : guideIndex;
+  let html = buildHead(TEMPLATE, { ...index, lang });
   html = withJsonLd(html, {
     '@context': 'https://schema.org',
     '@graph': [
       organisation,
       {
         '@type': 'CollectionPage',
-        name: guideIndex.h1,
-        description: guideIndex.description,
-        url: `${SITE_ORIGIN}/guides`,
-        inLanguage: 'he-IL',
+        name: index.h1,
+        description: index.description,
+        url: SITE_ORIGIN + (en ? enPath('/guides') : '/guides'),
+        inLanguage: en ? 'en' : 'he-IL',
       },
     ],
   });
-  const list = `<ul>${GUIDES.map(g =>
-    `<li><a href="/guides/${escapeHtml(g.slug)}">${escapeHtml(g.h1)}</a> - ${escapeHtml(g.description)}</li>`).join('')}</ul>`;
-  writePage('/guides', withBody(html, shell({ h1: guideIndex.h1, body: list, lang: 'he' })));
+  const list = `<ul>${GUIDES.map(source => {
+    const g = en ? { ...source, ...source.en } : source;
+    const href = en ? enPath(`/guides/${source.slug}`) : `/guides/${source.slug}`;
+    return `<li><a href="${escapeHtml(href)}">${escapeHtml(g.h1)}</a> - ${escapeHtml(g.description)}</li>`;
+  }).join('')}</ul>`;
+  writePage(en ? enPath('/guides') : '/guides', withBody(html, shell({ h1: index.h1, body: list, lang })));
 }
 
-for (const guide of GUIDES) {
-  const path = `/guides/${guide.slug}`;
-  const url = SITE_ORIGIN + path;
+for (const source of GUIDES) {
+  const path = `/guides/${source.slug}`;
+  for (const lang of ['he', 'en']) {
+  const en = lang === 'en';
+  const guide = en ? { ...source, ...source.en } : source;
+  const url = SITE_ORIGIN + (en ? enPath(path) : path);
   let html = buildHead(TEMPLATE, {
     path,
+    lang,
     title: guide.title,
     description: guide.description,
-    alternate: false,
   });
   html = withJsonLd(html, {
     '@context': 'https://schema.org',
@@ -610,14 +625,14 @@ for (const guide of GUIDES) {
         description: guide.description,
         url,
         mainEntityOfPage: url,
-        inLanguage: 'he-IL',
+        inLanguage: en ? 'en' : 'he-IL',
         publisher: { '@id': `${SITE_ORIGIN}/#shop` },
       },
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'דף הבית', item: `${SITE_ORIGIN}/` },
-          { '@type': 'ListItem', position: 2, name: 'מדריכים', item: `${SITE_ORIGIN}/guides` },
+          { '@type': 'ListItem', position: 1, name: en ? 'Home' : 'דף הבית', item: SITE_ORIGIN + (en ? '/en' : '/') },
+          { '@type': 'ListItem', position: 2, name: en ? 'Guides' : 'מדריכים', item: SITE_ORIGIN + (en ? enPath('/guides') : '/guides') },
           { '@type': 'ListItem', position: 3, name: guide.h1, item: url },
         ],
       },
@@ -628,10 +643,11 @@ for (const guide of GUIDES) {
     `<h2>${escapeHtml(section.h2)}</h2>` +
     (section.paragraphs || []).map(text => `<p>${escapeHtml(text)}</p>`).join('') +
     (section.list ? `<ul>${section.list.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : '')).join('') +
-    `<nav aria-label="קישורים מהמדריך">${guide.links.map(link =>
-      `<a href="${escapeHtml(link.to)}">${escapeHtml(link.label)}</a>`).join(' ')}</nav>`;
+    `<nav aria-label="${en ? 'Links from this guide' : 'קישורים מהמדריך'}">${guide.links.map(link =>
+      `<a href="${escapeHtml(en ? enPath(link.to) : link.to)}">${escapeHtml(link.label)}</a>`).join(' ')}</nav>`;
 
-  writePage(path, withBody(html, shell({ h1: guide.h1, body: article, lang: 'he' })));
+  writePage(en ? enPath(path) : path, withBody(html, shell({ h1: guide.h1, body: article, lang })));
+  }
 }
 
 console.log(`[prerender] ${STATIC_PAGES.length} static + ${COLLECTIONS.length} collection + ${shirts.length} product + ${GUIDES.length + 1} guide pages written to dist/, in Hebrew and, where there is English copy, in English`);

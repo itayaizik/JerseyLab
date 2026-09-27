@@ -74,9 +74,8 @@ function pageEntries(route, hasEnglish) {
 
 const entries = [
   ...STATIC_ROUTES.flatMap(route => pageEntries(route, ENGLISH_ROUTES.has(route.path))),
-  // The guides are written in Hebrew only (src/lib/guides).
-  urlEntry({ path: '/guides', changefreq: 'monthly', priority: '0.7' }),
-  ...GUIDES.map(g => urlEntry({ path: `/guides/${g.slug}`, changefreq: 'monthly', priority: '0.7' })),
+  ...pageEntries({ path: '/guides', changefreq: 'monthly', priority: '0.7' }, true),
+  ...GUIDES.flatMap(g => pageEntries({ path: `/guides/${g.slug}`, changefreq: 'monthly', priority: '0.7' }, !!g.en)),
   ...COLLECTIONS.flatMap(c => pageEntries({
     path: `/collections/${c.slug}`,
     changefreq: 'weekly',

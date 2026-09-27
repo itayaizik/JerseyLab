@@ -146,26 +146,81 @@
     <loc>https://www.jerseylab.co/guides</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/guides</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides" />
   </url>
   <url>
     <loc>https://www.jerseylab.co/guides/original-vs-replica</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/original-vs-replica" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/original-vs-replica" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/original-vs-replica" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/guides/original-vs-replica</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/original-vs-replica" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/original-vs-replica" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/original-vs-replica" />
   </url>
   <url>
     <loc>https://www.jerseylab.co/guides/fan-vs-player</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/fan-vs-player" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/fan-vs-player" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/fan-vs-player" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/guides/fan-vs-player</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/fan-vs-player" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/fan-vs-player" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/fan-vs-player" />
   </url>
   <url>
     <loc>https://www.jerseylab.co/guides/famous-retro-shirts</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/famous-retro-shirts" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/famous-retro-shirts" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/famous-retro-shirts" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/guides/famous-retro-shirts</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/famous-retro-shirts" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/famous-retro-shirts" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/famous-retro-shirts" />
   </url>
   <url>
     <loc>https://www.jerseylab.co/guides/gifts-for-football-fans</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/gifts-for-football-fans" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/gifts-for-football-fans" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/gifts-for-football-fans" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/guides/gifts-for-football-fans</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/gifts-for-football-fans" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/gifts-for-football-fans" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/gifts-for-football-fans" />
   </url>
   <url>
     <loc>https://www.jerseylab.co/collections/retro</loc>

@@ -14,6 +14,71 @@
 export const GUIDES = [
   {
     slug: 'original-vs-replica',
+    en: {
+          "title": "How to Tell an Original Football Shirt from a Replica | JerseyLab",
+          "h1": "How to tell an original football shirt",
+          "description": "How to tell an original football shirt from a replica: the label, the stitching, the crest, the fabric and the price. Straight answers, no tricks.",
+          "intro": "Every fan about to buy a shirt runs into the same question: what separates the €120 shirt from the ₪80 one, and how do you know what you are actually buying. These are the signs that really tell them apart.",
+          "sections": [
+                {
+                      "h2": "The inner label",
+                      "paragraphs": [
+                            "An original carries a unique product code on its label, usually letters and digits, and the same code is printed on the packaging. Type it into Google and see whether it leads to a shirt that exists. On replicas the label is usually simpler, and sometimes printed rather than sewn in."
+                      ]
+                },
+                {
+                      "h2": "The crest",
+                      "paragraphs": [
+                            "On the expensive shirts of recent years the crest is heat-pressed onto the fabric or densely embroidered. A crest sewn roughly, with threads standing out around it, points to cheaper manufacturing."
+                      ]
+                },
+                {
+                      "h2": "The fabric",
+                      "paragraphs": [
+                            "The big makers use fabrics with trade names of their own, like Nike's Dri-FIT or adidas AEROREADY, and the name is usually printed inside the shirt. The feel differs too: an original is normally thinner and lighter."
+                      ]
+                },
+                {
+                      "h2": "The stitching",
+                      "paragraphs": [
+                            "Turn the shirt inside out. Good manufacturing means straight, even seams with no loose threads. A crooked seam or frayed edges are the easiest sign to spot."
+                      ]
+                },
+                {
+                      "h2": "The price",
+                      "paragraphs": [
+                            "An original shirt from a big club costs around ₪350 to ₪500 in Israel. That gap explains itself: a shirt at ₪80 is a replica, and this is the simplest sign of them all."
+                      ]
+                },
+                {
+                      "h2": "What we sell",
+                      "paragraphs": [
+                            "At JerseyLab we sell high-quality replicas, at ₪70 to ₪80.",
+                            "What we do promise: good fabric, crests that stay put after a wash, and sizes that match the chart on the site. If you specifically want an official club product, an official store is the place to buy it."
+                      ]
+                },
+                {
+                      "h2": "How long does a shirt like this last?",
+                      "paragraphs": [
+                            "A good shirt washed on a gentle cycle, without a tumble dryer, survives whole seasons. What ruins shirts is high heat, not the number of washes."
+                      ]
+                }
+          ],
+          "links": [
+                {
+                      "to": "/catalog",
+                      "label": "All shirts"
+                },
+                {
+                      "to": "/size-guide",
+                      "label": "Size guide"
+                },
+                {
+                      "to": "/guides/fan-vs-player",
+                      "label": "Fan version vs player version"
+                }
+          ]
+    },
     title: 'איך לזהות חולצת כדורגל מקורית? המדריך המלא | JerseyLab',
     h1: 'איך לזהות חולצת כדורגל מקורית',
     description: 'איך מבדילים בין חולצת כדורגל מקורית לבין העתק: התווית, התפרים, הסמלים, הבד והמחיר. מדריך ברור, בלי טריקים.',
@@ -60,6 +125,62 @@ export const GUIDES = [
 
   {
     slug: 'fan-vs-player',
+    en: {
+          "title": "Fan Version or Player Version? Fit, Fabric and Price | JerseyLab",
+          "h1": "Fan version vs player version",
+          "description": "The difference between the fan version and the player version of a football shirt: fit, fabric, weight and price, and how to pick the right size in each.",
+          "intro": "Two shirts, same club, same season, and almost identical in a photo. The difference starts the moment you put them on.",
+          "sections": [
+                {
+                      "h2": "The fan version",
+                      "paragraphs": [
+                            "This is what most people buy. A regular, comfortable cut, slightly thicker fabric, and it suits everyday wear. If you are unsure, this is the answer most of the time."
+                      ]
+                },
+                {
+                      "h2": "The player version",
+                      "paragraphs": [
+                            "This is the shirt the players wear on the pitch. Lighter fabric, sometimes with ventilation holes, and a much closer cut: it is meant to hug the body while running. On a body that is not athletic it will look a size too small, even when the size is right by the chart."
+                      ]
+                },
+                {
+                      "h2": "The difference in numbers",
+                      "paragraphs": [
+                            "On our size chart the player version in L measures about 53-55 cm across, against 57-58 in the fan version. That is a few centimetres you feel straight away."
+                      ]
+                },
+                {
+                      "h2": "Which to choose",
+                      "list": [
+                            "A shirt for everyday wear, for work or for watching the game: fan version.",
+                            "You actually play football in it, or you like a close fit: player version.",
+                            "Torn between two sizes in the player version: take the larger one."
+                      ]
+                },
+                {
+                      "h2": "Name and number printing",
+                      "paragraphs": [
+                            "Available on both. On the player version the print is usually heat-pressed and thinner; on the fan version it is printed in a slightly thicker layer. Both hold up well as long as you don't iron directly over them."
+                      ]
+                },
+                {
+                      "h2": "Price",
+                      "paragraphs": [
+                            "Here both cost the same, and the player version is a ₪20 extra. In official stores the gap between the two is far larger."
+                      ]
+                }
+          ],
+          "links": [
+                {
+                      "to": "/size-guide",
+                      "label": "Size guide and calculator"
+                },
+                {
+                      "to": "/catalog",
+                      "label": "All shirts"
+                }
+          ]
+    },
     title: 'גרסת אוהד או גרסת שחקן? ההבדלים, הגזרה והמחיר | JerseyLab',
     h1: 'גרסת אוהד מול גרסת שחקן',
     description: 'ההבדל בין גרסת אוהד לגרסת שחקן בחולצות כדורגל: גזרה, בד, משקל ומחיר, ואיך לבחור את המידה הנכונה בכל אחת מהן.',
@@ -102,6 +223,66 @@ export const GUIDES = [
 
   {
     slug: 'famous-retro-shirts',
+    en: {
+          "title": "The Most Famous Retro Football Shirts in History | JerseyLab",
+          "h1": "The retro shirts every fan knows",
+          "description": "The shirts nobody forgets: Argentina 1986, the Netherlands 1988, Brazil 1998, Manchester United 1999 and more. The story behind them and where to get them.",
+          "intro": "Some shirts are remembered for a single match. Here are a few of them, and why they are still wanted.",
+          "sections": [
+                {
+                      "h2": "Argentina, 1986 World Cup",
+                      "paragraphs": [
+                            "The shirt Maradona wore in the quarter-final against England, the match of the Hand of God and the Goal of the Century. That year's sky blue and white stripes may be the most recognised design in the game's history."
+                      ]
+                },
+                {
+                      "h2": "The Netherlands, Euro 1988",
+                      "paragraphs": [
+                            "A geometric orange pattern that looks more like a painting than a piece of sportswear. Van Basten, the volley, the final against the Soviet Union. If you like design, this is the shirt."
+                      ]
+                },
+                {
+                      "h2": "Napoli 1987/88",
+                      "paragraphs": [
+                            "The sky blue of Napoli in the years Maradona turned a whole city into champions. You still see it on the streets there."
+                      ]
+                },
+                {
+                      "h2": "Brazil, 1998 and 2002",
+                      "paragraphs": [
+                            "The classic yellow, Ronaldo, Rivaldo and Ronaldinho. 2002 is the shirt of the fifth title."
+                      ]
+                },
+                {
+                      "h2": "Manchester United 1998/99",
+                      "paragraphs": [
+                            "The treble season: league, cup and Champions League, and that final against Bayern with two goals in stoppage time."
+                      ]
+                },
+                {
+                      "h2": "Barcelona 2005/06",
+                      "paragraphs": [
+                            "Ronaldinho at his peak, Iniesta, and a young Messi. The blaugrana stripes of the season the club returned to the top of Europe."
+                      ]
+                },
+                {
+                      "h2": "What makes a retro shirt wanted",
+                      "paragraphs": [
+                            "Not age. A shirt becomes wanted when something happened in it: a title, an unforgettable goal, or a design that was bold for its time. That is why designs from the 1990s are wanted more than ones from the 2010s."
+                      ]
+                }
+          ],
+          "links": [
+                {
+                      "to": "/collections/retro",
+                      "label": "All retro shirts"
+                },
+                {
+                      "to": "/request-shirt",
+                      "label": "Looking for one we don't have?"
+                }
+          ]
+    },
     title: 'חולצות הרטרו המפורסמות בהיסטוריה של הכדורגל | JerseyLab',
     h1: 'חולצות הרטרו שכל אוהד מכיר',
     description: 'החולצות שנחרטו בזיכרון: ארגנטינה 1986, הולנד 1988, ברזיל 1998, מנצ\'סטר יונייטד 1999 ועוד. מה הסיפור מאחוריהן ואיפה להשיג אותן.',
@@ -144,6 +325,52 @@ export const GUIDES = [
 
   {
     slug: 'gifts-for-football-fans',
+    en: {
+          "title": "A Gift for a Football Fan: 7 Ideas That Land | JerseyLab",
+          "h1": "What to buy a football fan",
+          "description": "What to buy a football fan for a birthday or a holiday: their club's shirt, a retro kit, personalised printing or a Mystery Box. Including what to do when you don't know their size.",
+          "intro": "Buying a gift for a fan is easy when you know what they like, and hard when you don't. Here are the ideas that work, in order.",
+          "sections": [
+                {
+                      "h2": "Seven ideas",
+                      "list": [
+                            "Their club's shirt for the current season. The safe choice.",
+                            "A retro shirt from a season they remember. A 35-year-old United fan will take the 1999 shirt over this year's.",
+                            "A shirt with their name on the back. Name and number printing is ₪10 and turns a shirt into something kept.",
+                            "A national team shirt before a World Cup, for when you don't know which club they support.",
+                            "A Mystery Box: you choose the style and size, the shirt is a surprise, and you can rule out teams in advance.",
+                            "A shirt for a child with their own name on it. Children like their own name back there more than any player's.",
+                            "A joint gift for a group of friends: one order, each shirt in its own size and name."
+                      ]
+                },
+                {
+                      "h2": "If you don't know their size",
+                      "paragraphs": [
+                            "This is the most common worry and it has a simple answer: the size guide has a calculator that suggests a size from height, weight, build and preferred fit. If you are still unsure, message us and we'll help."
+                      ]
+                },
+                {
+                      "h2": "What it costs",
+                      "paragraphs": [
+                            "A shirt is ₪70 to ₪80, name and number printing ₪10, and delivery ₪25 or free over ₪250."
+                      ]
+                }
+          ],
+          "links": [
+                {
+                      "to": "/mystery-box",
+                      "label": "Mystery Box"
+                },
+                {
+                      "to": "/size-guide",
+                      "label": "Size guide"
+                },
+                {
+                      "to": "/catalog",
+                      "label": "All shirts"
+                }
+          ]
+    },
     title: 'מתנה לאוהד כדורגל: 7 רעיונות שבאמת שמחים לקבל | JerseyLab',
     h1: 'מה קונים לאוהד כדורגל',
     description: 'מה קונים לאוהד כדורגל ליום הולדת או לחג: חולצה של הקבוצה, חולצת רטרו, הדפסת שם אישית או מיסטרי בוקס. כולל פתרון למי שלא יודע את המידה.',
@@ -177,6 +404,11 @@ export const GUIDES = [
     ],
   },
 ];
+
+// The guide in the site's language. Every guide is written in both, so the
+// English site is a real translation rather than Hebrew under an English
+// address.
+export const localizeGuide = (guide, en) => (guide && en && guide.en ? { ...guide, ...guide.en } : guide);
 
 export const findGuide = (slug) => GUIDES.find(g => g.slug === slug) || null;
 
