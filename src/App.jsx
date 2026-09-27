@@ -44,6 +44,8 @@ const LegalAccessibility = lazy(() => import('@/pages/legal/Accessibility'));
 const LegalBusiness = lazy(() => import('@/pages/legal/BusinessDetails'));
 const FAQPage = lazy(() => import('@/pages/FAQPage'));
 const Contact = lazy(() => import('@/pages/Contact'));
+const Guides = lazy(() => import('@/pages/Guides'));
+const Guide = lazy(() => import('@/pages/Guide'));
 const SizeGuide = lazy(() => import('@/pages/SizeGuide'));
 
 // Protected Customer Pages
@@ -125,6 +127,8 @@ const AuthenticatedApp = () => {
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/size-guide" element={<SizeGuide />} />
+        <Route path="/guides" element={<Guides />} />
+        <Route path="/guides/:slug" element={<Guide />} />
 
         {/* Protected Customer Routes */}
         <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>

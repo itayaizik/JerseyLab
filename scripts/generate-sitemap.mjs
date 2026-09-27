@@ -10,6 +10,7 @@ import { resolve } from 'node:path';
 import { ROOT, SITE_ORIGIN, escapeHtml, fetchShirts } from './lib/build-data.mjs';
 import { COLLECTIONS } from '../src/lib/collections.js';
 import { shirtNameEn } from '../src/lib/english.js';
+import { GUIDES } from '../src/lib/guides.js';
 
 const OUT = resolve(ROOT, 'public/sitemap.xml');
 
@@ -73,6 +74,9 @@ function pageEntries(route, hasEnglish) {
 
 const entries = [
   ...STATIC_ROUTES.flatMap(route => pageEntries(route, ENGLISH_ROUTES.has(route.path))),
+  // The guides are written in Hebrew only (src/lib/guides).
+  urlEntry({ path: '/guides', changefreq: 'monthly', priority: '0.7' }),
+  ...GUIDES.map(g => urlEntry({ path: `/guides/${g.slug}`, changefreq: 'monthly', priority: '0.7' })),
   ...COLLECTIONS.flatMap(c => pageEntries({
     path: `/collections/${c.slug}`,
     changefreq: 'weekly',

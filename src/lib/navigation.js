@@ -109,6 +109,7 @@ export const SHIRTS_MENU = {
     { label: t('מיסטרי בוקס', 'Mystery Box'), href: '/mystery-box' },
     { label: t('לא מצאתם? בקשו חולצה', "Can't find it? Request a shirt"), href: '/request-shirt' },
     { label: t('מדריך מידות', 'Size guide'), href: '/size-guide' },
+    { label: t('מדריכים', 'Guides'), href: '/guides' },
   ]),
 };
 
@@ -133,6 +134,7 @@ export const SITE_LINKS = withStock([
   { label: t('מיסטרי בוקס', 'Mystery Box'), href: '/mystery-box' },
   { label: t('בקשת חולצה', 'Request a shirt'), href: '/request-shirt' },
   { label: t('מדריך מידות', 'Size guide'), href: '/size-guide' },
+  { label: t('מדריכים', 'Guides'), href: '/guides' },
   { label: t('שאלות ותשובות', 'FAQ'), href: '/faq' },
   { label: t('צור קשר', 'Contact'), href: '/contact' },
 ]);

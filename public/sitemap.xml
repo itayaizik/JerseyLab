@@ -143,6 +143,31 @@
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://www.jerseylab.co/guides</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/guides/original-vs-replica</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/guides/fan-vs-player</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/guides/famous-retro-shirts</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/guides/gifts-for-football-fans</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.jerseylab.co/collections/retro</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>

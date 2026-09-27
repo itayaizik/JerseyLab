@@ -31,6 +31,7 @@ const HELP_LINKS = [
   { label: t('שאלות ותשובות', 'FAQ'), href: '/faq' },
   { label: t('צור קשר', 'Contact'), href: '/contact' },
   { label: t('מדריך מידות', 'Size guide'), href: '/size-guide' },
+  { label: t('מדריכים', 'Guides'), href: '/guides' },
   { label: t('משלוחים והחזרות', 'Shipping & returns'), href: '/legal/shipping' },
 ];
 

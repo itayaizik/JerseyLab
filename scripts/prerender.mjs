@@ -20,6 +20,7 @@ import {
 } from './lib/build-data.mjs';
 import { COLLECTIONS, collectionShirts } from '../src/lib/collections.js';
 import { shirtNameEn, shirtDescriptionIn, termIn } from '../src/lib/english.js';
+import { GUIDES } from '../src/lib/guides.js';
 
 const DIST = resolve(ROOT, 'dist');
 const TEMPLATE_PATH = resolve(DIST, 'index.html');
@@ -559,4 +560,78 @@ for (const source of COLLECTIONS) {
   }
 }
 
-console.log(`[prerender] ${STATIC_PAGES.length} static + ${COLLECTIONS.length} collection + ${shirts.length} product pages written to dist/, in Hebrew and, where there is English copy, in English`);
+// --- guides ---------------------------------------------------------------
+// The articles (src/lib/guides), written out in full so a crawler that runs
+// no JavaScript - and an AI assistant quoting an answer - gets the whole text.
+
+const guideIndex = {
+  path: '/guides',
+  title: 'מדריכים - JerseyLab',
+  description: 'מדריכים על חולצות כדורגל: איך לזהות חולצה מקורית, ההבדל בין גרסת אוהד לגרסת שחקן, חולצות הרטרו המפורסמות, ומה קונים לאוהד.',
+  h1: 'מדריכים',
+};
+
+{
+  let html = buildHead(TEMPLATE, { ...guideIndex, alternate: false });
+  html = withJsonLd(html, {
+    '@context': 'https://schema.org',
+    '@graph': [
+      organisation,
+      {
+        '@type': 'CollectionPage',
+        name: guideIndex.h1,
+        description: guideIndex.description,
+        url: `${SITE_ORIGIN}/guides`,
+        inLanguage: 'he-IL',
+      },
+    ],
+  });
+  const list = `<ul>${GUIDES.map(g =>
+    `<li><a href="/guides/${escapeHtml(g.slug)}">${escapeHtml(g.h1)}</a> - ${escapeHtml(g.description)}</li>`).join('')}</ul>`;
+  writePage('/guides', withBody(html, shell({ h1: guideIndex.h1, body: list, lang: 'he' })));
+}
+
+for (const guide of GUIDES) {
+  const path = `/guides/${guide.slug}`;
+  const url = SITE_ORIGIN + path;
+  let html = buildHead(TEMPLATE, {
+    path,
+    title: guide.title,
+    description: guide.description,
+    alternate: false,
+  });
+  html = withJsonLd(html, {
+    '@context': 'https://schema.org',
+    '@graph': [
+      organisation,
+      {
+        '@type': 'Article',
+        headline: guide.h1,
+        description: guide.description,
+        url,
+        mainEntityOfPage: url,
+        inLanguage: 'he-IL',
+        publisher: { '@id': `${SITE_ORIGIN}/#shop` },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'דף הבית', item: `${SITE_ORIGIN}/` },
+          { '@type': 'ListItem', position: 2, name: 'מדריכים', item: `${SITE_ORIGIN}/guides` },
+          { '@type': 'ListItem', position: 3, name: guide.h1, item: url },
+        ],
+      },
+    ],
+  });
+
+  const article = `<p>${escapeHtml(guide.intro)}</p>` + guide.sections.map(section =>
+    `<h2>${escapeHtml(section.h2)}</h2>` +
+    (section.paragraphs || []).map(text => `<p>${escapeHtml(text)}</p>`).join('') +
+    (section.list ? `<ul>${section.list.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : '')).join('') +
+    `<nav aria-label="קישורים מהמדריך">${guide.links.map(link =>
+      `<a href="${escapeHtml(link.to)}">${escapeHtml(link.label)}</a>`).join(' ')}</nav>`;
+
+  writePage(path, withBody(html, shell({ h1: guide.h1, body: article, lang: 'he' })));
+}
+
+console.log(`[prerender] ${STATIC_PAGES.length} static + ${COLLECTIONS.length} collection + ${shirts.length} product + ${GUIDES.length + 1} guide pages written to dist/, in Hebrew and, where there is English copy, in English`);

@@ -15,6 +15,7 @@ import { COLLECTIONS } from '../src/lib/collections.js';
 import { BOX_TYPES, NAME_PRICE, PATCHES_PRICE } from '../src/lib/mysteryBox.js';
 import { EXTRA_PRICES } from '../src/lib/cart.js';
 import { BUSINESS } from '../src/lib/business.js';
+import { GUIDES } from '../src/lib/guides.js';
 
 const OUT = resolve(ROOT, 'public/llms.txt');
 
@@ -80,6 +81,10 @@ const lines = [
   `- [שאלות ותשובות](${SITE_ORIGIN}/faq)`,
   `- [משלוחים, אספקה וביטול](${SITE_ORIGIN}/legal/shipping)`,
   `- [צור קשר](${SITE_ORIGIN}/contact)`,
+  '',
+  '## מדריכים',
+  '',
+  ...GUIDES.map(g => `- [${g.h1}](${SITE_ORIGIN}/guides/${g.slug}): ${g.description}`),
   '',
   '## אוספים',
   '',
