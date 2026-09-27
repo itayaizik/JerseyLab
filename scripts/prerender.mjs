@@ -19,6 +19,7 @@ import {
   ROOT, SITE_ORIGIN, escapeHtml, fetchShirts, fetchFaqs, shirtPrice, shirtDescription,
 } from './lib/build-data.mjs';
 import { COLLECTIONS, collectionShirts } from '../src/lib/collections.js';
+import { shirtNameEn, shirtDescriptionIn, termIn } from '../src/lib/english.js';
 
 const DIST = resolve(ROOT, 'dist');
 const TEMPLATE_PATH = resolve(DIST, 'index.html');
@@ -43,6 +44,12 @@ if (!TEMPLATE.includes('<div id="root"></div>')) {
 const STATIC_PAGES = [
   {
     path: '/',
+    en: {
+      title: "JerseyLab - Football Shirts for Collectors and Fans",
+      description: "Football shirts for collectors and fans: club and national team kits, current seasons and retro, with name and number printing. Delivery across Israel.",
+      h1: "Football shirts, rare ones included, at fair prices",
+      body: "<p>JerseyLab sells football shirts - club kits, national teams, retro and player versions - and can source shirts that are not in the catalog.</p>",
+    },
     title: 'JerseyLab - חולצות כדורגל נדירות לאספנים ואוהדים',
     description: 'חולצות כדורגל איכותיות ונדירות לאספנים ואוהדים. מצא חולצות של קבוצות, נבחרות ושחקנים אהובים - חדשות, רטרו ומהדורות מיוחדות במחירים טובים.',
     h1: 'חולצות כדורגל איכותיות, נדירות ובמחירים טובים',
@@ -50,6 +57,12 @@ const STATIC_PAGES = [
   },
   {
     path: '/catalog',
+    en: {
+      title: "All Shirts - JerseyLab",
+      description: "The full catalog of football shirts: clubs, national teams and players. Retro kits and special editions, with sizes S to 3XL.",
+      h1: "Football shirt catalog",
+      body: "<p>Every shirt in the catalog - by club, national team, season and size. Filter by retro, national teams and sale.</p>",
+    },
     title: 'קטלוג - JerseyLab',
     description: 'קטלוג חולצות כדורגל: חולצות של קבוצות, נבחרות ושחקנים במחירים טובים. רטרו ומהדורות מיוחדות.',
     h1: 'קטלוג חולצות כדורגל',
@@ -57,6 +70,12 @@ const STATIC_PAGES = [
   },
   {
     path: '/mystery-box',
+    en: {
+      title: "Mystery Box - JerseyLab",
+      description: "A surprise football shirt in the style and size you choose. Regular ₪70, retro ₪80, World Cup ₪70. Rule out teams and colours you don't want.",
+      h1: "Mystery Box",
+      body: "<p>You choose the style and size, and the shirt is drawn at random. Regular ₪70, World Cup ₪70, retro ₪80. Name and number ₪10, all patches ₪5, long sleeves ₪20, matching shorts ₪40. You can rule out teams and colours in advance, and order a box each for a group of friends.</p>",
+    },
     title: 'מיסטרי בוקס - JerseyLab',
     description: 'מיסטרי בוקס של JerseyLab: חולצת כדורגל מפתיעה לפי סגנון ומידה שתבחר. רגיל ₪70, רטרו ₪80, מונדיאל ₪70. אפשר לסמן קבוצות וצבעים שלא תרצה לקבל.',
     h1: 'מיסטרי בוקס',
@@ -64,6 +83,12 @@ const STATIC_PAGES = [
   },
   {
     path: '/request-shirt',
+    en: {
+      title: "Looking for a Shirt We Don't Have? - JerseyLab",
+      description: "Can't find the shirt in the catalog? Send us a photo or a description and we'll check whether we can get it, and at what price.",
+      h1: "Looking for a shirt we don't have?",
+      body: "<p>The catalog is not everything. Send a photo or a description - club, season and size - and we'll come back to you with an answer and a price.</p>",
+    },
     title: 'מחפשים חולצה שאין באתר? - JerseyLab',
     description: 'לא מצאתם את החולצה בקטלוג? שלחו לנו בקשה עם תמונה או תיאור, ונבדוק אם אפשר להשיג אותה ובאיזה מחיר.',
     h1: 'מחפשים חולצה שאין באתר?',
@@ -71,6 +96,12 @@ const STATIC_PAGES = [
   },
   {
     path: '/faq',
+    en: {
+      title: "FAQ - JerseyLab",
+      description: "Common questions about ordering football shirts from JerseyLab: how ordering works, payment, delivery, sizes and availability.",
+      h1: "Questions and answers",
+      body: "<p>Nothing is paid on the site. Sending an order is a request - we get back to you on WhatsApp or Instagram to confirm the details, and payment is arranged with us directly once everything is agreed.</p>",
+    },
     title: 'שאלות ותשובות - JerseyLab',
     description: 'שאלות ותשובות נפוצות על רכישת חולצות כדורגל ב-JerseyLab: משלוחים, מידות, זמינות ופרטי הזמנה.',
     h1: 'שאלות ותשובות',
@@ -78,6 +109,12 @@ const STATIC_PAGES = [
   },
   {
     path: '/contact',
+    en: {
+      title: "Contact Us - JerseyLab",
+      description: "Contact JerseyLab on WhatsApp or Instagram for questions about sizes, availability and special orders.",
+      h1: "Contact us",
+      body: "<p>Reach us on WhatsApp at +972-50-558-6255 or on Instagram at @Jerseylabil. We're happy to help with sizes, availability and special orders.</p>",
+    },
     title: 'צור קשר - JerseyLab',
     description: 'צור קשר עם JerseyLab לשאלות, הזמנות ויעוץ בוואטסאפ ואינסטגרם. מענה מהיר ושירות אישי.',
     h1: 'צור קשר',
@@ -127,6 +164,12 @@ const STATIC_PAGES = [
   },
   {
     path: '/size-guide',
+    en: {
+      title: "Size Guide - JerseyLab",
+      description: "Football shirt size guide: fan version, player version, women's and kids' size charts, and a calculator that suggests a size from your height, weight, build and preferred fit.",
+      h1: "Size guide",
+      body: "<p>Size charts for fan and player versions, for adults and kids, plus a calculator that suggests a size from height, weight, build and how you like the shirt to fit.</p>",
+    },
     title: 'מדריך מידות - JerseyLab',
     description: 'מדריך מידות לחולצות כדורגל: טבלאות מידות לאוהד, גרסת שחקן, נשים וילדים. איך לבחור את המידה הנכונה לפי מידות הגוף.',
     h1: 'מדריך מידות',
@@ -147,9 +190,16 @@ function setMeta(html, matcher, attr, name, content) {
   return matcher.test(html) ? html.replace(matcher, tag) : html.replace('</head>', `    ${tag}\n  </head>`);
 }
 
-function buildHead(html, { path, title, description, image }) {
-  const url = SITE_ORIGIN + path;
+// The English site is the same pages under /en (src/lib/i18n).
+export const enPath = (path) => (path === '/' ? '/en' : `/en${path}`);
+
+function buildHead(html, { path, title, description, image, lang = 'he', alternate = true }) {
+  const en = lang === 'en';
+  const url = SITE_ORIGIN + (en ? enPath(path) : path);
   let out = setTitle(html, title);
+  if (en) {
+    out = out.replace('<html lang="he" dir="rtl">', '<html lang="en" dir="ltr">');
+  }
   out = setMeta(out, /<meta name="description"[^>]*>/, 'name', 'description', description);
   out = setMeta(out, /<meta property="og:title"[^>]*>/, 'property', 'og:title', title);
   out = setMeta(out, /<meta property="og:description"[^>]*>/, 'property', 'og:description', description);
@@ -158,9 +208,22 @@ function buildHead(html, { path, title, description, image }) {
   out = setMeta(out, /<meta name="twitter:description"[^>]*>/, 'name', 'twitter:description', description);
   out = setMeta(out, /<meta name="twitter:image"[^>]*>/, 'name', 'twitter:image', image || DEFAULT_IMAGE);
   out = setMeta(out, /<meta property="og:url"[^>]*>/, 'property', 'og:url', url);
+  out = setMeta(out, /<meta property="og:locale"[^>]*>/, 'property', 'og:locale', en ? 'en_US' : 'he_IL');
   // Canonical in the served HTML is the whole point: it is read on the first
-  // crawl, long before the client-side one exists.
-  out = out.replace('</head>', `    <link rel="canonical" href="${escapeHtml(url)}" />\n  </head>`);
+  // crawl, long before the client-side one exists. The hreflang pair beside it
+  // says the two addresses are one page in two languages, which is what keeps
+  // Google from reading the English side as a duplicate.
+  const alternates = [
+    `<link rel="canonical" href="${escapeHtml(url)}" />`,
+    // Only where the page exists in both languages. Pointing hreflang at a
+    // page with no English version is worse than not pointing at all.
+    ...(alternate ? [
+      `<link rel="alternate" hreflang="he-IL" href="${escapeHtml(SITE_ORIGIN + path)}" />`,
+      `<link rel="alternate" hreflang="en" href="${escapeHtml(SITE_ORIGIN + enPath(path))}" />`,
+      `<link rel="alternate" hreflang="x-default" href="${escapeHtml(SITE_ORIGIN + path)}" />`,
+    ] : []),
+  ].join('\n    ');
+  out = out.replace('</head>', `    ${alternates}\n  </head>`);
   return out;
 }
 
@@ -188,11 +251,16 @@ function withBody(html, inner) {
   );
 }
 
-function shell({ h1, body }) {
-  return `<header><a href="/">JerseyLab</a></header><main><h1>${escapeHtml(h1)}</h1>${body}</main>` +
-    `<nav aria-label="ניווט"><a href="/catalog">קטלוג</a> <a href="/mystery-box">מיסטרי בוקס</a> ` +
-    `<a href="/request-shirt">בקשת חולצה</a> <a href="/size-guide">מדריך מידות</a> ` +
-    `<a href="/faq">שאלות ותשובות</a> <a href="/contact">צור קשר</a></nav>`;
+const NAV = {
+  he: { label: 'ניווט', links: [['/catalog', 'קטלוג'], ['/mystery-box', 'מיסטרי בוקס'], ['/request-shirt', 'בקשת חולצה'], ['/size-guide', 'מדריך מידות'], ['/faq', 'שאלות ותשובות'], ['/contact', 'צור קשר']] },
+  en: { label: 'Navigation', links: [['/catalog', 'All shirts'], ['/mystery-box', 'Mystery Box'], ['/request-shirt', 'Request a shirt'], ['/size-guide', 'Size guide'], ['/faq', 'FAQ'], ['/contact', 'Contact']] },
+};
+
+function shell({ h1, body, lang = 'he' }) {
+  const nav = NAV[lang];
+  const at = (path) => (lang === 'en' ? enPath(path) : path);
+  return `<header><a href="${at('/')}">JerseyLab</a></header><main><h1>${escapeHtml(h1)}</h1>${body}</main>` +
+    `<nav aria-label="${nav.label}">${nav.links.map(([path, label]) => `<a href="${at(path)}">${escapeHtml(label)}</a>`).join(' ')}</nav>`;
 }
 
 // Written as flat `<route>.html` files, paired with `"cleanUrls": true` in
@@ -271,17 +339,22 @@ const HOW_IT_WORKS_FAQ = {
   answer: 'באתר לא מתבצע תשלום. שליחת ההזמנה היא בקשה בלבד. אנחנו חוזרים אליך בוואטסאפ או באינסטגרם לאישור כל הפרטים, והתשלום מתבצע מולנו ישירות רק אחרי שסיכמנו.',
 };
 
+// A page with English copy is written twice: the Hebrew one at its own
+// address and the English one under /en. Pages without it - the legal ones,
+// which are binding in Hebrew - stay Hebrew only.
 for (const page of STATIC_PAGES) {
-  let html = buildHead(TEMPLATE, page);
+  for (const lang of page.en ? ['he', 'en'] : ['he']) {
+  const copy = lang === 'en' ? { ...page, ...page.en } : page;
+  let html = buildHead(TEMPLATE, { ...copy, path: page.path, lang, alternate: !!page.en });
 
   const graph = [
     organisation,
     {
       '@type': page.path === '/' ? 'WebSite' : 'WebPage',
-      name: page.title,
-      description: page.description,
-      url: SITE_ORIGIN + page.path,
-      inLanguage: 'he-IL',
+      name: copy.title,
+      description: copy.description,
+      url: SITE_ORIGIN + (lang === 'en' ? enPath(page.path) : page.path),
+      inLanguage: lang === 'en' ? 'en' : 'he-IL',
       ...(page.path === '/' ? {
         potentialAction: {
           '@type': 'SearchAction',
@@ -292,9 +365,11 @@ for (const page of STATIC_PAGES) {
     },
   ];
 
-  let body = page.body;
+  let body = copy.body;
 
-  if (page.path === '/faq') {
+  // The questions are written in the admin in Hebrew, so only the Hebrew
+  // page carries them.
+  if (page.path === '/faq' && lang === 'he') {
     const entries = [HOW_IT_WORKS_FAQ, ...faqs];
     graph.push({
       '@type': 'FAQPage',
@@ -312,32 +387,40 @@ for (const page of STATIC_PAGES) {
   }
 
   html = withJsonLd(html, { '@context': 'https://schema.org', '@graph': graph });
-  writePage(page.path, withBody(html, shell({ ...page, body })));
+  writePage(lang === 'en' ? enPath(page.path) : page.path, withBody(html, shell({ ...copy, body, lang })));
+  }
 }
 
 const shirts = await fetchShirts({ label: 'prerender' });
 
 for (const shirt of shirts) {
   const path = `/shirt/${shirt.id}`;
-  const url = SITE_ORIGIN + path;
   const price = shirtPrice(shirt);
-  const description = shirtDescription(shirt);
-  const title = `${shirt.name} - JerseyLab`;
 
-  let html = buildHead(TEMPLATE, { path, title, description, image: shirt.main_image });
+  // The English page only exists where the shirt has an English name; a
+  // shirt whose club is not in the translation list would otherwise be a
+  // Hebrew page at an English address.
+  for (const lang of shirtNameEn(shirt) ? ['he', 'en'] : ['he']) {
+  const en = lang === 'en';
+  const url = SITE_ORIGIN + (en ? enPath(path) : path);
+  const name = en ? shirtNameEn(shirt) : shirt.name;
+  const description = en ? shirtDescriptionIn(shirt, true) : shirtDescription(shirt);
+  const title = `${name} - JerseyLab`;
+
+  let html = buildHead(TEMPLATE, { path, title, description, image: shirt.main_image, lang, alternate: !!shirtNameEn(shirt) });
   html = withJsonLd(html, {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'Product',
-        name: shirt.name,
+        name,
         description,
         url,
         ...(shirt.main_image ? { image: [shirt.main_image] } : {}),
         sku: shirt.id,
         brand: { '@type': 'Brand', name: 'JerseyLab' },
         ...(shirt.club || shirt.national_team
-          ? { audience: { '@type': 'Audience', name: `אוהדי ${shirt.club || shirt.national_team}` } }
+          ? { audience: { '@type': 'Audience', name: en ? `${termIn(shirt.club || shirt.national_team, true)} fans` : `אוהדי ${shirt.club || shirt.national_team}` } }
           : {}),
         offers: {
           '@type': 'Offer',
@@ -357,33 +440,34 @@ for (const shirt of shirts) {
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'דף הבית', item: `${SITE_ORIGIN}/` },
-          { '@type': 'ListItem', position: 2, name: 'קטלוג', item: `${SITE_ORIGIN}/catalog` },
-          { '@type': 'ListItem', position: 3, name: shirt.name, item: url },
+          { '@type': 'ListItem', position: 1, name: en ? 'Home' : 'דף הבית', item: SITE_ORIGIN + (en ? '/en' : '/') },
+          { '@type': 'ListItem', position: 2, name: en ? 'All shirts' : 'קטלוג', item: SITE_ORIGIN + (en ? enPath('/catalog') : '/catalog') },
+          { '@type': 'ListItem', position: 3, name, item: url },
         ],
       },
     ],
   });
 
   const facts = [
-    ['קבוצה', shirt.club || shirt.national_team],
-    ['עונה', shirt.season],
-    ['שחקן', shirt.player_name],
-    ['ליגה', shirt.league],
-    ['מידות', Array.isArray(shirt.sizes) ? shirt.sizes.join(', ')
+    [en ? 'Team' : 'קבוצה', termIn(shirt.club || shirt.national_team, en)],
+    [en ? 'Season' : 'עונה', shirt.season],
+    [en ? 'Player' : 'שחקן', shirt.player_name],
+    [en ? 'League' : 'ליגה', termIn(shirt.league, en)],
+    [en ? 'Sizes' : 'מידות', Array.isArray(shirt.sizes) ? shirt.sizes.join(', ')
       : shirt.sizes && typeof shirt.sizes === 'object' ? Object.keys(shirt.sizes).join(', ') : null],
   ].filter(([, v]) => v);
 
   const inner =
-    `<header><a href="/">JerseyLab</a> · <a href="/catalog">קטלוג</a></header>` +
-    `<main><h1>${escapeHtml(shirt.name)}</h1>` +
-    (shirt.main_image ? `<img src="${escapeHtml(shirt.main_image)}" alt="${escapeHtml(shirt.name)}" width="600" />` : '') +
+    `<header><a href="${en ? '/en' : '/'}">JerseyLab</a> · <a href="${en ? enPath('/catalog') : '/catalog'}">${en ? 'All shirts' : 'קטלוג'}</a></header>` +
+    `<main><h1>${escapeHtml(name)}</h1>` +
+    (shirt.main_image ? `<img src="${escapeHtml(shirt.main_image)}" alt="${escapeHtml(name)}" width="600" />` : '') +
     (price ? `<p><strong>₪${escapeHtml(price)}</strong></p>` : '') +
     `<p>${escapeHtml(description)}</p>` +
     (facts.length ? `<ul>${facts.map(([k, v]) => `<li>${escapeHtml(k)}: ${escapeHtml(v)}</li>`).join('')}</ul>` : '') +
-    `<p><a href="${escapeHtml(url)}">להזמנת ${escapeHtml(shirt.name)}</a></p></main>`;
+    `<p><a href="${escapeHtml(url)}">${en ? `Order the ${escapeHtml(name)}` : `להזמנת ${escapeHtml(name)}`}</a></p></main>`;
 
-  writePage(path, withBody(html, inner));
+  writePage(en ? enPath(path) : path, withBody(html, inner));
+  }
 }
 
 // --- collection landing pages --------------------------------------------
@@ -392,13 +476,19 @@ for (const shirt of shirts) {
 // collection, and an ItemList linking to each one - which is also how a
 // crawler discovers product pages without following JavaScript.
 
-for (const collection of COLLECTIONS) {
-  const path = `/collections/${collection.slug}`;
-  const url = SITE_ORIGIN + path;
-  const items = collectionShirts(collection, shirts);
+for (const source of COLLECTIONS) {
+  const path = `/collections/${source.slug}`;
+  const items = collectionShirts(source, shirts);
+
+  for (const lang of source.en ? ['he', 'en'] : ['he']) {
+  const en = lang === 'en';
+  const collection = en ? { ...source, ...source.en } : source;
+  const url = SITE_ORIGIN + (en ? enPath(path) : path);
 
   let html = buildHead(TEMPLATE, {
     path,
+    lang,
+    alternate: !!source.en,
     title: collection.title,
     description: collection.description,
     image: items.find(s => s.main_image)?.main_image,
@@ -412,7 +502,7 @@ for (const collection of COLLECTIONS) {
         name: collection.h1,
         description: collection.description,
         url,
-        inLanguage: 'he-IL',
+        inLanguage: en ? 'en' : 'he-IL',
       },
       {
         '@type': 'ItemList',
@@ -421,15 +511,15 @@ for (const collection of COLLECTIONS) {
         itemListElement: items.slice(0, 40).map((s, i) => ({
           '@type': 'ListItem',
           position: i + 1,
-          url: `${SITE_ORIGIN}/shirt/${s.id}`,
-          name: s.name,
+          url: SITE_ORIGIN + (en && shirtNameEn(s) ? enPath(`/shirt/${s.id}`) : `/shirt/${s.id}`),
+          name: (en && shirtNameEn(s)) || s.name,
         })),
       },
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'דף הבית', item: `${SITE_ORIGIN}/` },
-          { '@type': 'ListItem', position: 2, name: 'קטלוג', item: `${SITE_ORIGIN}/catalog` },
+          { '@type': 'ListItem', position: 1, name: en ? 'Home' : 'דף הבית', item: SITE_ORIGIN + (en ? '/en' : '/') },
+          { '@type': 'ListItem', position: 2, name: en ? 'All shirts' : 'קטלוג', item: SITE_ORIGIN + (en ? enPath('/catalog') : '/catalog') },
           { '@type': 'ListItem', position: 3, name: collection.h1, item: url },
         ],
       },
@@ -439,25 +529,34 @@ for (const collection of COLLECTIONS) {
   const list = items.length
     ? `<ul>${items.map(s => {
         const price = shirtPrice(s);
-        return `<li><a href="/shirt/${escapeHtml(s.id)}">${escapeHtml(s.name)}</a>${price ? ` - ₪${escapeHtml(price)}` : ''}</li>`;
+        const shirtName = (en && shirtNameEn(s)) || s.name;
+        const shirtPath = en && shirtNameEn(s) ? enPath(`/shirt/${s.id}`) : `/shirt/${s.id}`;
+        return `<li><a href="${escapeHtml(shirtPath)}">${escapeHtml(shirtName)}</a>${price ? ` - ₪${escapeHtml(price)}` : ''}</li>`;
       }).join('')}</ul>`
-    : `<p>אין כרגע מלאי בקטגוריה הזו. <a href="/request-shirt">אפשר לשלוח לנו בקשה</a> ונבדוק אם אפשר להשיג.</p>`;
+    : en
+      ? `<p>Nothing in this category right now. <a href="${enPath('/request-shirt')}">Send us a request</a> and we'll see if we can get it.</p>`
+      : `<p>אין כרגע מלאי בקטגוריה הזו. <a href="/request-shirt">אפשר לשלוח לנו בקשה</a> ונבדוק אם אפשר להשיג.</p>`;
 
-  const related = `<nav aria-label="קטגוריות נוספות">${
+  const related = `<nav aria-label="${en ? 'More categories' : 'קטגוריות נוספות'}">${
     COLLECTIONS.filter(c => c.slug !== collection.slug)
-      .map(c => `<a href="/collections/${escapeHtml(c.slug)}">${escapeHtml(c.name)}</a>`)
+      .map(c => {
+        const other = en && c.en ? { ...c, ...c.en } : c;
+        const href = en && c.en ? enPath(`/collections/${c.slug}`) : `/collections/${c.slug}`;
+        return `<a href="${escapeHtml(href)}">${escapeHtml(other.name)}</a>`;
+      })
       .join(' ')
   }</nav>`;
 
   const inner =
-    `<header><a href="/">JerseyLab</a> · <a href="/catalog">קטלוג</a></header>` +
+    `<header><a href="${en ? '/en' : '/'}">JerseyLab</a> · <a href="${en ? enPath('/catalog') : '/catalog'}">${en ? 'All shirts' : 'קטלוג'}</a></header>` +
     `<main><h1>${escapeHtml(collection.h1)}</h1>` +
     `<p>${escapeHtml(collection.intro)}</p>` +
-    `<p>${escapeHtml(items.length)} חולצות בקטגוריה.</p>` +
+    `<p>${en ? `${escapeHtml(items.length)} shirts in this category.` : `${escapeHtml(items.length)} חולצות בקטגוריה.`}</p>` +
     list +
     `</main>${related}`;
 
-  writePage(path, withBody(html, inner));
+  writePage(en ? enPath(path) : path, withBody(html, inner));
+  }
 }
 
-console.log(`[prerender] ${STATIC_PAGES.length} static + ${COLLECTIONS.length} collection + ${shirts.length} product pages written to dist/`);
+console.log(`[prerender] ${STATIC_PAGES.length} static + ${COLLECTIONS.length} collection + ${shirts.length} product pages written to dist/, in Hebrew and, where there is English copy, in English`);

@@ -30,7 +30,10 @@ export default function LegalPage({ title, description, path, intro, updated, ch
   const shownTitle = isEn ? (LEGAL_PAGES.find(p => p.path === path)?.label || title) : title;
   return (
     <div>
-      <Seo title={`${shownTitle} — JerseyLab`} description={description} canonicalPath={path} />
+      {/* Hebrew is the binding version and the only one, so the English side
+          of the site points back at the Hebrew page rather than claiming a
+          translation that does not exist. */}
+      <Seo title={`${shownTitle} — JerseyLab`} description={description} canonicalPath={path} hebrewOnly />
 
       <CollectionHero
         breadcrumb={<Breadcrumb trail={[{ label: t('מידע משפטי', 'Legal') }, { label: shownTitle }]} />}

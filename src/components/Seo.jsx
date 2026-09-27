@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { siteUrl } from '@/lib/siteUrl';
+import { isEn, pathInLang } from '@/lib/i18n';
 
 const SITE_NAME = 'JerseyLab';
 const DEFAULT_IMAGE = 'https://www.jerseylab.co/og-image.jpg';
@@ -15,17 +16,25 @@ function upsertMeta(selector, attrKey, attrValue, content) {
   el.setAttribute('content', content);
 }
 
-function upsertLink(rel, href) {
-  let el = document.head.querySelector(`link[rel="${rel}"]`);
+function upsertLink(rel, href, hreflang) {
+  const selector = hreflang ? `link[rel="${rel}"][hreflang="${hreflang}"]` : `link[rel="${rel}"]:not([hreflang])`;
+  let el = document.head.querySelector(selector);
   if (!el) {
     el = document.createElement('link');
     el.setAttribute('rel', rel);
+    if (hreflang) el.setAttribute('hreflang', hreflang);
     document.head.appendChild(el);
   }
   el.setAttribute('href', href);
 }
 
-export default function Seo({ title, description, image, type = 'website', canonicalPath, jsonLd, noindex = false }) {
+function removeLink(rel, hreflang) {
+  document.head.querySelector(`link[rel="${rel}"][hreflang="${hreflang}"]`)?.remove();
+}
+
+export default function Seo({ title, description, image, type = 'website', canonicalPath, jsonLd, noindex = false, hebrewOnly = false }) {
+  // The Hebrew path of this page, whichever side we are on: what the two
+  // hreflang links are built from.
   const jsonLdStr = jsonLd ? JSON.stringify(jsonLd) : '';
 
   useEffect(() => {
@@ -33,9 +42,9 @@ export default function Seo({ title, description, image, type = 'website', canon
 
     // Always absolute to the canonical origin - never to whatever host this
     // copy is being served from. See src/lib/siteUrl.js.
-    const url = canonicalPath
-      ? siteUrl(canonicalPath)
-      : siteUrl(window.location.pathname + window.location.search);
+    const here = canonicalPath || (window.location.pathname + window.location.search);
+    const hebrewPath = pathInLang(here.startsWith('/') ? here : `/${here}`, 'he');
+    const url = siteUrl(hebrewOnly ? hebrewPath : pathInLang(hebrewPath, isEn ? 'en' : 'he'));
 
     upsertMeta('meta[name="description"]', 'name', 'description', description);
 
@@ -46,7 +55,7 @@ export default function Seo({ title, description, image, type = 'website', canon
     upsertMeta('meta[property="og:url"]', 'property', 'og:url', url);
     upsertMeta('meta[property="og:type"]', 'property', 'og:type', type);
     upsertMeta('meta[property="og:site_name"]', 'property', 'og:site_name', SITE_NAME);
-    upsertMeta('meta[property="og:locale"]', 'property', 'og:locale', 'he_IL');
+    upsertMeta('meta[property="og:locale"]', 'property', 'og:locale', isEn ? 'en_US' : 'he_IL');
 
     // Twitter / X
     upsertMeta('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image');
@@ -58,6 +67,18 @@ export default function Seo({ title, description, image, type = 'website', canon
 
     // Canonical URL
     upsertLink('canonical', url);
+
+    // The same page in the other language. Without these Google treats the
+    // English pages as duplicates of nothing and drops them.
+    if (noindex || hebrewOnly) {
+      removeLink('alternate', 'he-IL');
+      removeLink('alternate', 'en');
+      removeLink('alternate', 'x-default');
+    } else {
+      upsertLink('alternate', siteUrl(hebrewPath), 'he-IL');
+      upsertLink('alternate', siteUrl(pathInLang(hebrewPath, 'en')), 'en');
+      upsertLink('alternate', siteUrl(hebrewPath), 'x-default');
+    }
 
     // Structured data (JSON-LD)
     let script = document.head.querySelector('script[data-seo-jsonld]');
@@ -72,7 +93,7 @@ export default function Seo({ title, description, image, type = 'website', canon
     } else if (script) {
       script.remove();
     }
-  }, [title, description, image, type, canonicalPath, jsonLdStr, noindex]);
+  }, [title, description, image, type, canonicalPath, jsonLdStr, noindex, hebrewOnly]);
 
   return null;
 }

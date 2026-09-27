@@ -22,6 +22,7 @@ import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
+import { isEn, EN_PREFIX } from '@/lib/i18n';
 
 // Public Pages (Home/Catalog/ShirtDetail stay eager for the critical path)
 import Home from '@/pages/Home';
@@ -170,7 +171,9 @@ function App() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
-        <Router>
+        {/* The English site lives under /en, so every Link and every route
+            below is written once and resolves to the right side (lib/i18n). */}
+        <Router basename={isEn ? EN_PREFIX : undefined}>
           <ScrollToTop />
           <AuthenticatedApp />
           <AccessibilityMenu />

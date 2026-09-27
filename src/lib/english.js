@@ -104,7 +104,13 @@ const TERM_MAP = new Map(Object.entries(TERMS).map(([he, en]) => [clean(he), en]
 
 // A club, national team, league or kit type in the site's language.
 export function term(he) {
-  if (!isEn || !he) return he;
+  return termIn(he, isEn);
+}
+
+// The same, for the build, which writes the Hebrew and the English page in one
+// run and so cannot read the language off the browser.
+export function termIn(he, en) {
+  if (!en || !he) return he;
   return TERM_MAP.get(clean(he)) ?? he;
 }
 
@@ -136,8 +142,12 @@ export function shirtNameEn(shirt) {
 
 // The shirt's name in the site's language.
 export function shirtName(shirt) {
+  return shirtNameIn(shirt, isEn);
+}
+
+export function shirtNameIn(shirt, en) {
   if (!shirt) return '';
-  return (isEn && shirtNameEn(shirt)) || shirt.name;
+  return (en && shirtNameEn(shirt)) || shirt.name;
 }
 
 // The sizes a shirt comes in, as the Hebrew descriptions list them.
@@ -150,11 +160,15 @@ const sizeList = (shirt) => {
 // The stored descriptions are generated in Hebrew from the same fields
 // (scripts/generate-descriptions.mjs), so the English one is generated too.
 export function shirtDescription(shirt) {
+  return shirtDescriptionIn(shirt, isEn);
+}
+
+export function shirtDescriptionIn(shirt, en) {
   if (!shirt) return '';
-  if (!isEn) return shirt.description;
-  const name = shirtName(shirt);
+  if (!en) return shirt.description;
+  const name = shirtNameIn(shirt, true);
   if (name === shirt.name) return shirt.description;
-  const league = shirt.league && term(shirt.league) !== shirt.league ? term(shirt.league) : '';
+  const league = shirt.league && termIn(shirt.league, true) !== shirt.league ? termIn(shirt.league, true) : '';
   const sizes = sizeList(shirt);
   return [
     `The ${name}${league && !shirt.national_team ? `, ${league}` : ''}.`,
