@@ -213,12 +213,54 @@ function writePage(path, html) {
 // --- pages ----------------------------------------------------------------
 
 const organisation = {
-  '@type': 'Organization',
+  '@type': 'OnlineStore',
+  '@id': `${SITE_ORIGIN}/#shop`,
   name: 'JerseyLab',
   url: SITE_ORIGIN,
   logo: DEFAULT_IMAGE,
+  image: DEFAULT_IMAGE,
+  description: 'חנות חולצות כדורגל לאספנים ולאוהדים: חולצות מועדונים ונבחרות, חדשות ורטרו, עם הדפסת שם ומספר.',
+  currenciesAccepted: 'ILS',
+  areaServed: { '@type': 'Country', name: 'Israel' },
   sameAs: ['https://instagram.com/Jerseylabil'],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'customer service',
+    telephone: '+972505586255',
+    availableLanguage: ['he', 'en'],
+    url: `${SITE_ORIGIN}/contact`,
+  },
 };
+
+// Google wants to know what an order costs to ship and how it can be sent
+// back before it will show a price and availability in the results. The
+// numbers are the ones on the shipping policy (lib/business), and the 14-day
+// right to cancel is the one the Consumer Protection Law gives.
+const SHIPPING_DETAILS = {
+  '@type': 'OfferShippingDetails',
+  shippingRate: { '@type': 'MonetaryAmount', value: 25, currency: 'ILS' },
+  shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'IL' },
+  deliveryTime: {
+    '@type': 'ShippingDeliveryTime',
+    handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
+    transitTime: { '@type': 'QuantitativeValue', minValue: 5, maxValue: 21, unitCode: 'DAY' },
+  },
+};
+
+const RETURN_POLICY = {
+  '@type': 'MerchantReturnPolicy',
+  applicableCountry: 'IL',
+  returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+  merchantReturnDays: 14,
+  returnMethod: 'https://schema.org/ReturnByMail',
+  returnFees: 'https://schema.org/ReturnShippingFees',
+  returnShippingFeesAmount: { '@type': 'MonetaryAmount', value: 25, currency: 'ILS' },
+  merchantReturnLink: `${SITE_ORIGIN}/legal/shipping`,
+};
+
+// A year out: the tag only has to say the price is not stale, and the build
+// runs often enough to keep pushing it forward.
+const priceValidUntil = () => new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
 const faqs = await fetchFaqs({ label: 'prerender' });
 
@@ -293,14 +335,23 @@ for (const shirt of shirts) {
         url,
         ...(shirt.main_image ? { image: [shirt.main_image] } : {}),
         sku: shirt.id,
-        brand: { '@type': 'Brand', name: shirt.club || shirt.national_team || 'JerseyLab' },
+        brand: { '@type': 'Brand', name: 'JerseyLab' },
+        ...(shirt.club || shirt.national_team
+          ? { audience: { '@type': 'Audience', name: `אוהדי ${shirt.club || shirt.national_team}` } }
+          : {}),
         offers: {
           '@type': 'Offer',
           url,
           price,
           priceCurrency: 'ILS',
+          priceValidUntil: priceValidUntil(),
           availability: shirt.status === 'available' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-          ...(shirt.condition && shirt.condition !== 'new' ? { itemCondition: 'https://schema.org/UsedCondition' } : {}),
+          itemCondition: shirt.condition && shirt.condition !== 'new'
+            ? 'https://schema.org/UsedCondition'
+            : 'https://schema.org/NewCondition',
+          seller: { '@id': `${SITE_ORIGIN}/#shop` },
+          shippingDetails: SHIPPING_DETAILS,
+          hasMerchantReturnPolicy: RETURN_POLICY,
         },
       },
       {

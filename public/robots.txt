@@ -8,3 +8,30 @@ Disallow: /wishlist
 Disallow: /profile
 
 Sitemap: https://www.jerseylab.co/sitemap.xml
+
+# AI assistants. They answer "where can I buy a retro Barcelona shirt in
+# Israel" from pages they are allowed to read, and llms.txt is the shop in one
+# file for them.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /

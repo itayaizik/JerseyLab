@@ -11,7 +11,9 @@
 // Anything still reading TODO is shown to visitors as "יעודכן בקרוב" rather
 // than as an empty gap, and is listed for the owner to fill in.
 
-import { SHOP_PHONE, SHOP_PHONE_E164, INSTAGRAM_HANDLE } from '@/lib/contact';
+// Relative, not the @ alias: the build scripts import this file in plain node,
+// where the alias does not exist.
+import { SHOP_PHONE, SHOP_PHONE_E164, INSTAGRAM_HANDLE } from './contact.js';
 
 export const BUSINESS = {
   // Trading name shown to customers.
