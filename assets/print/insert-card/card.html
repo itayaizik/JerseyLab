@@ -43,10 +43,18 @@ body{font-family:Heebo,sans-serif;-webkit-print-color-adjust:exact;print-color-a
 .logo{height:13mm;width:auto;margin-top:6mm}
 /* הלוגו נושא שתי שורות: הסלוגן באנגלית, ומתחתיו מה שהחנות מוכרת בעברית.
    האנגלית מרווחת וכהה יותר כדי שהיא תיקרא כחותמת ולא כמשפט שני. */
-.tagline{margin-top:3.5mm;font-size:7.6pt;font-weight:700;letter-spacing:.30em;
-  color:rgba(255,255,255,.52);text-align:center;direction:ltr}
-.tagline-he{margin-top:2.2mm;font-size:7.6pt;font-weight:400;letter-spacing:.16em;
-  color:rgba(255,255,255,.40);text-align:center}
+/* שתי השורות מכוונות לאותו רוחב, 64 מ"מ, כך שהן יוצרות בסיס אחד מתחת ללוגו
+   במקום שתי שורות קצרות באורכים שונים. הריווח לכל שורה חושב מרוחב הטקסט
+   הטבעי שלה, ולכן הוא שונה בשתיהן. ה-span עם השוליים השליליים מקזז את
+   הריווח שנוסף אחרי האות האחרונה, אחרת המילים יושבות שמאלה מהמרכז. */
+/* nowrap: כרום מחשב את הרוחב הטבעי בלי הריווח שאחרי האות האחרונה,
+   ולכן ה-flex item יוצא צר מדי והשורה נשברת באמצע. */
+.tagline{margin-top:4mm;font-size:8.6pt;font-weight:700;letter-spacing:.468em;
+  color:rgba(255,255,255,.58);text-align:center;direction:ltr;white-space:nowrap}
+.tagline span{margin-inline-end:-.468em}
+.tagline-he{margin-top:2.6mm;font-size:7.4pt;font-weight:400;letter-spacing:.355em;
+  color:rgba(255,255,255,.38);text-align:center;white-space:nowrap}
+.tagline-he span{margin-inline-end:-.355em}
 
 .hero{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:0 3mm}
 .hero h1{font-size:27pt;font-weight:900;line-height:1.16;color:#fff;letter-spacing:-.01em}
@@ -112,15 +120,16 @@ body{font-family:Heebo,sans-serif;-webkit-print-color-adjust:exact;print-color-a
   <div class="wash"></div><div class="weave"></div>
   <div class="inner">
     <img class="logo" src="../../../public/logo-navbar.png" alt="JerseyLab">
-    <div class="tagline">ONE PASSION. ONE LAB.</div>
-    <div class="tagline-he">חולצות כדורגל לאספנים ולאוהדים</div>
+    <div class="tagline"><span>ONE PASSION. ONE LAB.</span></div>
+    <div class="tagline-he"><span>חולצות כדורגל לאספנים ולאוהדים</span></div>
 
     <div class="hero">
       <h1>תודה שבחרת<br><span class="hl">ב JerseyLab</span></h1>
       <div class="rule"></div>
-      <p>החולצה נבדקה לפני שיצאה אליך.<br>
-         אם משהו לא יושב, מידה או הדפסה,<br>
-         כתוב לנו בוואטסאפ ונסדר את זה.</p>
+      <p>קיבלת את החולצה, וזה החלק הכיף.<br>
+         אנחנו חנות קטנה, וכל הזמנה כאן נספרת.<br>
+         תודה שבחרת דווקא בנו.<br>
+         אם צריך משהו, אנחנו במרחק הודעה.</p>
     </div>
 
     <div class="qrcard">
