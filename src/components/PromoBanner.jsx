@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { t } from '@/lib/i18n';
+import { resized, srcSetFor } from '@/lib/imageUrl';
 
 // An optional banner on the home page, switched on and written from ניהול >
 // הגדרות אתר: a photo across the card with the text on a frosted panel over it.
@@ -10,7 +11,7 @@ export default function PromoBanner({ title, subtitle, buttonText, buttonLink, i
   return (
     <section className="shop-container mt-16 sm:mt-24">
       <div className="relative overflow-hidden rounded-[2rem] bg-brand-navy">
-        {imageUrl && <img src={imageUrl} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />}
+        {imageUrl && <img src={resized(imageUrl, 1280)} srcSet={srcSetFor(imageUrl, [640, 960, 1280])} sizes="100vw" alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />}
         <div className="relative flex min-h-[20rem] items-center p-3 sm:p-6 lg:min-h-[26rem]">
           <div className="max-w-xl rounded-[1.75rem] bg-white/85 p-7 backdrop-blur-xl sm:p-10">
             <h2 className="text-3xl font-bold leading-tight tracking-[-0.02em] text-brand-navy sm:text-4xl">

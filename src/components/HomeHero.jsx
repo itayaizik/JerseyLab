@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { t, isEn } from '@/lib/i18n';
+import { resized } from '@/lib/imageUrl';
 
 // The first thing on the home page: one photograph in a rounded banner with a
 // narrow white card over it on the left. Everything is
@@ -78,10 +79,10 @@ export default function HomeHero({ settings = {}, ready = true }) {
       <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-brand-navy sm:aspect-[16/10] sm:rounded-[2rem] md:aspect-[2/1] lg:aspect-[2.3/1]">
         {hasSource && (
         <picture>
-          <source media="(min-width: 768px)" srcSet={desktop} />
+          <source media="(min-width: 768px)" srcSet={resized(desktop, 1600)} />
           {/* React 18 only passes the lowercase attribute through. */}
           {/* eslint-disable-next-line react/no-unknown-property */}
-          <img src={mobile} alt="" fetchpriority="high" className="absolute inset-0 h-full w-full object-cover" />
+          <img src={resized(mobile, 900)} alt="" fetchpriority="high" width="900" height="1125" className="absolute inset-0 h-full w-full object-cover" />
         </picture>
         )}
 

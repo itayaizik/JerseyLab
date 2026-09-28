@@ -39,8 +39,21 @@
          a connection to early. -->
     <link rel="preconnect" href="https://cnskcshxvdymabvlghqc.supabase.co" crossorigin>
     <!-- Heebo is the one family for the shop, loaded as a single variable font.
-         Space Mono stays for the admin area's figures. -->
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300..900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+         Space Mono stays for the admin area's figures.
+
+         Loaded without blocking the first paint: a stylesheet in the head holds
+         the page back until it arrives, and on a phone that was over a second
+         of staring at nothing. `media="print"` makes the browser fetch it at a
+         low priority and apply nothing; the onload switch hands it to the
+         screen once the page has been parsed (public/theme-init.js, since the
+         Content-Security-Policy allows no inline handlers). The <noscript>
+         copy keeps the font for a visitor with JavaScript off, for whom
+         nothing is blocked anyway. -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300..900&family=Space+Mono:wght@400;700&display=swap">
+    <link data-font href="https://fonts.googleapis.com/css2?family=Heebo:wght@300..900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" media="print">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300..900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    </noscript>
     <!-- Inline so it applies before any stylesheet arrives. The prerendered copy
          of the page inside #root is for crawlers and screen readers; visitors
          see the logo until the app replaces both. See scripts/prerender.mjs. -->

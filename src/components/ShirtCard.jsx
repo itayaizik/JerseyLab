@@ -49,7 +49,9 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false,
       <div className="relative aspect-square overflow-hidden rounded-[1.125rem] bg-brand-mist">
         <ProductImage
           src={shirt.main_image}
-          alt=""
+          // The shirt's name, not an empty alt: this is how the photo is found
+          // in Google Images, where a lot of shirt searches start.
+          alt={name}
           eager={eager}
           sizes={featured ? IMAGE_SIZES.featured : IMAGE_SIZES.card}
           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"

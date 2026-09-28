@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import SectionHeader from '@/components/shop/SectionHeader';
 import ScrollRow from '@/components/shop/ScrollRow';
 import { t, isEn } from '@/lib/i18n';
+import { resized } from '@/lib/imageUrl';
 
 // Conversations with customers, shown as social proof, and alongside them the
 // photo reviews the owner picked for this row.
@@ -67,7 +68,7 @@ export default function ChatProofsSection({ title }) {
                 <figure key={proof.id} className="h-full">
                   <button type="button" onClick={() => setLightbox({ image: proof.image_url, caption: proof.caption })} aria-label={t('הגדלת צילום השיחה', 'Enlarge the conversation')}
                     className="block w-full cursor-zoom-in rounded-3xl bg-white p-2 shadow-card transition-shadow hover:shadow-lift">
-                    <img src={proof.image_url} alt={proof.caption || t('שיחה עם לקוח', 'A conversation with a customer')} loading="lazy"
+                    <img src={resized(proof.image_url, 720)} alt={proof.caption || t('שיחה עם לקוח', 'A conversation with a customer')} loading="lazy" width="360" height="420"
                       className="h-[420px] w-full rounded-[1.25rem] object-cover object-center" />
                   </button>
                   {/* Captions are typed in Hebrew in the admin, so the English
@@ -83,11 +84,11 @@ export default function ChatProofsSection({ title }) {
                   <figure key={`review-${review.id}`} className="flex h-full flex-col rounded-3xl bg-white p-2 shadow-card">
                     <button type="button" onClick={() => setLightbox({ image: review.image_url, caption: review.comment })} aria-label={t('הגדלת התמונה', 'Enlarge the photo')}
                       className="block w-full cursor-zoom-in">
-                      <img src={review.image_url} alt={t(`תמונה ששלח ${name}`, `Photo sent by ${name}`)} loading="lazy"
+                      <img src={resized(review.image_url, 720)} alt={t(`תמונה ששלח ${name}`, `Photo sent by ${name}`)} loading="lazy" width="360" height="300"
                         className="h-[300px] w-full rounded-[1.25rem] object-cover transition hover:opacity-95" />
                     </button>
                     <figcaption className="flex flex-1 flex-col px-3 pb-3 pt-3.5">
-                      <span className="flex gap-0.5" aria-label={t(`${review.rating} מתוך 5`, `${review.rating} out of 5`)}>
+                      <span role="img" className="flex gap-0.5" aria-label={t(`${review.rating} מתוך 5`, `${review.rating} out of 5`)}>
                         {[1, 2, 3, 4, 5].map(s => (
                           <Star key={s} className={`h-4 w-4 ${s <= review.rating ? 'fill-brand-orange text-brand-orange' : 'text-brand-line'}`} aria-hidden="true" />
                         ))}
@@ -114,7 +115,7 @@ export default function ChatProofsSection({ title }) {
             <X className="h-5 w-5" />
           </button>
           <figure className="flex max-h-full flex-col items-center gap-3" onClick={e => e.stopPropagation()}>
-            <img src={lightbox.image} alt={lightbox.caption || ''}
+            <img src={resized(lightbox.image, 1280)} alt={lightbox.caption || ''}
               className="max-h-[80vh] max-w-full rounded-2xl object-contain" />
             {lightbox.caption && (
               <figcaption className="max-w-lg text-center text-sm text-white/85">{lightbox.caption}</figcaption>

@@ -28,6 +28,14 @@
     root.setAttribute('dir', 'ltr');
   }
 
+  // The font stylesheet is fetched without holding up the first paint (it is
+  // marked media="print" in index.html); it is handed to the screen as soon as
+  // the page itself has been parsed.
+  document.addEventListener('DOMContentLoaded', function () {
+    var font = document.querySelector('link[data-font]');
+    if (font) font.media = 'all';
+  });
+
   try {
     if (localStorage.getItem('jl_theme') === 'dark') {
       root.classList.add('dark');

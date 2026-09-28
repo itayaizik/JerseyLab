@@ -69,7 +69,9 @@ export const integrations = {
       const dir = folder ? `${folder.replace(/\/+$/, '')}/` : '';
       const path = `${dir}${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage.from(bucket).upload(path, uploadFile, {
-        cacheControl: "3600",
+        // A year: the file name is a fresh uuid every time, so an image can
+        // never change under a URL that is already cached.
+        cacheControl: "31536000",
         upsert: false,
       });
       if (error) throw error;

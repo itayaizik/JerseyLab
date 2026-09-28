@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import SectionHeader from '@/components/shop/SectionHeader';
 import { t } from '@/lib/i18n';
 import { term } from '@/lib/english';
+import { resized } from '@/lib/imageUrl';
 
 const DEFAULT_LEAGUES = [
   { name: 'ליגת העל', logo_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/9/9d/Ligat_ha%27Al_logo.svg/200px-Ligat_ha%27Al_logo.svg.png', href: `/catalog?q=${encodeURIComponent('ליגת העל')}` },
@@ -23,7 +24,7 @@ function LeagueLogo({ src }) {
   const [failed, setFailed] = useState(false);
   if (!src || failed) return <Trophy className="h-9 w-9 text-brand-orange-ink" aria-hidden="true" />;
   return (
-    <img src={src} alt="" loading="lazy" onError={() => setFailed(true)}
+    <img src={resized(src, 128)} alt="" loading="lazy" width="128" height="128" onError={() => setFailed(true)}
       className="max-h-16 max-w-[4rem] object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-110 dark:max-h-12 dark:max-w-[3rem] dark:mix-blend-normal" />
   );
 }

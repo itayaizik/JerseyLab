@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { isOurStorage, resized } from '@/lib/imageUrl';
 
 const FALLBACK = 'https://placehold.co/400x400/EDE8D9/9aa3b2?text=JerseyLab';
 
@@ -25,9 +26,6 @@ const FALLBACK = 'https://placehold.co/400x400/EDE8D9/9aa3b2?text=JerseyLab';
 //   3. Decode blocking. `decoding="async"` keeps a large JPEG from stalling the
 //      main thread while it is unpacked.
 
-const STORAGE_OBJECT = '/storage/v1/object/public/';
-const STORAGE_RENDER = '/storage/v1/render/image/public/';
-
 // The widths worth generating: thumbnails at 64px through to the product page
 // hero on a high-density screen, which needs far more than a card does.
 const WIDTHS = [160, 320, 480, 640, 900, 1280, 1600];
@@ -51,10 +49,6 @@ export const IMAGE_SIZES = {
   thumb: '64px',
 };
 
-function isOurStorage(url) {
-  return typeof url === 'string' && url.includes(STORAGE_OBJECT) && url.includes('.supabase.co');
-}
-
 // A transformed copy at a given width.
 //
 // `resize=contain` is not optional. Asking for a width on its own leaves the
@@ -67,9 +61,7 @@ function isOurStorage(url) {
 // apart, but these are shirts: crests, sponsor lettering and fabric texture are
 // exactly the detail that low quality smears first, and 75 was visibly soft on
 // them. The extra weight is small next to serving the right dimensions.
-function atWidth(url, width) {
-  return `${url.replace(STORAGE_OBJECT, STORAGE_RENDER)}?width=${width}&resize=contain&quality=82`;
-}
+const atWidth = (url, width) => resized(url, width);
 
 export default function ProductImage({
   src,

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://ard.dev/schemas/ai-catalog.json",
+  "version": "1.0",
+  "name": "JerseyLab",
+  "description": "חנות אונליין ישראלית לחולצות כדורגל: חולצות מועדונים ונבחרות, עונות חדשות ורטרו, עם הדפסת שם ומספר. An Israeli online shop for football shirts - club and national team kits, current seasons and retro, with name and number printing.",
+  "url": "https://www.jerseylab.co",
+  "languages": ["he", "en"],
+  "contact": {
+    "whatsapp": "https://wa.me/972505586255",
+    "instagram": "https://instagram.com/Jerseylabil",
+    "page": "https://www.jerseylab.co/contact"
+  },
+  "resources": [
+    {
+      "name": "About the shop",
+      "description": "What is sold, how ordering works, prices and delivery, in one file.",
+      "url": "https://www.jerseylab.co/llms.txt",
+      "type": "text/plain"
+    },
+    {
+      "name": "Catalog",
+      "description": "Every shirt in the shop, filterable by club, national team, league, season and size.",
+      "url": "https://www.jerseylab.co/catalog",
+      "type": "text/html"
+    },
+    {
+      "name": "Sitemap",
+      "description": "Every page on the site, in Hebrew and English.",
+      "url": "https://www.jerseylab.co/sitemap.xml",
+      "type": "application/xml"
+    },
+    {
+      "name": "Size guide",
+      "description": "Size charts for fan and player versions, women's and kids', and a calculator that suggests a size.",
+      "url": "https://www.jerseylab.co/size-guide",
+      "type": "text/html"
+    },
+    {
+      "name": "Guides",
+      "description": "Articles: original against replica, fan against player version, famous retro shirts, gifts for a fan.",
+      "url": "https://www.jerseylab.co/guides",
+      "type": "text/html"
+    },
+    {
+      "name": "Shipping, delivery and cancellation",
+      "description": "Delivery cost and times, self collection, and the 14-day right to cancel.",
+      "url": "https://www.jerseylab.co/legal/shipping",
+      "type": "text/html"
+    }
+  ]
+}

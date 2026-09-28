@@ -21,6 +21,7 @@ import {
 import { COLLECTIONS, collectionShirts } from '../src/lib/collections.js';
 import { shirtNameEn, shirtDescriptionIn, termIn } from '../src/lib/english.js';
 import { GUIDES } from '../src/lib/guides.js';
+import { resized } from '../src/lib/imageUrl.js';
 
 const DIST = resolve(ROOT, 'dist');
 const TEMPLATE_PATH = resolve(DIST, 'index.html');
@@ -231,8 +232,10 @@ function buildHead(html, { path, title, description, image, lang = 'he', alterna
   out = out.replace('</head>', `    ${alternates}\n  </head>`);
   if (preloadHero) {
     const preloads = [
-      `<link rel="preload" as="image" href="${escapeHtml(hero.mobile)}" media="(max-width: 767px)" fetchpriority="high" />`,
-      `<link rel="preload" as="image" href="${escapeHtml(hero.desktop)}" media="(min-width: 768px)" fetchpriority="high" />`,
+      // The same addresses components/HomeHero will ask for, or the browser
+      // downloads the banner twice.
+      `<link rel="preload" as="image" href="${escapeHtml(resized(hero.mobile, 900))}" media="(max-width: 767px)" fetchpriority="high" />`,
+      `<link rel="preload" as="image" href="${escapeHtml(resized(hero.desktop, 1600))}" media="(min-width: 768px)" fetchpriority="high" />`,
     ].join('\n    ');
     out = out.replace('</head>', `    ${preloads}\n  </head>`);
   }

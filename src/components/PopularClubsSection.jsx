@@ -6,6 +6,7 @@ import SectionHeader from '@/components/shop/SectionHeader';
 import ScrollRow from '@/components/shop/ScrollRow';
 import { t } from '@/lib/i18n';
 import { term } from '@/lib/english';
+import { resized } from '@/lib/imageUrl';
 
 const DEFAULT_CLUBS = [
   { name: 'ליברפול', logo_url: 'https://upload.wikimedia.org/wikipedia/he/thumb/c/cd/Liverpool_FC.svg/200px-Liverpool_FC.svg.png', href: `/catalog?q=${encodeURIComponent('ליברפול')}` },
@@ -48,9 +49,11 @@ export default function PopularClubsSection({ title }) {
                 <span className="flex aspect-square items-center justify-center rounded-[1.125rem] bg-brand-mist dark:bg-slate-100">
                   {club.logo_url && (
                     <img
-                      src={club.logo_url}
+                      src={resized(club.logo_url, 160)}
                       alt=""
                       loading="lazy"
+                      width="160"
+                      height="160"
                       className="h-1/2 w-1/2 object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-110"
                       onError={e => { e.currentTarget.style.visibility = 'hidden'; }}
                     />

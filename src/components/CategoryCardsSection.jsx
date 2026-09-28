@@ -5,6 +5,7 @@ import { withStock } from '@/lib/catalogFacets';
 import SectionHeader from '@/components/shop/SectionHeader';
 import { t, isEn } from '@/lib/i18n';
 import { term } from '@/lib/english';
+import { resized, srcSetFor } from '@/lib/imageUrl';
 
 const DEFAULT_CATS = [
   { label: 'ילדים', subtitle: 'מידות ילדים', href: '/catalog?gender=kids', image_url: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=600&q=80' },
@@ -79,7 +80,8 @@ export default function CategoryCardsSection({ title }) {
                 className={`group relative block overflow-hidden rounded-3xl bg-brand-navy ${lonely ? 'aspect-[16/9]' : 'aspect-[4/5]'} ${wide ? 'lg:aspect-[4/3]' : 'lg:aspect-[4/5]'}`}
               >
                 {cat.image_url && (
-                  <img src={cat.image_url} alt="" loading="lazy"
+                  <img src={resized(cat.image_url, 640)} srcSet={srcSetFor(cat.image_url, [320, 640, 900])}
+                    sizes="(min-width: 1024px) 33vw, 50vw" alt="" loading="lazy" width="640" height="800"
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
                 )}
                 <span className="absolute inset-x-2.5 bottom-2.5 flex items-center justify-between gap-2 rounded-2xl bg-white/90 px-3.5 py-3 backdrop-blur sm:inset-x-3 sm:bottom-3 sm:px-4">
