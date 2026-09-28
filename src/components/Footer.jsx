@@ -116,9 +116,16 @@ export default function Footer() {
 
       <div className="border-t border-white/10">
         <div className="shop-container flex flex-col items-center gap-5 py-6 sm:flex-row sm:justify-between">
-          <Link to="/" aria-label={t('JerseyLab - דף הבית', 'JerseyLab - Home')} className="rounded-lg">
-            <img src="/logo-navbar.png" alt="JerseyLab" width="391" height="128" loading="lazy" className="h-10 w-auto" />
-          </Link>
+          {/* The logo and, under it, the shop's line. Latin in a right-to-left
+              page, so it carries its own direction. */}
+          <div className="flex flex-col items-center gap-2 sm:items-start">
+            <Link to="/" aria-label={t('JerseyLab - דף הבית', 'JerseyLab - Home')} className="rounded-lg">
+              <img src="/logo-navbar.png" alt="JerseyLab" width="391" height="128" loading="lazy" className="h-10 w-auto" />
+            </Link>
+            <p dir="ltr" className="text-[11px] font-bold uppercase tracking-[0.3em] text-white/45">
+              One Passion. One Lab.
+            </p>
+          </div>
           <p className="order-last text-[13px] text-white/55 sm:order-none">
             © {new Date().getFullYear()} JerseyLab. {t('כל הזכויות שמורות.', 'All rights reserved.')}
           </p>
