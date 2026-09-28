@@ -20,7 +20,7 @@ LEVELS=(
   "1:#2A3F6B:#1B2A4A"   # מדרגה אחת בהיר יותר
   "2:#3A5388:#2A3F6B"   # שתי מדרגות
 )
-DEFAULT_LEVEL=1
+DEFAULT_LEVEL=2
 
 mkdir -p variants
 for entry in "${LEVELS[@]}"; do
