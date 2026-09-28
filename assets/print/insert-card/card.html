@@ -41,8 +41,12 @@ body{font-family:Heebo,sans-serif;-webkit-print-color-adjust:exact;print-color-a
 .a .inner{position:absolute;inset:var(--safe);display:flex;flex-direction:column;align-items:center}
 
 .logo{height:13mm;width:auto;margin-top:6mm}
+/* הלוגו נושא שתי שורות: הסלוגן באנגלית, ומתחתיו מה שהחנות מוכרת בעברית.
+   האנגלית מרווחת וכהה יותר כדי שהיא תיקרא כחותמת ולא כמשפט שני. */
 .tagline{margin-top:3.5mm;font-size:7.6pt;font-weight:700;letter-spacing:.30em;
   color:rgba(255,255,255,.52);text-align:center;direction:ltr}
+.tagline-he{margin-top:2.2mm;font-size:7.6pt;font-weight:400;letter-spacing:.16em;
+  color:rgba(255,255,255,.40);text-align:center}
 
 .hero{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:0 3mm}
 .hero h1{font-size:27pt;font-weight:900;line-height:1.16;color:#fff;letter-spacing:-.01em}
@@ -109,6 +113,7 @@ body{font-family:Heebo,sans-serif;-webkit-print-color-adjust:exact;print-color-a
   <div class="inner">
     <img class="logo" src="../../../public/logo-navbar.png" alt="JerseyLab">
     <div class="tagline">ONE PASSION. ONE LAB.</div>
+    <div class="tagline-he">חולצות כדורגל לאספנים ולאוהדים</div>
 
     <div class="hero">
       <h1>תודה שבחרת<br><span class="hl">ב JerseyLab</span></h1>
