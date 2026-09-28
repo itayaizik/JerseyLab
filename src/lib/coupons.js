@@ -16,6 +16,25 @@ import { t } from '@/lib/i18n';
 
 export const normalizeCode = (code) => String(code ?? '').trim().toUpperCase().replace(/\s+/g, '');
 
+// A code printed as FRIENDS25, typed without switching the keyboard out of
+// Hebrew, arrives as ןרןקמגד25. The keys are the same ones, so the letters are
+// mapped back before the code is given up on: a customer should not have to
+// notice which language their keyboard is in.
+const HEBREW_KEYS = {
+  'ק': 'E', 'ר': 'R', 'א': 'T', 'ט': 'Y', 'ו': 'U', 'ן': 'I', 'ם': 'O', 'פ': 'P',
+  'ש': 'A', 'ד': 'S', 'ג': 'D', 'כ': 'F', 'ע': 'G', 'י': 'H', 'ח': 'J', 'ל': 'K', 'ך': 'L',
+  'ז': 'Z', 'ס': 'X', 'ב': 'C', 'ה': 'V', 'נ': 'B', 'מ': 'N', 'צ': 'M',
+};
+
+const fromHebrewKeyboard = (code) => code.replace(/[֐-׿]/g, ch => HEBREW_KEYS[ch] ?? ch);
+
+// The spellings worth trying for what was typed, best first.
+export function codeVariants(code) {
+  const typed = normalizeCode(code);
+  const swapped = fromHebrewKeyboard(typed);
+  return swapped === typed ? [typed] : [typed, swapped];
+}
+
 const REASONS = {
   not_found: () => t('הקוד לא קיים או שכבר לא בתוקף', "This code doesn't exist or is no longer active"),
   not_started: () => t('הקוד עוד לא פעיל', "This code isn't active yet"),
@@ -30,12 +49,19 @@ export const couponReason = (reason) => (REASONS[reason] || REASONS.not_found)()
 export async function checkCoupon(code, { email, phone } = {}) {
   const normalized = normalizeCode(code);
   if (!normalized) return { ok: false, message: couponReason('not_found') };
-  const { data, error } = await supabase.rpc('check_coupon', {
-    p_code: normalized, p_email: email || null, p_phone: phone || null,
-  });
-  if (error) return { ok: false, message: couponReason('unavailable') };
-  if (!data?.ok) return { ok: false, message: couponReason(data?.reason) };
-  return { ok: true, coupon: data };
+  let reason = 'not_found';
+  for (const candidate of codeVariants(normalized)) {
+    const { data, error } = await supabase.rpc('check_coupon', {
+      p_code: candidate, p_email: email || null, p_phone: phone || null,
+    });
+    if (error) return { ok: false, message: couponReason('unavailable') };
+    if (data?.ok) return { ok: true, coupon: data };
+    reason = data?.reason;
+    // Only an unknown code is worth trying in the other keyboard: a code that
+    // exists but has run out should say so, not "no such code".
+    if (reason !== 'not_found') break;
+  }
+  return { ok: false, message: couponReason(reason) };
 }
 
 // Best effort: the order is already saved when this runs.
