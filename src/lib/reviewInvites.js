@@ -26,6 +26,23 @@ async function call(fn, args) {
   return data;
 }
 
+// Finding your own link from /review, for a customer holding the card that
+// came in the box rather than a message from us. The phone and the email must
+// both belong to the same order (supabase/review_lookup.sql).
+const START_REASONS = {
+  not_found: () => t('לא מצאנו הזמנה עם הטלפון והאימייל האלה. בדקו שהם כתובים בדיוק כמו בהזמנה.',
+                     "We couldn't find an order with that phone and email. Check they're exactly as you gave them."),
+  used: () => t('כבר שלחתם לנו ביקורת על ההזמנה הזאת. תודה!', "You've already sent us a review for this order. Thank you!"),
+  unavailable: () => t('משהו השתבש. נסו שוב בעוד רגע.', 'Something went wrong. Please try again in a moment.'),
+};
+
+export async function startReview({ phone, email }) {
+  const { data, error } = await supabase.rpc('start_review', { p_phone: phone, p_email: email });
+  if (error || !data) return { ok: false, message: START_REASONS.unavailable() };
+  if (!data.ok) return { ok: false, message: (START_REASONS[data.reason] || START_REASONS.not_found)() };
+  return data;
+}
+
 export const fetchInvite = (inviteId) => call('get_review_invite', { p_id: inviteId });
 
 export const submitInvite = (inviteId, { name, anonymous, reviews }) =>

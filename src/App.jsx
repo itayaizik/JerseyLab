@@ -30,6 +30,7 @@ import Catalog from '@/pages/Catalog';
 import ShirtDetail from '@/pages/ShirtDetail';
 const MysteryBox = lazy(() => import('@/pages/MysteryBox'));
 const ReviewInvite = lazy(() => import('@/pages/ReviewInvite'));
+const ReviewStart = lazy(() => import('@/pages/ReviewStart'));
 const MysteryBoxJoin = lazy(() => import('@/pages/MysteryBoxJoin'));
 const RequestShirt = lazy(() => import('@/pages/RequestShirt'));
 const Collection = lazy(() => import('@/pages/Collection'));
@@ -115,6 +116,7 @@ const AuthenticatedApp = () => {
         <Route path="/shirt/:id" element={<ShirtDetail />} />
         <Route path="/mystery-box" element={<MysteryBox />} />
         <Route path="/mystery-box/join/:groupId" element={<MysteryBoxJoin />} />
+        <Route path="/review" element={<ReviewStart />} />
         <Route path="/review/:inviteId" element={<ReviewInvite />} />
         <Route path="/request-shirt" element={<RequestShirt />} />
         <Route path="/collections/:slug" element={<Collection />} />
