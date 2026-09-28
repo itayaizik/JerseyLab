@@ -447,6 +447,150 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/beitar-jerusalem" />
   </url>
   <url>
+    <loc>https://www.jerseylab.co/collections/juventus</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/juventus" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/juventus" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/juventus" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/collections/juventus</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/juventus" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/juventus" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/juventus" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/collections/arsenal</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/arsenal" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/arsenal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/arsenal" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/collections/arsenal</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/arsenal" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/arsenal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/arsenal" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/collections/manchester-city</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/manchester-city" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/manchester-city" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/manchester-city" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/collections/manchester-city</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/manchester-city" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/manchester-city" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/manchester-city" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/collections/manchester-united</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/manchester-united" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/manchester-united" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/manchester-united" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/collections/manchester-united</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/manchester-united" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/manchester-united" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/manchester-united" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/collections/dortmund</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/dortmund" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/dortmund" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/dortmund" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/collections/dortmund</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/dortmund" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/dortmund" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/dortmund" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/collections/liverpool</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/liverpool" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/liverpool" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/liverpool" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/collections/liverpool</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/liverpool" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/liverpool" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/liverpool" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/collections/brazil</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/brazil" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/brazil" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/brazil" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/collections/brazil</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/brazil" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/brazil" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/brazil" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/collections/portugal</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/portugal" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/portugal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/portugal" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/collections/portugal</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/portugal" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/portugal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/portugal" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/collections/netherlands</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/netherlands" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/netherlands" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/netherlands" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/collections/netherlands</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/netherlands" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/netherlands" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/netherlands" />
+  </url>
+  <url>
     <loc>https://www.jerseylab.co/collections/la-liga</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
