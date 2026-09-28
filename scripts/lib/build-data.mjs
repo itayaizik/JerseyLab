@@ -67,6 +67,33 @@ export async function fetchShirts({ label = 'build' } = {}) {
   return rows.filter(r => r.id && r.status !== 'hidden').map(coerce);
 }
 
+// The home page's banner photos, read at build time so the page can tell the
+// browser to start downloading the right one immediately. Without this the
+// banner - the largest thing on the screen, and what Google measures the page
+// by - only starts loading after the app has booted and asked the database
+// which photo to show.
+export async function fetchHeroImages({ label = 'build' } = {}) {
+  const url = env('VITE_SUPABASE_URL');
+  const key = env('VITE_SUPABASE_ANON_KEY');
+  const fallback = { desktop: '/hero-desktop.jpg', mobile: '/hero-mobile.jpg' };
+  if (!url || !key) return fallback;
+  try {
+    const endpoint = `${url}/rest/v1/site_settings_raw?select=key,value&key=in.(homepage_hero_image,homepage_hero_image_mobile)`;
+    const res = await fetch(endpoint, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
+    if (!res.ok) return fallback;
+    const rows = await res.json();
+    const value = (name) => rows.find(r => r.key === name)?.value || '';
+    const desktop = value('homepage_hero_image') || fallback.desktop;
+    // Matches components/HomeHero: an uploaded desktop photo with no phone
+    // version is used on phones too.
+    const mobile = value('homepage_hero_image_mobile') || (value('homepage_hero_image') ? desktop : fallback.mobile);
+    return { desktop, mobile };
+  } catch (err) {
+    console.warn(`[${label}] could not read the hero settings (${err.message}) - using the defaults.`);
+    return fallback;
+  }
+}
+
 // The published FAQ, for the prerendered /faq page. FAQPage structured data is
 // what produces the expandable answers in Google's results, and it is one of
 // the formats AI assistants quote most readily - but it only existed after

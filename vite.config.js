@@ -23,4 +23,21 @@ export default defineConfig({
       '@': path.resolve(root, 'src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // The shop shipped as one 970KB file, so a phone had to parse all of it
+        // before the first shirt appeared. These four rarely change, so a
+        // returning visitor keeps them cached while the shop's own code, the
+        // part that actually changes on every deploy, is the only thing
+        // downloaded again.
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          supabase: ['@supabase/supabase-js'],
+          motion: ['framer-motion'],
+          icons: ['lucide-react'],
+        },
+      },
+    },
+  },
 })

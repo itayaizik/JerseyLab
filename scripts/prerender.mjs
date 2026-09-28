@@ -16,7 +16,7 @@
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import {
-  ROOT, SITE_ORIGIN, escapeHtml, fetchShirts, fetchFaqs, shirtPrice, shirtDescription,
+  ROOT, SITE_ORIGIN, escapeHtml, fetchShirts, fetchFaqs, fetchHeroImages, shirtPrice, shirtDescription,
 } from './lib/build-data.mjs';
 import { COLLECTIONS, collectionShirts } from '../src/lib/collections.js';
 import { shirtNameEn, shirtDescriptionIn, termIn } from '../src/lib/english.js';
@@ -194,7 +194,11 @@ function setMeta(html, matcher, attr, name, content) {
 // The English site is the same pages under /en (src/lib/i18n).
 export const enPath = (path) => (path === '/' ? '/en' : `/en${path}`);
 
-function buildHead(html, { path, title, description, image, lang = 'he', alternate = true }) {
+// The banner photo the home page will draw, so the browser starts fetching it
+// with the HTML rather than after the app has booted.
+const hero = await fetchHeroImages({ label: 'prerender' });
+
+function buildHead(html, { path, title, description, image, lang = 'he', alternate = true, preloadHero = false }) {
   const en = lang === 'en';
   const url = SITE_ORIGIN + (en ? enPath(path) : path);
   let out = setTitle(html, title);
@@ -225,6 +229,13 @@ function buildHead(html, { path, title, description, image, lang = 'he', alterna
     ] : []),
   ].join('\n    ');
   out = out.replace('</head>', `    ${alternates}\n  </head>`);
+  if (preloadHero) {
+    const preloads = [
+      `<link rel="preload" as="image" href="${escapeHtml(hero.mobile)}" media="(max-width: 767px)" fetchpriority="high" />`,
+      `<link rel="preload" as="image" href="${escapeHtml(hero.desktop)}" media="(min-width: 768px)" fetchpriority="high" />`,
+    ].join('\n    ');
+    out = out.replace('</head>', `    ${preloads}\n  </head>`);
+  }
   return out;
 }
 
@@ -346,7 +357,7 @@ const HOW_IT_WORKS_FAQ = {
 for (const page of STATIC_PAGES) {
   for (const lang of page.en ? ['he', 'en'] : ['he']) {
   const copy = lang === 'en' ? { ...page, ...page.en } : page;
-  let html = buildHead(TEMPLATE, { ...copy, path: page.path, lang, alternate: !!page.en });
+  let html = buildHead(TEMPLATE, { ...copy, path: page.path, lang, alternate: !!page.en, preloadHero: page.path === '/' });
 
   const graph = [
     organisation,
