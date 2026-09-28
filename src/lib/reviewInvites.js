@@ -36,6 +36,40 @@ const START_REASONS = {
   unavailable: () => t('משהו השתבש. נסו שוב בעוד רגע.', 'Something went wrong. Please try again in a moment.'),
 };
 
+// A review left straight from the card in the box: stars and a few words are
+// all that is required, and the order details only decide whether it counts as
+// a verified purchase (supabase/open_reviews.sql).
+const OPEN_REASONS = {
+  rating_required: () => t('בחרו כמה כוכבים.', 'Choose a rating.'),
+  comment_required: () => t('כתבו כמה מילים על ההזמנה.', 'Write a few words about your order.'),
+  busy: () => t('קיבלנו הרבה ביקורות ברגע זה. נסו שוב בעוד דקה.', 'We are getting a lot of reviews right now. Try again in a minute.'),
+  unavailable: () => t('משהו השתבש. נסו שוב בעוד רגע.', 'Something went wrong. Please try again in a moment.'),
+};
+
+export async function submitOpenReview({ rating, comment, name, anonymous, bought, shirtId, imageUrl, phone, email }) {
+  const { data, error } = await supabase.rpc('submit_open_review', {
+    p_rating: rating,
+    p_comment: comment,
+    p_name: name || null,
+    p_anonymous: !!anonymous,
+    p_bought: bought || null,
+    p_shirt_id: shirtId || null,
+    p_image_url: imageUrl || null,
+    p_phone: phone || null,
+    p_email: email || null,
+  });
+  if (error || !data) return { ok: false, message: OPEN_REASONS.unavailable() };
+  if (!data.ok) return { ok: false, message: (OPEN_REASONS[data.reason] || OPEN_REASONS.unavailable)() };
+  return data;
+}
+
+// The photos for those reviews live in their own folder, which is the one
+// anyone may upload to.
+export const uploadOpenPhoto = async (file) => {
+  const { file_url } = await base44.integrations.Core.UploadFile({ file, bucket: 'review-images', folder: 'open' });
+  return file_url;
+};
+
 export async function startReview({ phone, email }) {
   const { data, error } = await supabase.rpc('start_review', { p_phone: phone, p_email: email });
   if (error || !data) return { ok: false, message: START_REASONS.unavailable() };
