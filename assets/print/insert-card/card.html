@@ -14,7 +14,19 @@
 @font-face{font-family:'Space Mono';font-weight:700;src:url(../fonts/SpaceMono-700.ttf) format('truetype')}
 
 :root{
-  --navy:#1B2A4A; --navy-light:#2A3F6B; --navy-dark:#0F1D38;
+  /* שים לב: ערכי ה-rgba של הטקסט הלבן על הכחול כוונו לרקע של דרגה 2.
+     רקע בהיר יותר בולע אטימות נמוכה, ובלי הכוונון הזה הסלוגן והשורה
+     שמתחתיו נמוגים בהדפסה.
+
+     הכחול מופיע כאן בשני תפקידים שאסור לבלבל ביניהם, בדיוק כמו באתר
+     (--c-navy-bg מול --c-ink ב-tailwind.config.js): כרקע גדול, שנדפס
+     כהה יותר ממה שנראה על המסך ולכן מוגדר כאן בהיר יותר, וכצבע דיו על
+     נייר בהיר, שחייב להישאר כהה כדי שהטקסט יישאר קריא.
+     ערכי הרקע נדרסים ב-build.sh כדי לייצר את הדרגות. */
+  --navy-bg:#1B2A4A;                /* NAVY_BG */
+  --navy-bg-dark:#0F1D38;           /* NAVY_BG_DARK */
+  --navy-ink:#1B2A4A;               /* הדיו, לא משתנה בין הדרגות */
+  --navy-light:#2A3F6B;
   --orange:#E8622A; --orange-ink:#C2501C;
   --mist:#F3F5F8; --line:#E3E7EE; --white:#fff;
   --bleed:3mm; --trim-w:148mm; --trim-h:210mm;
@@ -32,9 +44,9 @@ body{font-family:Heebo,sans-serif;-webkit-print-color-adjust:exact;print-color-a
 .page:last-child{page-break-after:auto;break-after:auto}
 
 /* ============ צד א' — קבלת פנים ============ */
-.a{background:var(--navy-dark)}
+.a{background:var(--navy-bg-dark)}
 .a .wash{position:absolute;inset:0;
-  background:linear-gradient(160deg,var(--navy) 0%,var(--navy) 42%,var(--navy-dark) 100%)}
+  background:linear-gradient(160deg,var(--navy-bg) 0%,var(--navy-bg) 42%,var(--navy-bg-dark) 100%)}
 /* מרקם בד: קווים אלכסוניים דקים ב-5% */
 .a .weave{position:absolute;inset:0;opacity:.05;
   background:repeating-linear-gradient(45deg,#fff 0 1px,transparent 1px 9px)}
@@ -50,17 +62,17 @@ body{font-family:Heebo,sans-serif;-webkit-print-color-adjust:exact;print-color-a
 /* nowrap: כרום מחשב את הרוחב הטבעי בלי הריווח שאחרי האות האחרונה,
    ולכן ה-flex item יוצא צר מדי והשורה נשברת באמצע. */
 .tagline{margin-top:4mm;font-size:8.6pt;font-weight:700;letter-spacing:.468em;
-  color:rgba(255,255,255,.58);text-align:center;direction:ltr;white-space:nowrap}
+  color:rgba(255,255,255,.80);text-align:center;direction:ltr;white-space:nowrap}
 .tagline span{margin-inline-end:-.468em}
 .tagline-he{margin-top:2.6mm;font-size:7.4pt;font-weight:400;letter-spacing:.355em;
-  color:rgba(255,255,255,.38);text-align:center;white-space:nowrap}
+  color:rgba(255,255,255,.52);text-align:center;white-space:nowrap}
 .tagline-he span{margin-inline-end:-.355em}
 
 .hero{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:0 3mm}
 .hero h1{font-size:27pt;font-weight:900;line-height:1.16;color:#fff;letter-spacing:-.01em}
 .hero h1 .hl{color:var(--orange)}
 .rule{width:14mm;height:2.2px;background:var(--orange);border-radius:2px;margin:6mm auto 6mm}
-.hero p{font-size:10.2pt;font-weight:300;line-height:1.72;color:rgba(255,255,255,.78);
+.hero p{font-size:10.2pt;font-weight:300;line-height:1.72;color:rgba(255,255,255,.88);
   max-width:92mm;margin:0 auto}
 
 /* כרטיס ה-QR */
@@ -71,7 +83,7 @@ body{font-family:Heebo,sans-serif;-webkit-print-color-adjust:exact;print-color-a
 .qrbox svg{display:block;width:100%;height:100%}
 .qrtext{flex:1;text-align:right}
 .qrtext .k{font-size:6.6pt;font-weight:700;letter-spacing:.22em;color:var(--orange-ink)}
-.qrtext h2{font-size:12pt;font-weight:800;color:var(--navy);line-height:1.3;margin-top:2mm}
+.qrtext h2{font-size:12pt;font-weight:800;color:var(--navy-ink);line-height:1.3;margin-top:2mm}
 .qrtext .code{display:inline-block;margin-top:2.5mm;padding:1.4mm 3.5mm;
   background:#FDF1EB;border:1px dashed var(--orange);border-radius:2mm;
   font-family:'Space Mono',monospace;font-weight:700;font-size:11pt;
@@ -81,7 +93,7 @@ body{font-family:Heebo,sans-serif;-webkit-print-color-adjust:exact;print-color-a
 .foot{width:100%;margin-top:5.5mm}
 .foot .orule{height:1.6px;background:var(--orange);border-radius:2px;opacity:.9}
 .foot .row{display:flex;justify-content:space-between;align-items:center;margin-top:4mm;
-  font-size:8.2pt;font-weight:500;color:rgba(255,255,255,.72)}
+  font-size:8.2pt;font-weight:500;color:rgba(255,255,255,.84)}
 .foot .row span{direction:ltr;unicode-bidi:isolate}
 .foot .row .site{color:#fff;font-weight:700;font-size:9pt}
 .foot .row .ig{display:inline-flex;align-items:center;gap:1.8mm;color:#fff;font-weight:600}
@@ -89,10 +101,10 @@ body{font-family:Heebo,sans-serif;-webkit-print-color-adjust:exact;print-color-a
 
 /* ============ צד ב' — טיפול ============ */
 .b{background:var(--mist)}
-.b .band{background:var(--navy);height:34mm;padding:var(--safe) var(--safe) 0;
+.b .band{background:var(--navy-bg);height:34mm;padding:var(--safe) var(--safe) 0;
   display:flex;flex-direction:column;justify-content:center;padding-bottom:4mm}
 .b .band h2{font-size:17pt;font-weight:900;color:#fff;line-height:1.2}
-.b .band p{font-size:8.6pt;font-weight:300;color:rgba(255,255,255,.62);margin-top:1.5mm}
+.b .band p{font-size:8.6pt;font-weight:300;color:rgba(255,255,255,.80);margin-top:1.5mm}
 .b{display:flex;flex-direction:column}
 .b .body{flex:1;padding:9mm var(--safe) var(--safe);display:flex;flex-direction:column}
 
@@ -102,7 +114,7 @@ body{font-family:Heebo,sans-serif;-webkit-print-color-adjust:exact;print-color-a
   border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
   box-shadow:0 1mm 4mm rgba(27,42,74,.05)}
 .tile svg{width:58%;height:58%}
-.tile .cap{margin-top:3mm;font-size:8pt;font-weight:500;color:var(--navy);line-height:1.42}
+.tile .cap{margin-top:3mm;font-size:8pt;font-weight:500;color:var(--navy-ink);line-height:1.42}
 
 .note{margin-top:auto;padding-top:9mm}
 .note .orule{height:1.6px;background:var(--orange);border-radius:2px;opacity:.9}
@@ -127,8 +139,8 @@ body{font-family:Heebo,sans-serif;-webkit-print-color-adjust:exact;print-color-a
       <h1>תודה שבחרת<br><span class="hl">ב JerseyLab</span></h1>
       <div class="rule"></div>
       <p>קיבלת את החולצה, וזה החלק הכיף.<br>
-         אנחנו חנות קטנה, וכל הזמנה כאן נספרת.<br>
-         תודה שבחרת דווקא בנו.<br>
+         אנחנו עסק קטן, וכל הזמנה כאן נספרת.<br>
+         תודה שבחרת בנו.<br>
          אם צריך משהו, אנחנו במרחק הודעה.</p>
     </div>
 
@@ -167,7 +179,7 @@ body{font-family:Heebo,sans-serif;-webkit-print-color-adjust:exact;print-color-a
 <section class="page b">
   <div class="band">
     <h2>איך שומרים על החולצה</h2>
-    <p>שש הוראות. לוקח שתי דקות, חוסך עונה שלמה.</p>
+    <p>שש פעולות. לוקח שתי דקות, חוסך עונה שלמה.</p>
   </div>
 
   <div class="body">

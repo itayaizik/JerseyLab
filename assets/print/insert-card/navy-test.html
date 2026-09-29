@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>JerseyLab · בדיקת גוון כחול</title>
+<style>
+@font-face{font-family:Heebo;font-weight:300;src:url(../fonts/Heebo-300.ttf) format('truetype')}
+@font-face{font-family:Heebo;font-weight:700;src:url(../fonts/Heebo-700.ttf) format('truetype')}
+@font-face{font-family:Heebo;font-weight:900;src:url(../fonts/Heebo-900.ttf) format('truetype')}
+@font-face{font-family:'Space Mono';font-weight:700;src:url(../fonts/SpaceMono-700.ttf) format('truetype')}
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:302mm 216mm;margin:0}
+body{font-family:Heebo;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sheet{width:302mm;height:216mm;display:flex}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+     padding:14mm 8mm;text-align:center;color:#fff}
+.col img{height:12mm;width:auto}
+.col h2{margin-top:9mm;font-size:20pt;font-weight:900;line-height:1.15}
+.col h2 span{color:#E8622A}
+.col p{margin-top:5mm;font-size:9.5pt;font-weight:300;line-height:1.7;color:rgba(255,255,255,.78)}
+.chip{margin-top:auto;padding:2.5mm 5mm;border:1px solid rgba(255,255,255,.35);border-radius:3mm;
+      font-family:'Space Mono',monospace;font-weight:700;font-size:9pt;direction:ltr;letter-spacing:.06em}
+.chip b{display:block;font-family:Heebo;font-size:13pt;margin-bottom:1mm}
+.n0{background:linear-gradient(160deg,#1B2A4A 0%,#1B2A4A 42%,#0F1D38 100%)}
+.n1{background:linear-gradient(160deg,#2A3F6B 0%,#2A3F6B 42%,#1B2A4A 100%)}
+.n2{background:linear-gradient(160deg,#3A5388 0%,#3A5388 42%,#2A3F6B 100%)}
+</style>
+</head>
+<body>
+<div class="sheet">
+  <!-- סדר RTL: דרגה 0 בימין, 2 בשמאל. המספר על השבב הוא מה שאומרים לי. -->
+  <div class="col n0">
+    <img src="../../../public/logo-navbar.png" alt="JerseyLab">
+    <h2>תודה שבחרת<br><span>ב JerseyLab</span></h2>
+    <p>ככה ייראה הרקע של צד א' ושל הפס<br>בראש צד ב' בדרגה הזאת.</p>
+    <div class="chip"><b>דרגה 0</b>#1B2A4A · המקורי</div>
+  </div>
+  <div class="col n1">
+    <img src="../../../public/logo-navbar.png" alt="JerseyLab">
+    <h2>תודה שבחרת<br><span>ב JerseyLab</span></h2>
+    <p>ככה ייראה הרקע של צד א' ושל הפס<br>בראש צד ב' בדרגה הזאת.</p>
+    <div class="chip"><b>דרגה 1</b>#2A3F6B · ברירת המחדל</div>
+  </div>
+  <div class="col n2">
+    <img src="../../../public/logo-navbar.png" alt="JerseyLab">
+    <h2>תודה שבחרת<br><span>ב JerseyLab</span></h2>
+    <p>ככה ייראה הרקע של צד א' ושל הפס<br>בראש צד ב' בדרגה הזאת.</p>
+    <div class="chip"><b>דרגה 2</b>#3A5388 · הכי בהיר</div>
+  </div>
+</div>
+</body>
+</html>
