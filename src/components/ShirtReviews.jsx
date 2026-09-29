@@ -4,6 +4,7 @@ import { Star, Loader2, Check, Lock, ImagePlus, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { friendlyError } from '@/lib/errorMessages';
 import { t } from '@/lib/i18n';
+import { reviewPhoto } from '@/lib/reviewDisplay';
 
 function StarRating({ rating, onSelect, interactive = false }) {
   const [hovered, setHovered] = useState(0);
@@ -140,9 +141,9 @@ export default function ShirtReviews({ shirtId, user, onSummary }) {
                   <StarRating rating={r.rating} />
                 </div>
                 <p dir="auto" className="mt-2 text-start text-[15px] leading-relaxed text-brand-navy/75">{r.comment}</p>
-                {r.image_url && (
-                  <button type="button" onClick={() => setLightboxImage(r.image_url)} className="mt-3 block" aria-label={t('הגדלת התמונה', 'Enlarge the photo')}>
-                    <img src={r.image_url} alt="" className="h-28 w-28 cursor-zoom-in rounded-xl object-cover transition hover:opacity-90" />
+                {reviewPhoto(r) && (
+                  <button type="button" onClick={() => setLightboxImage(reviewPhoto(r))} className="mt-3 block" aria-label={t('הגדלת התמונה', 'Enlarge the photo')}>
+                    <img src={reviewPhoto(r)} alt="" className="h-28 w-28 cursor-zoom-in rounded-xl object-cover transition hover:opacity-90" />
                   </button>
                 )}
               </li>

@@ -9,6 +9,7 @@ import useShirtsById from '@/hooks/useShirtsById';
 import { MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 import { t, isEn } from '@/lib/i18n';
 import { resized } from '@/lib/imageUrl';
+import { reviewPhoto } from '@/lib/reviewDisplay';
 
 // Conversations with customers, shown as social proof, and alongside them the
 // photo reviews the owner picked for this row.
@@ -102,8 +103,9 @@ export default function ChatProofsSection({ title }) {
                 // What the card shows at the top: the customer's own photo when
                 // they sent one, and otherwise the shirt they are reviewing, so
                 // a review without a photo still earns its place in the row.
-                const shot = review.image_url || shirt?.main_image || '';
-                const ownPhoto = Boolean(review.image_url);
+                const photo = reviewPhoto(review);
+                const shot = photo || shirt?.main_image || '';
+                const ownPhoto = Boolean(photo);
                 const href = review.shirt_id === MYSTERY_BOX_ID ? '/mystery-box' : shirt ? `/shirt/${shirt.id}` : '';
                 return (
                   <figure key={`review-${review.id}`} className="flex h-full flex-col rounded-3xl bg-white p-2 shadow-card">

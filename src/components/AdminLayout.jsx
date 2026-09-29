@@ -12,7 +12,7 @@ const adminLinks = [
   { to: '/admin/requests', label: 'הזמנות', icon: Users },
   { to: '/admin/contact-messages', label: 'פניות צור קשר', icon: Mail },
   { to: '/admin/categories', label: 'קטגוריות', icon: FolderOpen },
-  { to: '/admin/reviews', label: 'ביקורות', icon: Star },
+  { to: '/admin/reviews', label: 'ביקורות וצילומים', icon: Star },
   { to: '/admin/coupons', label: 'קופונים', icon: Ticket },
   { to: '/admin/faq', label: 'שאלות ותשובות', icon: HelpCircle },
   { to: '/admin/home-sections', label: 'עריכת דף הבית', icon: Layout },

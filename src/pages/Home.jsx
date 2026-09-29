@@ -15,6 +15,7 @@ import ChatProofsSection from '@/components/ChatProofsSection';
 import OrderedRow, { reviewItems } from '@/components/shop/OrderedRow';
 import useShirtsById from '@/hooks/useShirtsById';
 import { resized } from '@/lib/imageUrl';
+import { reviewPhoto } from '@/lib/reviewDisplay';
 import MysteryBoxPromo from '@/components/MysteryBoxPromo';
 import Seo from '@/components/Seo';
 import HomeHero from '@/components/HomeHero';
@@ -320,8 +321,8 @@ export default function Home() {
                     {/* The photo the customer sent, when they sent one. It is
                         the strongest part of a review, and this section used
                         to drop it entirely. */}
-                    {r.image_url && (
-                      <img src={resized(r.image_url, 640)} alt={t('תמונה ששלח לקוח', 'A photo sent by a customer')} loading="lazy" width="400" height="220"
+                    {reviewPhoto(r) && (
+                      <img src={resized(reviewPhoto(r), 640)} alt={t('תמונה ששלח לקוח', 'A photo sent by a customer')} loading="lazy" width="400" height="220"
                         className="mb-4 h-[220px] w-full rounded-2xl bg-brand-mist object-cover" />
                     )}
                     <div className="flex gap-0.5" aria-label={t(`${r.rating} מתוך 5`, `${r.rating} out of 5`)}>

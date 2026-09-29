@@ -3,6 +3,7 @@ import { MessageSquare, Trash2, Upload, Loader2, Eye, EyeOff, ArrowUp, ArrowDown
 import { base44 } from '@/api/base44Client';
 import { formatDate } from '@/lib/dates';
 import { uploadErrorMessage } from '@/lib/supabaseStorage';
+import ShirtPicker from '@/components/admin/ShirtPicker';
 
 // Screenshots of real conversations with customers, shown on the site as
 // proof that people actually buy here and get answered.
@@ -17,7 +18,9 @@ import { uploadErrorMessage } from '@/lib/supabaseStorage';
 // here and the shirts from it appear under the screenshot on the site, each
 // linking to its product page (supabase/chat_proof_orders.sql).
 
-export default function ManageChatProofs() {
+// `embedded` is for the tab inside ניהול > ביקורות, which draws its own
+// heading: the page keeps working on its own URL either way.
+export default function ManageChatProofs({ embedded = false }) {
   const [proofs, setProofs] = useState([]);
   const [shirts, setShirts] = useState([]);
   const [requests, setRequests] = useState([]);
@@ -166,7 +169,7 @@ export default function ManageChatProofs() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="font-heading font-black text-2xl text-turf mb-1">צילומי שיחות</h1>
+        {!embedded && <h1 className="font-heading font-black text-2xl text-turf mb-1">צילומי שיחות</h1>}
         <p className="text-sm text-varnish font-body">
           צילומי מסך של שיחות עם לקוחות. מוצגים בדף הבית כהוכחה חברתית.
           {proofs.length > 0 && ` ${liveCount} מוצגים מתוך ${proofs.length}.`}
@@ -356,34 +359,6 @@ function OrderPicker({ orders, shirtsById, onPick }) {
           ))}
         </ul>
       )}
-    </div>
-  );
-}
-
-// For a conversation with no order behind it in the system - most of the older
-// ones - the shirts can be picked straight from the catalogue.
-function ShirtPicker({ shirts, onPick }) {
-  const [q, setQ] = useState('');
-  const needle = q.trim().toLowerCase();
-  const matches = shirts
-    .filter(s => !needle || `${s.name} ${s.team || ''}`.toLowerCase().includes(needle))
-    .slice(0, 12);
-
-  return (
-    <div className="mt-2 border border-white/10 bg-pitch/40 p-2">
-      <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder="חפש חולצה בקטלוג"
-        className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none mb-2" />
-      <ul className="space-y-1 max-h-64 overflow-y-auto">
-        {matches.map(s => (
-          <li key={s.id}>
-            <button onClick={() => onPick(s)}
-              className="w-full flex items-center gap-2 text-right border border-white/10 hover:border-turf px-2 py-1.5 transition-colors">
-              {s.main_image && <img src={s.main_image} alt="" className="w-7 h-7 object-cover flex-shrink-0" />}
-              <span className="text-xs text-chalk truncate">{s.name}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
