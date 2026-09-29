@@ -147,8 +147,9 @@ export default function ChatProofsSection({ title }) {
                           named row is. */}
                       {href && label && (
                         <Link to={href} className="mt-3 flex items-center gap-2.5 rounded-2xl bg-brand-mist p-2 transition hover:bg-brand-mist-dark">
-                          {/* relative: ProductImage מניח שלד ב-absolute inset-0 מאחורי התמונה,
-                              והוא צריך את העוטף הזה כדי לא לברוח ממנו. */}
+                          {/* Relative: ProductImage lays a skeleton at inset-0
+                              behind the picture, and it needs this wrapper to
+                              sit against or it escapes to the page. */}
                           <span className="relative h-11 w-11 flex-shrink-0 overflow-hidden rounded-xl bg-white">
                             {!mystery && shirt?.main_image && (
                               <ProductImage src={shirt.main_image} alt="" sizes="44px" className="h-full w-full object-cover" />
