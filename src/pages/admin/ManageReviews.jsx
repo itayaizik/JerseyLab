@@ -27,12 +27,29 @@ export default function ManageReviews() {
     setReviews(p => p.map(r => r.id === id ? { ...r, approved } : r));
   };
 
-  // Photo reviews can also be shown in "לקוחות מספרים" on the home page.
+  // Any approved review can also be shown in "לקוחות מספרים" on the home
+  // page, photo or not.
   const toggleProofs = async (review) => {
     const show_in_proofs = !review.show_in_proofs;
     try {
       await base44.entities.Review.update(review.id, { show_in_proofs });
       setReviews(p => p.map(r => r.id === review.id ? { ...r, show_in_proofs } : r));
+    } catch {
+      alert('לא נשמר. אם זו הפעם הראשונה, צריך קודם להריץ את קובץ ה-SQL (עמודה show_in_proofs).');
+    }
+  };
+
+  // The reviews that came in before the section could show them are the ones
+  // most likely to be missing from it, and turning on twenty toggles by hand
+  // is how that stays missing. One button for the lot.
+  const showAllApproved = async () => {
+    const missing = reviews.filter(r => r.approved && !r.show_in_proofs);
+    if (!missing.length) return;
+    if (!confirm(`להציג ${missing.length} ביקורות מאושרות ב"לקוחות מספרים"?`)) return;
+    try {
+      await Promise.all(missing.map(r => base44.entities.Review.update(r.id, { show_in_proofs: true })));
+      const ids = new Set(missing.map(r => r.id));
+      setReviews(p => p.map(r => ids.has(r.id) ? { ...r, show_in_proofs: true } : r));
     } catch {
       alert('לא נשמר. אם זו הפעם הראשונה, צריך קודם להריץ את קובץ ה-SQL (עמודה show_in_proofs).');
     }
@@ -53,12 +70,19 @@ export default function ManageReviews() {
   });
 
   const pendingCount = reviews.filter(r => !r.approved).length;
+  const hiddenFromProofs = reviews.filter(r => r.approved && !r.show_in_proofs).length;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-heading font-black text-2xl text-turf">ניהול ביקורות</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap items-center">
+          {hiddenFromProofs > 0 && (
+            <button onClick={showAllApproved}
+              className="text-xs px-3 py-1.5 font-bold font-heading border border-turf/50 text-turf hover:bg-turf hover:text-pitch transition-colors">
+              הצג {hiddenFromProofs} ב"לקוחות מספרים"
+            </button>
+          )}
           {[
             { key: 'pending', label: `ממתין (${pendingCount})` },
             { key: 'approved', label: 'מאושר' },
@@ -93,18 +117,21 @@ export default function ManageReviews() {
                   חולצה: {shirt ? <Link to={`/shirt/${shirt.id}`} className="text-turf hover:underline">{shirt.name}</Link> : (r.shirt_id || 'לא ידוע')}
                 </p>
                 <p className="text-sm text-varnish">{r.comment}</p>
-                {r.image_url && (
-                  <div className="mt-2 flex items-end gap-3">
+                {/* Any review can go in "לקוחות מספרים", not only the ones
+                    with a photo: a review without one now shows the shirt it
+                    is about instead, so there is nothing left to hide. */}
+                <div className="mt-2 flex items-end gap-3">
+                  {r.image_url && (
                     <a href={r.image_url} target="_blank" rel="noopener noreferrer" className="inline-block">
                       <img src={r.image_url} alt="" className="w-16 h-16 object-cover border border-white/10 hover:opacity-80 transition-opacity" />
                     </a>
-                    <button onClick={() => toggleProofs(r)}
-                      title={r.approved ? '' : 'יוצג רק אחרי שהביקורת תאושר'}
-                      className={`text-xs px-3 py-1.5 font-bold transition-colors ${r.show_in_proofs ? 'bg-turf text-pitch' : 'border border-white/20 text-varnish hover:text-chalk'}`}>
-                      {r.show_in_proofs ? '✓ מוצג ב"לקוחות מספרים"' : 'להציג ב"לקוחות מספרים"'}
-                    </button>
-                  </div>
-                )}
+                  )}
+                  <button onClick={() => toggleProofs(r)}
+                    title={r.approved ? '' : 'יוצג רק אחרי שהביקורת תאושר'}
+                    className={`text-xs px-3 py-1.5 font-bold transition-colors ${r.show_in_proofs ? 'bg-turf text-pitch' : 'border border-white/20 text-varnish hover:text-chalk'}`}>
+                    {r.show_in_proofs ? '✓ מוצג ב"לקוחות מספרים"' : 'להציג ב"לקוחות מספרים"'}
+                  </button>
+                </div>
               </div>
               <div className="flex gap-1 flex-shrink-0">
                 {!r.approved ? (

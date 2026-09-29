@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { X, Star, ChevronLeft } from 'lucide-react';
+import { X, Star } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import SectionHeader from '@/components/shop/SectionHeader';
 import ScrollRow from '@/components/shop/ScrollRow';
-import ProductImage from '@/components/ui/ProductImage';
+import OrderedRow, { reviewItems, proofItems } from '@/components/shop/OrderedRow';
+import useShirtsById from '@/hooks/useShirtsById';
 import { MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 import { t, isEn } from '@/lib/i18n';
 import { resized } from '@/lib/imageUrl';
@@ -20,7 +21,6 @@ import { resized } from '@/lib/imageUrl';
 export default function ChatProofsSection({ title }) {
   const [proofs, setProofs] = useState([]);
   const [reviews, setReviews] = useState([]);
-  const [shirts, setShirts] = useState({});
   const [lightbox, setLightbox] = useState(null);
 
   useEffect(() => {
@@ -31,22 +31,17 @@ export default function ChatProofsSection({ title }) {
       .then(data => { if (!cancelled) setProofs(data); })
       .catch(() => {});
     base44.entities.Review.filter({ approved: true, show_in_proofs: true }, '-created_date', 24)
-      .then(async data => {
-        if (cancelled) return;
-        setReviews(data);
-        // The shirts these reviews are about, so each card can show what was
-        // bought and lead to it. Fetched one by one, the way the wishlist does
-        // it, because the entity filter only matches on equality; the ids are
-        // deduplicated first, so a row of reviews of the same shirt is one
-        // request rather than twenty.
-        const ids = [...new Set(data.map(r => r.shirt_id).filter(id => id && id !== MYSTERY_BOX_ID))];
-        const found = await Promise.all(ids.map(id => base44.entities.Shirt.get(id).catch(() => null)));
-        if (cancelled) return;
-        setShirts(Object.fromEntries(found.filter(Boolean).map(sh => [sh.id, sh])));
-      })
+      .then(data => { if (!cancelled) setReviews(data); })
       .catch(() => {});
     return () => { cancelled = true; };
   }, []);
+
+  // The shirts both halves of the row are about, so each card can show what
+  // was bought and lead to it.
+  const shirts = useShirtsById([
+    ...reviews.map(r => r.shirt_id),
+    ...proofs.flatMap(p => p.shirt_ids || []),
+  ]);
 
   useEffect(() => {
     if (!lightbox) return;
@@ -80,31 +75,36 @@ export default function ChatProofsSection({ title }) {
         <div className="mt-10">
           <ScrollRow label={heading} itemClassName="w-[300px] sm:w-[360px]">
             {[
-              ...proofs.map(proof => (
-                <figure key={proof.id} className="h-full">
-                  <button type="button" onClick={() => setLightbox({ image: proof.image_url, caption: proof.caption })} aria-label={t('הגדלת צילום השיחה', 'Enlarge the conversation')}
-                    className="block w-full cursor-zoom-in rounded-3xl bg-white p-2 shadow-card transition-shadow hover:shadow-lift">
-                    <img src={resized(proof.image_url, 720)} alt={proof.caption || t('שיחה עם לקוח', 'A conversation with a customer')} loading="lazy" width="360" height="420"
-                      className="h-[420px] w-full rounded-[1.25rem] object-cover object-center" />
-                  </button>
-                  {/* Captions are typed in Hebrew in the admin, so the English
-                      site shows the screenshots without them. */}
-                  {proof.caption && !isEn && (
-                    <figcaption className="mt-3 px-2 text-[13px] leading-snug text-brand-navy/65">{proof.caption}</figcaption>
-                  )}
-                </figure>
-              )),
+              ...proofs.map(proof => {
+                const bought = proofItems(proof, shirts);
+                return (
+                  <figure key={proof.id} className="flex h-full flex-col">
+                    <button type="button" onClick={() => setLightbox({ image: proof.image_url, caption: proof.caption })} aria-label={t('הגדלת צילום השיחה', 'Enlarge the conversation')}
+                      className="block w-full cursor-zoom-in rounded-3xl bg-white p-2 shadow-card transition-shadow hover:shadow-lift">
+                      <img src={resized(proof.image_url, 720)} alt={proof.caption || t('שיחה עם לקוח', 'A conversation with a customer')} loading="lazy" width="360" height="420"
+                        className="h-[420px] w-full rounded-[1.25rem] object-cover object-center" />
+                    </button>
+                    {/* Captions are typed in Hebrew in the admin, so the English
+                        site shows the screenshots without them. */}
+                    {proof.caption && !isEn && (
+                      <figcaption className="mt-3 px-2 text-[13px] leading-snug text-brand-navy/65">{proof.caption}</figcaption>
+                    )}
+                    {/* What that conversation ended in, when the admin attached
+                        an order to it. */}
+                    <OrderedRow items={bought} className="mt-3" />
+                  </figure>
+                );
+              }),
               ...reviews.map(review => {
                 const name = review.is_anonymous ? t('לקוח', 'Customer') : (review.reviewer_name || t('לקוח', 'Customer'));
-                const mystery = review.shirt_id === MYSTERY_BOX_ID;
+                const bought = reviewItems(review, shirts);
                 const shirt = shirts[review.shirt_id];
                 // What the card shows at the top: the customer's own photo when
                 // they sent one, and otherwise the shirt they are reviewing, so
                 // a review without a photo still earns its place in the row.
                 const shot = review.image_url || shirt?.main_image || '';
                 const ownPhoto = Boolean(review.image_url);
-                const href = mystery ? '/mystery-box' : shirt ? `/shirt/${shirt.id}` : '';
-                const label = mystery ? t('מיסטרי בוקס', 'Mystery box') : shirt?.name;
+                const href = review.shirt_id === MYSTERY_BOX_ID ? '/mystery-box' : shirt ? `/shirt/${shirt.id}` : '';
                 return (
                   <figure key={`review-${review.id}`} className="flex h-full flex-col rounded-3xl bg-white p-2 shadow-card">
                     {!shot && (
@@ -126,7 +126,7 @@ export default function ChatProofsSection({ title }) {
                       // The shirt's own photo is not the customer's, so it leads
                       // to the product rather than opening as a snapshot.
                       <Link to={href || '/catalog'} className="block w-full">
-                        <img src={resized(shot, 720)} alt={label || ''} loading="lazy" width="360" height="300"
+                        <img src={resized(shot, 720)} alt={bought[0]?.label || ''} loading="lazy" width="360" height="300"
                           className="h-[300px] w-full rounded-[1.25rem] bg-brand-mist object-cover transition hover:opacity-95" />
                       </Link>
                     ))}
@@ -145,23 +145,7 @@ export default function ChatProofsSection({ title }) {
                           review, including the ones whose picture already is the
                           shirt: the picture is not a link people expect, and a
                           named row is. */}
-                      {href && label && (
-                        <Link to={href} className="mt-3 flex items-center gap-2.5 rounded-2xl bg-brand-mist p-2 transition hover:bg-brand-mist-dark">
-                          {/* Relative: ProductImage lays a skeleton at inset-0
-                              behind the picture, and it needs this wrapper to
-                              sit against or it escapes to the page. */}
-                          <span className="relative h-11 w-11 flex-shrink-0 overflow-hidden rounded-xl bg-white">
-                            {!mystery && shirt?.main_image && (
-                              <ProductImage src={shirt.main_image} alt="" sizes="44px" className="h-full w-full object-cover" />
-                            )}
-                          </span>
-                          <span className="min-w-0 flex-1 text-start">
-                            <span className="block text-[11px] font-semibold uppercase tracking-wide text-brand-navy/45">{t('ההזמנה', 'Ordered')}</span>
-                            <span className="block truncate text-[13px] font-semibold text-brand-navy">{label}</span>
-                          </span>
-                          <ChevronLeft className="h-4 w-4 flex-shrink-0 text-brand-navy/40 rtl:rotate-0 ltr:rotate-180" aria-hidden="true" />
-                        </Link>
-                      )}
+                      <OrderedRow items={bought} className="mt-3" />
                     </figcaption>
                   </figure>
                 );

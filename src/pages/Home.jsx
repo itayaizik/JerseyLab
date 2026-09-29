@@ -12,6 +12,9 @@ import CategoryCardsSection from '@/components/CategoryCardsSection';
 import PromoBanner from '@/components/PromoBanner';
 import InstagramSection from '@/components/InstagramSection';
 import ChatProofsSection from '@/components/ChatProofsSection';
+import OrderedRow, { reviewItems } from '@/components/shop/OrderedRow';
+import useShirtsById from '@/hooks/useShirtsById';
+import { resized } from '@/lib/imageUrl';
 import MysteryBoxPromo from '@/components/MysteryBoxPromo';
 import Seo from '@/components/Seo';
 import HomeHero from '@/components/HomeHero';
@@ -55,6 +58,10 @@ export default function Home() {
   const [loadError, setLoadError] = useState(false);
   const [pickTab, setPickTab] = useState('new');
   const navigate = useNavigate();
+
+  // The shirts the reviews below are about, so each card can show what was
+  // bought and lead to it.
+  const reviewShirts = useShirtsById(reviews.map(r => r.shirt_id));
 
   useEffect(() => {
     async function load() {
@@ -309,7 +316,14 @@ export default function Home() {
               <SectionHeader id="reviews-heading" title={t('מה אומרים עלינו', 'What customers say')} />
               <ul className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {reviews.map(r => (
-                  <li key={r.id} className="shop-card p-6">
+                  <li key={r.id} className="shop-card flex flex-col p-6">
+                    {/* The photo the customer sent, when they sent one. It is
+                        the strongest part of a review, and this section used
+                        to drop it entirely. */}
+                    {r.image_url && (
+                      <img src={resized(r.image_url, 640)} alt={t('תמונה ששלח לקוח', 'A photo sent by a customer')} loading="lazy" width="400" height="220"
+                        className="mb-4 h-[220px] w-full rounded-2xl bg-brand-mist object-cover" />
+                    )}
                     <div className="flex gap-0.5" aria-label={t(`${r.rating} מתוך 5`, `${r.rating} out of 5`)}>
                       {[1, 2, 3, 4, 5].map(s => (
                         <Star key={s} className={`h-4 w-4 ${s <= r.rating ? 'fill-brand-orange text-brand-orange' : 'text-brand-line'}`} aria-hidden="true" />
@@ -318,6 +332,8 @@ export default function Home() {
                     {/* Written by customers, in Hebrew. */}
                     <p lang="he" dir="rtl" className="mt-3 text-start text-[15px] leading-relaxed text-brand-navy/80">"{r.comment}"</p>
                     <p className="mt-4 text-sm font-semibold text-brand-navy/60">{r.is_anonymous ? t('אנונימי', 'Anonymous') : (r.reviewer_name || r.name)}</p>
+                    {/* What the review is about, and the way into it. */}
+                    <OrderedRow items={reviewItems(r, reviewShirts)} className="mt-4" />
                   </li>
                 ))}
               </ul>

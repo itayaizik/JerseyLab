@@ -347,7 +347,11 @@ create table if not exists chat_proofs_raw (
   image_url    text not null,
   caption      text,
   sort_order   integer default 0,
-  active       boolean not null default true
+  active       boolean not null default true,
+  -- What the conversation was about: the order it came from, and the shirts
+  -- shown under the screenshot (supabase/chat_proof_orders.sql).
+  order_id     text,
+  shirt_ids    jsonb not null default '[]'::jsonb
 );
 
 alter table chat_proofs_raw enable row level security;
