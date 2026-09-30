@@ -8,7 +8,7 @@
 // Clubs used when a shirt has no league filled in. A shirt whose league is set
 // goes by its league: an Israeli club's Champions League shirt is not a
 // Premier League one.
-const ISRAELI_LEAGUE_CLUBS = ['ביתר ירושלים', 'הפועל באר שבע', 'הפועל תל אביב', 'מכבי חיפה', 'מכבי תל אביב'];
+const ISRAELI_LEAGUE_CLUBS = ['ביתר ירושלים', 'הפועל באר שבע', 'הפועל חיפה', 'הפועל פתח תקווה', 'הפועל תל אביב', 'מכבי חיפה', 'מכבי תל אביב'];
 
 export function isIsraeliLeagueShirt(shirt) {
   const league = String(shirt?.league || '').trim();
