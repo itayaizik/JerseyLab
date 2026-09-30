@@ -22,6 +22,7 @@ const TABLES = {
   ChatProof: "chat_proofs_raw",
   Coupon: "coupons_raw",
   ReviewInvite: "review_invites_raw",
+  Legionnaire: "legionnaires_raw",
 };
 
 // Entities where the creator can't read the row back under RLS (public/

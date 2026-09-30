@@ -63,6 +63,7 @@ const ManageRequests = lazy(() => import('@/pages/admin/ManageRequests'));
 const ManageShirtRequests = lazy(() => import('@/pages/admin/ManageShirtRequests'));
 const ManageContactMessages = lazy(() => import('@/pages/admin/ManageContactMessages'));
 const ManageCategories = lazy(() => import('@/pages/admin/ManageCategories'));
+const ManageLegionnaires = lazy(() => import('@/pages/admin/ManageLegionnaires'));
 const ManageReviews = lazy(() => import('@/pages/admin/ManageReviews'));
 const ManageCoupons = lazy(() => import('@/pages/admin/ManageCoupons'));
 const ManageFAQ = lazy(() => import('@/pages/admin/ManageFAQ'));
@@ -158,6 +159,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin/chat-proofs" element={<Navigate to="/admin/reviews?tab=proofs" replace />} />
           <Route path="/admin/contact-messages" element={<ManageContactMessages />} />
           <Route path="/admin/categories" element={<ManageCategories />} />
+          <Route path="/admin/legionnaires" element={<ManageLegionnaires />} />
           <Route path="/admin/reviews" element={<ManageReviews />} />
           <Route path="/admin/coupons" element={<ManageCoupons />} />
           <Route path="/admin/faq" element={<ManageFAQ />} />

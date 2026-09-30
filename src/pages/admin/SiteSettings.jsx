@@ -36,6 +36,8 @@ const settingFields = [
   { key: 'instagram_link', label: 'קישור Instagram', type: 'text', placeholder: 'https://instagram.com/...' },
   { key: 'email', label: 'אימייל', type: 'text' },
   { key: 'contact_message', label: 'הודעת צור קשר', type: 'textarea' },
+  { key: 'legionnaires_title', label: 'כותרת קטע "הלגיונרים"', type: 'text', placeholder: 'הלגיונרים',
+    help: 'השחקנים עצמם נערכים בניהול > לגיונרים. הקטע מופיע כל עוד יש שם שחקן אחד מוצג.' },
   { key: 'popular_clubs_title', label: 'כותרת "קבוצות פופולריות"', type: 'text', placeholder: 'קבוצות פופולריות' },
   { key: 'category_cards_title', label: 'כותרת "קנה לפי קטגוריה"', type: 'text', placeholder: 'קנה לפי קטגוריה' },
   { key: 'promo_banner_active', label: 'באנר מבצע - פעיל? (כתוב "yes" להצגה)', type: 'text', placeholder: 'yes' },

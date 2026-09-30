@@ -8,6 +8,7 @@ import Disclosure from '@/components/shop/Disclosure';
 import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
 import PopularClubsSection from '@/components/PopularClubsSection';
 import LeaguesSection from '@/components/LeaguesSection';
+import LegionnairesSection from '@/components/LegionnairesSection';
 import CategoryCardsSection from '@/components/CategoryCardsSection';
 import PromoBanner from '@/components/PromoBanner';
 import InstagramSection from '@/components/InstagramSection';
@@ -233,6 +234,14 @@ export default function Home() {
               </div>
             </section>
           )}
+
+          <LegionnairesSection
+            title={sectionTitle('legionnaires_title')}
+            shirts={catalogShirts}
+            user={user}
+            wishlistIds={wishlistIds}
+            onToggleWishlist={toggleWishlist}
+          />
 
           <PopularClubsSection title={sectionTitle('popular_clubs_title')} />
 
