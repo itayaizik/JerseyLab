@@ -47,7 +47,7 @@ export default function ManageContactMessages() {
             <button
               key={btn.value}
               onClick={() => setFilter(btn.value)}
-              className={`px-4 py-2 text-sm font-bold border-2 transition-colors ${
+              className={`rounded-2xl px-4 py-2 text-sm font-bold border-2 transition-colors ${
                 filter === btn.value
                   ? 'bg-turf text-pitch border-turf'
                   : 'bg-white text-varnish border-brand-line hover:border-turf'

@@ -270,7 +270,7 @@ export default function ManageHomeSections() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-turf text-pitch px-5 py-2.5 font-heading font-bold text-sm flex items-center gap-2 disabled:opacity-50"
+          className="rounded-2xl bg-turf text-pitch px-5 py-2.5 font-heading font-bold text-sm flex items-center gap-2 disabled:opacity-50"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           {saving ? 'שומר...' : saved ? '✓ נשמר!' : 'שמור הכל'}
@@ -281,7 +281,7 @@ export default function ManageHomeSections() {
       <section>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-heading font-bold text-lg text-chalk">⚽ קבוצות פופולריות</h2>
-          <button onClick={addClub} className="flex items-center gap-1 text-xs text-turf border border-turf/40 hover:border-turf px-3 py-1.5">
+          <button onClick={addClub} className="rounded-lg flex items-center gap-1 text-xs text-turf border border-turf/40 hover:border-turf px-3 py-1.5">
             <Plus className="w-3 h-3" /> הוסף קבוצה
           </button>
         </div>
@@ -307,7 +307,7 @@ export default function ManageHomeSections() {
       <section>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-heading font-bold text-lg text-chalk">🗂️ כרטיסי קטגוריות</h2>
-          <button onClick={addCat} className="flex items-center gap-1 text-xs text-turf border border-turf/40 hover:border-turf px-3 py-1.5">
+          <button onClick={addCat} className="rounded-lg flex items-center gap-1 text-xs text-turf border border-turf/40 hover:border-turf px-3 py-1.5">
             <Plus className="w-3 h-3" /> הוסף קטגוריה
           </button>
         </div>
@@ -333,7 +333,7 @@ export default function ManageHomeSections() {
       <section>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-heading font-bold text-lg text-chalk">🏆 ליגות וטורנירים</h2>
-          <button onClick={addLeague} className="flex items-center gap-1 text-xs text-turf border border-turf/40 hover:border-turf px-3 py-1.5">
+          <button onClick={addLeague} className="rounded-lg flex items-center gap-1 text-xs text-turf border border-turf/40 hover:border-turf px-3 py-1.5">
             <Plus className="w-3 h-3" /> הוסף ליגה
           </button>
         </div>

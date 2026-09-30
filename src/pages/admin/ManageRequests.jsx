@@ -232,10 +232,10 @@ export default function ManageRequests() {
                     </span>
                     <span className="text-xs text-varnish font-mono">{formatDate(first.created_date, 'ללא תאריך')}</span>
                     {items.length > 1 && (
-                      <span className="text-xs px-2 py-0.5 bg-turf/10 text-turf font-bold">{items.length} פריטים בהזמנה</span>
+                      <span className="rounded-lg text-xs px-2 py-0.5 bg-turf/10 text-turf font-bold">{items.length} פריטים בהזמנה</span>
                     )}
                     {history.length > 0 && (
-                      <span className="text-xs px-2 py-0.5 bg-amber-500/15 text-amber-600 font-bold">נערכה</span>
+                      <span className="rounded-lg text-xs px-2 py-0.5 bg-amber-500/15 text-amber-600 font-bold">נערכה</span>
                     )}
                   </div>
                   <h3 className="font-heading font-bold text-sm mb-2">{first.full_name}</h3>
@@ -255,7 +255,7 @@ export default function ManageRequests() {
                             {reqShirt?.main_image && (
                               <button
                                 onClick={() => handleCopyImage(r.id, reqShirt.main_image)}
-                                className="flex items-center gap-1 text-xs text-turf hover:text-chalk border border-turf/40 hover:border-turf px-2 py-1 transition-colors"
+                                className="rounded-lg flex items-center gap-1 text-xs text-turf hover:text-chalk border border-turf/40 hover:border-turf px-2 py-1 transition-colors"
                               >
                                 {copiedImageId === r.id ? <Check className="w-3 h-3" /> : <ImageIcon className="w-3 h-3" />}
                                 {copiedImageId === r.id ? 'התמונה הועתקה!' : 'העתקת תמונה'}
@@ -289,7 +289,7 @@ export default function ManageRequests() {
                     {first.phone && <a href={`tel:${first.phone}`} className="flex items-center gap-1 hover:text-chalk"><Phone className="w-3 h-3" />{first.phone}</a>}
                     {first.email && <a href={`mailto:${first.email}`} className="flex items-center gap-1 hover:text-chalk"><Mail className="w-3 h-3" />{first.email}</a>}
                     {first.whatsapp && <a href={`https://wa.me/${first.whatsapp}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-emerald-600"><MessageCircle className="w-3 h-3" />WhatsApp</a>}
-                    {first.instagram && <a href={`https://instagram.com/${first.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-pink-400"><ExternalLink className="w-3 h-3" />{first.instagram}</a>}
+                    {first.instagram && <a href={`https://instagram.com/${first.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-pink-600"><ExternalLink className="w-3 h-3" />{first.instagram}</a>}
                   </div>
 
                   {/* Channel the customer asked to be reached on, with the handle
@@ -300,14 +300,14 @@ export default function ManageRequests() {
                       {first.contact_channel === 'instagram' ? (
                         <a href={`https://instagram.com/${(first.instagram_handle || '').replace('@', '')}`}
                           target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2 py-1 bg-pink-500/15 border border-pink-400/40 text-pink-300 hover:bg-pink-500/25">
+                          className="rounded-lg flex items-center gap-1 px-2 py-1 bg-pink-500/15 border border-pink-400/40 text-pink-600 hover:bg-pink-500/25">
                           <ExternalLink className="w-3 h-3" />
                           @{(first.instagram_handle || '').replace('@', '') || '-'}
                         </a>
                       ) : (
                         <a href={`https://wa.me/${(first.phone || '').replace(/\D/g, '').replace(/^0/, '972')}`}
                           target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2 py-1 bg-green-500/15 border border-green-400/40 text-emerald-700 hover:bg-green-500/25">
+                          className="rounded-lg flex items-center gap-1 px-2 py-1 bg-green-500/15 border border-green-400/40 text-emerald-700 hover:bg-green-500/25">
                           <MessageCircle className="w-3 h-3" />
                           WhatsApp
                         </a>
@@ -345,14 +345,14 @@ export default function ManageRequests() {
 
                   <button
                     onClick={() => { setEditingKey(isEditing ? null : groupKey); setNotice(null); }}
-                    className={`flex items-center gap-1 text-xs border px-2 py-1.5 transition-colors ${isEditing ? 'bg-turf text-pitch border-turf' : 'text-turf hover:text-chalk border-turf/40 hover:border-turf'}`}
+                    className={`rounded-lg flex items-center gap-1 text-xs border px-2 py-1.5 transition-colors ${isEditing ? 'bg-turf text-pitch border-turf' : 'text-turf hover:text-chalk border-turf/40 hover:border-turf'}`}
                   >
                     <Pencil className="w-3 h-3" />
                     עריכת הזמנה
                   </button>
                   <button
                     onClick={() => handleCopySupplierText(groupKey, items)}
-                    className="flex items-center gap-1 text-xs text-turf hover:text-chalk border border-turf/40 hover:border-turf px-2 py-1.5 transition-colors"
+                    className="rounded-lg flex items-center gap-1 text-xs text-turf hover:text-chalk border border-turf/40 hover:border-turf px-2 py-1.5 transition-colors"
                   >
                     {copiedId === groupKey ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                     {copiedId === groupKey ? 'הועתק!' : 'טקסט לספקית'}
@@ -360,7 +360,7 @@ export default function ManageRequests() {
                   <button
                     onClick={() => handleRequestReview(groupKey, first)}
                     title="שולח ללקוח בוואטסאפ קישור אישי לכתיבת ביקורת עם תמונה"
-                    className={`flex items-center gap-1 text-xs border px-2 py-1.5 transition-colors ${first.status === 'closed' && !invites[groupKey] ? 'bg-turf text-pitch border-turf' : 'text-turf hover:text-chalk border-turf/40 hover:border-turf'}`}
+                    className={`rounded-lg flex items-center gap-1 text-xs border px-2 py-1.5 transition-colors ${first.status === 'closed' && !invites[groupKey] ? 'bg-turf text-pitch border-turf' : 'text-turf hover:text-chalk border-turf/40 hover:border-turf'}`}
                   >
                     <Star className="w-3 h-3" />
                     {invites[groupKey]?.used_at ? `התקבלה ביקורת (${invites[groupKey].review_count})` : invites[groupKey] ? 'בקשת ביקורת (שוב)' : 'בקשת ביקורת'}

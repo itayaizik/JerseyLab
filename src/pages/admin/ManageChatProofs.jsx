@@ -178,7 +178,7 @@ export default function ManageChatProofs({ embedded = false }) {
 
       {/* Privacy is the shop's call, but it is worth saying once, here, where
           the screenshots are actually chosen. */}
-      <div className="border-2 border-brand-orange/50 bg-brand-orange/10 p-4 mb-6">
+      <div className="rounded-2xl border-2 border-brand-orange/50 bg-brand-orange/10 p-4 mb-6">
         <p className="text-sm text-chalk font-body leading-relaxed">
           <strong>לפני שמעלים:</strong> טשטש שם מלא, מספר טלפון ותמונת פרופיל של הלקוח.
           צילום שיחה הוא מידע אישי שלו, לא שלך, וברגע שהוא באתר הוא פומבי לגמרי.
@@ -196,7 +196,7 @@ export default function ManageChatProofs({ embedded = false }) {
             className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
         </div>
 
-        <label className={`flex items-center justify-center gap-2 border-2 border-dashed border-brand-line py-6 cursor-pointer hover:border-turf transition-colors ${uploading ? 'opacity-60 pointer-events-none' : ''}`}>
+        <label className={`rounded-2xl flex items-center justify-center gap-2 border-2 border-dashed border-brand-line py-6 cursor-pointer hover:border-turf transition-colors ${uploading ? 'opacity-60 pointer-events-none' : ''}`}>
           {uploading ? <Loader2 className="w-5 h-5 animate-spin text-turf" /> : <Upload className="w-5 h-5 text-varnish" />}
           <span className="text-sm text-varnish font-body">
             {uploading ? 'מעלה…' : 'בחר צילומי מסך (אפשר כמה בבת אחת)'}
@@ -222,7 +222,7 @@ export default function ManageChatProofs({ embedded = false }) {
             const attached = (proof.shirt_ids || []).map(id => shirtsById[id]).filter(Boolean);
             const order = orders.find(o => o.key === proof.order_id);
             return (
-              <div key={proof.id} className={`flex gap-4 border border-brand-line p-3 ${proof.active ? 'bg-white' : 'bg-brand-mist opacity-60'}`}>
+              <div key={proof.id} className={`rounded-lg flex gap-4 border border-brand-line p-3 ${proof.active ? 'bg-white' : 'bg-brand-mist opacity-60'}`}>
                 <div className="flex-shrink-0 flex flex-col gap-1.5">
                   <a href={proof.image_url} target="_blank" rel="noopener noreferrer">
                     <img src={proof.image_url} alt="" className="rounded-2xl w-20 h-28 object-cover border border-brand-line hover:border-turf transition-colors" />

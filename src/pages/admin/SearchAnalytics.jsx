@@ -164,7 +164,7 @@ export default function SearchAnalytics() {
         ) : (
           <div className="flex flex-wrap gap-2">
             {zeroTop.map(([term, count]) => (
-              <span key={term} className="text-xs bg-redcard/10 border border-redcard/30 text-chalk px-2 py-1">
+              <span key={term} className="rounded-lg text-xs bg-redcard/10 border border-redcard/30 text-chalk px-2 py-1">
                 {term} <span className="font-mono text-redcard">{count}</span>
               </span>
             ))}

@@ -129,7 +129,7 @@ export default function ManageReviews() {
             </div>
             {hiddenFromProofs > 0 && (
               <button onClick={showAllApproved}
-                className="text-xs px-3 py-1.5 font-bold font-heading border border-turf/50 text-turf hover:bg-turf hover:text-pitch transition-colors">
+                className="rounded-lg text-xs px-3 py-1.5 font-bold font-heading border border-turf/50 text-turf hover:bg-turf hover:text-pitch transition-colors">
                 הצג {hiddenFromProofs} ב"לקוחות מספרים"
               </button>
             )}
@@ -235,7 +235,7 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
   const draftShirt = draft && shirts.find(s => s.id === draft.shirt_id);
 
   return (
-    <div className={`border bg-white p-4 ${r.approved ? 'border-turf/30' : 'border-amber-500/40'}`}>
+    <div className={`rounded-2xl border bg-white p-4 ${r.approved ? 'border-turf/30' : 'border-amber-500/40'}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -246,7 +246,7 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
             <div className="flex gap-0.5">
               {[1, 2, 3, 4, 5].map(s => <Star key={s} className={`w-3 h-3 ${s <= r.rating ? 'fill-turf text-turf' : 'text-varnish'}`} />)}
             </div>
-            {r.verified_purchase && <span className="text-xs px-2 py-0.5 bg-turf/15 text-turf font-bold">רכישה מאומתת</span>}
+            {r.verified_purchase && <span className="rounded-lg text-xs px-2 py-0.5 bg-turf/15 text-turf font-bold">רכישה מאומתת</span>}
             <span className="text-xs text-varnish font-mono mr-auto">{formatDate(r.created_date)}</span>
           </div>
           <p className="text-xs text-varnish mb-1">
@@ -273,12 +273,12 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
 
         <div className="flex gap-1 flex-shrink-0">
           <button onClick={onEdit} title="ערוך"
-            className={`flex items-center gap-1 text-xs px-3 py-1.5 border transition-colors ${editing ? 'border-turf text-turf' : 'border-brand-line text-varnish hover:text-chalk'}`}>
+            className={`rounded-lg flex items-center gap-1 text-xs px-3 py-1.5 border transition-colors ${editing ? 'border-turf text-turf' : 'border-brand-line text-varnish hover:text-chalk'}`}>
             <Pencil className="w-3 h-3" /> ערוך
           </button>
           {!r.approved ? (
             <button onClick={() => onApprove(true)}
-              className="flex items-center gap-1 text-xs bg-turf text-pitch px-3 py-1.5 font-bold hover:opacity-90">
+              className="rounded-lg flex items-center gap-1 text-xs bg-turf text-pitch px-3 py-1.5 font-bold hover:opacity-90">
               <Check className="w-3 h-3" /> אשר
             </button>
           ) : (
@@ -381,7 +381,7 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
 
           <div className="flex gap-2">
             <button onClick={save} disabled={busy}
-              className="text-xs bg-turf text-pitch px-4 py-2 font-bold hover:opacity-90 disabled:opacity-50">
+              className="rounded-2xl text-xs bg-turf text-pitch px-4 py-2 font-bold hover:opacity-90 disabled:opacity-50">
               {busy ? 'שומר…' : 'שמור שינויים'}
             </button>
             <button onClick={onDone} disabled={busy}

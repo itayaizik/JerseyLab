@@ -49,7 +49,7 @@ function status(c) {
   return { label: 'פעיל', tone: 'text-turf' };
 }
 
-const input = 'w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none';
+const input = 'rounded-lg w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none';
 
 function Field({ label, hint, children }) {
   return (
@@ -156,7 +156,7 @@ function CouponForm({ initial, onSave, onCancel, saving, error }) {
       {error && <p role="alert" className="text-sm text-redcard">{error}</p>}
 
       <div className="flex gap-3">
-        <button type="submit" disabled={saving} className="bg-turf px-5 py-2 text-sm font-bold text-pitch disabled:opacity-50">
+        <button type="submit" disabled={saving} className="rounded-2xl bg-turf px-5 py-2 text-sm font-bold text-pitch disabled:opacity-50">
           {saving ? 'שומר...' : 'שמירה'}
         </button>
         <button type="button" onClick={onCancel} className="text-sm text-varnish">ביטול</button>
@@ -262,7 +262,7 @@ export default function ManageCoupons() {
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-heading text-2xl font-black text-turf">קופונים</h1>
         {editing === null && (
-          <button onClick={() => { setEditing('new'); setSaveError(''); }} className="flex items-center gap-1 bg-turf px-4 py-2 text-sm font-bold text-pitch">
+          <button onClick={() => { setEditing('new'); setSaveError(''); }} className="rounded-2xl flex items-center gap-1 bg-turf px-4 py-2 text-sm font-bold text-pitch">
             <Plus className="h-4 w-4" /> קופון חדש
           </button>
         )}
@@ -273,7 +273,7 @@ export default function ManageCoupons() {
         בכל הזמנה אפשר קופון אחד.
       </p>
 
-      {loadError && <p role="alert" className="mb-6 border border-redcard/40 bg-redcard/10 p-3 text-sm text-redcard">{loadError}</p>}
+      {loadError && <p role="alert" className="rounded-lg mb-6 border border-redcard/40 bg-redcard/10 p-3 text-sm text-redcard">{loadError}</p>}
 
       {editing === 'new' && (
         <CouponForm initial={EMPTY} onSave={save} onCancel={() => setEditing(null)} saving={saving} error={saveError} />

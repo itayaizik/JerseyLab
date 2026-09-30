@@ -78,7 +78,7 @@ export default function Dashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
         {statCards.map(s => (
-          <div key={s.label} className={`border-r-2 ${s.color} bg-white p-4`}>
+          <div key={s.label} className={`rounded-2xl border border-brand-line border-r-4 ${s.color} bg-white p-4 shadow-card`}>
             <p className="font-mono font-bold text-2xl text-chalk">{s.value}</p>
             <p className="text-xs text-varnish">{s.label}</p>
           </div>
@@ -115,7 +115,7 @@ export default function Dashboard() {
                     <p className="text-sm font-medium">{r.full_name}</p>
                     <p className="text-xs text-varnish">{r.shirt_name} • {r.wanted_size || '-'}</p>
                   </div>
-                  <span className="text-xs bg-turf text-pitch px-2 py-1 font-bold">חדש</span>
+                  <span className="rounded-lg text-xs bg-turf text-pitch px-2 py-1 font-bold">חדש</span>
                 </div>
               ))}
             </div>
@@ -145,7 +145,7 @@ export default function Dashboard() {
 
         {/* Low Stock */}
         {stats.lowStock.length > 0 && (
-          <div className="border border-amber-500/30 bg-amber-500/5 p-4">
+          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
             <h2 className="font-heading font-bold text-sm text-amber-600 flex items-center gap-2 mb-4">
               <AlertTriangle className="w-4 h-4" />
               מלאי נמוך

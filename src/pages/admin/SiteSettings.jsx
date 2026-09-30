@@ -50,7 +50,7 @@ const settingFields = [
 // themselves the moment they change.
 const SAVED_WITH_BUTTON = [...heroFields, ...settingFields];
 
-const inputClass = 'w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none';
+const inputClass = 'rounded-lg w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none';
 
 export default function SiteSettings() {
   const [settings, setSettings] = useState({});
@@ -175,11 +175,11 @@ export default function SiteSettings() {
             return (
               <div key={img.key} className="flex flex-col">
                 <p className="text-sm text-varnish mb-2">{img.label}</p>
-                <div className={`relative overflow-hidden border border-brand-line bg-black/40 ${img.frame}`}>
+                <div className={`relative overflow-hidden rounded-2xl border border-brand-line bg-black/40 ${img.frame}`}>
                   <img src={custom || (img.key === 'homepage_hero_image_mobile' && settings.homepage_hero_image) || img.fallback}
                     alt="" className="absolute inset-0 h-full w-full object-cover" />
                   {!custom && (
-                    <span className="absolute top-2 start-2 bg-black/70 px-2 py-0.5 text-[11px] text-white/90">
+                    <span className="rounded-lg absolute top-2 start-2 bg-black/70 px-2 py-0.5 text-[11px] text-white/90">
                       {img.key === 'homepage_hero_image_mobile' && settings.homepage_hero_image ? 'כמו במחשב' : 'ברירת מחדל'}
                     </span>
                   )}
@@ -190,7 +190,7 @@ export default function SiteSettings() {
                   )}
                 </div>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <label className={`inline-flex cursor-pointer items-center gap-2 bg-turf px-3 py-2 text-xs font-bold text-pitch hover:bg-turf/90 ${busy ? 'pointer-events-none opacity-60' : ''}`}>
+                  <label className={`rounded-lg inline-flex cursor-pointer items-center gap-2 bg-turf px-3 py-2 text-xs font-bold text-pitch hover:bg-turf/90 ${busy ? 'pointer-events-none opacity-60' : ''}`}>
                     {custom ? <Upload className="w-3.5 h-3.5" /> : <ImageIcon className="w-3.5 h-3.5" />}
                     {busy ? 'מעלה…' : 'החלפת תמונה'}
                     <input type="file" accept="image/*" className="hidden" onChange={e => handleImage(img.key, e)} disabled={busy} />
@@ -227,7 +227,7 @@ export default function SiteSettings() {
         {settingFields.map(renderField)}
         {error && <p className="text-redcard text-sm">{error}</p>}
         <button onClick={handleSave} disabled={saving || !!uploadingKey}
-          className="bg-turf text-pitch px-6 py-3 font-heading font-bold text-sm hover:bg-turf/90 disabled:opacity-50 flex items-center gap-2">
+          className="rounded-2xl bg-turf text-pitch px-6 py-3 font-heading font-bold text-sm hover:bg-turf/90 disabled:opacity-50 flex items-center gap-2">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
           {saving ? 'שומר...' : saved ? 'נשמר!' : 'שמור הגדרות'}
         </button>

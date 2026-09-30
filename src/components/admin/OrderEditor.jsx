@@ -178,7 +178,7 @@ export default function OrderEditor({ items, shirts, onCancel, onSaved }) {
       <p className="text-xs text-varnish font-heading uppercase tracking-wide">עריכת הזמנה</p>
 
       {drafts.map((d, i) => (
-        <div key={d.key} className={`border border-brand-line bg-brand-mist p-3 space-y-2.5 ${d.removed ? 'opacity-40' : ''}`}>
+        <div key={d.key} className={`rounded-lg border border-brand-line bg-brand-mist p-3 space-y-2.5 ${d.removed ? 'opacity-40' : ''}`}>
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm text-chalk font-bold">
               {i + 1}. {d.name}
@@ -250,7 +250,7 @@ export default function OrderEditor({ items, shirts, onCancel, onSaved }) {
           </select>
           <input value={addSize} onChange={e => setAddSize(e.target.value)} placeholder="מידה" dir="ltr" className={`${field} sm:w-24`} />
           <button onClick={addItem} disabled={!addShirtId || !addSize.trim()}
-            className="flex items-center justify-center gap-1 px-3 py-2 text-xs border border-turf/40 text-turf hover:border-turf disabled:opacity-40">
+            className="rounded-lg flex items-center justify-center gap-1 px-3 py-2 text-xs border border-turf/40 text-turf hover:border-turf disabled:opacity-40">
             <Plus className="w-3 h-3" /> הוספה
           </button>
         </div>
@@ -264,7 +264,7 @@ export default function OrderEditor({ items, shirts, onCancel, onSaved }) {
             <X className="w-3 h-3" /> ביטול
           </button>
           <button onClick={save} disabled={saving}
-            className="flex items-center gap-1.5 px-4 py-2 bg-turf text-pitch text-xs font-bold disabled:opacity-50">
+            className="rounded-2xl flex items-center gap-1.5 px-4 py-2 bg-turf text-pitch text-xs font-bold disabled:opacity-50">
             {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
             {saving ? 'שומר...' : 'שמירת השינויים'}
           </button>
@@ -319,7 +319,7 @@ export function NotifyCustomerPanel({ request, orderId, payload, onClose }) {
     }
   };
 
-  const button = 'flex items-center gap-1.5 px-3 py-2 text-xs border transition-colors';
+  const button = 'rounded-lg flex items-center gap-1.5 px-3 py-2 text-xs border transition-colors';
 
   return (
     <div className="mt-3 pt-3 border-t border-turf/30 space-y-3">
@@ -346,7 +346,7 @@ export function NotifyCustomerPanel({ request, orderId, payload, onClose }) {
           </a>
         )}
         <button onClick={openInstagram}
-          className={`${button} ${prefersInstagram ? 'bg-pink-500/20 border-pink-400/60 text-pink-300' : 'border-brand-line text-varnish hover:text-chalk'}`}>
+          className={`${button} ${prefersInstagram ? 'bg-pink-500/20 border-pink-400/60 text-pink-600' : 'border-brand-line text-varnish hover:text-chalk'}`}>
           <Instagram className="w-3.5 h-3.5" /> העתקה ופתיחת אינסטגרם
         </button>
         {request.email && (

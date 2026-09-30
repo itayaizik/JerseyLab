@@ -403,3 +403,78 @@ html.a11y-cursor,
 html.a11y-cursor * {
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24'%3E%3Cpath d='M4 2.5 20 12l-7.2 1.6L9 21.5z' fill='black' stroke='white' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E") 5 3, auto !important;
 }
+
+/* The admin's controls, rounded by default.
+ *
+ * The admin was moved onto the shop's palette, but a few hundred buttons and
+ * fields still had square corners, and a square button next to a rounded card
+ * is the thing the eye catches. Most were fixed in the markup; these selectors
+ * cover what markup cannot reach - a native select, a checkbox, an <input>
+ * whose classes are assembled somewhere else.
+ *
+ * :where() holds the specificity at zero, so any explicit rounded-* utility
+ * still wins, including rounded-none where a square edge is deliberate.
+ */
+:where(.admin-shell) :where(button, [role="button"], input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  border-radius: 0.5rem;
+}
+:where(.admin-shell) :where(input[type="checkbox"], input[type="radio"]) {
+  border-radius: 0.25rem;
+}
+/* The chart library draws its own tooltip, with its own square box. */
+:where(.admin-shell) :where(.recharts-default-tooltip) {
+  border-radius: 0.75rem;
+}
+/* A radio is a circle whatever the rule above says. */
+:where(.admin-shell) :where(input[type="radio"]) {
+  border-radius: 9999px;
+}
+
+/* A checkbox with rounded corners.
+ *
+ * Chrome ignores border-radius on a control it is drawing itself, so the only
+ * way to round one is to stop it drawing: appearance:none, then the box and
+ * the tick are ours. The tick is a clip-path rather than an SVG background so
+ * it stays crisp at any size and needs no extra request.
+ *
+ * Size is left at zero specificity, so the `h-4 w-4` the markup already
+ * carries still decides how big each one is.
+ */
+.admin-shell input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  display: inline-grid;
+  place-content: center;
+  border: 1.5px solid rgb(var(--c-line));
+  border-radius: 0.3rem;
+  background-color: rgb(var(--c-surface));
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+:where(.admin-shell) :where(input[type="checkbox"]) {
+  width: 1rem;
+  height: 1rem;
+}
+.admin-shell input[type="checkbox"]::before {
+  content: "";
+  width: 0.6em;
+  height: 0.6em;
+  transform: scale(0);
+  transition: transform 0.12s ease-in-out;
+  box-shadow: inset 1em 1em white;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+.admin-shell input[type="checkbox"]:checked {
+  background-color: var(--brand-orange);
+  border-color: var(--brand-orange);
+}
+.admin-shell input[type="checkbox"]:checked::before { transform: scale(1); }
+.admin-shell input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--brand-orange);
+  outline-offset: 2px;
+}
+.admin-shell input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

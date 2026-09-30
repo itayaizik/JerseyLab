@@ -14,7 +14,7 @@ import { newStockItem, stockSummaryText } from '@/lib/localStock';
 // leaves the print empty, since the next shirt in a batch usually differs only
 // in the name.
 
-const FIELD = 'bg-white border border-brand-line px-2 py-1.5 text-sm text-chalk focus:border-turf focus:outline-none';
+const FIELD = 'rounded-lg bg-white border border-brand-line px-2 py-1.5 text-sm text-chalk focus:border-turf focus:outline-none';
 
 export default function LocalStockEditor({ items, onChange, sizes }) {
   const update = (id, patch) => onChange(items.map(item => (item.id === id ? { ...item, ...patch } : item)));
@@ -74,7 +74,7 @@ export default function LocalStockEditor({ items, onChange, sizes }) {
       )}
 
       <button type="button" onClick={add}
-        className="flex items-center gap-1.5 text-sm text-turf border border-dashed border-turf/40 px-3 py-2 hover:bg-turf/10 transition-colors">
+        className="rounded-lg flex items-center gap-1.5 text-sm text-turf border border-dashed border-turf/40 px-3 py-2 hover:bg-turf/10 transition-colors">
         <Plus className="w-4 h-4" /> הוסף חולצה שנמצאת בארץ
       </button>
     </div>

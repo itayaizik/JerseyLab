@@ -50,7 +50,7 @@ export default function ManageInstagram() {
         <h1 className="font-heading font-black text-2xl text-turf">פוסטים באינסטגרם</h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="bg-turf text-pitch px-4 py-2 font-heading font-bold text-sm uppercase hover:bg-turf/90 flex items-center gap-2"
+          className="rounded-2xl bg-turf text-pitch px-4 py-2 font-heading font-bold text-sm uppercase hover:bg-turf/90 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           הוסף פוסט
@@ -99,7 +99,7 @@ export default function ManageInstagram() {
               className="rounded-xl w-32 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none"
             />
           </div>
-          <button type="submit" disabled={saving} className="bg-turf text-pitch px-5 py-2 font-heading font-bold text-sm uppercase hover:bg-turf/90 disabled:opacity-50 flex items-center gap-2">
+          <button type="submit" disabled={saving} className="rounded-2xl bg-turf text-pitch px-5 py-2 font-heading font-bold text-sm uppercase hover:bg-turf/90 disabled:opacity-50 flex items-center gap-2">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
             שמור
           </button>

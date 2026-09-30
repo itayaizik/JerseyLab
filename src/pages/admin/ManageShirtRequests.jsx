@@ -64,7 +64,7 @@ export default function ManageShirtRequests() {
       <div className="flex gap-2 mb-5 flex-wrap">
         {[['all', 'הכל'], ['new', 'חדשות'], ['answered', 'נענו'], ['closed', 'סגורות']].map(([value, label]) => (
           <button key={value} onClick={() => setFilter(value)}
-            className={`px-3 py-1.5 text-xs font-heading font-bold uppercase tracking-wide border-2 transition-colors ${
+            className={`rounded-lg px-3 py-1.5 text-xs font-heading font-bold uppercase tracking-wide border-2 transition-colors ${
               filter === value ? 'bg-brand-orange text-white border-brand-orange' : 'border-brand-line text-brand-navy/70 hover:border-brand-line'
             }`}>
             {label}
@@ -134,7 +134,7 @@ export default function ManageShirtRequests() {
                       )}
                       {r.instagram_handle && (
                         <a href={`https://instagram.com/${r.instagram_handle}`} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-pink-400 hover:underline font-mono" dir="ltr">
+                          className="inline-flex items-center gap-1 text-xs text-pink-600 hover:underline font-mono" dir="ltr">
                           <Instagram className="w-3 h-3" />@{r.instagram_handle}
                         </a>
                       )}
@@ -155,7 +155,7 @@ export default function ManageShirtRequests() {
                       {Object.entries(STATUSES).map(([value, meta]) => (
                         <button key={value} onClick={() => setStatus(r.id, value)}
                           disabled={r.status === value}
-                          className={`px-2.5 py-1 text-[11px] font-heading font-bold uppercase border transition-colors ${
+                          className={`rounded-lg px-2.5 py-1 text-[11px] font-heading font-bold uppercase border transition-colors ${
                             r.status === value
                               ? 'border-brand-line text-brand-navy/40 cursor-default'
                               : 'border-brand-line text-brand-navy/70 hover:border-brand-orange hover:text-brand-orange'
@@ -179,7 +179,7 @@ export default function ManageShirtRequests() {
       {/* Full-size photo. Click anywhere to dismiss. */}
       {lightbox && (
         <div onClick={() => setLightbox('')} role="presentation"
-          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-6 cursor-zoom-out">
+          className="rounded-2xl fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-6 cursor-zoom-out">
           <img src={lightbox} alt="" className="max-w-full max-h-full object-contain" />
         </div>
       )}

@@ -25,7 +25,7 @@ export default function AdminLayout() {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-brand-mist text-chalk flex flex-col">
+    <div className="admin-shell min-h-screen bg-brand-mist text-chalk flex flex-col">
       {/* Top Bar. White on the mist ground, the way the shop's own header
           sits on its page. */}
       <div className="bg-white border-b border-brand-line px-4 py-3 flex items-center justify-between sticky top-0 z-40">

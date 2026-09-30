@@ -58,9 +58,9 @@ function OrphanCard({ file, shirts, busy, onAttach, onDelete }) {
               {!shirt.main_image && <span className="text-amber-600"> · בלי תמונה</span>}
             </span>
             <button type="button" disabled={busy} onClick={() => onAttach(file, shirt, 'main')}
-              className="px-2 py-1 text-[11px] font-bold bg-turf text-pitch disabled:opacity-40">ראשית</button>
+              className="rounded-lg px-2 py-1 text-[11px] font-bold bg-turf text-pitch disabled:opacity-40">ראשית</button>
             <button type="button" disabled={busy} onClick={() => onAttach(file, shirt, 'extra')}
-              className="px-2 py-1 text-[11px] border border-turf/50 text-turf disabled:opacity-40">נוספת</button>
+              className="rounded-lg px-2 py-1 text-[11px] border border-turf/50 text-turf disabled:opacity-40">נוספת</button>
           </li>
         ))}
         {matches.length === 0 && <li className="text-xs text-varnish">לא נמצאו חולצות</li>}
@@ -166,7 +166,7 @@ export default function RecoverUploads() {
       {error && <p className="mb-4 text-sm text-redcard">{error}</p>}
 
       {done.length > 0 && (
-        <div className="mb-6 border border-turf/30 bg-turf/5 p-3">
+        <div className="rounded-lg mb-6 border border-turf/30 bg-turf/5 p-3">
           <p className="text-xs text-turf font-bold mb-2 flex items-center gap-1"><Check className="w-3.5 h-3.5" /> שויכו {done.length} תמונות</p>
           <ul className="flex flex-wrap gap-2">
             {done.map(d => (

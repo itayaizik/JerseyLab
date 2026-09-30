@@ -51,7 +51,7 @@ export default function ManageFAQ() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-heading font-black text-2xl text-turf">ניהול שאלות ותשובות</h1>
-        <button onClick={() => setShowAdd(true)} className="flex items-center gap-1 bg-turf text-pitch px-4 py-2 text-sm font-bold">
+        <button onClick={() => setShowAdd(true)} className="rounded-2xl flex items-center gap-1 bg-turf text-pitch px-4 py-2 text-sm font-bold">
           <Plus className="w-4 h-4" /> הוסף שאלה
         </button>
       </div>
@@ -63,7 +63,7 @@ export default function ManageFAQ() {
           <textarea value={newA} onChange={e => setNewA(e.target.value)} placeholder="תשובה" rows={3}
             className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none resize-none" />
           <div className="flex gap-2">
-            <button onClick={handleAdd} className="bg-turf text-pitch px-4 py-2 text-sm font-bold">שמור</button>
+            <button onClick={handleAdd} className="rounded-2xl bg-turf text-pitch px-4 py-2 text-sm font-bold">שמור</button>
             <button onClick={() => setShowAdd(false)} className="text-varnish text-sm">ביטול</button>
           </div>
         </div>

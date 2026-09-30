@@ -269,12 +269,12 @@ export default function ManageShirts() {
         <h1 className="font-heading font-black text-2xl text-turf">ניהול חולצות</h1>
         <div className="flex items-center gap-2 flex-wrap">
           {dirtyCount > 0 && (
-            <span className="text-xs text-turf bg-turf/10 px-2 py-1">{dirtyCount} שינויים לא שמורים</span>
+            <span className="rounded-lg text-xs text-turf bg-turf/10 px-2 py-1">{dirtyCount} שינויים לא שמורים</span>
           )}
           <button
             onClick={handleSaveAll}
             disabled={submitting || dirtyCount === 0}
-            className="flex items-center gap-2 bg-turf text-pitch px-4 py-2 text-sm font-heading font-bold hover:bg-turf/90 disabled:opacity-40 transition-colors"
+            className="rounded-2xl flex items-center gap-2 bg-turf text-pitch px-4 py-2 text-sm font-heading font-bold hover:bg-turf/90 disabled:opacity-40 transition-colors"
           >
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             {submitting ? 'שומר...' : dirtyCount > 0 ? `שמור הכל (${dirtyCount})` : 'שמור הכל'}
@@ -289,7 +289,7 @@ export default function ManageShirts() {
       </div>
 
       {restoredCount > 0 && (
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border border-amber-400/40 bg-amber-500/10 p-3 text-sm">
+        <div className="rounded-lg mb-4 flex flex-wrap items-center justify-between gap-3 border border-amber-400/40 bg-amber-500/10 p-3 text-sm">
           <span className="text-amber-700">
             שוחזרו שינויים שלא נשמרו ב-{restoredCount} חולצות (מסומנות ב-●). עבור עליהן ולחץ "שמור הכל".
           </span>
@@ -347,7 +347,7 @@ export default function ManageShirts() {
               return (
                 <button key={item.id} type="button" onClick={() => toggleQuick(item.id)}
                   disabled={!on && n === 0} aria-pressed={on}
-                  className={`px-2.5 py-1 text-xs font-heading font-bold border transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${on ? 'bg-turf text-pitch border-turf' : 'bg-white text-chalk border-brand-line hover:border-turf'}`}>
+                  className={`rounded-lg px-2.5 py-1 text-xs font-heading font-bold border transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${on ? 'bg-turf text-pitch border-turf' : 'bg-white text-chalk border-brand-line hover:border-turf'}`}>
                   {item.label} <span className={`font-mono ${on ? 'text-pitch/70' : 'text-varnish'}`}>{n}</span>
                 </button>
               );
@@ -433,10 +433,10 @@ export default function ManageShirts() {
                     <div className="flex flex-wrap gap-1">
                       {s.local_stock_sizes && Object.entries(s.local_stock_sizes).filter(([, q]) => Number(q) > 0).length > 0 ? (
                         Object.entries(s.local_stock_sizes).filter(([, q]) => Number(q) > 0).map(([size, q]) => (
-                          <span key={size} className="text-[10px] px-1.5 py-0.5 bg-brand-navy text-white font-heading uppercase">{size}: {q}</span>
+                          <span key={size} className="rounded-lg text-[10px] px-1.5 py-0.5 bg-brand-navy text-white font-heading uppercase">{size}: {q}</span>
                         ))
                       ) : (
-                        <span className="text-[10px] px-1.5 py-0.5 bg-brand-orange text-white font-heading uppercase">משלוח מהיר</span>
+                        <span className="rounded-lg text-[10px] px-1.5 py-0.5 bg-brand-orange text-white font-heading uppercase">משלוח מהיר</span>
                       )}
                     </div>
                   </td>

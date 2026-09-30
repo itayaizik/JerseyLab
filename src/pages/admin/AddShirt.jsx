@@ -147,7 +147,7 @@ export default function AddShirt() {
             <div className="md:col-span-2">
               <label className="text-sm text-varnish block mb-1">שם חולצה *</label>
               <input value={form.name} onChange={e => handleChange('name', e.target.value)}
-                className={`w-full bg-white border px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none ${errors.name ? 'border-redcard' : 'border-brand-line'}`} />
+                className={`rounded-lg w-full bg-white border px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none ${errors.name ? 'border-redcard' : 'border-brand-line'}`} />
               {errors.name && <p className="text-redcard text-xs mt-1">{errors.name}</p>}
             </div>
             <div>
@@ -202,7 +202,7 @@ export default function AddShirt() {
             <div>
               <label className="text-sm text-varnish block mb-1">מחיר (₪) *</label>
               <input type="number" value={form.price} onChange={e => handleChange('price', e.target.value)} dir="ltr"
-                className={`w-full bg-white border px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none ${errors.price ? 'border-redcard' : 'border-brand-line'}`} />
+                className={`rounded-lg w-full bg-white border px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none ${errors.price ? 'border-redcard' : 'border-brand-line'}`} />
             </div>
             <div>
               <label className="text-sm text-varnish block mb-1">מחיר מבצע (₪)</label>
@@ -262,7 +262,7 @@ export default function AddShirt() {
               <div className="flex gap-2">
                 <input value={mainImageUrlInput} onChange={e => setMainImageUrlInput(e.target.value)} placeholder="https://..." dir="ltr"
                   className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
-                <button type="button" onClick={handleMainImageUrl} className="px-4 py-2.5 bg-turf/10 text-turf text-sm font-bold">הוסף</button>
+                <button type="button" onClick={handleMainImageUrl} className="rounded-2xl px-4 py-2.5 bg-turf/10 text-turf text-sm font-bold">הוסף</button>
               </div>
             ) : (
               <label className="rounded-2xl flex items-center justify-center w-32 h-32 border border-dashed border-brand-line cursor-pointer hover:border-turf transition-colors">
@@ -287,7 +287,7 @@ export default function AddShirt() {
               <div className="flex gap-2">
                 <input value={extraImageUrlInput} onChange={e => setExtraImageUrlInput(e.target.value)} placeholder="https://..." dir="ltr"
                   className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
-                <button type="button" onClick={handleExtraImageUrl} className="px-4 py-2.5 bg-turf/10 text-turf text-sm font-bold">הוסף</button>
+                <button type="button" onClick={handleExtraImageUrl} className="rounded-2xl px-4 py-2.5 bg-turf/10 text-turf text-sm font-bold">הוסף</button>
               </div>
             ) : (
               <label className="rounded-2xl flex items-center justify-center w-20 h-20 border border-dashed border-brand-line cursor-pointer hover:border-turf transition-colors">
@@ -313,7 +313,7 @@ export default function AddShirt() {
             <label className="text-sm text-varnish block mb-1">תגיות</label>
             <div className="flex gap-2 mb-2 flex-wrap">
               {form.tags.map(t => (
-                <span key={t} className="text-xs bg-turf/10 text-turf px-2 py-1 flex items-center gap-1">
+                <span key={t} className="rounded-lg text-xs bg-turf/10 text-turf px-2 py-1 flex items-center gap-1">
                   {t} <button type="button" onClick={() => removeTag(t)} className="hover:text-redcard">×</button>
                 </span>
               ))}
@@ -321,7 +321,7 @@ export default function AddShirt() {
             <div className="flex gap-2">
               <input value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())}
                 placeholder="הוסף תגית..." className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
-              <button type="button" onClick={addTag} className="px-3 py-2 bg-turf/10 text-turf text-sm font-bold hover:bg-turf/20">+</button>
+              <button type="button" onClick={addTag} className="rounded-lg px-3 py-2 bg-turf/10 text-turf text-sm font-bold hover:bg-turf/20">+</button>
             </div>
           </div>
 
@@ -355,7 +355,7 @@ export default function AddShirt() {
         </div>
 
         <button type="submit" disabled={submitting || uploading}
-          className="w-full bg-turf text-pitch py-3 font-heading font-bold text-sm hover:bg-turf/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+          className="rounded-lg w-full bg-turf text-pitch py-3 font-heading font-bold text-sm hover:bg-turf/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
           {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
           {submitting ? 'שומר...' : 'הוסף חולצה'}
         </button>

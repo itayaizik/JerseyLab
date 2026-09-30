@@ -117,7 +117,7 @@ export default function SalesReport() {
             <button
               key={opt.days}
               onClick={() => setPeriod(opt.days)}
-              className={`px-3 py-1.5 text-xs font-bold font-heading uppercase transition-colors border ${period === opt.days ? 'bg-turf text-pitch border-turf' : 'border-brand-line text-varnish hover:text-chalk'}`}
+              className={`rounded-lg px-3 py-1.5 text-xs font-bold font-heading uppercase transition-colors border ${period === opt.days ? 'bg-turf text-pitch border-turf' : 'border-brand-line text-varnish hover:text-chalk'}`}
             >
               {opt.label}
             </button>

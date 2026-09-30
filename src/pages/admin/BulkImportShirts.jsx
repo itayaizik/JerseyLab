@@ -133,7 +133,7 @@ export default function BulkImportShirts() {
           </div>
 
           <button type="submit" disabled={!file || uploading}
-            className="w-full bg-turf text-pitch py-3 font-heading font-bold text-sm hover:bg-turf/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+            className="rounded-lg w-full bg-turf text-pitch py-3 font-heading font-bold text-sm hover:bg-turf/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
             {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
             {uploading ? 'מייבא...' : 'ייבא חולצות'}
           </button>

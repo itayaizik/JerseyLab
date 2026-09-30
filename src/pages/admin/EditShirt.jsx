@@ -189,12 +189,12 @@ export default function EditShirt() {
       </button>
       <h1 className="font-heading font-black text-2xl mb-6 text-turf">עריכת חולצה</h1>
       {restorable && (
-        <div className="max-w-3xl mb-4 flex flex-wrap items-center justify-between gap-2 border border-amber-400/40 bg-amber-500/10 p-3 text-sm">
+        <div className="rounded-lg max-w-3xl mb-4 flex flex-wrap items-center justify-between gap-2 border border-amber-400/40 bg-amber-500/10 p-3 text-sm">
           <span className="text-amber-700">
             נמצאו שינויים שלא נשמרו בחולצה הזו (מ-{new Date(restorable.at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}).
           </span>
           <span className="flex gap-2">
-            <button type="button" onClick={restoreAutosave} className="bg-turf text-pitch px-3 py-1.5 text-xs font-bold">שחזור השינויים</button>
+            <button type="button" onClick={restoreAutosave} className="rounded-lg bg-turf text-pitch px-3 py-1.5 text-xs font-bold">שחזור השינויים</button>
             <button type="button" onClick={discardAutosave} className="rounded-xl border border-brand-line px-3 py-1.5 text-xs text-varnish hover:text-chalk">התעלמות</button>
           </span>
         </div>
@@ -261,7 +261,7 @@ export default function EditShirt() {
             {mainImageUrl ? (
               <div className="relative w-32 h-32 mt-1"><img src={mainImageUrl} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.src = 'https://placehold.co/128x128'; }} /><button type="button" onClick={() => setMainImageUrl('')} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button></div>
             ) : useUrlMode ? (
-              <div className="flex gap-2 mt-1"><input value={mainImageUrlInput} onChange={e => setMainImageUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={handleMainImageUrl} className="px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
+              <div className="flex gap-2 mt-1"><input value={mainImageUrlInput} onChange={e => setMainImageUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={handleMainImageUrl} className="rounded-lg px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
             ) : (
               <label className="rounded-2xl flex items-center justify-center w-32 h-32 border border-dashed border-brand-line cursor-pointer hover:border-turf mt-1"><Upload className="w-6 h-6 text-varnish" /><input type="file" accept="image/*" onChange={handleMainImage} className="hidden" /></label>
             )}
@@ -274,7 +274,7 @@ export default function EditShirt() {
               ))}
             </div>
             {useUrlMode ? (
-              <div className="flex gap-2 mt-2"><input value={extraImageUrlInput} onChange={e => setExtraImageUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={handleExtraImageUrl} className="px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
+              <div className="flex gap-2 mt-2"><input value={extraImageUrlInput} onChange={e => setExtraImageUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={handleExtraImageUrl} className="rounded-lg px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
             ) : (
               <label className="rounded-2xl flex items-center justify-center w-20 h-20 border border-dashed border-brand-line cursor-pointer hover:border-turf mt-2"><Plus className="w-5 h-5 text-varnish" /><input type="file" accept="image/*" multiple onChange={handleExtraImages} className="hidden" /></label>
             )}
@@ -293,8 +293,8 @@ export default function EditShirt() {
           <div><label className="text-sm text-varnish block mb-1">תיאור</label><textarea value={form.description} onChange={e => handleChange('description', e.target.value)} rows={3} className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none resize-none" /></div>
           <div>
             <label className="text-sm text-varnish block mb-1">תגיות</label>
-            <div className="flex gap-1 flex-wrap mb-2">{form.tags.map(t => (<span key={t} className="text-xs bg-turf/10 text-turf px-2 py-1 flex items-center gap-1">{t}<button type="button" onClick={() => handleChange('tags', form.tags.filter(x => x !== t))} className="hover:text-redcard">×</button></span>))}</div>
-            <div className="flex gap-2"><input value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())} placeholder="הוסף..." className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={addTag} className="px-3 bg-turf/10 text-turf text-sm">+</button></div>
+            <div className="flex gap-1 flex-wrap mb-2">{form.tags.map(t => (<span key={t} className="rounded-lg text-xs bg-turf/10 text-turf px-2 py-1 flex items-center gap-1">{t}<button type="button" onClick={() => handleChange('tags', form.tags.filter(x => x !== t))} className="hover:text-redcard">×</button></span>))}</div>
+            <div className="flex gap-2"><input value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())} placeholder="הוסף..." className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={addTag} className="rounded-lg px-3 bg-turf/10 text-turf text-sm">+</button></div>
           </div>
           <div className="flex flex-wrap gap-4">
             {[{ key: 'featured', label: 'מומלץ' },{ key: 'is_new', label: 'חדש' },{ key: 'is_rare', label: 'נדיר' },{ key: 'is_retro', label: 'רטרו' },{ key: 'best_seller', label: 'נמכר ביותר' },{ key: 'limited_stock', label: 'מלאי מוגבל' }].map(f => (
@@ -303,7 +303,7 @@ export default function EditShirt() {
           </div>
         </div>
 
-        <button type="submit" disabled={submitting || uploading} className="w-full bg-turf text-pitch py-3 font-heading font-bold text-sm hover:bg-turf/90 disabled:opacity-50 flex items-center justify-center gap-2">
+        <button type="submit" disabled={submitting || uploading} className="rounded-lg w-full bg-turf text-pitch py-3 font-heading font-bold text-sm hover:bg-turf/90 disabled:opacity-50 flex items-center justify-center gap-2">
           {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
           {submitting ? 'שומר...' : 'שמור שינויים'}
         </button>

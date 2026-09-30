@@ -205,7 +205,7 @@ export default function ShirtEditForm({ draft, onChange, onImageSaved }) {
           {draft.mainImageUrl ? (
             <div className="relative w-32 h-32 mt-1"><img src={draft.mainImageUrl} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.src = 'https://placehold.co/128x128'; }} /><button type="button" onClick={() => setMain('')} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button></div>
           ) : useUrlMode ? (
-            <div className="flex gap-2 mt-1"><input value={mainUrlInput} onChange={e => setMainUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={() => { if (mainUrlInput.trim()) { addMainUrl(mainUrlInput.trim()); setMainUrlInput(''); } }} className="px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
+            <div className="flex gap-2 mt-1"><input value={mainUrlInput} onChange={e => setMainUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={() => { if (mainUrlInput.trim()) { addMainUrl(mainUrlInput.trim()); setMainUrlInput(''); } }} className="rounded-lg px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
           ) : (
             <label className="rounded-2xl flex items-center justify-center w-32 h-32 border border-dashed border-brand-line cursor-pointer hover:border-turf mt-1"><Upload className="w-6 h-6 text-varnish" /><input type="file" accept="image/*" onChange={uploadMain} className="hidden" /></label>
           )}
@@ -218,7 +218,7 @@ export default function ShirtEditForm({ draft, onChange, onImageSaved }) {
             ))}
           </div>
           {useUrlMode ? (
-            <div className="flex gap-2 mt-2"><input value={extraUrlInput} onChange={e => setExtraUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={() => { if (extraUrlInput.trim()) { addExtraUrl(extraUrlInput.trim()); setExtraUrlInput(''); } }} className="px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
+            <div className="flex gap-2 mt-2"><input value={extraUrlInput} onChange={e => setExtraUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={() => { if (extraUrlInput.trim()) { addExtraUrl(extraUrlInput.trim()); setExtraUrlInput(''); } }} className="rounded-lg px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
           ) : (
             <label className="rounded-2xl flex items-center justify-center w-20 h-20 border border-dashed border-brand-line cursor-pointer hover:border-turf mt-2"><Plus className="w-5 h-5 text-varnish" /><input type="file" accept="image/*" multiple onChange={uploadExtras} className="hidden" /></label>
           )}
@@ -238,8 +238,8 @@ export default function ShirtEditForm({ draft, onChange, onImageSaved }) {
         <div><label className="text-sm text-varnish block mb-1">תיאור</label><textarea value={draft.form.description} onChange={e => setForm('description', e.target.value)} rows={3} className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none resize-none" /></div>
         <div>
           <label className="text-sm text-varnish block mb-1">תגיות</label>
-          <div className="flex gap-1 flex-wrap mb-2">{draft.form.tags.map(t => (<span key={t} className="text-xs bg-turf/10 text-turf px-2 py-1 flex items-center gap-1">{t}<button type="button" onClick={() => setForm('tags', draft.form.tags.filter(x => x !== t))} className="hover:text-redcard">×</button></span>))}</div>
-          <div className="flex gap-2"><input value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())} placeholder="הוסף..." className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={addTag} className="px-3 bg-turf/10 text-turf text-sm">+</button></div>
+          <div className="flex gap-1 flex-wrap mb-2">{draft.form.tags.map(t => (<span key={t} className="rounded-lg text-xs bg-turf/10 text-turf px-2 py-1 flex items-center gap-1">{t}<button type="button" onClick={() => setForm('tags', draft.form.tags.filter(x => x !== t))} className="hover:text-redcard">×</button></span>))}</div>
+          <div className="flex gap-2"><input value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())} placeholder="הוסף..." className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={addTag} className="rounded-lg px-3 bg-turf/10 text-turf text-sm">+</button></div>
         </div>
         <div className="flex flex-wrap gap-4">
           {[{ key: 'featured', label: 'מומלץ' },{ key: 'is_new', label: 'חדש' },{ key: 'is_rare', label: 'נדיר' },{ key: 'is_retro', label: 'רטרו' },{ key: 'best_seller', label: 'נמכר ביותר' },{ key: 'limited_stock', label: 'מלאי מוגבל' }].map(f => (

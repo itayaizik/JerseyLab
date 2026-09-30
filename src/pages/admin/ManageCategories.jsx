@@ -52,7 +52,7 @@ export default function ManageCategories() {
         <input value={newName} onChange={e => setNewName(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()}
           placeholder="שם קטגוריה חדשה..."
           className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
-        <button onClick={handleAdd} className="bg-turf text-pitch px-4 py-2.5 text-sm font-bold flex items-center gap-1">
+        <button onClick={handleAdd} className="rounded-2xl bg-turf text-pitch px-4 py-2.5 text-sm font-bold flex items-center gap-1">
           <Plus className="w-4 h-4" /> הוסף
         </button>
       </div>
