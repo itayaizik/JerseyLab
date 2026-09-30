@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { X, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import SectionHeader from '@/components/shop/SectionHeader';
 import ScrollRow from '@/components/shop/ScrollRow';
@@ -9,6 +9,7 @@ import useShirtsById from '@/hooks/useShirtsById';
 import { MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 import { t, isEn } from '@/lib/i18n';
 import { resized } from '@/lib/imageUrl';
+import PhotoLightbox from '@/components/shop/PhotoLightbox';
 import { reviewPhoto } from '@/lib/reviewDisplay';
 
 // Conversations with customers, shown as social proof, and alongside them the
@@ -43,13 +44,6 @@ export default function ChatProofsSection({ title }) {
     ...reviews.map(r => r.shirt_id),
     ...proofs.flatMap(p => p.shirt_ids || []),
   ]);
-
-  useEffect(() => {
-    if (!lightbox) return;
-    const onKey = (e) => { if (e.key === 'Escape') setLightbox(null); };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [lightbox]);
 
   // Nothing to show means no empty section and no stray heading.
   if (!proofs.length && !reviews.length) return null;
@@ -157,23 +151,8 @@ export default function ChatProofsSection({ title }) {
         </div>
       </div>
 
-      {lightbox && (
-        <div role="dialog" aria-modal="true" aria-label={t('תמונה מוגדלת', 'Enlarged photo')}
-          onClick={() => setLightbox(null)}
-          className="fixed inset-0 z-[80] flex cursor-zoom-out items-center justify-center bg-brand-navy-dark/85 p-4">
-          <button type="button" onClick={() => setLightbox(null)} aria-label={t('סגירה', 'Close')}
-            className="absolute end-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white text-brand-navy shadow-lift transition hover:bg-brand-orange hover:text-white">
-            <X className="h-5 w-5" />
-          </button>
-          <figure className="flex max-h-full flex-col items-center gap-3" onClick={e => e.stopPropagation()}>
-            <img src={resized(lightbox.image, 1280)} alt={lightbox.caption || ''}
-              className="max-h-[80vh] max-w-full rounded-2xl object-contain" />
-            {lightbox.caption && (
-              <figcaption className="max-w-lg text-center text-sm text-white/85">{lightbox.caption}</figcaption>
-            )}
-          </figure>
-        </div>
-      )}
+      <PhotoLightbox photo={lightbox} onClose={() => setLightbox(null)} />
+
     </section>
   );
 }

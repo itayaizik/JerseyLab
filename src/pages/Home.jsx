@@ -15,6 +15,7 @@ import ChatProofsSection from '@/components/ChatProofsSection';
 import OrderedRow, { reviewItems } from '@/components/shop/OrderedRow';
 import useShirtsById from '@/hooks/useShirtsById';
 import { resized } from '@/lib/imageUrl';
+import PhotoLightbox from '@/components/shop/PhotoLightbox';
 import { reviewPhoto } from '@/lib/reviewDisplay';
 import MysteryBoxPromo from '@/components/MysteryBoxPromo';
 import Seo from '@/components/Seo';
@@ -56,6 +57,7 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [wishlistIds, setWishlistIds] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [lightbox, setLightbox] = useState(null);
   const [loadError, setLoadError] = useState(false);
   const [pickTab, setPickTab] = useState('new');
   const navigate = useNavigate();
@@ -320,10 +322,14 @@ export default function Home() {
                   <li key={r.id} className="shop-card flex flex-col p-6">
                     {/* The photo the customer sent, when they sent one. It is
                         the strongest part of a review, and this section used
-                        to drop it entirely. */}
+                        to drop it entirely. The card crops it to keep the grid
+                        even, so tapping opens the whole picture. */}
                     {reviewPhoto(r) && (
-                      <img src={resized(reviewPhoto(r), 640)} alt={t('תמונה ששלח לקוח', 'A photo sent by a customer')} loading="lazy" width="400" height="220"
-                        className="mb-4 h-[220px] w-full rounded-2xl bg-brand-mist object-cover" />
+                      <button type="button" onClick={() => setLightbox({ image: reviewPhoto(r), caption: r.comment })}
+                        aria-label={t('הגדלת התמונה', 'Enlarge the photo')} className="mb-4 block w-full cursor-zoom-in">
+                        <img src={resized(reviewPhoto(r), 640)} alt={t('תמונה ששלח לקוח', 'A photo sent by a customer')} loading="lazy" width="400" height="220"
+                          className="h-[220px] w-full rounded-2xl bg-brand-mist object-cover transition hover:opacity-95" />
+                      </button>
                     )}
                     <div className="flex gap-0.5" aria-label={t(`${r.rating} מתוך 5`, `${r.rating} out of 5`)}>
                       {[1, 2, 3, 4, 5].map(s => (
@@ -386,6 +392,8 @@ export default function Home() {
           </section>
         </>
       )}
+
+      <PhotoLightbox photo={lightbox} onClose={() => setLightbox(null)} />
     </div>
   );
 }
