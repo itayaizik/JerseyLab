@@ -8,7 +8,7 @@ import { NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID, EXCLUDE_COLORS as COLORS } f
 import { newBox, newBoxId, typeOf, wantsShorts, boxPrice, boxesTotal, boxesSaving, boxSummary, isBlank, cleanBox } from '@/lib/mysteryBoxes';
 import { fetchTiers, discountFor, hasLadder, nextTier } from '@/lib/mysteryTiers';
 import {
-  MAX_GROUP_BOXES, loadDraft, saveDraft, createGroup, fetchGroup, closeGroup, joinLink,
+  MAX_GROUP_BOXES, loadDraft, saveDraft, createGroup, fetchGroup, closeGroup, joinLink, findGroupByCode,
 } from '@/lib/mysteryGroup';
 import MysteryBoxFields from '@/components/mystery/MysteryBoxFields';
 import { t } from '@/lib/i18n';
@@ -211,6 +211,17 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     setGroup({ id: result.id, ownerToken: result.owner_token, ownerName, code: result.code || '', seenVersions: {} });
     setGroupClosed(false);
     return result;
+  };
+
+  // Taking a group over again from its code, on a phone that never had the
+  // link. The boxes themselves arrive through the usual sync.
+  const resumeGroup = (found) => {
+    setGroup({
+      id: found.id, ownerToken: found.owner_token, ownerName: found.owner_name || '',
+      code: found.code || '', seenVersions: {},
+    });
+    setGroupClosed(!!found.closed);
+    setArrivals([]);
   };
 
   const endGroup = async () => {
@@ -470,7 +481,8 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
       <div className={`pb-5 ${pad}`}>
         <GroupPanel group={group} closed={groupClosed} syncing={syncing} fid={fid}
-          onStart={startGroup} onRefresh={sync} onEnd={endGroup} />
+          onStart={startGroup} onResume={resumeGroup} onRefresh={sync} onEnd={endGroup}
+          filled={boxes.filter(b => b.remoteId).length} count={count} />
       </div>
 
       {/* What to leave out - once, for the whole order. */}
@@ -571,8 +583,56 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   );
 }
 
+// Coming back to a group started somewhere else. The five digits are not a
+// password - they open the organiser's own view of a box he started, and the
+// worst a guessed code reaches is somebody else's shirt sizes - so this asks
+// for nothing but the code.
+function ReturnByCode({ fid, onFound }) {
+  const [open, setOpen] = useState(false);
+  const [code, setCode] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  const submit = async (e) => {
+    e.preventDefault();
+    const digits = code.replace(/\D/g, '');
+    if (digits.length !== 5) { setError(t('צריך קוד של חמש ספרות', 'The code is five digits')); return; }
+    setBusy(true);
+    setError('');
+    const result = await findGroupByCode(digits);
+    setBusy(false);
+    if (!result.ok) { setError(t('לא מצאנו קבוצה עם הקוד הזה.', "We couldn't find a group with that code.")); return; }
+    onFound(result);
+  };
+
+  if (!open) {
+    return (
+      <button type="button" onClick={() => setOpen(true)} className="shop-link mt-3 w-full justify-center text-[13px]">
+        {t('כבר יצרתם קבוצה? כניסה עם קוד', 'Already started a group? Enter your code')}
+      </button>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} noValidate className="mt-3 space-y-2">
+      <label htmlFor={fid('group-code')} className="block text-sm font-medium text-brand-navy/70">
+        {t('קוד הניהול', 'Your organiser code')}
+      </label>
+      <div className="flex gap-2">
+        <input id={fid('group-code')} value={code} onChange={e => { setCode(e.target.value); setError(''); }}
+          inputMode="numeric" maxLength={7} dir="ltr" placeholder="12345"
+          className="shop-field flex-1 text-center text-lg tracking-[0.3em] tabular-nums" />
+        <button type="submit" disabled={busy} className="shop-btn min-h-[3.25rem] flex-shrink-0 px-5 text-sm">
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : t('כניסה', 'Enter')}
+        </button>
+      </div>
+      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+    </form>
+  );
+}
+
 // Starting a group, and once there is one, sharing its link.
-function GroupPanel({ group, closed, syncing, fid, onStart, onRefresh, onEnd }) {
+function GroupPanel({ group, closed, syncing, fid, onStart, onResume, onRefresh, onEnd, filled = 0, count = 0 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -606,10 +666,13 @@ function GroupPanel({ group, closed, syncing, fid, onStart, onRefresh, onEnd }) 
             'Send your friends a link; each fills in their own box on a page of their own, and the boxes show up here for you.')}
         </p>
         {!open ? (
-          <button type="button" onClick={() => setOpen(true)} className="shop-btn-secondary mt-3 min-h-[2.75rem] w-full text-sm">
-            <Users className="h-4 w-4" aria-hidden="true" />
-            {t('יצירת קישור לחברים', 'Create a link for friends')}
-          </button>
+          <>
+            <button type="button" onClick={() => setOpen(true)} className="shop-btn-secondary mt-3 min-h-[2.75rem] w-full text-sm">
+              <Users className="h-4 w-4" aria-hidden="true" />
+              {t('יצירת קישור לחברים', 'Create a link for friends')}
+            </button>
+            <ReturnByCode fid={fid} onFound={onResume} />
+          </>
         ) : (
           <form onSubmit={start} noValidate className="mt-3 space-y-3">
             <div>
@@ -659,7 +722,35 @@ function GroupPanel({ group, closed, syncing, fid, onStart, onRefresh, onEnd }) 
           ? t('הקבוצה סגורה, אז אי אפשר להוסיף אליה עוד בוקסים.', 'The group is closed, so no more boxes can be added.')
           : t('שלחו את הקישור. כל בוקס שחבר שומר מופיע כאן אוטומטית, גם אם תצאו ותחזרו.', 'Send the link. Every box a friend saves appears here automatically, even if you leave and come back.')}
       </p>
-      <p dir="ltr" className="mt-2 truncate rounded-xl bg-white px-3 py-2 text-start text-[13px] text-brand-navy/70">{link}</p>
+      {/* The code, before the link. A link is something you have to still
+          have; five digits are something you can read off this screen and
+          type into another phone a week later. */}
+      {group.code && (
+        <div className="mt-3 rounded-2xl bg-white p-3 text-center">
+          <p className="text-[12px] text-brand-navy/55">{t('קוד הניהול שלכם', 'Your organiser code')}</p>
+          <p dir="ltr" className="mt-0.5 text-3xl font-bold tracking-[0.3em] tabular-nums text-brand-navy">{group.code}</p>
+          <p className="mt-1 text-[12px] leading-relaxed text-brand-navy/55">
+            {t('שמרו אותו. אם תאבדו את הקישור, הקוד מחזיר אתכם לקבוצה מכל מכשיר.',
+               'Keep it. If you lose the link, the code brings you back to this group from any device.')}
+          </p>
+        </div>
+      )}
+
+      {/* How many of the boxes here came from a friend, so the organiser can
+          see who is still outstanding without counting cards. */}
+      {filled > 0 && (
+        <div className="mt-3">
+          <div className="flex items-baseline justify-between text-[13px]">
+            <span className="font-medium text-brand-navy">{t(`${filled} מתוך ${count} מילאו`, `${filled} of ${count} filled in`)}</span>
+            {filled < count && <span className="text-brand-navy/55">{t(`${count - filled} ממתינים`, `${count - filled} waiting`)}</span>}
+          </div>
+          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-white" role="presentation">
+            <div className="h-full rounded-full bg-brand-orange transition-all" style={{ width: `${Math.round((filled / Math.max(count, 1)) * 100)}%` }} />
+          </div>
+        </div>
+      )}
+
+      <p dir="ltr" className="mt-3 truncate rounded-xl bg-white px-3 py-2 text-start text-[13px] text-brand-navy/70">{link}</p>
       <div className="mt-3 grid grid-cols-1 gap-2 min-[440px]:grid-cols-2">
         <a href={`https://wa.me/?text=${encodeURIComponent(`${message}\n${link}`)}`} target="_blank" rel="noopener noreferrer"
           className="shop-btn min-h-[2.75rem] text-sm">
