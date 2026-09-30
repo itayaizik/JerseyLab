@@ -86,6 +86,8 @@ const ALIAS_GROUPS = {
   'מכבי תל אביב': ['מכבי תא', 'maccabi tel aviv'],
   'מכבי חיפה': ['maccabi haifa'],
   'הפועל באר שבע': ['הפועל בש', 'hapoel beer sheva'],
+  'הפועל חיפה': ['hapoel haifa'],
+  'הפועל פתח תקווה': ['הפועל פת', 'הפועל פתח תקוה', 'hapoel petah tikva'],
   'בוקה גוניורס': ['בוקה', 'boca', 'boca juniors', 'boca jrs'],
   'פורטו': ['porto', 'fc porto', 'פורטו fc'],
   'בנפיקה': ['benfica', 'slb'],
@@ -97,6 +99,15 @@ const ALIAS_GROUPS = {
   'לסטר סיטי': ['leicester', 'לסטר', 'leicester city', 'foxes'],
   'סנט פאולי': ['st pauli'],
   'ראיו וייקאנו': ['ראיו', 'rayo vallecano', 'rayo'],
+
+  // The clubs the Israelis abroad play for. Stocked because of the player, so
+  // his name is a tag on the shirt and finds it that way too.
+  'ווסטהאם': ['ווסט האם', 'west ham', 'west ham united', 'whu', 'hammers'],
+  'קריסטל פאלאס': ['פאלאס', 'crystal palace', 'palace', 'cpfc'],
+  'סאות\'המפטון': ['סאותמפטון', 'southampton', 'saints', 'saints fc'],
+  'לצ\'ה': ['לצה', 'lecce', 'us lecce'],
+  'אלצ\'ה': ['אלצה', 'elche', 'elche cf'],
+  'הכוכב האדום בלגרד': ['הכוכב האדום', 'כוכב אדום', 'red star', 'red star belgrade', 'crvena zvezda'],
 
   'ספורטינג ליסבון': ['ספורטינג', 'sporting', 'sporting cp', 'sporting lisbon'],
   'לאציו': ['lazio', 'ss lazio'],
@@ -129,6 +140,8 @@ const ALIAS_GROUPS = {
   'בונדסליגה': ['בונדס', 'bundesliga'],
   'ליגת האלופות': ['אלופות', 'צמפיונס', 'צאמפיונס', 'קאמפיונס', 'champions league', 'ucl', 'ליגת אלופות'],
   'ליגה צרפתית': ['ligue 1', 'ליג 1', 'ליגה 1'],
+  'צמפיונשיפ': ['championship', 'efl championship', 'ליגה אנגלית שנייה'],
+  'ליגה סרבית': ['serbian superliga', 'סרביה'],
   'ליגת העל': ['ישראלית', 'israeli league'],
   'מונדיאל': ['גביע העולם', 'world cup'],
   'יורו': ['euro', 'אליפות אירופה'],
