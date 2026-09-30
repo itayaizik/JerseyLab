@@ -24,3 +24,18 @@ export const allowsPatches = (shirt) => !isIsraeliLeagueShirt(shirt);
 // Israeli league shirts, and not for retro, which comes as the shirt alone.
 export const allowsLongSleeve = (shirt) => !isIsraeliLeagueShirt(shirt);
 export const allowsShorts = (shirt) => !shirt?.is_retro && !isIsraeliLeagueShirt(shirt);
+
+// A kids kit (src/lib/kidsKit.js) is made to order as a shirt-and-shorts set,
+// and two kinds of shirt cannot be had that way: a retro design, which is only
+// made in adult sizes, and a shirt held in Israel, where the stock is the
+// product and the stock is adult.
+//
+// The stock check reads the size map directly rather than going through
+// ShippingBadge, which is a component: what may be ordered is a fact about the
+// shirt, and belongs with the other rules here.
+export const allowsKids = (shirt) => {
+  if (shirt?.is_retro) return false;
+  const stock = shirt?.local_stock_sizes;
+  const inIsrael = stock && typeof stock === 'object' && Object.values(stock).some(q => Number(q) > 0);
+  return !inIsrael;
+};

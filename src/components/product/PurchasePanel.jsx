@@ -13,7 +13,7 @@ import TrustBar from '@/components/TrustBar';
 import { showsLocalStock, showsLocalStockForSize } from '@/components/ShippingBadge';
 import { itemsForSize, stockPrint } from '@/lib/localStock';
 import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
-import { allowsPlayerVersion, allowsPatches, allowsLongSleeve, allowsShorts } from '@/lib/shirtOptions';
+import { allowsPlayerVersion, allowsPatches, allowsLongSleeve, allowsShorts, allowsKids } from '@/lib/shirtOptions';
 import { KIDS_PRICE, KIDS_KIT_LABEL, KIDS_KIT_VALUE, KIDS_PRINT_LABEL, kidsSizeHint } from '@/lib/kidsKit';
 import { BUSINESS, isPlaceholder } from '@/lib/business';
 import { t } from '@/lib/i18n';
@@ -91,7 +91,8 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
 
   // A kids kit is its own product: one price, a set with shorts, and no
   // choice that costs anything (src/lib/kidsKit.js).
-  const kids = audience === 'kids';
+  const kidsAllowed = allowsKids(shirt);
+  const kids = kidsAllowed && audience === 'kids';
   const basePrice = kids ? KIDS_PRICE : shirtBasePrice(shirt);
   const onSale = !kids && shirt.sale_price && shirt.sale_price < shirt.price;
   const available = shirt.status === 'available';
@@ -249,7 +250,9 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
       {/* Who it is for, before the size, because it decides what the sizes
           even are. Men by default: it is what nearly every order is, and a
           shopper who is not buying for a child should not have to answer a
-          question to get on with it. */}
+          question to get on with it. Hidden altogether on a shirt that has no
+          kids kit, rather than shown as a choice that leads nowhere. */}
+      {kidsAllowed && (
       <Section id="audience-heading" title={t('למי החולצה?', 'Who is it for?')}>
         <div role="group" aria-labelledby="audience-heading" className="flex flex-wrap gap-2">
           {[
@@ -271,6 +274,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
           </p>
         )}
       </Section>
+      )}
 
       <Section
         id="size-heading"

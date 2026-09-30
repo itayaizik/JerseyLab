@@ -2,7 +2,7 @@
 //
 // A shop made only of product pages has nothing for a search like "איך לזהות
 // חולצת כדורגל מקורית" or "גרסת אוהד או שחקן", and nothing for an AI assistant
-// to quote when someone asks it the same question. These four answer those
+// to quote when someone asks it the same question. These answer those
 // questions properly, and link back into the catalogue where an answer ends in
 // a shirt.
 //
@@ -399,6 +399,209 @@ export const GUIDES = [
     ],
     links: [
       { to: '/mystery-box', label: 'מיסטרי בוקס' },
+      { to: '/size-guide', label: 'מדריך מידות' },
+      { to: '/catalog', label: 'לכל החולצות' },
+    ],
+  },
+  {
+    slug: 'washing-a-football-shirt',
+    en: {
+      title: 'How to Wash a Football Shirt Without Ruining the Print | JerseyLab',
+      h1: 'How to wash a football shirt',
+      description: 'How to wash a football shirt so the name, number and crest survive: temperature, inside out, no tumble dryer, no fabric softener, no ironing over the print.',
+      intro: 'A printed shirt does not fade in the wash. It cracks, and almost always for the same four reasons. Get those right and the print outlives the season.',
+      sections: [
+        {
+          h2: 'Inside out, always',
+          paragraphs: ['The print and the crest are on the outside, so turning the shirt inside out puts the fabric between them and everything else in the drum. This is the single habit that matters most, and it costs nothing.'],
+        },
+        {
+          h2: 'Cold, and gentle',
+          paragraphs: ['Wash at 30°C at most, on a delicate or sports cycle. Heat is what lifts a heat-pressed number off the fabric; there is nothing on a football shirt that needs hot water to come clean.'],
+        },
+        {
+          h2: 'No fabric softener',
+          paragraphs: ['Softener coats the fibres, and the fibres of a football shirt are meant to move air and moisture through them. It dulls the colour, it hurts the fabric, and on a printed shirt it works its way under the edges of the print.'],
+        },
+        {
+          h2: 'Air dry, never a tumble dryer',
+          paragraphs: ['A dryer is heat and tumbling together, which is exactly the combination a print cannot take. Hang the shirt in the shade - direct sun fades colour on its own - and it dries in a couple of hours, because the fabric is built to.'],
+        },
+        {
+          h2: 'If you iron, never over the print',
+          paragraphs: ['Iron the shirt inside out, on low, and keep the iron off the print, the numbers and the crest entirely. In practice a shirt hung to dry properly does not need ironing at all.'],
+        },
+        {
+          h2: 'Stains and sweat',
+          paragraphs: ['Deal with a stain the same day with cold water and a little mild detergent, rubbed in with your fingers rather than scrubbed. For a sweat smell, half an hour in cold water with a splash of white vinegar before the wash does more than any amount of detergent.'],
+        },
+      ],
+      links: [
+        { to: '/catalog', label: 'All shirts' },
+        { to: '/size-guide', label: 'Size guide' },
+      ],
+    },
+    title: 'איך מכבסים חולצת כדורגל בלי להרוס את ההדפסה | JerseyLab',
+    h1: 'איך מכבסים חולצת כדורגל',
+    description: 'איך לכבס חולצת כדורגל כדי שהשם, המספר והסמל ישרדו: טמפרטורה, כביסה הפוכה, בלי מייבש, בלי מרכך ובלי גיהוץ על ההדפסה.',
+    intro: 'חולצה מודפסת לא דוהה בכביסה. היא נסדקת, וכמעט תמיד מאותן ארבע סיבות. אם עושים אותן נכון, ההדפסה שורדת הרבה מעבר לעונה.',
+    sections: [
+      {
+        h2: 'הפוך על הפוך, תמיד',
+        paragraphs: ['ההדפסה והסמל נמצאים בחוץ, אז כביסה כשהחולצה הפוכה שמה את הבד בין ההדפסה לכל השאר בתוף. זה ההרגל הכי משמעותי מכולם, והוא לא עולה כלום.'],
+      },
+      {
+        h2: 'קר, ועדין',
+        paragraphs: ['עד 30 מעלות, בתוכנית עדינה או ספורט. חום הוא מה שמרים מספר מודבק מהבד, ואין שום דבר בחולצת כדורגל שצריך מים חמים כדי להתנקות.'],
+      },
+      {
+        h2: 'בלי מרכך כביסה',
+        paragraphs: ['מרכך מצפה את הסיבים, והסיבים של חולצת כדורגל אמורים להעביר דרכם אוויר ולחות. הוא מעמעם את הצבע, פוגע בבד, ובחולצה מודפסת הוא נכנס מתחת לקצוות ההדפסה.'],
+      },
+      {
+        h2: 'לייבש באוויר, אף פעם לא במייבש',
+        paragraphs: ['מייבש הוא חום וסיבוב ביחד, בדיוק הצירוף שהדפסה לא עומדת בו. תולים בצל - שמש ישירה מדהה צבע בפני עצמה - והחולצה מתייבשת בשעתיים, כי הבד בנוי לזה.'],
+      },
+      {
+        h2: 'ואם מגהצים, אף פעם לא על ההדפסה',
+        paragraphs: ['מגהצים כשהחולצה הפוכה, בחום נמוך, ולא מתקרבים עם המגהץ להדפסה, למספרים ולסמל. בפועל, חולצה שנתלתה כמו שצריך לא צריכה גיהוץ בכלל.'],
+      },
+      {
+        h2: 'כתמים וריח זיעה',
+        paragraphs: ['מטפלים בכתם באותו יום, במים קרים ומעט סבון עדין, משפשפים באצבעות ולא בכוח. לריח זיעה, חצי שעה במים קרים עם קצת חומץ לבן לפני הכביסה עושה יותר מכל כמות של אבקה.'],
+      },
+    ],
+    links: [
+      { to: '/catalog', label: 'לכל החולצות' },
+      { to: '/size-guide', label: 'מדריך מידות' },
+    ],
+  },
+  {
+    slug: 'home-away-third',
+    en: {
+      title: 'Home, Away, Third and Fourth: What the Kits Mean | JerseyLab',
+      h1: 'Home, away, third - what the difference is',
+      description: 'What home, away, third and fourth kits are, why clubs have several, and which one to buy. The rule behind the colours, in plain words.',
+      intro: 'A club puts out three or four shirts a season and they are not the same thing dressed differently. Each one exists for a reason, and knowing the reason makes choosing easy.',
+      sections: [
+        {
+          h2: 'Home: the colours everyone knows',
+          paragraphs: ['The home kit is the club in its own colours - the red of Liverpool, the stripes of Atletico, the white of Real Madrid. It changes the least from season to season, it is what people picture when they picture the club, and it is the safest shirt to buy for someone else.'],
+        },
+        {
+          h2: 'Away: for when the colours clash',
+          paragraphs: ['Two teams cannot play in colours a referee or a viewer might confuse, so the visiting side changes. That is the whole origin of the away kit, and because it is not tied to the club\'s own colours it is where designers take the most liberty. Away shirts are often the more interesting design of the two.'],
+        },
+        {
+          h2: 'Third: for when away clashes too',
+          paragraphs: ['A third kit exists for the nights when neither home nor away works - most often in Europe, against a side whose colours happen to catch both. It is made in smaller numbers, it is usually the boldest design of the season, and that combination is why collectors go for it.'],
+        },
+        {
+          h2: 'Fourth and special editions',
+          paragraphs: ['Some clubs add a fourth shirt, or a one-off for an anniversary or a cup final. PSG\'s Jordan collaboration is the best-known example. These are the shirts that are hardest to find a season later, which is exactly why they are worth having.'],
+        },
+        {
+          h2: 'So which one do you buy?',
+          paragraphs: ['If it is a gift and you are not sure, buy the home shirt. If it is for yourself and you already own the home shirt, the third is usually the one you will enjoy wearing most. And if you want the design people will ask you about, look at the special editions.'],
+        },
+      ],
+      links: [
+        { to: '/catalog', label: 'All shirts' },
+        { to: '/collections/retro', label: 'Retro shirts' },
+      ],
+    },
+    title: 'בית, חוץ, שלישית ורביעית: מה ההבדל בין הסטים | JerseyLab',
+    h1: 'בית, חוץ, שלישית - מה ההבדל',
+    description: 'מה זה חולצת בית, חוץ, שלישית ורביעית, למה לכל קבוצה יש כמה סטים, ואיזו חולצה כדאי לקנות. הכלל שמאחורי הצבעים, במילים פשוטות.',
+    intro: 'קבוצה מוציאה שלוש או ארבע חולצות בעונה, והן לא אותו דבר בצבע אחר. לכל אחת יש סיבה קיום, וברגע שמכירים אותה הבחירה נעשית קלה.',
+    sections: [
+      {
+        h2: 'בית: הצבעים שכולם מכירים',
+        paragraphs: ['חולצת הבית היא הקבוצה בצבעים של עצמה - האדום של ליברפול, הפסים של אתלטיקו, הלבן של ריאל מדריד. היא משתנה הכי מעט בין עונות, היא מה שאנשים מדמיינים כשהם חושבים על הקבוצה, והיא החולצה הבטוחה ביותר לקנות במתנה.'],
+      },
+      {
+        h2: 'חוץ: בשביל כשהצבעים מתנגשים',
+        paragraphs: ['שתי קבוצות לא יכולות לשחק בצבעים שהשופט או הצופה עלולים לבלבל ביניהם, אז האורחת מחליפה. זה כל המקור של חולצת החוץ, ובגלל שהיא לא כבולה לצבעי הקבוצה, שם המעצבים לוקחים לעצמם הכי הרבה חופש. לא פעם דווקא חולצת החוץ היא העיצוב המעניין מבין השתיים.'],
+      },
+      {
+        h2: 'שלישית: בשביל כשגם החוץ מתנגשת',
+        paragraphs: ['החולצה השלישית קיימת לערבים שבהם לא הבית ולא החוץ עובדות - לרוב באירופה, מול קבוצה שהצבעים שלה במקרה תופסים את שתיהן. היא מיוצרת בכמויות קטנות יותר, היא בדרך כלל העיצוב הכי נועז של העונה, והצירוף הזה הוא הסיבה שאספנים רודפים אחריה.'],
+      },
+      {
+        h2: 'רביעית ומהדורות מיוחדות',
+        paragraphs: ['יש קבוצות שמוסיפות חולצה רביעית, או חולצה חד-פעמית ליובל או לגמר. שיתוף הפעולה של פריז סן זרמן עם ג\'ורדן הוא הדוגמה המוכרת. אלה החולצות שהכי קשה להשיג עונה אחרי, וזו בדיוק הסיבה שכדאי לתפוס אותן.'],
+      },
+      {
+        h2: 'אז איזו לקנות?',
+        paragraphs: ['אם זו מתנה ואתם לא בטוחים, קנו את חולצת הבית. אם זו חולצה לעצמכם וכבר יש לכם את הבית, השלישית היא בדרך כלל זו שתהנו ללבוש הכי הרבה. ואם אתם רוצים את העיצוב שישאלו אתכם עליו ברחוב, חפשו את המהדורות המיוחדות.'],
+      },
+    ],
+    links: [
+      { to: '/catalog', label: 'לכל החולצות' },
+      { to: '/collections/retro', label: 'חולצות רטרו' },
+    ],
+  },
+  {
+    slug: 'kids-football-shirt',
+    en: {
+      title: "Buying a Football Shirt for a Child: Size, Fit and What Not to Do | JerseyLab",
+      h1: 'Buying a football shirt for a child',
+      description: "How to choose a kids football shirt size by height rather than age, whether to size up, and why the name on the back matters more than the player's.",
+      intro: 'Kids shirts are sized by numbers - 14, 16, 18 and up - and the numbers mean height, not age. That one fact solves most of the guesswork.',
+      sections: [
+        {
+          h2: 'Go by height, not age',
+          paragraphs: ['The size number matches the height the shirt is cut for: a 22 is made for a child of 125 to 135 cm. Ages on a chart are an average and children are not averages, so measure the child against a wall and use that. It takes a minute and it is the difference between a shirt that fits and a shirt in a drawer.'],
+        },
+        {
+          h2: 'How much room to leave',
+          paragraphs: ['One size up is sensible if the child is between two sizes or mid-growth-spurt. Two sizes up is not: a shirt that reaches the knees is not a shirt a child wants to wear, and by the time it fits, the season it belongs to is over.'],
+        },
+        {
+          h2: 'It comes as a set',
+          paragraphs: ['A kids kit is the shirt and matching shorts together, in the same size, for one price. That is how kids kits are made, and it is what a child expects to open.'],
+        },
+        {
+          h2: 'Put their name on it, not a star\'s',
+          paragraphs: ['A child with their own name and number on the back wears that shirt until it falls apart. A shirt with a famous player\'s name is a shirt they grow out of the moment the player transfers. The printing is free on our kids kits, so there is no reason not to.'],
+        },
+        {
+          h2: 'What it costs',
+          paragraphs: ['A kids kit is ₪100 - shirt and shorts, with the name and number included. Made to order, arriving within about three weeks.'],
+        },
+      ],
+      links: [
+        { to: '/size-guide', label: 'Size guide' },
+        { to: '/catalog', label: 'All shirts' },
+      ],
+    },
+    title: 'חולצת כדורגל לילד: איך בוחרים מידה ומה לא לעשות | JerseyLab',
+    h1: 'חולצת כדורגל לילד',
+    description: 'איך בוחרים מידת חולצת כדורגל לילד לפי גובה ולא לפי גיל, האם לקחת מידה גדולה יותר, ולמה השם של הילד על הגב שווה יותר מהשם של שחקן.',
+    intro: 'מידות ילדים מסומנות במספרים - 14, 16, 18 והלאה - והמספרים האלה מציינים גובה, לא גיל. העובדה הזאת לבדה פותרת את רוב הניחושים.',
+    sections: [
+      {
+        h2: 'הולכים לפי גובה, לא לפי גיל',
+        paragraphs: ['מספר המידה תואם לגובה שהחולצה נתפרה לו: מידה 22 נעשית לילד בגובה 125 עד 135 ס"מ. הגילאים בטבלה הם ממוצע, וילדים הם לא ממוצע, אז מודדים את הילד ליד הקיר והולכים לפי זה. זה לוקח דקה, וזה ההבדל בין חולצה שמתאימה לחולצה שנשארת במגירה.'],
+      },
+      {
+        h2: 'כמה מקום להשאיר',
+        paragraphs: ['מידה אחת גדולה יותר היא הגיונית אם הילד בין שתי מידות או באמצע קפיצת גדילה. שתי מידות גדולות - לא: חולצה שמגיעה לברכיים היא לא חולצה שילד רוצה ללבוש, וכשהיא כבר תתאים, העונה שלה כבר תהיה מאחורינו.'],
+      },
+      {
+        h2: 'זה מגיע כסט',
+        paragraphs: ['סט ילדים הוא חולצה ומכנס קצר תואם יחד, באותה מידה, במחיר אחד. ככה סטים לילדים מיוצרים, וזה גם מה שילד מצפה לפתוח.'],
+      },
+      {
+        h2: 'שימו את השם שלו, לא של כוכב',
+        paragraphs: ['ילד עם השם והמספר שלו על הגב לובש את החולצה הזאת עד שהיא נגמרת. חולצה עם שם של שחקן מפורסם היא חולצה שהוא מתבייש בה ברגע שהשחקן עובר קבוצה. ההדפסה על סטים לילדים אצלנו בחינם, אז אין סיבה לא.'],
+      },
+      {
+        h2: 'כמה זה עולה',
+        paragraphs: ['סט ילדים עולה ₪100 - חולצה ומכנס, כולל שם ומספר. הזמנה מיוחדת שמגיעה תוך כשלושה שבועות.'],
+      },
+    ],
+    links: [
       { to: '/size-guide', label: 'מדריך מידות' },
       { to: '/catalog', label: 'לכל החולצות' },
     ],
