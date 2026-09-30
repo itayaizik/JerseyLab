@@ -32,7 +32,7 @@ function orderSummary(items) {
 function OrderSummary({ items }) {
   const { total, unpriced, discount, coupons } = orderSummary(items);
   return (
-    <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-white/10 pt-2 text-sm">
+    <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-brand-line pt-2 text-sm">
       <span className="font-heading font-bold text-chalk">
         סה"כ <span className="font-mono text-turf">₪{total}</span>
       </span>
@@ -40,14 +40,14 @@ function OrderSummary({ items }) {
         <>
           <span className="text-xs text-varnish">לפני הנחה <span className="font-mono">₪{total + discount}</span></span>
           {coupons.map(([code, amount]) => (
-            <span key={code} className="text-xs text-green-400">
+            <span key={code} className="text-xs text-emerald-600">
               קופון {code}: <span className="font-mono">-₪{amount}</span>
             </span>
           ))}
         </>
       )}
       {unpriced > 0 && (
-        <span className="text-xs text-amber-400">{unpriced === 1 ? 'פריט אחד בלי מחיר' : `${unpriced} פריטים בלי מחיר`}</span>
+        <span className="text-xs text-amber-600">{unpriced === 1 ? 'פריט אחד בלי מחיר' : `${unpriced} פריטים בלי מחיר`}</span>
       )}
     </div>
   );
@@ -179,7 +179,7 @@ export default function ManageRequests() {
   };
 
   const filtered = requests.filter(r => !statusFilter || r.status === statusFilter);
-  const statusColors = { new: 'bg-turf text-pitch', contacted: 'bg-blue-500/20 text-blue-400', closed: 'bg-white/5 text-varnish' };
+  const statusColors = { new: 'bg-turf text-pitch', contacted: 'bg-blue-500/20 text-blue-600', closed: 'bg-white text-varnish' };
   const statusLabels = { new: 'חדש', contacted: 'נוצר קשר', closed: 'סגור' };
 
   // Every item from one cart checkout shares an order_id - group them so a
@@ -223,7 +223,7 @@ export default function ManageRequests() {
             .sort((a, b) => String(a.at).localeCompare(String(b.at)));
 
           return (
-            <div key={groupKey} className="border border-white/10 bg-white/5 p-4">
+            <div key={groupKey} className="rounded-2xl border border-brand-line bg-white p-4 shadow-card">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -235,7 +235,7 @@ export default function ManageRequests() {
                       <span className="text-xs px-2 py-0.5 bg-turf/10 text-turf font-bold">{items.length} פריטים בהזמנה</span>
                     )}
                     {history.length > 0 && (
-                      <span className="text-xs px-2 py-0.5 bg-amber-500/15 text-amber-400 font-bold">נערכה</span>
+                      <span className="text-xs px-2 py-0.5 bg-amber-500/15 text-amber-600 font-bold">נערכה</span>
                     )}
                   </div>
                   <h3 className="font-heading font-bold text-sm mb-2">{first.full_name}</h3>
@@ -265,7 +265,7 @@ export default function ManageRequests() {
                           {reqShirt && reqShirt.status === 'available' && (
                             <button
                               onClick={() => handleMarkShirtSold(reqShirt.id)}
-                              className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1 mt-1"
+                              className="text-xs text-amber-600 hover:text-amber-700 flex items-center gap-1 mt-1"
                             >
                               <Package className="w-3 h-3" />
                               סמן "{reqShirt.name}" כנמכרה
@@ -277,7 +277,7 @@ export default function ManageRequests() {
                               <span className="line-through">{reqShirt.name}</span> - נמכרה ✓
                             </span>
                           )}
-                          {r.message && <p className="text-xs text-varnish bg-white/5 p-2 mt-1 whitespace-pre-line">{r.message}</p>}
+                          {r.message && <p className="rounded-xl text-xs text-varnish bg-white p-2 mt-1 whitespace-pre-line">{r.message}</p>}
                         </div>
                       );
                     })}
@@ -288,7 +288,7 @@ export default function ManageRequests() {
                   <div className="flex flex-wrap gap-3 text-xs text-varnish items-center">
                     {first.phone && <a href={`tel:${first.phone}`} className="flex items-center gap-1 hover:text-chalk"><Phone className="w-3 h-3" />{first.phone}</a>}
                     {first.email && <a href={`mailto:${first.email}`} className="flex items-center gap-1 hover:text-chalk"><Mail className="w-3 h-3" />{first.email}</a>}
-                    {first.whatsapp && <a href={`https://wa.me/${first.whatsapp}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-green-400"><MessageCircle className="w-3 h-3" />WhatsApp</a>}
+                    {first.whatsapp && <a href={`https://wa.me/${first.whatsapp}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-emerald-600"><MessageCircle className="w-3 h-3" />WhatsApp</a>}
                     {first.instagram && <a href={`https://instagram.com/${first.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-pink-400"><ExternalLink className="w-3 h-3" />{first.instagram}</a>}
                   </div>
 
@@ -307,7 +307,7 @@ export default function ManageRequests() {
                       ) : (
                         <a href={`https://wa.me/${(first.phone || '').replace(/\D/g, '').replace(/^0/, '972')}`}
                           target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2 py-1 bg-green-500/15 border border-green-400/40 text-green-300 hover:bg-green-500/25">
+                          className="flex items-center gap-1 px-2 py-1 bg-green-500/15 border border-green-400/40 text-emerald-700 hover:bg-green-500/25">
                           <MessageCircle className="w-3 h-3" />
                           WhatsApp
                         </a>
@@ -321,10 +321,10 @@ export default function ManageRequests() {
                         <History className="w-3 h-3" />
                         היסטוריית עריכות ({history.length})
                       </summary>
-                      <ul className="mt-2 space-y-2 border-r border-white/10 pr-3">
+                      <ul className="mt-2 space-y-2 border-r border-brand-line pr-3">
                         {history.map((entry, i) => (
                           <li key={i}>
-                            <span className="font-mono text-white/50">{formatDate(entry.at, '')}</span>
+                            <span className="font-mono text-brand-navy/50">{formatDate(entry.at, '')}</span>
                             <ul className="mt-0.5 space-y-0.5">
                               {entry.changes.map((change, j) => <li key={j}>• {change}</li>)}
                             </ul>
@@ -337,7 +337,7 @@ export default function ManageRequests() {
 
                 <div className="flex flex-col gap-2 items-end">
                   <select value={first.status} onChange={e => handleStatusChange(items, e.target.value)}
-                    className="bg-white/5 border border-white/10 px-3 py-2 text-xs text-chalk focus:outline-none">
+                    className="rounded-xl bg-white border border-brand-line px-3 py-2 text-xs text-chalk focus:outline-none">
                     <option value="new">חדש</option>
                     <option value="contacted">נוצר קשר</option>
                     <option value="closed">סגור</option>
@@ -370,7 +370,7 @@ export default function ManageRequests() {
                   )}
                   <button
                     onClick={() => handleDeleteGroup(items)}
-                    className="flex items-center gap-1 text-xs text-varnish hover:text-red-400 border border-white/10 hover:border-red-400/40 px-2 py-1.5 transition-colors"
+                    className="rounded-xl flex items-center gap-1 text-xs text-varnish hover:text-red-400 border border-brand-line hover:border-red-400/40 px-2 py-1.5 transition-colors"
                   >
                     <Trash2 className="w-3 h-3" />
                     מחק

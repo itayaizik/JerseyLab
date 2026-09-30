@@ -42,7 +42,7 @@ const DEFAULT_LEAGUES = [
 
 function ClubRow({ club, onChange, onDelete, onMoveUp, onMoveDown, canUp, canDown }) {
   return (
-    <div className="flex items-center gap-2 bg-white/5 border border-white/10 p-3">
+    <div className="rounded-xl flex items-center gap-2 bg-white border border-brand-line p-3">
       <div className="flex flex-col flex-shrink-0">
         <GripVertical className="w-4 h-4 text-varnish mx-auto" />
         <div className="flex gap-0.5 mt-1">
@@ -55,21 +55,21 @@ function ClubRow({ club, onChange, onDelete, onMoveUp, onMoveDown, canUp, canDow
         value={club.name}
         onChange={e => onChange({ ...club, name: e.target.value })}
         placeholder="שם קבוצה"
-        className="flex-1 bg-pitch border border-white/20 px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
+        className="rounded-xl flex-1 bg-brand-mist border border-brand-line px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
       />
       <input
         value={club.logo_url || ''}
         onChange={e => onChange({ ...club, logo_url: e.target.value })}
         placeholder="URL לוגו"
         dir="ltr"
-        className="flex-1 bg-pitch border border-white/20 px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
+        className="rounded-xl flex-1 bg-brand-mist border border-brand-line px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
       />
       <input
         value={club.href || ''}
         onChange={e => onChange({ ...club, href: e.target.value })}
         placeholder="/catalog?q=..."
         dir="ltr"
-        className="w-36 bg-pitch border border-white/20 px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
+        className="rounded-xl w-36 bg-brand-mist border border-brand-line px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
       />
       <label className="flex items-center gap-1 text-xs text-varnish flex-shrink-0">
         <input type="checkbox" checked={club.active !== false} onChange={e => onChange({ ...club, active: e.target.checked })} />
@@ -84,7 +84,7 @@ function ClubRow({ club, onChange, onDelete, onMoveUp, onMoveDown, canUp, canDow
 
 function LeagueRow({ league, onChange, onDelete, onMoveUp, onMoveDown, canUp, canDown }) {
   return (
-    <div className="flex items-center gap-2 bg-white/5 border border-white/10 p-3">
+    <div className="rounded-xl flex items-center gap-2 bg-white border border-brand-line p-3">
       <div className="flex flex-col flex-shrink-0">
         <GripVertical className="w-4 h-4 text-varnish mx-auto" />
         <div className="flex gap-0.5 mt-1">
@@ -97,21 +97,21 @@ function LeagueRow({ league, onChange, onDelete, onMoveUp, onMoveDown, canUp, ca
         value={league.name}
         onChange={e => onChange({ ...league, name: e.target.value })}
         placeholder="שם ליגה"
-        className="flex-1 bg-pitch border border-white/20 px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
+        className="rounded-xl flex-1 bg-brand-mist border border-brand-line px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
       />
       <input
         value={league.logo_url || ''}
         onChange={e => onChange({ ...league, logo_url: e.target.value })}
         placeholder="URL לוגו (אופציונלי)"
         dir="ltr"
-        className="flex-1 bg-pitch border border-white/20 px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
+        className="rounded-xl flex-1 bg-brand-mist border border-brand-line px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
       />
       <input
         value={league.href || ''}
         onChange={e => onChange({ ...league, href: e.target.value })}
         placeholder="/catalog?league=..."
         dir="ltr"
-        className="w-40 bg-pitch border border-white/20 px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
+        className="rounded-xl w-40 bg-brand-mist border border-brand-line px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
       />
       <label className="flex items-center gap-1 text-xs text-varnish flex-shrink-0">
         <input type="checkbox" checked={league.active !== false} onChange={e => onChange({ ...league, active: e.target.checked })} />
@@ -126,7 +126,7 @@ function LeagueRow({ league, onChange, onDelete, onMoveUp, onMoveDown, canUp, ca
 
 function CatRow({ cat, onChange, onDelete, onMoveUp, onMoveDown, canUp, canDown }) {
   return (
-    <div className="flex items-center gap-2 bg-white/5 border border-white/10 p-3">
+    <div className="rounded-xl flex items-center gap-2 bg-white border border-brand-line p-3">
       <div className="flex flex-col flex-shrink-0">
         <GripVertical className="w-4 h-4 text-varnish mx-auto" />
         <div className="flex gap-0.5 mt-1">
@@ -134,32 +134,32 @@ function CatRow({ cat, onChange, onDelete, onMoveUp, onMoveDown, canUp, canDown 
           <button onClick={onMoveDown} disabled={!canDown} className="text-varnish hover:text-turf disabled:opacity-20 disabled:cursor-not-allowed"><ChevronDown className="w-3.5 h-3.5" /></button>
         </div>
       </div>
-      {cat.image_url && <img src={cat.image_url} alt="" className="w-10 h-10 object-cover flex-shrink-0 border border-white/20" />}
+      {cat.image_url && <img src={cat.image_url} alt="" className="rounded-2xl w-10 h-10 object-cover flex-shrink-0 border border-brand-line" />}
       <input
         value={cat.label}
         onChange={e => onChange({ ...cat, label: e.target.value })}
         placeholder="תווית"
-        className="w-28 bg-pitch border border-white/20 px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
+        className="rounded-xl w-28 bg-brand-mist border border-brand-line px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
       />
       <input
         value={cat.subtitle || ''}
         onChange={e => onChange({ ...cat, subtitle: e.target.value })}
         placeholder="תת כותרת"
-        className="w-36 bg-pitch border border-white/20 px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
+        className="rounded-xl w-36 bg-brand-mist border border-brand-line px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
       />
       <input
         value={cat.image_url || ''}
         onChange={e => onChange({ ...cat, image_url: e.target.value })}
         placeholder="URL תמונה"
         dir="ltr"
-        className="flex-1 bg-pitch border border-white/20 px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
+        className="rounded-xl flex-1 bg-brand-mist border border-brand-line px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
       />
       <input
         value={cat.href || ''}
         onChange={e => onChange({ ...cat, href: e.target.value })}
         placeholder="/catalog?..."
         dir="ltr"
-        className="w-36 bg-pitch border border-white/20 px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
+        className="rounded-xl w-36 bg-brand-mist border border-brand-line px-2 py-1.5 text-xs text-chalk focus:outline-none focus:border-turf"
       />
       <label className="flex items-center gap-1 text-xs text-varnish flex-shrink-0">
         <input type="checkbox" checked={cat.active !== false} onChange={e => onChange({ ...cat, active: e.target.checked })} />

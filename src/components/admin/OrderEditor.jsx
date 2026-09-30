@@ -13,7 +13,7 @@ import {
 // rows back, records what changed, and hands the change list to the panel below
 // so the customer can be told.
 
-const field = 'w-full bg-pitch border border-white/20 px-2.5 py-2 text-xs text-chalk focus:outline-none focus:border-turf';
+const field = 'w-full rounded-xl bg-brand-mist border border-brand-line px-2.5 py-2 text-xs text-chalk focus:outline-none focus:border-turf';
 
 function Labelled({ label, children, className = '' }) {
   return (
@@ -174,11 +174,11 @@ export default function OrderEditor({ items, shirts, onCancel, onSaved }) {
   };
 
   return (
-    <div className="mt-3 pt-3 border-t border-white/10 space-y-3">
+    <div className="mt-3 pt-3 border-t border-brand-line space-y-3">
       <p className="text-xs text-varnish font-heading uppercase tracking-wide">עריכת הזמנה</p>
 
       {drafts.map((d, i) => (
-        <div key={d.key} className={`border border-white/10 bg-white/[0.03] p-3 space-y-2.5 ${d.removed ? 'opacity-40' : ''}`}>
+        <div key={d.key} className={`border border-brand-line bg-brand-mist p-3 space-y-2.5 ${d.removed ? 'opacity-40' : ''}`}>
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm text-chalk font-bold">
               {i + 1}. {d.name}
@@ -186,7 +186,7 @@ export default function OrderEditor({ items, shirts, onCancel, onSaved }) {
               {d.removed && <span className="text-red-400 text-xs font-normal"> (יוסר)</span>}
             </p>
             <button onClick={() => update(d.key, { removed: !d.removed })}
-              className="flex items-center gap-1 text-xs text-varnish hover:text-chalk border border-white/15 px-2 py-1">
+              className="rounded-xl flex items-center gap-1 text-xs text-varnish hover:text-chalk border border-brand-line px-2 py-1">
               {d.removed ? <><Undo2 className="w-3 h-3" /> החזרה</> : <><Trash2 className="w-3 h-3" /> הסרה</>}
             </button>
           </div>
@@ -234,12 +234,12 @@ export default function OrderEditor({ items, shirts, onCancel, onSaved }) {
             </div>
           )}
           {d.mystery && !d.removed && (
-            <p className="text-[11px] text-white/45">מיסטרי בוקס: אפשר לשנות מידה ומחיר. שאר הבחירות נשארות כמו שהלקוח בחר.</p>
+            <p className="text-[11px] text-brand-navy/50">מיסטרי בוקס: אפשר לשנות מידה ומחיר. שאר הבחירות נשארות כמו שהלקוח בחר.</p>
           )}
         </div>
       ))}
 
-      <div className="border border-dashed border-white/15 p-3">
+      <div className="rounded-xl border border-dashed border-brand-line p-3">
         <p className="text-[11px] text-varnish mb-2">הוספת פריט להזמנה</p>
         <div className="flex gap-2 flex-col sm:flex-row">
           <select value={addShirtId} onChange={e => setAddShirtId(e.target.value)} className={`${field} sm:flex-1`}>
@@ -260,7 +260,7 @@ export default function OrderEditor({ items, shirts, onCancel, onSaved }) {
         <p className="text-sm text-chalk">סה״כ אחרי העריכה: <span className="font-mono font-bold text-turf">₪{total}</span></p>
         <div className="flex gap-2">
           <button onClick={onCancel} disabled={saving}
-            className="flex items-center gap-1 px-3 py-2 text-xs text-varnish border border-white/15 hover:text-chalk">
+            className="rounded-xl flex items-center gap-1 px-3 py-2 text-xs text-varnish border border-brand-line hover:text-chalk">
             <X className="w-3 h-3" /> ביטול
           </button>
           <button onClick={save} disabled={saving}
@@ -329,34 +329,34 @@ export function NotifyCustomerPanel({ request, orderId, payload, onClose }) {
       </div>
 
       {!payload.historySaved && (
-        <p className="text-[11px] text-amber-400">
+        <p className="text-[11px] text-amber-600">
           היסטוריית העריכה לא נשמרה, כי חסרה עמודה במסד הנתונים. צריך להריץ ב-Supabase:
-          <span dir="ltr" className="block font-mono mt-1 text-amber-300">alter table interest_requests_raw add column if not exists edit_log text;</span>
+          <span dir="ltr" className="block font-mono mt-1 text-amber-700">alter table interest_requests_raw add column if not exists edit_log text;</span>
         </p>
       )}
 
       <textarea value={text} onChange={e => setText(e.target.value)} rows={9} dir="rtl"
-        className="w-full bg-pitch border border-white/20 px-3 py-2 text-xs text-chalk leading-relaxed focus:outline-none focus:border-turf" />
+        className="rounded-xl w-full bg-brand-mist border border-brand-line px-3 py-2 text-xs text-chalk leading-relaxed focus:outline-none focus:border-turf" />
 
       <div className="flex flex-wrap gap-2">
         {request.phone && (
           <a href={whatsappLink(request.phone, text)} target="_blank" rel="noopener noreferrer"
-            className={`${button} ${!prefersInstagram ? 'bg-green-500/20 border-green-400/60 text-green-300' : 'border-white/15 text-varnish hover:text-chalk'}`}>
+            className={`${button} ${!prefersInstagram ? 'bg-green-500/20 border-green-400/60 text-emerald-700' : 'border-brand-line text-varnish hover:text-chalk'}`}>
             <MessageCircle className="w-3.5 h-3.5" /> שליחה בוואטסאפ
           </a>
         )}
         <button onClick={openInstagram}
-          className={`${button} ${prefersInstagram ? 'bg-pink-500/20 border-pink-400/60 text-pink-300' : 'border-white/15 text-varnish hover:text-chalk'}`}>
+          className={`${button} ${prefersInstagram ? 'bg-pink-500/20 border-pink-400/60 text-pink-300' : 'border-brand-line text-varnish hover:text-chalk'}`}>
           <Instagram className="w-3.5 h-3.5" /> העתקה ופתיחת אינסטגרם
         </button>
         {request.email && (
           <button onClick={sendMail} disabled={mail === 'sending' || mail === 'sent'}
-            className={`${button} border-white/15 text-varnish hover:text-chalk disabled:opacity-60`}>
+            className={`${button} border-brand-line text-varnish hover:text-chalk disabled:opacity-60`}>
             {mail === 'sending' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : mail === 'sent' ? <Check className="w-3.5 h-3.5" /> : <Mail className="w-3.5 h-3.5" />}
             {mail === 'sent' ? 'המייל נשלח' : mail === 'sending' ? 'שולח...' : 'שליחת מייל'}
           </button>
         )}
-        <button onClick={copy} className={`${button} border-white/15 text-varnish hover:text-chalk`}>
+        <button onClick={copy} className={`${button} border-brand-line text-varnish hover:text-chalk`}>
           {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
           {copied ? 'הועתק!' : 'העתקת הטקסט'}
         </button>

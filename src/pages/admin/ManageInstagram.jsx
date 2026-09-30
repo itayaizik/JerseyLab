@@ -58,7 +58,7 @@ export default function ManageInstagram() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleAdd} className="bg-white/5 border border-white/10 p-4 mb-6 space-y-3">
+        <form onSubmit={handleAdd} className="rounded-2xl bg-white border border-brand-line p-4 mb-6 space-y-3">
           <div>
             <label className="text-sm text-varnish block mb-1">קישור לתמונה (URL) *</label>
             <input
@@ -66,7 +66,7 @@ export default function ManageInstagram() {
               onChange={e => setNewPost(p => ({ ...p, image_url: e.target.value }))}
               dir="ltr"
               placeholder="https://..."
-              className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none"
+              className="rounded-xl w-full bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none"
               required
             />
           </div>
@@ -77,7 +77,7 @@ export default function ManageInstagram() {
               onChange={e => setNewPost(p => ({ ...p, post_url: e.target.value }))}
               dir="ltr"
               placeholder="https://instagram.com/p/..."
-              className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none"
+              className="rounded-xl w-full bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none"
               required
             />
           </div>
@@ -87,7 +87,7 @@ export default function ManageInstagram() {
               value={newPost.caption}
               onChange={e => setNewPost(p => ({ ...p, caption: e.target.value }))}
               rows={2}
-              className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none resize-none"
+              className="rounded-xl w-full bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none resize-none"
             />
           </div>
           <div>
@@ -96,7 +96,7 @@ export default function ManageInstagram() {
               type="number"
               value={newPost.sort_order}
               onChange={e => setNewPost(p => ({ ...p, sort_order: e.target.value }))}
-              className="w-32 bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none"
+              className="rounded-xl w-32 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none"
             />
           </div>
           <button type="submit" disabled={saving} className="bg-turf text-pitch px-5 py-2 font-heading font-bold text-sm uppercase hover:bg-turf/90 disabled:opacity-50 flex items-center gap-2">
@@ -114,8 +114,8 @@ export default function ManageInstagram() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {posts.map(post => (
-            <div key={post.id} className="bg-white/5 border border-white/10 overflow-hidden">
-              <div className="aspect-square overflow-hidden bg-white/5">
+            <div key={post.id} className="rounded-2xl bg-white border border-brand-line overflow-hidden">
+              <div className="rounded-2xl aspect-square overflow-hidden bg-white">
                 <img src={post.image_url} alt="" className="w-full h-full object-cover" />
               </div>
               <div className="p-3">
@@ -123,7 +123,7 @@ export default function ManageInstagram() {
                 <div className="flex items-center justify-between">
                   <button
                     onClick={() => toggleActive(post)}
-                    className={`text-xs px-2 py-1 font-heading font-bold uppercase ${post.active ? 'bg-green-500/20 text-green-400' : 'bg-white/5 text-varnish'}`}
+                    className={`text-xs px-2 py-1 font-heading font-bold uppercase ${post.active ? 'bg-green-500/20 text-emerald-600' : 'bg-white text-varnish'}`}
                   >
                     {post.active ? 'פעיל' : 'מוסתר'}
                   </button>

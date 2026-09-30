@@ -279,10 +279,10 @@ export default function ManageShirts() {
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             {submitting ? 'שומר...' : dirtyCount > 0 ? `שמור הכל (${dirtyCount})` : 'שמור הכל'}
           </button>
-          <button onClick={() => navigate('/admin/recover-uploads')} className="flex items-center gap-1 bg-white/5 border border-white/10 text-chalk px-4 py-2 text-sm font-bold hover:bg-white/10">
+          <button onClick={() => navigate('/admin/recover-uploads')} className="rounded-xl flex items-center gap-1 bg-white border border-brand-line text-chalk px-4 py-2 text-sm font-bold hover:bg-brand-mist-dark">
             שחזור תמונות
           </button>
-          <button onClick={() => navigate('/admin/add-shirt')} className="flex items-center gap-1 bg-white/5 border border-white/10 text-chalk px-4 py-2 text-sm font-bold hover:bg-white/10">
+          <button onClick={() => navigate('/admin/add-shirt')} className="rounded-xl flex items-center gap-1 bg-white border border-brand-line text-chalk px-4 py-2 text-sm font-bold hover:bg-brand-mist-dark">
             <Plus className="w-4 h-4" /> הוסף חולצה
           </button>
         </div>
@@ -290,10 +290,10 @@ export default function ManageShirts() {
 
       {restoredCount > 0 && (
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border border-amber-400/40 bg-amber-500/10 p-3 text-sm">
-          <span className="text-amber-300">
+          <span className="text-amber-700">
             שוחזרו שינויים שלא נשמרו ב-{restoredCount} חולצות (מסומנות ב-●). עבור עליהן ולחץ "שמור הכל".
           </span>
-          <button type="button" onClick={discardRestored} className="border border-white/20 px-3 py-1.5 text-xs text-varnish hover:text-chalk">
+          <button type="button" onClick={discardRestored} className="rounded-xl border border-brand-line px-3 py-1.5 text-xs text-varnish hover:text-chalk">
             ביטול השחזור
           </button>
         </div>
@@ -304,15 +304,15 @@ export default function ManageShirts() {
         <div className="relative flex-1">
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-varnish pointer-events-none" />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="שם, קבוצה, עונה או שחקן - גם עם שגיאות כתיב"
-            className="w-full bg-white/5 border border-white/10 pr-10 pl-9 py-2.5 text-sm text-chalk placeholder:text-white/30 rounded focus:border-turf focus:ring-1 focus:ring-turf/40 focus:outline-none transition-colors" />
+            className="w-full bg-white border border-brand-line pr-10 pl-9 py-2.5 text-sm text-chalk placeholder:text-brand-navy/40 rounded focus:border-turf focus:ring-1 focus:ring-turf/40 focus:outline-none transition-colors" />
           {search && (
-            <button onClick={() => setSearch('')} aria-label="נקה חיפוש" className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-white/40 hover:text-chalk hover:bg-white/10 rounded transition-colors">
+            <button onClick={() => setSearch('')} aria-label="נקה חיפוש" className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-brand-navy/50 hover:text-chalk hover:bg-brand-mist-dark rounded transition-colors">
               <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-          className="bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:outline-none">
+          className="rounded-xl bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:outline-none">
           <option value="">כל הסטטוסים</option>
           <option value="available">זמין</option>
           <option value="reserved">שמור</option>
@@ -320,12 +320,12 @@ export default function ManageShirts() {
           <option value="hidden">מוסתר</option>
         </select>
         <select value={leagueFilter} onChange={e => setParam('league', e.target.value)} aria-label="ליגה"
-          className="bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:outline-none">
+          className="rounded-xl bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:outline-none">
           <option value="">כל הליגות</option>
           {leagueOptions.map(([league, n]) => <option key={league} value={league}>{league} ({n})</option>)}
         </select>
         <select value={sortBy} onChange={e => setParam('sort', e.target.value)} aria-label="מיון"
-          className="bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:outline-none">
+          className="rounded-xl bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:outline-none">
           <option value="">{search ? 'לפי התאמה' : 'חדש ביותר'}</option>
           <option value="updated">עודכן לאחרונה</option>
           <option value="name">לפי שם</option>
@@ -347,7 +347,7 @@ export default function ManageShirts() {
               return (
                 <button key={item.id} type="button" onClick={() => toggleQuick(item.id)}
                   disabled={!on && n === 0} aria-pressed={on}
-                  className={`px-2.5 py-1 text-xs font-heading font-bold border transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${on ? 'bg-turf text-pitch border-turf' : 'bg-white/5 text-chalk border-white/10 hover:border-turf'}`}>
+                  className={`px-2.5 py-1 text-xs font-heading font-bold border transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${on ? 'bg-turf text-pitch border-turf' : 'bg-white text-chalk border-brand-line hover:border-turf'}`}>
                   {item.label} <span className={`font-mono ${on ? 'text-pitch/70' : 'text-varnish'}`}>{n}</span>
                 </button>
               );
@@ -371,7 +371,7 @@ export default function ManageShirts() {
 
       {saveResult && (
         <div className="mb-4 p-3 rounded border text-sm" style={{ background: saveResult.failed.length ? 'rgba(255,180,0,0.1)' : 'rgba(34,197,94,0.1)', borderColor: saveResult.failed.length ? 'rgba(255,180,0,0.3)' : 'rgba(34,197,94,0.3)' }}>
-          {saveResult.saved > 0 && <p className="text-green-400 flex items-center gap-2"><Check className="w-4 h-4" /> נשמרו {saveResult.saved} חולצות בהצלחה.</p>}
+          {saveResult.saved > 0 && <p className="text-emerald-600 flex items-center gap-2"><Check className="w-4 h-4" /> נשמרו {saveResult.saved} חולצות בהצלחה.</p>}
           {saveResult.failed.map((f, i) => (
             <p key={i} className="text-yellow-400 flex items-center gap-2 mt-1"><AlertCircle className="w-4 h-4" /> {f.name}: {f.error}</p>
           ))}
@@ -382,7 +382,7 @@ export default function ManageShirts() {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/10 text-varnish text-xs uppercase">
+            <tr className="border-b border-brand-line text-varnish text-xs uppercase">
               <th className="text-right py-3 px-2">תמונה</th>
               <th className="text-right py-3 px-2">שם</th>
               <th className="text-right py-3 px-2 hidden md:table-cell">קבוצה</th>
@@ -395,11 +395,11 @@ export default function ManageShirts() {
           <tbody>
             {filtered.map(s => (
               <React.Fragment key={s.id}>
-                <tr className={`border-b border-white/5 hover:bg-white/5 ${expandedId === s.id ? 'bg-white/5' : ''}`}>
+                <tr className={`border-b border-brand-line hover:bg-white ${expandedId === s.id ? 'bg-white' : ''}`}>
                   <td className="py-2 px-2">
                     {/* Resized, like the storefront: this list paints up to 178 of
                         these at 48px, and it was fetching every full-size photo. */}
-                    <div className="relative w-12 h-12 bg-white/5 overflow-hidden">
+                    <div className="rounded-2xl relative w-12 h-12 bg-white overflow-hidden">
                       {s.main_image ? <ProductImage src={s.main_image} alt="" sizes="48px" className="w-full h-full object-cover" /> :<div className="w-full h-full flex items-center justify-center text-varnish text-xs">-</div>}
                     </div>
                   </td>
@@ -414,7 +414,7 @@ export default function ManageShirts() {
                         <div className="mt-1 flex flex-wrap items-center gap-1.5">
                           <button type="button" onClick={() => copyQuery(s.id, query)} dir="ltr"
                             title="העתקת הטקסט באנגלית לחיפוש בגוגל"
-                            className="inline-flex items-center gap-1 border border-white/15 px-1.5 py-0.5 text-[11px] text-varnish hover:border-turf hover:text-chalk transition-colors">
+                            className="rounded-xl inline-flex items-center gap-1 border border-brand-line px-1.5 py-0.5 text-[11px] text-varnish hover:border-turf hover:text-chalk transition-colors">
                             {copiedQueryId === s.id ? <Check className="w-3 h-3 text-turf" /> : <Copy className="w-3 h-3" />}
                             {copiedQueryId === s.id ? 'Copied!' : query}
                           </button>
@@ -442,7 +442,7 @@ export default function ManageShirts() {
                   </td>
                   <td className="py-2 px-2">
                     <select value={s.status} onChange={e => handleStatusChange(s.id, e.target.value)}
-                      className="bg-transparent border border-white/10 px-2 py-1 text-xs text-chalk focus:outline-none">
+                      className="rounded-xl bg-transparent border border-brand-line px-2 py-1 text-xs text-chalk focus:outline-none">
                       <option value="available">זמין</option>
                       <option value="reserved">שמור</option>
                       <option value="sold">נמכר</option>
@@ -481,8 +481,8 @@ export default function ManageShirts() {
                   </td>
                 </tr>
                 {expandedId === s.id && drafts[s.id] && (
-                  <tr className="border-b border-white/10">
-                    <td colSpan={7} className="p-4 bg-pitch/30">
+                  <tr className="border-b border-brand-line">
+                    <td colSpan={7} className="p-4 bg-brand-mist">
                       <ShirtEditForm draft={drafts[s.id]} onChange={(next) => updateDraft(s.id, next)} onImageSaved={(patch) => handleImageSaved(s.id, patch)} />
                       <div className="flex items-center justify-between mt-4 max-w-3xl">
                         <button onClick={() => setExpandedId(null)} className="text-sm text-varnish hover:text-turf">סגור עריכה</button>

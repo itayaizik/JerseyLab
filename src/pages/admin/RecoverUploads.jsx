@@ -35,8 +35,8 @@ function OrphanCard({ file, shirts, busy, onAttach, onDelete }) {
   ).slice(0, 6);
 
   return (
-    <div className="border border-white/10 bg-white/5 p-3 flex flex-col gap-3">
-      <a href={file.url} target="_blank" rel="noopener noreferrer" className="block bg-white">
+    <div className="rounded-xl border border-brand-line bg-white p-3 flex flex-col gap-3">
+      <a href={file.url} target="_blank" rel="noopener noreferrer" className="rounded-2xl block bg-white">
         <img src={file.url} alt="" loading="lazy" className="h-44 w-full object-contain" />
       </a>
       <div className="flex items-center justify-between text-[11px] text-varnish">
@@ -47,7 +47,7 @@ function OrphanCard({ file, shirts, busy, onAttach, onDelete }) {
       <div className="relative">
         <Search className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-varnish pointer-events-none" />
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="חיפוש החולצה של התמונה..."
-          className="w-full bg-pitch border border-white/20 pr-7 pl-2 py-2 text-xs text-chalk focus:outline-none focus:border-turf" />
+          className="rounded-xl w-full bg-brand-mist border border-brand-line pr-7 pl-2 py-2 text-xs text-chalk focus:outline-none focus:border-turf" />
       </div>
 
       <ul className="space-y-1">
@@ -55,7 +55,7 @@ function OrphanCard({ file, shirts, busy, onAttach, onDelete }) {
           <li key={shirt.id} className="flex items-center gap-1.5">
             <span className="flex-1 min-w-0 truncate text-xs text-chalk" title={shirt.name}>
               {shirt.name}
-              {!shirt.main_image && <span className="text-amber-400"> · בלי תמונה</span>}
+              {!shirt.main_image && <span className="text-amber-600"> · בלי תמונה</span>}
             </span>
             <button type="button" disabled={busy} onClick={() => onAttach(file, shirt, 'main')}
               className="px-2 py-1 text-[11px] font-bold bg-turf text-pitch disabled:opacity-40">ראשית</button>
@@ -154,7 +154,7 @@ export default function RecoverUploads() {
           <History className="w-6 h-6" /> שחזור תמונות
         </h1>
         <button type="button" onClick={load} disabled={loading}
-          className="flex items-center gap-1 border border-white/15 px-3 py-2 text-xs text-varnish hover:text-chalk disabled:opacity-40">
+          className="rounded-xl flex items-center gap-1 border border-brand-line px-3 py-2 text-xs text-varnish hover:text-chalk disabled:opacity-40">
           <RotateCcw className="w-3.5 h-3.5" /> רענון
         </button>
       </div>
@@ -170,8 +170,8 @@ export default function RecoverUploads() {
           <p className="text-xs text-turf font-bold mb-2 flex items-center gap-1"><Check className="w-3.5 h-3.5" /> שויכו {done.length} תמונות</p>
           <ul className="flex flex-wrap gap-2">
             {done.map(d => (
-              <li key={d.url} className="flex items-center gap-2 bg-white/5 pl-2 text-[11px] text-chalk">
-                <img src={d.url} alt="" className="h-8 w-8 object-cover bg-white" />
+              <li key={d.url} className="rounded-2xl flex items-center gap-2 bg-white pl-2 text-[11px] text-chalk">
+                <img src={d.url} alt="" className="rounded-2xl h-8 w-8 object-cover bg-white" />
                 {d.shirtName} ({d.kind === 'main' ? 'ראשית' : 'נוספת'})
               </li>
             ))}

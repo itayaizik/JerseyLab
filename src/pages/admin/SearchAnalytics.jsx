@@ -79,7 +79,7 @@ export default function SearchAnalytics() {
         <div className="flex gap-2">
           {[7, 30, 90].map(d => (
             <button key={d} onClick={() => setPeriod(d)}
-              className={`text-xs px-3 py-1.5 font-bold font-heading uppercase transition-colors ${period === d ? 'bg-turf text-pitch' : 'border border-white/20 text-varnish hover:text-chalk'}`}>
+              className={`text-xs px-3 py-1.5 font-bold font-heading uppercase transition-colors ${period === d ? 'bg-turf text-pitch' : 'border border-brand-line text-varnish hover:text-chalk'}`}>
               {d} ימים
             </button>
           ))}
@@ -88,19 +88,19 @@ export default function SearchAnalytics() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white/5 border border-white/10 p-4">
+        <div className="rounded-2xl bg-white border border-brand-line p-4">
           <p className="text-xs text-varnish font-heading uppercase mb-1">סה"כ חיפושים</p>
           <p className="font-mono font-bold text-2xl text-chalk">{filtered.length}</p>
         </div>
-        <div className="bg-white/5 border border-white/10 p-4">
+        <div className="rounded-2xl bg-white border border-brand-line p-4">
           <p className="text-xs text-varnish font-heading uppercase mb-1">מונחים ייחודיים</p>
           <p className="font-mono font-bold text-2xl text-chalk">{Object.keys(counts).length}</p>
         </div>
-        <div className="bg-white/5 border border-white/10 p-4">
+        <div className="rounded-2xl bg-white border border-brand-line p-4">
           <p className="text-xs text-varnish font-heading uppercase mb-1">הכי מבוקש</p>
           <p className="font-mono font-bold text-lg text-turf truncate">{top[0]?.[0] || '-'}</p>
         </div>
-        <div className="bg-white/5 border border-white/10 p-4">
+        <div className="rounded-2xl bg-white border border-brand-line p-4">
           <p className="text-xs text-varnish font-heading uppercase mb-1">בלי תוצאות</p>
           <p className={`font-mono font-bold text-2xl ${zeroRate ? 'text-redcard' : 'text-chalk'}`}>{zeroRate == null ? '-' : `${zeroRate}%`}</p>
         </div>
@@ -108,7 +108,7 @@ export default function SearchAnalytics() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top searches */}
-        <div className="bg-white/5 border border-white/10 p-5">
+        <div className="rounded-2xl bg-white border border-brand-line p-5">
           <h2 className="font-heading font-bold text-sm text-chalk uppercase mb-4 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-turf" /> חיפושים פופולריים
           </h2>
@@ -119,7 +119,7 @@ export default function SearchAnalytics() {
               {top.map(([term, count], i) => (
                 <div key={term} className="flex items-center gap-3">
                   <span className="text-xs text-varnish font-mono w-5 text-left">{i + 1}</span>
-                  <div className="flex-1 bg-white/5 rounded-sm overflow-hidden h-6 relative">
+                  <div className="flex-1 bg-white rounded-sm overflow-hidden h-6 relative">
                     <div
                       className="absolute inset-y-0 right-0 bg-turf/30"
                       style={{ width: `${(count / (top[0]?.[1] || 1)) * 100}%` }}
@@ -134,7 +134,7 @@ export default function SearchAnalytics() {
         </div>
 
         {/* Daily chart */}
-        <div className="bg-white/5 border border-white/10 p-5">
+        <div className="rounded-2xl bg-white border border-brand-line p-5">
           <h2 className="font-heading font-bold text-sm text-chalk uppercase mb-4 flex items-center gap-2">
             <BarChart2 className="w-4 h-4 text-turf" /> חיפושים לפי יום (14 ימים אחרונים)
           </h2>
@@ -150,7 +150,7 @@ export default function SearchAnalytics() {
       </div>
 
       {/* Searched and found nothing */}
-      <div className="mt-6 bg-white/5 border border-white/10 p-5">
+      <div className="rounded-2xl mt-6 bg-white border border-brand-line p-5">
         <h2 className="font-heading font-bold text-sm text-chalk uppercase mb-2 flex items-center gap-2">
           <AlertCircle className="w-4 h-4 text-redcard" /> חיפשו ולא מצאו
         </h2>
@@ -173,13 +173,13 @@ export default function SearchAnalytics() {
       </div>
 
       {/* Full log */}
-      <div className="mt-6 bg-white/5 border border-white/10 p-5">
+      <div className="rounded-2xl mt-6 bg-white border border-brand-line p-5">
         <h2 className="font-heading font-bold text-sm text-chalk uppercase mb-4 flex items-center gap-2">
           <Search className="w-4 h-4 text-turf" /> לוג חיפושים אחרונים
         </h2>
         <div className="space-y-1 max-h-80 overflow-y-auto">
           {filtered.slice(0, 100).map(l => (
-            <div key={l.id} className="flex items-center justify-between text-sm py-1 border-b border-white/5">
+            <div key={l.id} className="flex items-center justify-between text-sm py-1 border-b border-brand-line">
               <span className="text-chalk font-body">{l.search_term}</span>
               <span className="flex items-center gap-3">
                 {l.results_count != null && (

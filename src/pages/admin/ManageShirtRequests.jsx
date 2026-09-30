@@ -65,7 +65,7 @@ export default function ManageShirtRequests() {
         {[['all', 'הכל'], ['new', 'חדשות'], ['answered', 'נענו'], ['closed', 'סגורות']].map(([value, label]) => (
           <button key={value} onClick={() => setFilter(value)}
             className={`px-3 py-1.5 text-xs font-heading font-bold uppercase tracking-wide border-2 transition-colors ${
-              filter === value ? 'bg-brand-orange text-white border-brand-orange' : 'border-white/20 text-white/70 hover:border-white/50'
+              filter === value ? 'bg-brand-orange text-white border-brand-orange' : 'border-brand-line text-brand-navy/70 hover:border-brand-line'
             }`}>
             {label}
           </button>
@@ -77,7 +77,7 @@ export default function ManageShirtRequests() {
           <div className="w-8 h-8 border-4 border-varnish border-t-turf rounded-full animate-spin" />
         </div>
       ) : requests.length === 0 ? (
-        <p className="text-varnish text-sm font-body py-12 text-center border-2 border-dashed border-white/15">
+        <p className="rounded-2xl text-varnish text-sm font-body py-12 text-center border-2 border-dashed border-brand-line">
           אין בקשות להצגה.
         </p>
       ) : (
@@ -86,18 +86,18 @@ export default function ManageShirtRequests() {
             const status = STATUSES[r.status] || STATUSES.new;
             const waLink = r.phone ? `https://wa.me/${String(r.phone).replace(/\D/g, '').replace(/^0/, '972')}` : null;
             return (
-              <div key={r.id} className="bg-white/5 border border-white/10 p-4">
+              <div key={r.id} className="rounded-2xl bg-white border border-brand-line p-4">
                 <div className="flex gap-4">
                   {/* Photo, when the customer sent one. Opens full size -
                       identifying a kit often needs the detail. */}
                   {r.image_url ? (
                     <button type="button" onClick={() => setLightbox(r.image_url)}
-                      className="w-24 h-24 flex-shrink-0 border-2 border-white/20 overflow-hidden hover:border-brand-orange transition-colors">
+                      className="rounded-2xl w-24 h-24 flex-shrink-0 border-2 border-brand-line overflow-hidden hover:border-brand-orange transition-colors">
                       <img src={r.image_url} alt="" className="w-full h-full object-cover" />
                     </button>
                   ) : (
-                    <div className="w-24 h-24 flex-shrink-0 border-2 border-dashed border-white/15 flex items-center justify-center">
-                      <Search className="w-6 h-6 text-white/20" />
+                    <div className="rounded-2xl w-24 h-24 flex-shrink-0 border-2 border-dashed border-brand-line flex items-center justify-center">
+                      <Search className="w-6 h-6 text-brand-navy/40" />
                     </div>
                   )}
 
@@ -118,17 +118,17 @@ export default function ManageShirtRequests() {
                     </div>
 
                     {r.shirt_description && (
-                      <p className="text-sm text-white/80 font-body whitespace-pre-wrap mb-1.5">{r.shirt_description}</p>
+                      <p className="text-sm text-brand-navy/80 font-body whitespace-pre-wrap mb-1.5">{r.shirt_description}</p>
                     )}
                     {r.notes && (
-                      <p className="text-xs text-white/50 font-body whitespace-pre-wrap mb-2">הערות: {r.notes}</p>
+                      <p className="text-xs text-brand-navy/50 font-body whitespace-pre-wrap mb-2">הערות: {r.notes}</p>
                     )}
 
                     <div className="flex flex-wrap items-center gap-2 mt-2">
-                      <span className="text-xs text-white/70 font-body">{r.full_name}</span>
+                      <span className="text-xs text-brand-navy/70 font-body">{r.full_name}</span>
                       {waLink && (
                         <a href={waLink} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-green-400 hover:underline font-mono" dir="ltr">
+                          className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:underline font-mono" dir="ltr">
                           <MessageCircle className="w-3 h-3" />{r.phone}
                         </a>
                       )}
@@ -139,32 +139,32 @@ export default function ManageShirtRequests() {
                         </a>
                       )}
                       {r.email && (
-                        <a href={`mailto:${r.email}`} className="text-xs text-blue-300 hover:underline font-mono" dir="ltr">
+                        <a href={`mailto:${r.email}`} className="text-xs text-blue-700 hover:underline font-mono" dir="ltr">
                           {r.email}
                         </a>
                       )}
                       {r.image_url && (
                         <a href={r.image_url} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-white/40 hover:text-white/70">
+                          className="inline-flex items-center gap-1 text-xs text-brand-navy/50 hover:text-brand-navy/70">
                           <ExternalLink className="w-3 h-3" />תמונה
                         </a>
                       )}
                     </div>
 
-                    <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-white/10">
+                    <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-brand-line">
                       {Object.entries(STATUSES).map(([value, meta]) => (
                         <button key={value} onClick={() => setStatus(r.id, value)}
                           disabled={r.status === value}
                           className={`px-2.5 py-1 text-[11px] font-heading font-bold uppercase border transition-colors ${
                             r.status === value
-                              ? 'border-white/10 text-white/25 cursor-default'
-                              : 'border-white/25 text-white/70 hover:border-brand-orange hover:text-brand-orange'
+                              ? 'border-brand-line text-brand-navy/40 cursor-default'
+                              : 'border-brand-line text-brand-navy/70 hover:border-brand-orange hover:text-brand-orange'
                           }`}>
                           {meta.label}
                         </button>
                       ))}
                       <button onClick={() => remove(r.id)} aria-label="מחק בקשה"
-                        className="mr-auto text-white/30 hover:text-red-400 transition-colors">
+                        className="mr-auto text-brand-navy/40 hover:text-red-400 transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>

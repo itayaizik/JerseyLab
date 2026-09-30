@@ -57,11 +57,11 @@ export default function ManageFAQ() {
       </div>
 
       {showAdd && (
-        <div className="border border-turf/30 bg-white/5 p-4 mb-6 space-y-3">
+        <div className="rounded-2xl border border-turf/30 bg-white p-4 mb-6 space-y-3">
           <input value={newQ} onChange={e => setNewQ(e.target.value)} placeholder="שאלה"
-            className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
+            className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
           <textarea value={newA} onChange={e => setNewA(e.target.value)} placeholder="תשובה" rows={3}
-            className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none resize-none" />
+            className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none resize-none" />
           <div className="flex gap-2">
             <button onClick={handleAdd} className="bg-turf text-pitch px-4 py-2 text-sm font-bold">שמור</button>
             <button onClick={() => setShowAdd(false)} className="text-varnish text-sm">ביטול</button>
@@ -71,11 +71,11 @@ export default function ManageFAQ() {
 
       <div className="space-y-2">
         {faqs.map(f => (
-          <div key={f.id} className="border border-white/10 bg-white/5 p-4">
+          <div key={f.id} className="rounded-2xl border border-brand-line bg-white p-4 shadow-card">
             {editId === f.id ? (
               <div className="space-y-3">
-                <input value={editQ} onChange={e => setEditQ(e.target.value)} className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:outline-none" />
-                <textarea value={editA} onChange={e => setEditA(e.target.value)} rows={3} className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:outline-none resize-none" />
+                <input value={editQ} onChange={e => setEditQ(e.target.value)} className="rounded-xl w-full bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:outline-none" />
+                <textarea value={editA} onChange={e => setEditA(e.target.value)} rows={3} className="rounded-xl w-full bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:outline-none resize-none" />
                 <div className="flex gap-2">
                   <button onClick={() => handleEdit(f.id)} className="text-turf text-sm flex items-center gap-1"><Check className="w-3 h-3" /> שמור</button>
                   <button onClick={() => setEditId(null)} className="text-varnish text-sm">ביטול</button>

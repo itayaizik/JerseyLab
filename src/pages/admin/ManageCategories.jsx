@@ -51,7 +51,7 @@ export default function ManageCategories() {
       <div className="flex gap-2 mb-6">
         <input value={newName} onChange={e => setNewName(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()}
           placeholder="שם קטגוריה חדשה..."
-          className="flex-1 bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
+          className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
         <button onClick={handleAdd} className="bg-turf text-pitch px-4 py-2.5 text-sm font-bold flex items-center gap-1">
           <Plus className="w-4 h-4" /> הוסף
         </button>
@@ -59,10 +59,10 @@ export default function ManageCategories() {
 
       <div className="space-y-2">
         {categories.map(c => (
-          <div key={c.id} className="border border-white/10 bg-white/5 px-4 py-3 flex items-center justify-between">
+          <div key={c.id} className="rounded-xl border border-brand-line bg-white px-4 py-3 flex items-center justify-between">
             {editId === c.id ? (
               <div className="flex items-center gap-2 flex-1">
-                <input value={editName} onChange={e => setEditName(e.target.value)} className="flex-1 bg-white/5 border border-white/10 px-2 py-1 text-sm text-chalk focus:outline-none" />
+                <input value={editName} onChange={e => setEditName(e.target.value)} className="rounded-xl flex-1 bg-white border border-brand-line px-2 py-1 text-sm text-chalk focus:outline-none" />
                 <button onClick={() => handleEdit(c.id)} className="text-turf"><Check className="w-4 h-4" /></button>
                 <button onClick={() => setEditId(null)} className="text-varnish"><X className="w-4 h-4" /></button>
               </div>

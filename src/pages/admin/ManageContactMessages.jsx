@@ -50,7 +50,7 @@ export default function ManageContactMessages() {
               className={`px-4 py-2 text-sm font-bold border-2 transition-colors ${
                 filter === btn.value
                   ? 'bg-turf text-pitch border-turf'
-                  : 'bg-white/5 text-varnish border-white/10 hover:border-turf'
+                  : 'bg-white text-varnish border-brand-line hover:border-turf'
               }`}
             >
               {btn.label}
@@ -73,7 +73,7 @@ export default function ManageContactMessages() {
           {messages.map(msg => (
             <div
               key={msg.id}
-              className="border border-white/10 bg-white/5 p-4 space-y-2"
+              className="rounded-2xl border border-brand-line bg-white p-4 shadow-card space-y-2"
             >
               {/* Header row */}
               <div className="flex items-start justify-between gap-4">
@@ -88,21 +88,21 @@ export default function ManageContactMessages() {
                     className={`text-xs font-bold px-2 py-1 ${
                       msg.status === 'new'
                         ? 'bg-turf/20 text-turf'
-                        : 'bg-green-500/20 text-green-400'
+                        : 'bg-green-500/20 text-emerald-600'
                     }`}
                   >
                     {msg.status === 'new' ? 'חדשה' : 'טופלה'}
                   </span>
                   <button
                     onClick={() => toggleStatus(msg.id, msg.status)}
-                    className="px-2 py-1 text-xs bg-white/10 hover:bg-white/20 transition-colors border border-white/10 text-chalk"
+                    className="rounded-xl px-2 py-1 text-xs bg-brand-mist-dark hover:bg-brand-mist-dark transition-colors border border-brand-line text-chalk"
                   >
                     {msg.status === 'new' ? 'סמן כטופלה' : 'סמן כחדשה'}
                   </button>
                   <button
                     onClick={() => handleDelete(msg.id)}
                     aria-label="מחק פנייה"
-                    className="p-1.5 bg-white/10 hover:bg-red-500/20 hover:text-red-400 transition-colors border border-white/10 text-chalk"
+                    className="rounded-xl p-1.5 bg-brand-mist-dark hover:bg-red-500/20 hover:text-red-400 transition-colors border border-brand-line text-chalk"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -113,7 +113,7 @@ export default function ManageContactMessages() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-varnish">
                 {msg.phone && (
                   <div>
-                    <p className="text-white/50">טלפון</p>
+                    <p className="text-brand-navy/50">טלפון</p>
                     <p className="font-mono text-chalk" dir="ltr">
                       {msg.phone}
                     </p>
@@ -121,18 +121,18 @@ export default function ManageContactMessages() {
                 )}
                 {msg.subject && (
                   <div>
-                    <p className="text-white/50">נושא</p>
+                    <p className="text-brand-navy/50">נושא</p>
                     <p className="text-chalk truncate">{msg.subject}</p>
                   </div>
                 )}
                 <div>
-                  <p className="text-white/50">תאריך</p>
+                  <p className="text-brand-navy/50">תאריך</p>
                   <p className="text-chalk">{formatDateTime(msg.created_date)}</p>
                 </div>
               </div>
 
               {/* Message */}
-              <div className="bg-white/5 border border-white/5 p-3 rounded">
+              <div className="bg-white border border-brand-line p-3 rounded">
                 <p className="text-sm text-chalk leading-relaxed">{msg.message}</p>
               </div>
             </div>

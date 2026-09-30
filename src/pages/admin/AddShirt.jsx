@@ -141,44 +141,44 @@ export default function AddShirt() {
 
       <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
         {/* Basic Info */}
-        <div className="border border-white/10 bg-white/5 p-4 space-y-4">
+        <div className="rounded-2xl border border-brand-line bg-white p-4 shadow-card space-y-4">
           <h2 className="font-heading font-bold text-sm text-turf">פרטי חולצה</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
               <label className="text-sm text-varnish block mb-1">שם חולצה *</label>
               <input value={form.name} onChange={e => handleChange('name', e.target.value)}
-                className={`w-full bg-white/5 border px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none ${errors.name ? 'border-redcard' : 'border-white/10'}`} />
+                className={`w-full bg-white border px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none ${errors.name ? 'border-redcard' : 'border-brand-line'}`} />
               {errors.name && <p className="text-redcard text-xs mt-1">{errors.name}</p>}
             </div>
             <div>
               <label className="text-sm text-varnish block mb-1">קבוצה</label>
               <input value={form.club} onChange={e => handleChange('club', e.target.value)}
-                className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
+                className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
             </div>
             <div>
               <label className="text-sm text-varnish block mb-1">נבחרת</label>
               <input value={form.national_team} onChange={e => handleChange('national_team', e.target.value)}
-                className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
+                className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
             </div>
             <div>
               <label className="text-sm text-varnish block mb-1">ליגה</label>
               <input value={form.league} onChange={e => handleChange('league', e.target.value)}
-                className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
+                className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
             </div>
             <div>
               <label className="text-sm text-varnish block mb-1">עונה</label>
               <input value={form.season} onChange={e => handleChange('season', e.target.value)} placeholder="2023/24"
-                className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
+                className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
             </div>
             <div>
               <label className="text-sm text-varnish block mb-1">שחקן</label>
               <input value={form.player_name} onChange={e => handleChange('player_name', e.target.value)}
-                className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
+                className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
             </div>
             <div>
               <label className="text-sm text-varnish block mb-1">קטגוריה</label>
               <select value={form.gender_category} onChange={e => handleChange('gender_category', e.target.value)}
-                className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none">
+                className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none">
                 <option value="men">גברים</option>
                 <option value="kids">ילדים</option>
                 <option value="unisex">יוניסקס</option>
@@ -187,7 +187,7 @@ export default function AddShirt() {
             <div>
               <label className="text-sm text-varnish block mb-1">ענף</label>
               <select value={form.sport_category} onChange={e => handleChange('sport_category', e.target.value)}
-                className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none">
+                className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none">
                 <option value="football">כדורגל</option>
                 <option value="basketball">כדורסל</option>
               </select>
@@ -196,23 +196,23 @@ export default function AddShirt() {
         </div>
 
         {/* Pricing */}
-        <div className="border border-white/10 bg-white/5 p-4 space-y-4">
+        <div className="rounded-2xl border border-brand-line bg-white p-4 shadow-card space-y-4">
           <h2 className="font-heading font-bold text-sm text-turf">מחיר ומצב</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="text-sm text-varnish block mb-1">מחיר (₪) *</label>
               <input type="number" value={form.price} onChange={e => handleChange('price', e.target.value)} dir="ltr"
-                className={`w-full bg-white/5 border px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none ${errors.price ? 'border-redcard' : 'border-white/10'}`} />
+                className={`w-full bg-white border px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none ${errors.price ? 'border-redcard' : 'border-brand-line'}`} />
             </div>
             <div>
               <label className="text-sm text-varnish block mb-1">מחיר מבצע (₪)</label>
               <input type="number" value={form.sale_price} onChange={e => handleChange('sale_price', e.target.value)} dir="ltr"
-                className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
+                className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
             </div>
             <div>
               <label className="text-sm text-varnish block mb-1">מצב</label>
               <select value={form.condition} onChange={e => handleChange('condition', e.target.value)}
-                className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none">
+                className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none">
                 <option value="new">חדש</option>
                 <option value="like_new">כמו חדש</option>
                 <option value="used">משומש</option>
@@ -222,21 +222,21 @@ export default function AddShirt() {
         </div>
 
         {/* Sizes */}
-        <div className="border border-white/10 bg-white/5 p-4 space-y-4">
+        <div className="rounded-2xl border border-brand-line bg-white p-4 shadow-card space-y-4">
           <h2 className="font-heading font-bold text-sm text-turf">מידות ומלאי</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {currentSizeOptions.map(size => (
               <div key={size} className="flex items-center gap-2">
                 <span className="text-sm text-chalk font-mono w-12">{size}</span>
                 <input type="number" min="0" value={sizes[size] || ''} onChange={e => handleSizeChange(size, e.target.value)} dir="ltr"
-                  placeholder="0" className="w-full bg-white/5 border border-white/10 px-2 py-1.5 text-sm text-chalk focus:border-turf focus:outline-none" />
+                  placeholder="0" className="rounded-xl w-full bg-white border border-brand-line px-2 py-1.5 text-sm text-chalk focus:border-turf focus:outline-none" />
               </div>
             ))}
           </div>
         </div>
 
         {/* Images */}
-        <div className="border border-white/10 bg-white/5 p-4 space-y-4">
+        <div className="rounded-2xl border border-brand-line bg-white p-4 shadow-card space-y-4">
           <div className="flex items-center justify-between mb-2">
             <h2 className="font-heading font-bold text-sm text-turf">תמונות</h2>
             <label className="flex items-center gap-2 text-xs text-varnish cursor-pointer">
@@ -255,17 +255,17 @@ export default function AddShirt() {
             <label className="text-sm text-varnish block mb-2">תמונה ראשית</label>
             {mainImageUrl ? (
               <div className="relative w-32 h-32">
-                <img src={mainImageUrl} className="w-full h-full object-cover border border-white/10" onError={e => { e.target.src = 'https://placehold.co/128x128'; }} />
+                <img src={mainImageUrl} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.src = 'https://placehold.co/128x128'; }} />
                 <button type="button" onClick={() => setMainImageUrl('')} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button>
               </div>
             ) : useUrlMode ? (
               <div className="flex gap-2">
                 <input value={mainImageUrlInput} onChange={e => setMainImageUrlInput(e.target.value)} placeholder="https://..." dir="ltr"
-                  className="flex-1 bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
+                  className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
                 <button type="button" onClick={handleMainImageUrl} className="px-4 py-2.5 bg-turf/10 text-turf text-sm font-bold">הוסף</button>
               </div>
             ) : (
-              <label className="flex items-center justify-center w-32 h-32 border border-dashed border-white/20 cursor-pointer hover:border-turf transition-colors">
+              <label className="rounded-2xl flex items-center justify-center w-32 h-32 border border-dashed border-brand-line cursor-pointer hover:border-turf transition-colors">
                 <Upload className="w-6 h-6 text-varnish" />
                 <input type="file" accept="image/*" onChange={handleMainImage} className="hidden" />
               </label>
@@ -278,7 +278,7 @@ export default function AddShirt() {
             <div className="flex gap-2 flex-wrap mb-3">
               {extraImageUrls.map((url, i) => (
                 <div key={i} className="relative w-20 h-20">
-                  <img src={url} className="w-full h-full object-cover border border-white/10" onError={e => { e.target.src = 'https://placehold.co/80x80'; }} />
+                  <img src={url} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.src = 'https://placehold.co/80x80'; }} />
                   <button type="button" onClick={() => removeExtraImage(i)} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button>
                 </div>
               ))}
@@ -286,11 +286,11 @@ export default function AddShirt() {
             {useUrlMode ? (
               <div className="flex gap-2">
                 <input value={extraImageUrlInput} onChange={e => setExtraImageUrlInput(e.target.value)} placeholder="https://..." dir="ltr"
-                  className="flex-1 bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
+                  className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
                 <button type="button" onClick={handleExtraImageUrl} className="px-4 py-2.5 bg-turf/10 text-turf text-sm font-bold">הוסף</button>
               </div>
             ) : (
-              <label className="flex items-center justify-center w-20 h-20 border border-dashed border-white/20 cursor-pointer hover:border-turf transition-colors">
+              <label className="rounded-2xl flex items-center justify-center w-20 h-20 border border-dashed border-brand-line cursor-pointer hover:border-turf transition-colors">
                 <Plus className="w-5 h-5 text-varnish" />
                 <input type="file" accept="image/*" multiple onChange={handleExtraImages} className="hidden" />
               </label>
@@ -302,12 +302,12 @@ export default function AddShirt() {
         <LocalStockEditor items={localStockItems} onChange={setLocalStockItems} sizes={LOCAL_STOCK_SIZES} />
 
         {/* Tags & Flags */}
-        <div className="border border-white/10 bg-white/5 p-4 space-y-4">
+        <div className="rounded-2xl border border-brand-line bg-white p-4 shadow-card space-y-4">
           <h2 className="font-heading font-bold text-sm text-turf">תגיות ודגלים</h2>
           <div>
             <label className="text-sm text-varnish block mb-1">תיאור</label>
             <textarea value={form.description} onChange={e => handleChange('description', e.target.value)} rows={3}
-              className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none resize-none" />
+              className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none resize-none" />
           </div>
           <div>
             <label className="text-sm text-varnish block mb-1">תגיות</label>
@@ -320,7 +320,7 @@ export default function AddShirt() {
             </div>
             <div className="flex gap-2">
               <input value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                placeholder="הוסף תגית..." className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
+                placeholder="הוסף תגית..." className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
               <button type="button" onClick={addTag} className="px-3 py-2 bg-turf/10 text-turf text-sm font-bold hover:bg-turf/20">+</button>
             </div>
           </div>
@@ -328,7 +328,7 @@ export default function AddShirt() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             <label className="text-sm text-varnish block mb-1">סטטוס</label>
             <select value={form.status} onChange={e => handleChange('status', e.target.value)}
-              className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none md:col-span-2">
+              className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none md:col-span-2">
               <option value="available">זמין</option>
               <option value="reserved">שמור</option>
               <option value="sold">נמכר</option>

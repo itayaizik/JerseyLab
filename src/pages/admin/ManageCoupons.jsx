@@ -49,7 +49,7 @@ function status(c) {
   return { label: 'פעיל', tone: 'text-turf' };
 }
 
-const input = 'w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none';
+const input = 'w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none';
 
 function Field({ label, hint, children }) {
   return (
@@ -63,7 +63,7 @@ function Field({ label, hint, children }) {
 
 function Toggle({ checked, onChange, label, hint }) {
   return (
-    <label className="flex cursor-pointer items-start gap-2.5 border border-white/10 bg-white/5 p-3">
+    <label className="rounded-xl flex cursor-pointer items-start gap-2.5 border border-brand-line bg-white p-3">
       <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} className="mt-0.5 h-4 w-4 accent-turf" />
       <span>
         <span className="block text-sm text-chalk">{label}</span>
@@ -84,7 +84,7 @@ function CouponForm({ initial, onSave, onCancel, saving, error }) {
   };
 
   return (
-    <form onSubmit={submit} className="mb-6 space-y-4 border border-turf/30 bg-white/5 p-4">
+    <form onSubmit={submit} className="rounded-2xl mb-6 space-y-4 border border-turf/30 bg-white p-4">
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label="הקוד" hint="מה שהלקוח מקליד. אותיות באנגלית ומספרים, בלי רווחים.">
           <input value={form.code} onChange={e => set('code', normalizeCode(e.target.value))} dir="ltr" maxLength={40} required
@@ -286,7 +286,7 @@ export default function ManageCoupons() {
           }
           const s = status(c);
           return (
-            <div key={c.id} className="border border-white/10 bg-white/5 p-4">
+            <div key={c.id} className="rounded-2xl border border-brand-line bg-white p-4 shadow-card">
               <div className="flex flex-wrap items-center gap-3">
                 <Ticket className="h-4 w-4 text-turf" />
                 <span dir="ltr" className="font-heading text-lg font-bold tracking-wide">{c.code}</span>

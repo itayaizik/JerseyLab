@@ -62,7 +62,7 @@ export default function Dashboard() {
   }
 
   const statCards = [
-    { label: 'סה"כ חולצות', value: stats.total, color: 'border-white/20' },
+    { label: 'סה"כ חולצות', value: stats.total, color: 'border-brand-line' },
     { label: 'זמינות', value: stats.available, color: 'border-turf' },
     { label: 'שמורות', value: stats.reserved, color: 'border-amber-400' },
     { label: 'נמכרו', value: stats.sold, color: 'border-redcard' },
@@ -78,7 +78,7 @@ export default function Dashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
         {statCards.map(s => (
-          <div key={s.label} className={`border-r-2 ${s.color} bg-white/5 p-4`}>
+          <div key={s.label} className={`border-r-2 ${s.color} bg-white p-4`}>
             <p className="font-mono font-bold text-2xl text-chalk">{s.value}</p>
             <p className="text-xs text-varnish">{s.label}</p>
           </div>
@@ -87,19 +87,19 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Status Distribution Chart */}
-        <div className="border border-white/10 bg-white/5 p-4">
+        <div className="rounded-2xl border border-brand-line bg-white p-4 shadow-card">
           <h2 className="font-heading font-bold text-sm text-turf mb-4">פילוח סטטוס חולצות</h2>
           <StatusPieChart stats={stats} />
         </div>
 
         {/* Top Viewed Chart */}
-        <div className="border border-white/10 bg-white/5 p-4">
+        <div className="rounded-2xl border border-brand-line bg-white p-4 shadow-card">
           <h2 className="font-heading font-bold text-sm text-turf mb-4">חולצות - מובילות צפיות</h2>
           <TopViewedBarChart shirts={shirtsData} />
         </div>
 
         {/* New Requests */}
-        <div className="border border-white/10 bg-white/5 p-4">
+        <div className="rounded-2xl border border-brand-line bg-white p-4 shadow-card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-heading font-bold text-sm text-turf flex items-center gap-2">
               <MessageCircle className="w-4 h-4" />
@@ -110,7 +110,7 @@ export default function Dashboard() {
           {newRequests.length > 0 ? (
             <div className="space-y-2">
               {newRequests.slice(0, 5).map(r => (
-                <div key={r.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                <div key={r.id} className="flex items-center justify-between py-2 border-b border-brand-line last:border-0">
                   <div>
                     <p className="text-sm font-medium">{r.full_name}</p>
                     <p className="text-xs text-varnish">{r.shirt_name} • {r.wanted_size || '-'}</p>
@@ -125,14 +125,14 @@ export default function Dashboard() {
         </div>
 
         {/* Most Viewed */}
-        <div className="border border-white/10 bg-white/5 p-4">
+        <div className="rounded-2xl border border-brand-line bg-white p-4 shadow-card">
           <h2 className="font-heading font-bold text-sm text-turf flex items-center gap-2 mb-4">
             <Eye className="w-4 h-4" />
             הנצפות ביותר
           </h2>
           <div className="space-y-2">
             {stats.mostViewed.map((s, i) => (
-              <div key={s.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+              <div key={s.id} className="flex items-center justify-between py-2 border-b border-brand-line last:border-0">
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-varnish font-mono w-5">{i + 1}.</span>
                   <Link to={`/shirt/${s.id}`} className="text-sm hover:text-turf transition-colors">{s.name}</Link>
@@ -146,7 +146,7 @@ export default function Dashboard() {
         {/* Low Stock */}
         {stats.lowStock.length > 0 && (
           <div className="border border-amber-500/30 bg-amber-500/5 p-4">
-            <h2 className="font-heading font-bold text-sm text-amber-400 flex items-center gap-2 mb-4">
+            <h2 className="font-heading font-bold text-sm text-amber-600 flex items-center gap-2 mb-4">
               <AlertTriangle className="w-4 h-4" />
               מלאי נמוך
             </h2>
@@ -154,7 +154,7 @@ export default function Dashboard() {
               {stats.lowStock.map(s => (
                 <Link key={s.id} to={`/admin/edit-shirt/${s.id}`} className="flex items-center justify-between py-2 border-b border-amber-500/10 last:border-0 hover:text-turf transition-colors">
                   <span className="text-sm">{s.name}</span>
-                  <span className="text-xs text-amber-400 font-mono">
+                  <span className="text-xs text-amber-600 font-mono">
                     {Object.values(s.sizes).reduce((a, b) => a + b, 0)} יח'
                   </span>
                 </Link>
@@ -165,7 +165,7 @@ export default function Dashboard() {
 
         {/* Top Searches */}
         {topSearches.length > 0 && (
-          <div className="border border-white/10 bg-white/5 p-4">
+          <div className="rounded-2xl border border-brand-line bg-white p-4 shadow-card">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-heading font-bold text-sm text-turf flex items-center gap-2">
                 <TrendingUp className="w-4 h-4" />
@@ -175,7 +175,7 @@ export default function Dashboard() {
             </div>
             <div className="flex flex-wrap gap-2">
               {topSearches.map(([term, count]) => (
-                <span key={term} className="text-xs bg-white/5 border border-white/10 px-3 py-1.5">
+                <span key={term} className="rounded-xl text-xs bg-white border border-brand-line px-3 py-1.5">
                   {term} <span className="text-varnish">({count})</span>
                 </span>
               ))}
@@ -185,14 +185,14 @@ export default function Dashboard() {
 
         {/* Recent Activity */}
         {recentLogs.length > 0 && (
-          <div className="border border-white/10 bg-white/5 p-4 lg:col-span-2">
+          <div className="rounded-2xl border border-brand-line bg-white p-4 shadow-card lg:col-span-2">
             <h2 className="font-heading font-bold text-sm text-turf flex items-center gap-2 mb-4">
               <Clock className="w-4 h-4" />
               פעילות אחרונה
             </h2>
             <div className="space-y-2">
               {recentLogs.map(log => (
-                <div key={log.id} className="flex items-center gap-3 py-2 border-b border-white/5 last:border-0">
+                <div key={log.id} className="flex items-center gap-3 py-2 border-b border-brand-line last:border-0">
                   <span className="text-xs text-varnish font-mono">
                     {formatDate(log.created_date)}
                   </span>

@@ -90,13 +90,18 @@ module.exports = {
   				line: '#E3E7EE',          // dividers and card outlines
   			},
 
-  			// The admin area's own darker palette. Deliberately not the shop's:
-  			// it is a dense internal tool, not the storefront, and it was already
-  			// referenced by name rather than by hex.
-  			pitch: '#0C0D0E',
-  			chalk: '#F9FAF7',
-  			varnish: '#8E8E8E',
-  			redcard: '#FF3B30',
+  			// The admin area's palette. It used to be a dark one of its own, on
+  			// the argument that an internal tool is not the storefront. In
+  			// practice one person uses both, all day, and the switch between a
+  			// near-black panel and a white page was the jarring part.
+  			//
+  			// So these four now point at the shop's own colours. The names stay
+  			// because ~660 admin class names are written in them, and renaming
+  			// them would be a sweep with nothing to show for it.
+  			pitch: '#F3F5F8',   // was the page ground, still is - brand.mist
+  			chalk: '#1B2A4A',   // was near-white text, now brand.navy on light
+  			varnish: '#6E7A94', // muted navy-grey: labels, timestamps, hints
+  			redcard: '#D92D20', // deeper than the old #FF3B30, which glared on white
   			// Same value as brand.orange. Kept because 266 admin class names use
   			// it; the shop should use brand-orange.
   			turf: '#E8622A',

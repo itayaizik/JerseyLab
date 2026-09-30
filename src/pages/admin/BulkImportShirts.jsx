@@ -106,15 +106,15 @@ export default function BulkImportShirts() {
       <h1 className="font-heading font-black text-2xl mb-2 text-turf">ייבוא מסיבי של חולצות</h1>
       <p className="text-varnish text-sm mb-6">העלה קובץ CSV כדי להוסיף מלא חולצות בפעם אחת</p>
 
-      <div className="max-w-2xl bg-white/5 border border-white/10 p-6 rounded">
+      <div className="max-w-2xl bg-white border border-brand-line p-6 rounded">
         {/* Template Download */}
-        <div className="mb-6 pb-6 border-b border-white/10">
+        <div className="mb-6 pb-6 border-b border-brand-line">
           <p className="text-sm text-varnish mb-2">דוגמת CSV:</p>
-          <code className="block bg-pitch/50 p-3 text-xs text-chalk overflow-x-auto rounded mb-3">
+          <code className="block bg-brand-mist p-3 text-xs text-chalk overflow-x-auto rounded mb-3">
             name,club,national_team,league,season,player_name,gender_category,sport_category,price,sale_price,condition,description,tags,status,featured,is_new,is_rare,is_retro,best_seller,main_image,extra_images{'\n'}
             Manchester United 1999,Manchester United,,Premier League,1998/99,Beckham,men,football,150,120,new,Treble winning shirt,retro;iconic,,true,true,true,false,false,https://...,https://...;https://...
           </code>
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-brand-navy/50">
             • <strong>name</strong> - חובה | <strong>price</strong> - חובה | <strong>tags</strong> - בנקודה-פסיק
             {' '} | <strong>featured,is_new,is_rare,is_retro,best_seller</strong> - true/false
             {' '} | <strong>extra_images</strong> - קישורים מופרדים בנקודה-פסיק
@@ -123,7 +123,7 @@ export default function BulkImportShirts() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="flex items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded cursor-pointer hover:border-turf transition-colors">
+            <label className="flex items-center justify-center w-full h-32 border-2 border-dashed border-brand-line rounded cursor-pointer hover:border-turf transition-colors">
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 <Upload className="w-8 h-8 text-varnish mb-2" />
                 <p className="text-sm text-varnish">{file ? file.name : 'בחר קובץ CSV או גרור לכאן'}</p>
@@ -141,12 +141,12 @@ export default function BulkImportShirts() {
 
         {/* Encoding + pre-import validation preview */}
         {preview && (
-          <div className="mt-4 p-3 bg-white/5 border border-white/10 rounded text-xs text-white/70 space-y-1">
+          <div className="mt-4 p-3 bg-white border border-brand-line rounded text-xs text-brand-navy/70 space-y-1">
             <p>
               קידוד זוהה: <span className="text-chalk font-mono">{encoding}</span>
               {' '}·{' '}
               עברית:{' '}
-              <span className={hebrewDetected ? 'text-green-400' : 'text-white/40'}>
+              <span className={hebrewDetected ? 'text-emerald-600' : 'text-brand-navy/50'}>
                 {hebrewDetected ? 'זוהתה ✓' : 'לא זוהתה'}
               </span>
             </p>
@@ -162,10 +162,10 @@ export default function BulkImportShirts() {
         {results && (
           <div className="mt-6 p-4 bg-green-500/10 border border-green-500/30 rounded">
             <div className="flex gap-2 items-start mb-2">
-              <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+              <Check className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-bold text-green-500">הייבוא הסתיים!</p>
-                <p className="text-xs text-green-400">{results.success} חולצות הוספו בהצלחה</p>
+                <p className="text-sm font-bold text-emerald-600">הייבוא הסתיים!</p>
+                <p className="text-xs text-emerald-600">{results.success} חולצות הוספו בהצלחה</p>
                 {results.failed > 0 && <p className="text-xs text-yellow-400">{results.failed} נכשלו</p>}
               </div>
             </div>

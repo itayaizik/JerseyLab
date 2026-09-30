@@ -14,7 +14,7 @@ import { newStockItem, stockSummaryText } from '@/lib/localStock';
 // leaves the print empty, since the next shirt in a batch usually differs only
 // in the name.
 
-const FIELD = 'bg-white/5 border border-white/10 px-2 py-1.5 text-sm text-chalk focus:border-turf focus:outline-none';
+const FIELD = 'bg-white border border-brand-line px-2 py-1.5 text-sm text-chalk focus:border-turf focus:outline-none';
 
 export default function LocalStockEditor({ items, onChange, sizes }) {
   const update = (id, patch) => onChange(items.map(item => (item.id === id ? { ...item, ...patch } : item)));
@@ -27,7 +27,7 @@ export default function LocalStockEditor({ items, onChange, sizes }) {
   const add = () => onChange([...items, newStockItem(items[items.length - 1]?.size || 'M')]);
 
   return (
-    <div className="border border-white/10 bg-white/5 p-4 space-y-3">
+    <div className="rounded-2xl border border-brand-line bg-white p-4 shadow-card space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="font-heading font-bold text-sm text-turf">מלאי בארץ</h3>
         <span className="text-xs text-varnish">
@@ -44,7 +44,7 @@ export default function LocalStockEditor({ items, onChange, sizes }) {
           {items.map((item, i) => {
             const options = sizes.includes(item.size) ? sizes : [item.size, ...sizes];
             return (
-              <div key={item.id} className="flex flex-wrap items-center gap-2 border border-white/10 bg-pitch/40 p-2">
+              <div key={item.id} className="rounded-xl flex flex-wrap items-center gap-2 border border-brand-line bg-brand-mist p-2">
                 <span className="text-xs text-varnish font-mono w-5 text-center">{i + 1}</span>
                 <select value={item.size} onChange={e => update(item.id, { size: e.target.value })} aria-label="מידה" className={FIELD}>
                   {options.map(size => <option key={size} value={size}>{size}</option>)}

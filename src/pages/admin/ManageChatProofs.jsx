@@ -186,17 +186,17 @@ export default function ManageChatProofs({ embedded = false }) {
       </div>
 
       {/* Upload */}
-      <div className="border border-white/10 bg-white/5 p-4 mb-6 space-y-3">
+      <div className="rounded-2xl border border-brand-line bg-white p-4 shadow-card mb-6 space-y-3">
         <div>
           <label htmlFor="cp-caption" className="text-sm text-varnish block mb-1">
             כיתוב (לא חובה, אפשר לערוך אחר כך)
           </label>
           <input id="cp-caption" value={caption} onChange={e => setCaption(e.target.value)} maxLength={140}
             placeholder="למשל: לקוח מתל אביב קיבל את החולצה תוך 5 ימים"
-            className="w-full bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
+            className="rounded-xl w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none" />
         </div>
 
-        <label className={`flex items-center justify-center gap-2 border-2 border-dashed border-white/25 py-6 cursor-pointer hover:border-turf transition-colors ${uploading ? 'opacity-60 pointer-events-none' : ''}`}>
+        <label className={`flex items-center justify-center gap-2 border-2 border-dashed border-brand-line py-6 cursor-pointer hover:border-turf transition-colors ${uploading ? 'opacity-60 pointer-events-none' : ''}`}>
           {uploading ? <Loader2 className="w-5 h-5 animate-spin text-turf" /> : <Upload className="w-5 h-5 text-varnish" />}
           <span className="text-sm text-varnish font-body">
             {uploading ? 'מעלה…' : 'בחר צילומי מסך (אפשר כמה בבת אחת)'}
@@ -211,10 +211,10 @@ export default function ManageChatProofs({ embedded = false }) {
           <div className="w-8 h-8 border-4 border-varnish border-t-turf rounded-full animate-spin" />
         </div>
       ) : proofs.length === 0 ? (
-        <div className="text-center py-12 border-2 border-dashed border-white/15">
-          <MessageSquare className="w-10 h-10 mx-auto mb-3 text-white/20" />
+        <div className="rounded-2xl text-center py-12 border-2 border-dashed border-brand-line">
+          <MessageSquare className="w-10 h-10 mx-auto mb-3 text-brand-navy/40" />
           <p className="text-varnish text-sm font-body">עדיין לא העלית צילומי שיחות.</p>
-          <p className="text-white/40 text-xs font-body mt-1">כל עוד אין אף אחד, הקטע הזה לא מופיע באתר.</p>
+          <p className="text-brand-navy/50 text-xs font-body mt-1">כל עוד אין אף אחד, הקטע הזה לא מופיע באתר.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -222,10 +222,10 @@ export default function ManageChatProofs({ embedded = false }) {
             const attached = (proof.shirt_ids || []).map(id => shirtsById[id]).filter(Boolean);
             const order = orders.find(o => o.key === proof.order_id);
             return (
-              <div key={proof.id} className={`flex gap-4 border border-white/10 p-3 ${proof.active ? 'bg-white/5' : 'bg-white/[0.02] opacity-60'}`}>
+              <div key={proof.id} className={`flex gap-4 border border-brand-line p-3 ${proof.active ? 'bg-white' : 'bg-brand-mist opacity-60'}`}>
                 <div className="flex-shrink-0 flex flex-col gap-1.5">
                   <a href={proof.image_url} target="_blank" rel="noopener noreferrer">
-                    <img src={proof.image_url} alt="" className="w-20 h-28 object-cover border border-white/20 hover:border-turf transition-colors" />
+                    <img src={proof.image_url} alt="" className="rounded-2xl w-20 h-28 object-cover border border-brand-line hover:border-turf transition-colors" />
                   </a>
                   <label className="text-[11px] text-center text-varnish hover:text-turf cursor-pointer transition-colors">
                     החלף תמונה
@@ -240,14 +240,14 @@ export default function ManageChatProofs({ embedded = false }) {
                     onBlur={e => saveCaption(proof, e.target.value)}
                     maxLength={140}
                     placeholder="כיתוב (נשמר כשעוזבים את השדה)"
-                    className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none"
+                    className="rounded-xl w-full bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none"
                   />
                   <p className="text-xs text-varnish font-mono">
                     {formatDate(proof.created_date)} · מיקום {i + 1}
                   </p>
 
                   {/* What the conversation was about */}
-                  <div className="border border-white/10 bg-white/[0.03] p-2.5">
+                  <div className="rounded-xl border border-brand-line bg-brand-mist p-2.5">
                     <div className="flex items-center gap-2 flex-wrap mb-2">
                       <ShoppingBag className="w-3.5 h-3.5 text-turf" />
                       <span className="text-xs font-bold text-chalk">
@@ -269,11 +269,11 @@ export default function ManageChatProofs({ embedded = false }) {
                     {attached.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mb-2">
                         {attached.map(s => (
-                          <span key={s.id} className="inline-flex items-center gap-1.5 bg-white/5 border border-white/10 pl-1.5 pr-1 py-1">
+                          <span key={s.id} className="rounded-xl inline-flex items-center gap-1.5 bg-white border border-brand-line pl-1.5 pr-1 py-1">
                             {s.main_image && <img src={s.main_image} alt="" className="w-6 h-6 object-cover" />}
                             <span className="text-xs text-chalk max-w-[160px] truncate">{s.name}</span>
                             <button onClick={() => removeShirt(proof, s.id)} aria-label={`הסר ${s.name}`}
-                              className="text-white/40 hover:text-redcard transition-colors">
+                              className="text-brand-navy/50 hover:text-redcard transition-colors">
                               <X className="w-3 h-3" />
                             </button>
                           </span>
@@ -283,11 +283,11 @@ export default function ManageChatProofs({ embedded = false }) {
 
                     <div className="flex gap-2">
                       <button onClick={() => setAttaching(attaching?.id === proof.id && attaching.tab === 'order' ? null : { id: proof.id, tab: 'order' })}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs border border-white/25 text-white/70 hover:border-turf hover:text-turf transition-colors">
+                        className="rounded-xl inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs border border-brand-line text-brand-navy/70 hover:border-turf hover:text-turf transition-colors">
                         <Search className="w-3 h-3" /> {order ? 'החלף הזמנה' : 'צרף הזמנה'}
                       </button>
                       <button onClick={() => setAttaching(attaching?.id === proof.id && attaching.tab === 'shirt' ? null : { id: proof.id, tab: 'shirt' })}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs border border-white/25 text-white/70 hover:border-turf hover:text-turf transition-colors">
+                        className="rounded-xl inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs border border-brand-line text-brand-navy/70 hover:border-turf hover:text-turf transition-colors">
                         <Plus className="w-3 h-3" /> הוסף חולצה
                       </button>
                     </div>
@@ -302,19 +302,19 @@ export default function ManageChatProofs({ embedded = false }) {
 
                   <div className="flex flex-wrap gap-2 mt-auto">
                     <button onClick={() => toggleActive(proof)}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs border border-white/25 text-white/70 hover:border-turf hover:text-turf transition-colors">
+                      className="rounded-xl inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs border border-brand-line text-brand-navy/70 hover:border-turf hover:text-turf transition-colors">
                       {proof.active ? <><Eye className="w-3 h-3" /> מוצג</> : <><EyeOff className="w-3 h-3" /> מוסתר</>}
                     </button>
                     <button onClick={() => move(i, -1)} disabled={i === 0} aria-label="הזז למעלה"
-                      className="px-2 py-1.5 border border-white/25 text-white/70 hover:border-turf disabled:opacity-30 disabled:hover:border-white/25 transition-colors">
+                      className="rounded-xl px-2 py-1.5 border border-brand-line text-brand-navy/70 hover:border-turf disabled:opacity-30 disabled:hover:border-brand-line transition-colors">
                       <ArrowUp className="w-3 h-3" />
                     </button>
                     <button onClick={() => move(i, 1)} disabled={i === proofs.length - 1} aria-label="הזז למטה"
-                      className="px-2 py-1.5 border border-white/25 text-white/70 hover:border-turf disabled:opacity-30 disabled:hover:border-white/25 transition-colors">
+                      className="rounded-xl px-2 py-1.5 border border-brand-line text-brand-navy/70 hover:border-turf disabled:opacity-30 disabled:hover:border-brand-line transition-colors">
                       <ArrowDown className="w-3 h-3" />
                     </button>
                     <button onClick={() => remove(proof)} aria-label="מחק"
-                      className="mr-auto px-2 py-1.5 text-white/30 hover:text-redcard transition-colors">
+                      className="mr-auto px-2 py-1.5 text-brand-navy/40 hover:text-redcard transition-colors">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -339,9 +339,9 @@ function OrderPicker({ orders, shirtsById, onPick }) {
     .slice(0, 12);
 
   return (
-    <div className="mt-2 border border-white/10 bg-pitch/40 p-2">
+    <div className="rounded-xl mt-2 border border-brand-line bg-brand-mist p-2">
       <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder="חפש לפי שם, טלפון או חולצה"
-        className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none mb-2" />
+        className="rounded-xl w-full bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none mb-2" />
       {matches.length === 0 ? (
         <p className="text-xs text-varnish py-2 text-center">לא נמצאה הזמנה.</p>
       ) : (
@@ -349,7 +349,7 @@ function OrderPicker({ orders, shirtsById, onPick }) {
           {matches.map(o => (
             <li key={o.key}>
               <button onClick={() => onPick(o)}
-                className="w-full text-right border border-white/10 hover:border-turf px-2.5 py-2 transition-colors">
+                className="rounded-xl w-full text-right border border-brand-line hover:border-turf px-2.5 py-2 transition-colors">
                 <span className="block text-xs font-bold text-chalk">{o.name || 'ללא שם'} · {formatDate(o.date)}</span>
                 <span className="block text-xs text-varnish truncate">
                   {o.items.map(r => r.shirt_name || shirtsById[r.shirt_id]?.name || 'פריט').join(' · ')}

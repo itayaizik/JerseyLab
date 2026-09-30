@@ -7,7 +7,7 @@ export default function AdminRoute() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-pitch">
+      <div className="flex items-center justify-center min-h-screen bg-brand-mist">
         <div className="w-8 h-8 border-4 border-varnish border-t-turf rounded-full animate-spin" />
       </div>
     );

@@ -117,7 +117,7 @@ export default function SalesReport() {
             <button
               key={opt.days}
               onClick={() => setPeriod(opt.days)}
-              className={`px-3 py-1.5 text-xs font-bold font-heading uppercase transition-colors border ${period === opt.days ? 'bg-turf text-pitch border-turf' : 'border-white/20 text-varnish hover:text-chalk'}`}
+              className={`px-3 py-1.5 text-xs font-bold font-heading uppercase transition-colors border ${period === opt.days ? 'bg-turf text-pitch border-turf' : 'border-brand-line text-varnish hover:text-chalk'}`}
             >
               {opt.label}
             </button>
@@ -127,22 +127,22 @@ export default function SalesReport() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-        <div className="bg-white/5 border border-white/10 p-4">
+        <div className="rounded-2xl bg-white border border-brand-line p-4">
           <p className="text-xs text-varnish mb-1 uppercase font-heading">סה"כ נמכר</p>
           <p className="font-mono font-bold text-3xl text-turf">₪{revenue.toLocaleString()}</p>
           <p className="text-xs text-varnish mt-1">{soldShirts.length} חולצות</p>
         </div>
-        <div className="bg-white/5 border border-white/10 p-4">
+        <div className="rounded-2xl bg-white border border-brand-line p-4">
           <p className="text-xs text-varnish mb-1 uppercase font-heading">מחיר ממוצע</p>
           <p className="font-mono font-bold text-3xl text-chalk">₪{avgPrice.toLocaleString()}</p>
           <p className="text-xs text-varnish mt-1">לחולצה</p>
         </div>
-        <div className="bg-white/5 border border-amber-500/30 p-4">
+        <div className="rounded-2xl bg-white border border-amber-500/30 p-4">
           <p className="text-xs text-varnish mb-1 uppercase font-heading">הכנסה פוטנציאלית</p>
-          <p className="font-mono font-bold text-3xl text-amber-400">₪{potentialRevenue.toLocaleString()}</p>
+          <p className="font-mono font-bold text-3xl text-amber-600">₪{potentialRevenue.toLocaleString()}</p>
           <p className="text-xs text-varnish mt-1">{reservedShirts.length} שמורות</p>
         </div>
-        <div className="bg-white/5 border border-white/10 p-4">
+        <div className="rounded-2xl bg-white border border-brand-line p-4">
           <p className="text-xs text-varnish mb-1 uppercase font-heading">בקשות סגורות</p>
           <p className="font-mono font-bold text-3xl text-chalk">{closedRequests.length}</p>
           <p className="text-xs text-varnish mt-1">בתקופה זו</p>
@@ -150,7 +150,7 @@ export default function SalesReport() {
       </div>
 
       {/* Monthly Chart */}
-      <div className="bg-white/5 border border-white/10 p-4 mb-6">
+      <div className="rounded-2xl bg-white border border-brand-line p-4 mb-6">
         <h2 className="font-heading font-bold text-sm text-turf mb-4 flex items-center gap-2">
           <BarChart2 className="w-4 h-4" />
           הכנסות לפי חודש (6 חודשים אחרונים)
@@ -171,7 +171,7 @@ export default function SalesReport() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Sold Shirts List */}
-        <div className="bg-white/5 border border-white/10 p-4">
+        <div className="rounded-2xl bg-white border border-brand-line p-4">
           <h2 className="font-heading font-bold text-sm text-turf mb-4 flex items-center gap-2">
             <ShoppingBag className="w-4 h-4" />
             חולצות שנמכרו ({soldShirts.length})
@@ -181,7 +181,7 @@ export default function SalesReport() {
           ) : (
             <div className="space-y-2 max-h-80 overflow-y-auto">
               {soldWithRevenue.map((s, i) => (
-                <div key={s.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                <div key={s.id} className="flex items-center justify-between py-2 border-b border-brand-line last:border-0">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-xs text-varnish font-mono w-5 flex-shrink-0">{i + 1}.</span>
                     <div className="min-w-0">
@@ -197,7 +197,7 @@ export default function SalesReport() {
         </div>
 
         {/* Top Interest */}
-        <div className="bg-white/5 border border-white/10 p-4">
+        <div className="rounded-2xl bg-white border border-brand-line p-4">
           <h2 className="font-heading font-bold text-sm text-turf mb-4 flex items-center gap-2">
             <DollarSign className="w-4 h-4" />
             הכי מבוקשות (בקשות התעניינות)
@@ -214,7 +214,7 @@ export default function SalesReport() {
                       <p className="text-sm truncate">{item.name}</p>
                       <span className="text-xs text-varnish font-mono mr-2">{item.count} בקשות</span>
                     </div>
-                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-brand-mist-dark rounded-full overflow-hidden">
                       <div
                         className="h-full bg-turf rounded-full"
                         style={{ width: `${Math.round((item.count / topInterest[0].count) * 100)}%` }}

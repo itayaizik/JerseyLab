@@ -98,7 +98,7 @@ export default function ManageReviews() {
       <h1 className="font-heading font-black text-2xl text-turf mb-4">ביקורות ולקוחות מספרים</h1>
 
       {/* The two halves of the same thing on the home page */}
-      <div className="flex gap-2 border-b border-white/10 mb-6">
+      <div className="flex gap-2 border-b border-brand-line mb-6">
         {[
           { key: 'reviews', label: `ביקורות (${reviews.length})`, icon: Star },
           { key: 'proofs', label: 'צילומי שיחות', icon: MessageSquare },
@@ -122,7 +122,7 @@ export default function ManageReviews() {
                 { key: 'all', label: 'הכל' },
               ].map(f => (
                 <button key={f.key} onClick={() => setFilter(f.key)}
-                  className={`text-xs px-3 py-1.5 font-bold font-heading uppercase transition-colors ${filter === f.key ? 'bg-turf text-pitch' : 'border border-white/20 text-varnish hover:text-chalk'}`}>
+                  className={`text-xs px-3 py-1.5 font-bold font-heading uppercase transition-colors ${filter === f.key ? 'bg-turf text-pitch' : 'border border-brand-line text-varnish hover:text-chalk'}`}>
                   {f.label}
                 </button>
               ))}
@@ -235,16 +235,16 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
   const draftShirt = draft && shirts.find(s => s.id === draft.shirt_id);
 
   return (
-    <div className={`border bg-white/5 p-4 ${r.approved ? 'border-turf/30' : 'border-amber-500/40'}`}>
+    <div className={`border bg-white p-4 ${r.approved ? 'border-turf/30' : 'border-amber-500/40'}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <span className={`text-xs px-2 py-0.5 font-bold ${r.approved ? 'bg-turf text-pitch' : 'bg-amber-500/20 text-amber-400'}`}>
+            <span className={`text-xs px-2 py-0.5 font-bold ${r.approved ? 'bg-turf text-pitch' : 'bg-amber-500/20 text-amber-600'}`}>
               {r.approved ? 'מאושר' : 'ממתין לאישור'}
             </span>
             <span className="text-sm font-bold text-chalk">{r.is_anonymous ? 'אנונימי' : r.reviewer_name}</span>
             <div className="flex gap-0.5">
-              {[1, 2, 3, 4, 5].map(s => <Star key={s} className={`w-3 h-3 ${s <= r.rating ? 'fill-amber-400 text-amber-400' : 'text-varnish'}`} />)}
+              {[1, 2, 3, 4, 5].map(s => <Star key={s} className={`w-3 h-3 ${s <= r.rating ? 'fill-turf text-turf' : 'text-varnish'}`} />)}
             </div>
             {r.verified_purchase && <span className="text-xs px-2 py-0.5 bg-turf/15 text-turf font-bold">רכישה מאומתת</span>}
             <span className="text-xs text-varnish font-mono mr-auto">{formatDate(r.created_date)}</span>
@@ -257,7 +257,7 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
           <div className="mt-2 flex items-end gap-3 flex-wrap">
             {r.image_url && (
               <a href={r.image_url} target="_blank" rel="noopener noreferrer" className="inline-block relative">
-                <img src={r.image_url} alt="" className={`w-16 h-16 object-cover border border-white/10 hover:opacity-80 transition-opacity ${r.image_hidden ? 'opacity-30' : ''}`} />
+                <img src={r.image_url} alt="" className={`w-16 h-16 object-cover border border-brand-line hover:opacity-80 transition-opacity ${r.image_hidden ? 'opacity-30' : ''}`} />
                 {r.image_hidden && <span className="absolute inset-0 flex items-center justify-center"><ImageOff className="w-5 h-5 text-redcard" /></span>}
               </a>
             )}
@@ -265,7 +265,7 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
                 photo: a review without one shows the shirt it is about. */}
             <button onClick={onToggleProofs}
               title={r.approved ? '' : 'יוצג רק אחרי שהביקורת תאושר'}
-              className={`text-xs px-3 py-1.5 font-bold transition-colors ${r.show_in_proofs ? 'bg-turf text-pitch' : 'border border-white/20 text-varnish hover:text-chalk'}`}>
+              className={`text-xs px-3 py-1.5 font-bold transition-colors ${r.show_in_proofs ? 'bg-turf text-pitch' : 'border border-brand-line text-varnish hover:text-chalk'}`}>
               {r.show_in_proofs ? '✓ מוצג ב"לקוחות מספרים"' : 'להציג ב"לקוחות מספרים"'}
             </button>
           </div>
@@ -273,7 +273,7 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
 
         <div className="flex gap-1 flex-shrink-0">
           <button onClick={onEdit} title="ערוך"
-            className={`flex items-center gap-1 text-xs px-3 py-1.5 border transition-colors ${editing ? 'border-turf text-turf' : 'border-white/10 text-varnish hover:text-chalk'}`}>
+            className={`flex items-center gap-1 text-xs px-3 py-1.5 border transition-colors ${editing ? 'border-turf text-turf' : 'border-brand-line text-varnish hover:text-chalk'}`}>
             <Pencil className="w-3 h-3" /> ערוך
           </button>
           {!r.approved ? (
@@ -283,7 +283,7 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
             </button>
           ) : (
             <button onClick={() => onApprove(false)}
-              className="flex items-center gap-1 text-xs text-varnish hover:text-chalk px-3 py-1.5 border border-white/10">
+              className="rounded-xl flex items-center gap-1 text-xs text-varnish hover:text-chalk px-3 py-1.5 border border-brand-line">
               <X className="w-3 h-3" /> הסתר
             </button>
           )}
@@ -294,13 +294,13 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
       </div>
 
       {editing && draft && (
-        <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
+        <div className="mt-4 pt-4 border-t border-brand-line space-y-3">
           <div className="grid gap-3 md:grid-cols-2">
             <Field label="דירוג">
               <div className="flex gap-1 py-1.5">
                 {[1, 2, 3, 4, 5].map(s => (
                   <button key={s} type="button" onClick={() => set({ rating: s })} aria-label={`${s} כוכבים`}>
-                    <Star className={`w-6 h-6 transition-colors ${s <= draft.rating ? 'fill-amber-400 text-amber-400' : 'text-varnish hover:text-amber-400/50'}`} />
+                    <Star className={`w-6 h-6 transition-colors ${s <= draft.rating ? 'fill-turf text-turf' : 'text-varnish hover:text-amber-600/50'}`} />
                   </button>
                 ))}
               </div>
@@ -308,34 +308,34 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
 
             <Field label="תאריך">
               <input type="datetime-local" value={draft.created_date} onChange={e => set({ created_date: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
+                className="rounded-xl w-full bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
             </Field>
 
             <Field label="שם המבקר">
               <input value={draft.reviewer_name} onChange={e => set({ reviewer_name: e.target.value })} maxLength={60}
-                className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
+                className="rounded-xl w-full bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
               <Toggle checked={draft.is_anonymous} onChange={v => set({ is_anonymous: v })} label="להציג כאנונימי" />
             </Field>
 
             <Field label="מה הזמין (טקסט חופשי, כשאין חולצה משויכת)">
               <input value={draft.title} onChange={e => set({ title: e.target.value })} maxLength={120}
                 placeholder="למשל: חולצת ריאל מדריד בית"
-                className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
+                className="rounded-xl w-full bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" />
             </Field>
           </div>
 
           <Field label="הטקסט שהוא כתב">
             <textarea value={draft.comment} onChange={e => set({ comment: e.target.value })} rows={3} maxLength={1000}
-              className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none resize-y" />
+              className="rounded-xl w-full bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none resize-y" />
           </Field>
 
           <Field label="החולצה שהביקורת עליה">
             <div className="flex items-center gap-2 flex-wrap">
               {draftShirt ? (
-                <span className="inline-flex items-center gap-1.5 bg-white/5 border border-white/10 pl-1.5 pr-1 py-1">
+                <span className="rounded-xl inline-flex items-center gap-1.5 bg-white border border-brand-line pl-1.5 pr-1 py-1">
                   {draftShirt.main_image && <img src={draftShirt.main_image} alt="" className="w-6 h-6 object-cover" />}
                   <span className="text-xs text-chalk max-w-[200px] truncate">{draftShirt.name}</span>
-                  <button type="button" onClick={() => set({ shirt_id: '' })} aria-label="הסר חולצה" className="text-white/40 hover:text-redcard transition-colors">
+                  <button type="button" onClick={() => set({ shirt_id: '' })} aria-label="הסר חולצה" className="text-brand-navy/50 hover:text-redcard transition-colors">
                     <X className="w-3 h-3" />
                   </button>
                 </span>
@@ -343,7 +343,7 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
                 <span className="text-xs text-varnish">{draft.shirt_id ? 'חולצה שאינה בקטלוג' : 'לא שויכה חולצה'}</span>
               )}
               <button type="button" onClick={() => setPicking(!picking)}
-                className="text-xs px-2.5 py-1.5 border border-white/25 text-white/70 hover:border-turf hover:text-turf transition-colors">
+                className="rounded-xl text-xs px-2.5 py-1.5 border border-brand-line text-brand-navy/70 hover:border-turf hover:text-turf transition-colors">
                 {draftShirt ? 'החלף חולצה' : 'שייך חולצה'}
               </button>
               <Toggle checked={draft.verified_purchase} onChange={v => set({ verified_purchase: v })} label="רכישה מאומתת" />
@@ -355,9 +355,9 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
             <div className="flex items-center gap-3 flex-wrap">
               {draft.image_url ? (
                 <>
-                  <img src={draft.image_url} alt="" className={`w-20 h-20 object-cover border border-white/10 ${draft.image_hidden ? 'opacity-30' : ''}`} />
+                  <img src={draft.image_url} alt="" className={`w-20 h-20 object-cover border border-brand-line ${draft.image_hidden ? 'opacity-30' : ''}`} />
                   <button type="button" onClick={() => set({ image_hidden: !draft.image_hidden })}
-                    className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 font-bold transition-colors ${draft.image_hidden ? 'border border-white/20 text-varnish hover:text-chalk' : 'bg-turf text-pitch'}`}>
+                    className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 font-bold transition-colors ${draft.image_hidden ? 'border border-brand-line text-varnish hover:text-chalk' : 'bg-turf text-pitch'}`}>
                     {draft.image_hidden ? <><ImageOff className="w-3 h-3" /> מוסתרת</> : <><ImageIcon className="w-3 h-3" /> מוצגת</>}
                   </button>
                   <button type="button" onClick={() => set({ image_url: '', image_hidden: false })}
@@ -366,7 +366,7 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
               ) : (
                 <span className="text-xs text-varnish">אין תמונה</span>
               )}
-              <label className="text-xs px-2.5 py-1.5 border border-white/25 text-white/70 hover:border-turf hover:text-turf cursor-pointer transition-colors">
+              <label className="rounded-xl text-xs px-2.5 py-1.5 border border-brand-line text-brand-navy/70 hover:border-turf hover:text-turf cursor-pointer transition-colors">
                 {draft.image_url ? 'החלף תמונה' : 'העלה תמונה'}
                 <input type="file" accept="image/*" className="hidden"
                   onChange={e => { uploadPhoto(e.target.files?.[0]); e.target.value = ''; }} />
@@ -385,7 +385,7 @@ function ReviewRow({ review: r, shirts, editing, onEdit, onDone, onPatch, onAppr
               {busy ? 'שומר…' : 'שמור שינויים'}
             </button>
             <button onClick={onDone} disabled={busy}
-              className="text-xs border border-white/20 text-varnish hover:text-chalk px-4 py-2 transition-colors">
+              className="rounded-xl text-xs border border-brand-line text-varnish hover:text-chalk px-4 py-2 transition-colors">
               ביטול
             </button>
           </div>
