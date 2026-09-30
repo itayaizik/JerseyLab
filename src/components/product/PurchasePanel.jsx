@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Check, Info, Pencil, ShoppingBag, Star } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import SizeSelector from '@/components/configurator/SizeSelector';
+import KidsSizeSelector from '@/components/configurator/KidsSizeSelector';
 import ExactOrCustomChoice from '@/components/configurator/ExactOrCustomChoice';
 import NameNumberInput from '@/components/configurator/NameNumberInput';
 import { SHIRT_TYPE_OPTIONS } from '@/components/configurator/ShirtTypeChoice';
@@ -13,6 +14,7 @@ import { showsLocalStock, showsLocalStockForSize } from '@/components/ShippingBa
 import { itemsForSize, stockPrint } from '@/lib/localStock';
 import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { allowsPlayerVersion, allowsPatches, allowsLongSleeve, allowsShorts } from '@/lib/shirtOptions';
+import { KIDS_PRICE, KIDS_KIT_LABEL, KIDS_KIT_VALUE, KIDS_PRINT_LABEL, kidsSizeHint } from '@/lib/kidsKit';
 import { BUSINESS, isPlaceholder } from '@/lib/business';
 import { t } from '@/lib/i18n';
 import { term, shirtName, shirtNameEn } from '@/lib/english';
@@ -52,6 +54,7 @@ const SHORTS_TEXT = t(SHORTS_LABEL, 'Shorts');
 const PATCHES_TEXT = t(PATCHES_LABEL, 'Patches');
 
 export default function PurchasePanel({ shirt, siblings = [], attention = 0, onOpenSizeGuide, ctaRef }) {
+  const [audience, setAudience] = useState('men'); // 'men' | 'kids'
   const [size, setSize] = useState('');
   const [buyMode, setBuyMode] = useState(''); // '' | 'exact' | 'custom'
   const [stockItemId, setStockItemId] = useState('');
@@ -70,6 +73,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
 
   // A different shirt is a fresh start.
   useEffect(() => {
+    setAudience('men');
     setSize(''); setBuyMode(''); setStockItemId(''); setShirtType('regular');
     setPrinting(false); setCustomName(''); setCustomNumber(''); setPatches(false);
     setLongSleeve(false); setShorts(false); setErrors({}); setAdded(false);
@@ -85,15 +89,20 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
     return () => clearTimeout(timer);
   }, [attention]);
 
-  const basePrice = shirtBasePrice(shirt);
-  const onSale = shirt.sale_price && shirt.sale_price < shirt.price;
+  // A kids kit is its own product: one price, a set with shorts, and no
+  // choice that costs anything (src/lib/kidsKit.js).
+  const kids = audience === 'kids';
+  const basePrice = kids ? KIDS_PRICE : shirtBasePrice(shirt);
+  const onSale = !kids && shirt.sale_price && shirt.sale_price < shirt.price;
   const available = shirt.status === 'available';
   const name = shirtName(shirt);
 
   // A size with shirts physically in Israel offers those shirts as they are,
   // next to ordering one made up. Legacy rows can mark a size as stocked
   // without listing the shirts; there is nothing to choose between then.
-  const stockItems = size && showsLocalStockForSize(shirt, size) ? itemsForSize(shirt, size) : [];
+  // Shirts held in Israel are adult ones, so a kids kit is always made to
+  // order and never offers one of them.
+  const stockItems = !kids && size && showsLocalStockForSize(shirt, size) ? itemsForSize(shirt, size) : [];
   const needsStockChoice = stockItems.length > 0;
   const buyingExact = needsStockChoice && buyMode === 'exact';
   const stockItem = buyingExact ? stockItems.find(item => item.id === stockItemId) || null : null;
@@ -101,20 +110,22 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
   // Israeli league shirts have no player version or patches, retro shirts no
   // player version. Checked again here, not only by hiding the choice, so a
   // choice made before switching shirts cannot slip into the price or the cart.
-  const playerAllowed = allowsPlayerVersion(shirt);
-  const patchesAllowed = allowsPatches(shirt);
+  const playerAllowed = !kids && allowsPlayerVersion(shirt);
+  const patchesAllowed = !kids && allowsPatches(shirt);
   const wantsPlayer = playerAllowed && shirtType === 'player';
   const wantsPatches = patchesAllowed && patches;
 
   // Long sleeves: not on Israeli league shirts. Matching shorts: not on Israeli
   // league shirts or retro. Both are made to order, so neither applies to a
   // shirt bought as it is from stock.
-  const longSleeveAllowed = allowsLongSleeve(shirt);
-  const shortsAllowed = allowsShorts(shirt);
+  const longSleeveAllowed = !kids && allowsLongSleeve(shirt);
+  const shortsAllowed = !kids && allowsShorts(shirt);
   const wantsLongSleeve = longSleeveAllowed && !buyingExact && longSleeve;
   const wantsShorts = shortsAllowed && !buyingExact && shorts;
 
-  const extras = buyingExact
+  // Nothing on a kids kit costs extra, printing included, so there is no
+  // "total with extras" line to draw for one.
+  const extras = kids ? 0 : buyingExact
     ? (stockItem?.player_version ? EXTRA_PRICES.player : 0) + (stockPrint(stockItem) ? EXTRA_PRICES.name : 0) + (wantsPatches ? EXTRA_PRICES.patches : 0)
     : (wantsPlayer ? EXTRA_PRICES.player : 0) + (printing ? EXTRA_PRICES.name : 0) + (wantsPatches ? EXTRA_PRICES.patches : 0)
       + (wantsLongSleeve ? EXTRA_PRICES.longSleeve : 0) + (wantsShorts ? EXTRA_PRICES.shorts : 0);
@@ -148,6 +159,11 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
       target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
+    // A kids kit prices itself: `unitPrice` wins over the extras, and every
+    // option that would have carried a price is off. What it is - a set, and
+    // the free print - travels as detail lines, which the cart, the order
+    // message and the confirmation email all already show.
+    const kidsPrint = printing && customName.trim() ? `${customName} ${customNumber}`.trim() : '';
     addToCart({
       // The Hebrew name goes into the order; the English one is for the cart.
       shirtId: shirt.id, shirtName: shirt.name, shirtNameEn: shirtNameEn(shirt), image: shirt.main_image, club: shirt.club || shirt.national_team || "",
@@ -166,6 +182,16 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
       // Which physical shirt, so the order says which of two size S shirts
       // with different prints the customer chose.
       stockItemId: buyingExact ? stockItem?.id || '' : '',
+      // Last, so it overrides every option above rather than being overridden.
+      ...(kids ? {
+        kids: true,
+        unitPrice: KIDS_PRICE,
+        addName: false, customName: '', playerVersion: false, patches: false, longSleeve: false, shorts: false,
+        details: [
+          { label: KIDS_KIT_LABEL, value: KIDS_KIT_VALUE },
+          ...(kidsPrint ? [{ label: KIDS_PRINT_LABEL, value: kidsPrint }] : []),
+        ],
+      } : {}),
     });
     base44.entities.Shirt.update(shirt.id, { interest_count: (shirt.interest_count || 0) + 1 }).catch(() => {});
     setAdded(true);
@@ -220,18 +246,47 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
         </Section>
       )}
 
+      {/* Who it is for, before the size, because it decides what the sizes
+          even are. Men by default: it is what nearly every order is, and a
+          shopper who is not buying for a child should not have to answer a
+          question to get on with it. */}
+      <Section id="audience-heading" title={t('למי החולצה?', 'Who is it for?')}>
+        <div role="group" aria-labelledby="audience-heading" className="flex flex-wrap gap-2">
+          {[
+            { id: 'men', label: t('גברים', 'Men') },
+            { id: 'kids', label: t('ילדים', 'Kids') },
+          ].map(opt => (
+            <button key={opt.id} type="button" aria-pressed={audience === opt.id}
+              onClick={() => { setAudience(opt.id); setSize(''); setBuyMode(''); setStockItemId(''); setErrors({}); }}
+              className={`shop-chip px-6 ${audience === opt.id ? 'shop-chip-active' : ''}`}>
+              {opt.label}
+              {opt.id === 'kids' && <span className="tabular-nums">₪{KIDS_PRICE}</span>}
+            </button>
+          ))}
+        </div>
+        {kids && (
+          <p className="mt-2.5 text-[13px] leading-relaxed text-brand-navy/55">
+            {t(`${KIDS_KIT_LABEL} מגיע תמיד כסט: ${KIDS_KIT_VALUE}, במחיר אחד של ₪${KIDS_PRICE}. שם ומספר על הגב בחינם, ואין גרסת שחקן, שרוול ארוך או פאצ'ים.`,
+               `A kids kit always comes as a set: shirt and shorts, for one price of ₪${KIDS_PRICE}. Name and number on the back are free, and there is no player version, long sleeve or patches.`)}
+          </p>
+        )}
+      </Section>
+
       <Section
         id="size-heading"
         sectionRef={sizeRef}
         className={`rounded-sm transition-shadow duration-500 ${highlight ? 'shadow-[0_0_0_6px_var(--brand-orange-soft)]' : ''}`}
         title={size ? <>{t('מידה:', 'Size:')} <span dir="ltr" className="font-normal text-brand-navy/60">{size}</span></> : t('מידה', 'Size')}
         aside={(
-          <button type="button" onClick={() => onOpenSizeGuide?.(wantsPlayer && !buyingExact ? 'player' : null)} className="shop-link text-sm">
+          <button type="button" onClick={() => onOpenSizeGuide?.(kids ? 'kids' : wantsPlayer && !buyingExact ? 'player' : null)} className="shop-link text-sm">
             {t('מדריך מידות', 'Size guide')}
           </button>
         )}
       >
-        <SizeSelector shirt={shirt} value={size} onChange={chooseSize} invalid={!!errors.size} />
+        {kids
+          ? <KidsSizeSelector value={size} onChange={chooseSize} invalid={!!errors.size} />
+          : <SizeSelector shirt={shirt} value={size} onChange={chooseSize} invalid={!!errors.size} />}
+        {kids && size && <p className="mt-2 text-[13px] text-brand-navy/60">{kidsSizeHint(size)}</p>}
         {errors.size && <p role="alert" className="mt-2 text-sm font-medium text-red-600">{errors.size}</p>}
       </Section>
 
@@ -280,7 +335,9 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
               <button type="button" aria-pressed={printing} onClick={() => setPrinting(true)}
                 className={`shop-chip px-5 ${printing ? 'shop-chip-active' : ''}`}>
                 {t('הדפסה אישית', 'Custom print')}
-                <span className="tabular-nums">+₪{EXTRA_PRICES.name}</span>
+                {kids
+                  ? <span className="font-semibold text-brand-orange-ink">{t('חינם', 'Free')}</span>
+                  : <span className="tabular-nums">+₪{EXTRA_PRICES.name}</span>}
                 <Pencil className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
