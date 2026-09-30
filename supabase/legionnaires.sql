@@ -39,3 +39,7 @@ create policy "public read active legionnaires" on legionnaires_raw for select
 drop policy if exists "admin full access legionnaires" on legionnaires_raw;
 create policy "admin full access legionnaires" on legionnaires_raw for all
   using (public.is_admin()) with check (public.is_admin());
+
+-- A face for each player, uploaded from the admin page. Optional: a player
+-- with no photo shows as a name alone, which is how the row started.
+alter table legionnaires_raw add column if not exists image_url text;

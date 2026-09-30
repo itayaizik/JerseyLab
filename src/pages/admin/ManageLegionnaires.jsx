@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Trash2, Eye, EyeOff, ChevronUp, ChevronDown, AlertTriangle, Users } from 'lucide-react';
+import { Plus, Trash2, Eye, EyeOff, ChevronUp, ChevronDown, AlertTriangle, Users, ImagePlus, Loader2, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { uploadErrorMessage } from '@/lib/supabaseStorage';
 
 // The Israelis abroad, as the home page shows them (supabase/legionnaires.sql).
 //
@@ -18,6 +19,7 @@ export default function ManageLegionnaires() {
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState({ name: '', club: '' });
   const [error, setError] = useState('');
+  const [uploadingId, setUploadingId] = useState('');
 
   useEffect(() => { load(); }, []);
 
@@ -59,6 +61,23 @@ export default function ManageLegionnaires() {
     } catch {
       alert('לא נשמר. נסו שוב.');
       await load();
+    }
+  };
+
+  // Photos go to the shirt-images bucket, which is already admin-write and
+  // public-read; a second bucket for eleven faces would be a second set of
+  // policies to keep right.
+  const uploadPhoto = async (player, file) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    setError('');
+    setUploadingId(player.id);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      await patch(player, { image_url: file_url });
+    } catch (err) {
+      setError(uploadErrorMessage(err));
+    } finally {
+      setUploadingId('');
     }
   };
 
@@ -154,6 +173,27 @@ export default function ManageLegionnaires() {
                   <button onClick={() => move(i, 1)} disabled={i === players.length - 1} aria-label="הזז למטה"
                     className="text-varnish hover:text-turf disabled:opacity-20"><ChevronDown className="w-4 h-4" /></button>
                 </div>
+
+                {/* The face. Clicking it picks a file, so the picture is both
+                    the preview and the button - there is nothing else a photo
+                    in this row could be for. */}
+                <label className="relative flex-shrink-0 cursor-pointer group" title={player.image_url ? 'החלפת התמונה' : 'העלאת תמונה'}>
+                  {player.image_url ? (
+                    <img src={player.image_url} alt="" className="h-11 w-11 rounded-full border border-brand-line object-cover group-hover:opacity-75 transition-opacity" />
+                  ) : (
+                    <span className="flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-brand-line bg-brand-mist text-brand-navy/40 group-hover:border-turf group-hover:text-turf transition-colors">
+                      {uploadingId === player.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
+                    </span>
+                  )}
+                  <input type="file" accept="image/*" className="hidden" disabled={uploadingId === player.id}
+                    onChange={e => { uploadPhoto(player, e.target.files?.[0]); e.target.value = ''; }} />
+                </label>
+                {player.image_url && (
+                  <button onClick={() => patch(player, { image_url: '' })} title="הסרת התמונה"
+                    className="rounded-lg px-1.5 py-1.5 text-brand-navy/30 hover:text-redcard transition-colors flex-shrink-0">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
 
                 <input defaultValue={player.name} maxLength={60}
                   onBlur={e => { const v = e.target.value.trim(); if (v && v !== player.name) patch(player, { name: v }); }}

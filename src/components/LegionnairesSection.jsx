@@ -6,6 +6,7 @@ import SectionHeader from '@/components/shop/SectionHeader';
 import ProductRail from '@/components/shop/ProductRail';
 import { t } from '@/lib/i18n';
 import { term } from '@/lib/english';
+import { resized } from '@/lib/imageUrl';
 
 // The Israelis abroad, a player at a time.
 //
@@ -74,7 +75,14 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
               <button key={player.id} type="button" role="tab"
                 id={`legionnaire-tab-${player.id}`} aria-selected={selected} aria-controls="legionnaire-panel"
                 onClick={() => setActiveName(player.name)}
-                className={`shop-chip px-5 ${selected ? 'shop-chip-active' : ''}`}>
+                className={`shop-chip ${player.image_url ? 'ps-1.5 pe-5' : 'px-5'} ${selected ? 'shop-chip-active' : ''}`}>
+                {/* A face, when the owner has uploaded one. The chip keeps its
+                    height and loses the padding on that side instead, so a row
+                    of players with and without photos still lines up. */}
+                {player.image_url && (
+                  <img src={resized(player.image_url, 96)} alt="" loading="lazy" width="32" height="32"
+                    className="h-8 w-8 flex-shrink-0 rounded-full bg-brand-mist object-cover" />
+                )}
                 {term(player.name)}
                 {count > 0 && <span className="tabular-nums text-brand-navy/45">{count}</span>}
               </button>
@@ -91,7 +99,12 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
             // Not a dead end: a player we have nothing for is a question the
             // shopper can answer for us.
             <div className="flex flex-col items-start justify-between gap-5 rounded-3xl bg-brand-mist p-7 sm:flex-row sm:items-center sm:p-9">
-              <div>
+              <div className="flex items-center gap-4">
+                {active.image_url && (
+                  <img src={resized(active.image_url, 160)} alt="" loading="lazy" width="64" height="64"
+                    className="h-16 w-16 flex-shrink-0 rounded-full bg-white object-cover" />
+                )}
+                <div>
                 <p className="text-[17px] font-semibold text-brand-navy">
                   {t(`עוד אין לנו חולצה של ${active.name}`, `We don't have a ${term(active.name)} shirt yet`)}
                 </p>
@@ -101,6 +114,7 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
                         `He plays for ${term(active.club)}. Ask us and we'll see what we can get.`)
                     : t('בקשו ונבדוק אם אפשר להשיג.', "Ask us and we'll see what we can get.")}
                 </p>
+                </div>
               </div>
               <Link to="/request-shirt" className="shop-btn flex-shrink-0">
                 <PackageSearch className="h-5 w-5" aria-hidden="true" />
