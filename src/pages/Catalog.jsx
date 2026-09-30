@@ -98,6 +98,8 @@ const DEFAULT_DESCRIPTION = t(
   'כל החולצות באתר במקום אחד: קבוצות, נבחרות ורטרו. אפשר לסנן לפי מידה, ליגה ומחיר.',
   'Every shirt on the site in one place: clubs, national teams and retro. Filter by size, league and price.',
 );
+// How many shirts the first paint builds. The button below the grid then
+// reveals the rest in one go.
 const PAGE_SIZE = 24;
 
 export default function Catalog() {
@@ -399,11 +401,16 @@ export default function Catalog() {
                 );
               })}
             </ul>
+            {/* One press, and the rest of the catalogue is there. It used to
+                add another 24, so browsing 250 shirts meant pressing the same
+                button ten times, each press sending you back to the foot of
+                the page to find it again. The first 24 are still all that is
+                built for the first paint. */}
             {visibleCount < shirts.length && (
               <div className="mt-10 flex flex-col items-center gap-3">
                 <p className="text-sm text-brand-navy/55">{t(`מוצגות ${visibleCount} מתוך ${shirts.length} חולצות`, `Showing ${visibleCount} of ${shirts.length} shirts`)}</p>
-                <button type="button" onClick={() => setVisibleCount(c => c + PAGE_SIZE)} className="shop-btn-secondary rounded-full px-8">
-                  {t('הצגת עוד חולצות', 'Show more shirts')}
+                <button type="button" onClick={() => setVisibleCount(shirts.length)} className="shop-btn-secondary rounded-full px-8">
+                  {t(`הצגת כל ${shirts.length} החולצות`, `Show all ${shirts.length} shirts`)}
                 </button>
               </div>
             )}
