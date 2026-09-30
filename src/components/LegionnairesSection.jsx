@@ -66,8 +66,12 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
                       'Shirts of the Israelis playing abroad, from the seasons they were actually there.')}
         />
 
+        {/* Wrapped and centred once there is room, and a single scrolling line
+            on a phone. Faces this size wrap to one per row on a 375px screen,
+            which put five rows of chips between the heading and the shirts -
+            the section would have pushed what it is selling off the screen. */}
         <div role="tablist" aria-label={t('בחירת שחקן', 'Choose a player')}
-          className="mt-6 flex flex-wrap justify-center gap-2">
+          className="scrollbar-hide -mx-4 mt-6 flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:justify-center sm:overflow-x-visible sm:px-0">
           {players.map(player => {
             const count = (byPlayer.get(player.name) || []).length;
             const selected = active?.id === player.id;
@@ -75,7 +79,7 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
               <button key={player.id} type="button" role="tab"
                 id={`legionnaire-tab-${player.id}`} aria-selected={selected} aria-controls="legionnaire-panel"
                 onClick={() => setActiveName(player.name)}
-                className={`shop-chip min-h-[3.5rem] ${player.image_url ? 'ps-1 pe-5' : 'px-5'} ${selected ? 'shop-chip-active' : ''}`}>
+                className={`shop-chip min-h-[4.5rem] flex-shrink-0 snap-start ${player.image_url ? 'ps-1.5 pe-6' : 'px-6'} ${selected ? 'shop-chip-active' : ''}`}>
                 {/* A face, when the owner has uploaded one. Every chip is the
                     taller height whether it carries a photo or not, so a row of
                     players with and without still lines up.
@@ -83,8 +87,8 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
                     with the head in the upper third: a square crop taken from
                     the middle of one cuts the face off at the eyebrows. */}
                 {player.image_url && (
-                  <img src={resized(player.image_url, 144)} alt="" loading="lazy" width="48" height="48"
-                    className="h-12 w-12 flex-shrink-0 rounded-full bg-brand-mist object-cover object-top" />
+                  <img src={resized(player.image_url, 192)} alt="" loading="lazy" width="64" height="64"
+                    className="h-16 w-16 flex-shrink-0 rounded-full bg-brand-mist object-cover object-top" />
                 )}
                 {term(player.name)}
                 {count > 0 && <span className="tabular-nums text-brand-navy/45">{count}</span>}
@@ -104,8 +108,8 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
             <div className="flex flex-col items-start justify-between gap-5 rounded-3xl bg-brand-mist p-7 sm:flex-row sm:items-center sm:p-9">
               <div className="flex items-center gap-4">
                 {active.image_url && (
-                  <img src={resized(active.image_url, 288)} alt="" loading="lazy" width="96" height="96"
-                    className="h-24 w-24 flex-shrink-0 rounded-full bg-white object-cover object-top" />
+                  <img src={resized(active.image_url, 384)} alt="" loading="lazy" width="128" height="128"
+                    className="h-28 w-28 flex-shrink-0 rounded-full bg-white object-cover object-top sm:h-32 sm:w-32" />
                 )}
                 <div>
                 <p className="text-[17px] font-semibold text-brand-navy">
