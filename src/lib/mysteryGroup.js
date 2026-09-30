@@ -45,6 +45,7 @@ export function loadDraft() {
     group: g && typeof g.id === 'string' && typeof g.ownerToken === 'string'
       ? {
         id: g.id, ownerToken: g.ownerToken, ownerName: String(g.ownerName || ''),
+        code: g.code ? String(g.code) : '',
         seenVersions: g.seenVersions && typeof g.seenVersions === 'object' ? { ...g.seenVersions } : {},
       }
       : null,
@@ -125,6 +126,12 @@ export const saveGroupBox = (groupId, { boxId, token, box }) => call('save_myste
 });
 
 export const closeGroup = (group) => call('close_mystery_group', { p_id: group.id, p_owner_token: group.ownerToken });
+
+// An organiser coming back on another phone types the five digits from the
+// screen he saw when he started. It opens his own group, nothing else: the
+// token that closes a group is still only in the browser that made it, and
+// the code returns it only to whoever already knows the five digits.
+export const findGroupByCode = (code) => call('find_mystery_group_by_code', { p_code: code });
 
 // "050-1234567" -> "972501234567", for a wa.me link.
 export function whatsappNumber(phone) {

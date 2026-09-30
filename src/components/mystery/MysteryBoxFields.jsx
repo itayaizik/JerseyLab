@@ -1,19 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Gift, Shirt, Sparkles, User } from 'lucide-react';
+import { Baby, Gift, Shirt, Sparkles, User } from 'lucide-react';
 import { EXTRA_PRICES } from '@/lib/cart';
-import { BOX_TYPES, SIZES, NAME_PRICE, PATCHES_PRICE } from '@/lib/mysteryBox';
-import { typeOf, shortsAllowed, LONG_SLEEVE_TEXT, SHORTS_TEXT } from '@/lib/mysteryBoxes';
+import { BOX_TYPES, NAME_PRICE, PATCHES_PRICE, isKidsType } from '@/lib/mysteryBox';
+import { kidsSizeHint } from '@/lib/kidsKit';
+import { typeOf, shortsAllowed, sizesFor, LONG_SLEEVE_TEXT, SHORTS_TEXT } from '@/lib/mysteryBoxes';
 import { t } from '@/lib/i18n';
 
 // The questions for one mystery box: who it is for, the style, the size, the
 // extras and a note. The builder shows them inside each box's card; a friend
 // filling in their box from a shared link sees them on a page of their own.
 
-const TYPE_ICONS = { regular: Shirt, retro: Sparkles, mundial: Gift };
+const TYPE_ICONS = { regular: Shirt, retro: Sparkles, mundial: Gift, kids: Baby };
 
 export default function MysteryBoxFields({ box, onChange, fid, missingSize = false, nameRequired = false, missingName = false }) {
   const type = typeOf(box);
+  const kids = isKidsType(box.type);
+  const sizes = sizesFor(box);
   return (
     <div className="space-y-5">
       <div>
@@ -33,7 +36,7 @@ export default function MysteryBoxFields({ box, onChange, fid, missingSize = fal
 
       <div>
         <p className="mb-2 text-sm font-medium text-brand-navy/70">{t('סגנון', 'Style')}</p>
-        <div role="group" className="grid grid-cols-3 gap-2">
+        <div role="group" className="grid grid-cols-2 gap-2 min-[380px]:grid-cols-4">
           {BOX_TYPES.map(option => {
             const active = box.type === option.id;
             const Icon = TYPE_ICONS[option.id];
@@ -61,8 +64,8 @@ export default function MysteryBoxFields({ box, onChange, fid, missingSize = fal
           </p>
           <Link to="/size-guide" target="_blank" className="shop-link text-[13px]">{t('מדריך מידות', 'Size guide')}</Link>
         </div>
-        <div role="group" className="grid grid-cols-6 gap-1.5">
-          {SIZES.map(v => (
+        <div role="group" className={`grid gap-1.5 ${kids ? 'grid-cols-4' : 'grid-cols-6'}`}>
+          {sizes.map(v => (
             <button key={v} type="button" aria-pressed={box.size === v}
               onClick={() => onChange({ size: v })}
               className={`shop-chip min-h-[2.75rem] px-0 font-semibold tabular-nums ${box.size === v ? 'shop-chip-active' : missingSize ? 'border-red-300' : ''}`}>
@@ -70,6 +73,11 @@ export default function MysteryBoxFields({ box, onChange, fid, missingSize = fal
             </button>
           ))}
         </div>
+        {kids && (
+          <p className="mt-2 text-[12px] text-brand-navy/60">
+            {box.size ? kidsSizeHint(box.size) : t('מידות ילדים נבחרות לפי הגובה של הילד.', "Kids sizes go by the child's height.")}
+          </p>
+        )}
       </div>
 
       <div>

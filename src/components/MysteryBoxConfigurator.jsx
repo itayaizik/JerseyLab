@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Gift, Check, ShoppingBag, Ban, MessageSquare,
-  Plus, Copy, Trash2, ChevronDown, CheckCircle2, Share2, Link2, Users, Loader2, RefreshCw, X,
+  Plus, Minus, Copy, Trash2, ChevronDown, CheckCircle2, Share2, Link2, Users, Loader2, RefreshCw, X,
 } from 'lucide-react';
 import { addToCart, openCart, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID, EXCLUDE_COLORS as COLORS } from '@/lib/mysteryBox';
-import { newBox, newBoxId, typeOf, wantsShorts, boxPrice, boxSummary, isBlank, cleanBox } from '@/lib/mysteryBoxes';
+import { newBox, newBoxId, typeOf, wantsShorts, boxPrice, boxesTotal, boxesSaving, boxSummary, isBlank, cleanBox } from '@/lib/mysteryBoxes';
+import { fetchTiers, discountFor, hasLadder, nextTier } from '@/lib/mysteryTiers';
 import {
   MAX_GROUP_BOXES, loadDraft, saveDraft, createGroup, fetchGroup, closeGroup, joinLink,
 } from '@/lib/mysteryGroup';
@@ -73,6 +74,15 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   const [lastAdded, setLastAdded] = useState(null);
   // Boxes friends added or changed since the organiser last looked.
   const [arrivals, setArrivals] = useState([]);
+  // The quantity ladder, if the shop has one (lib/mysteryTiers). Until it
+  // loads, and forever if there is none, every box costs what its style costs.
+  const [tiers, setTiers] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchTiers().then(rows => { if (!cancelled) setTiers(rows); });
+    return () => { cancelled = true; };
+  }, []);
 
   // Remembered on every change: a refresh brings all of it back.
   useEffect(() => {
@@ -198,7 +208,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     } catch { /* not supported */ }
     const result = await createGroup(ownerName, ownerPhone);
     if (!result.ok) return result;
-    setGroup({ id: result.id, ownerToken: result.owner_token, ownerName, seenVersions: {} });
+    setGroup({ id: result.id, ownerToken: result.owner_token, ownerName, code: result.code || '', seenVersions: {} });
     setGroupClosed(false);
     return result;
   };
@@ -213,8 +223,12 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
   // --- adding to the cart ------------------------------------------------------
 
-  const total = boxes.reduce((sum, b) => sum + boxPrice(b), 0);
   const count = boxes.length;
+  const discount = discountFor(tiers, count);
+  const total = boxesTotal(boxes, discount);
+  const saving = boxesSaving(boxes, discount);
+  const ladder = hasLadder(tiers);
+  const upsell = ladder ? nextTier(tiers, count) : null;
 
   const handleAdd = () => {
     const noSize = boxes.filter(b => !b.size).map(b => b.id);
@@ -260,7 +274,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         shirtNameEn: `Mystery Box — ${type.labelEn}`,
         size: box.size,
         basePrice: type.price,
-        unitPrice: boxPrice(box),
+        unitPrice: boxPrice(box, discount),
         extras,
         details: [...details, ...shared],
         deliveryNote: 'מיסטרי בוקס — הפתעה עד הפתיחה',
@@ -294,6 +308,67 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         </div>
         {headerAction && <span className="ms-auto">{headerAction}</span>}
       </div>
+
+      {/* How many, before anything else - and what that quantity is worth.
+          Only drawn when the shop has a ladder to show: a row of tiers that
+          all take nothing off is an ornament, not an offer. */}
+      {ladder && (
+        <div className={`mt-5 ${pad}`}>
+          <div className="rounded-2xl border border-brand-line bg-brand-mist/60 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-brand-navy">{t('כמה בוקסים?', 'How many boxes?')}</p>
+                <p className="text-[12px] text-brand-navy/55">
+                  {t('ככל שיש יותר בוקסים בהזמנה, כל אחד עולה פחות.', 'The more boxes in one order, the less each one costs.')}
+                </p>
+              </div>
+              <div className="flex flex-shrink-0 items-center gap-1">
+                <button type="button" onClick={() => removeBox(boxes[boxes.length - 1].id)} disabled={count <= 1}
+                  aria-label={t('בוקס אחד פחות', 'One box fewer')}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-line bg-white text-brand-navy transition hover:border-brand-navy/30 disabled:opacity-30">
+                  <Minus className="h-4 w-4" aria-hidden="true" />
+                </button>
+                <span aria-live="polite" className="w-10 text-center text-xl font-bold tabular-nums text-brand-navy">{count}</span>
+                <button type="button" onClick={() => addBox()} disabled={count >= MAX_BOXES}
+                  aria-label={t('בוקס אחד נוסף', 'One box more')}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-line bg-white text-brand-navy transition hover:border-brand-navy/30 disabled:opacity-30">
+                  <Plus className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+
+            <ul className="mt-3 grid grid-cols-2 gap-1.5 min-[420px]:grid-cols-3">
+              {tiers.map((tier, i) => {
+                const upto = tiers[i + 1] ? tiers[i + 1].minBoxes - 1 : null;
+                const here = count >= tier.minBoxes && (upto === null || count <= upto);
+                return (
+                  <li key={tier.minBoxes}
+                    className={`rounded-xl border px-2 py-1.5 text-center transition ${
+                      here ? 'border-brand-orange bg-brand-orange-soft' : 'border-brand-line bg-white'}`}>
+                    <span className="block text-[11px] text-brand-navy/55">
+                      {upto === null
+                        ? t(`${tier.minBoxes}+ בוקסים`, `${tier.minBoxes}+ boxes`)
+                        : tier.minBoxes === upto
+                          ? t(`${tier.minBoxes} בוקסים`, `${tier.minBoxes} boxes`)
+                          : `${tier.minBoxes}-${upto}`}
+                    </span>
+                    <span className={`block text-[13px] font-bold tabular-nums ${here ? 'text-brand-orange-ink' : 'text-brand-navy'}`}>
+                      {tier.discount > 0 ? t(`₪${tier.discount}- לבוקס`, `₪${tier.discount} off each`) : t('מחיר מלא', 'Full price')}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+
+            {upsell && (
+              <p className="mt-2.5 text-center text-[13px] font-medium text-brand-orange-ink">
+                {t(`עוד ${upsell.boxesAway} בוקסים ותחסכו עוד ₪${upsell.extraPerBox} על כל אחד`,
+                   `${upsell.boxesAway} more boxes and each one drops another ₪${upsell.extraPerBox}`)}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       {arrivals.length > 0 && (
         <div role="status" className={`mt-4 ${pad}`}>
@@ -348,7 +423,10 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                     </span>
                     <span className={`block truncate text-[12px] ${missing ? 'text-red-600' : 'text-brand-navy/55'}`}>{boxSummary(box)}</span>
                   </span>
-                  <span className="flex-shrink-0 text-[15px] font-semibold tabular-nums text-brand-navy">₪{boxPrice(box)}</span>
+                  <span className="flex-shrink-0 text-[15px] font-semibold tabular-nums text-brand-navy">
+                    {discount > 0 && <span className="me-1.5 text-[13px] font-normal text-brand-navy/40 line-through">₪{boxPrice(box)}</span>}
+                    ₪{boxPrice(box, discount)}
+                  </span>
                   <ChevronDown className={`h-4 w-4 flex-shrink-0 text-brand-navy/40 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
                 </button>
                 <span className="flex flex-shrink-0 items-center pe-2">
@@ -460,10 +538,17 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           {boxes.map((box, i) => (
             <li key={box.id} className="flex items-center justify-between gap-3 text-brand-navy/70">
               <span className="min-w-0 truncate">{boxTitle(box, i)} · {boxSummary(box)}</span>
-              <span className="flex-shrink-0 font-semibold tabular-nums text-brand-navy">₪{boxPrice(box)}</span>
+              <span className="flex-shrink-0 font-semibold tabular-nums text-brand-navy">₪{boxPrice(box, discount)}</span>
             </li>
           ))}
         </ul>
+
+        {saving > 0 && (
+          <div className="mt-3 flex items-baseline justify-between text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+            <span>{t(`הנחת כמות · ${boxesLabel(count)}`, `Quantity discount · ${boxesLabel(count)}`)}</span>
+            <span className="tabular-nums">{t(`חסכתם ₪${saving}`, `You save ₪${saving}`)}</span>
+          </div>
+        )}
 
         <div className="mt-3 flex items-baseline justify-between border-t border-brand-line pt-3">
           <span className={`font-semibold text-brand-navy ${lg ? 'text-lg' : ''}`}>

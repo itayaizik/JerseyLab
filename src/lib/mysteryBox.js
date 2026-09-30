@@ -30,7 +30,20 @@ export const BOX_TYPES = [
     blurb: 'חולצת נבחרת - מונדיאל או יורו, בית או חוץ.',
     blurbEn: 'A national team shirt - World Cup or Euro, home or away.',
   },
+  {
+    id: 'kids',
+    label: 'ילדים',
+    labelEn: 'Kids',
+    price: 70,
+    blurb: 'חולצת מועדון או נבחרת במידת ילדים, לפי הגובה.',
+    blurbEn: "A club or national shirt in a kids size, chosen by the child's height.",
+    kids: true,
+  },
 ];
+
+// A kids box is sized by the child rather than by S/M/L, from the same table
+// the catalogue's kids kits use.
+export const isKidsType = (id) => BOX_TYPES.find(b => b.id === id)?.kids === true;
 
 // Both add-ons are opt-in. Name-and-number is priced but deliberately not
 // specifiable: the shirt is unknown when the order is placed, so we pick the

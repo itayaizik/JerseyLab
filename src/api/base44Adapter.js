@@ -23,6 +23,7 @@ const TABLES = {
   Coupon: "coupons_raw",
   ReviewInvite: "review_invites_raw",
   Legionnaire: "legionnaires_raw",
+  MysteryTier: "mystery_tiers_raw",
 };
 
 // Entities where the creator can't read the row back under RLS (public/
