@@ -34,9 +34,9 @@ export const BOX_TYPES = [
     id: 'kids',
     label: 'ילדים',
     labelEn: 'Kids',
-    price: 70,
-    blurb: 'חולצת מועדון או נבחרת במידת ילדים, לפי הגובה.',
-    blurbEn: "A club or national shirt in a kids size, chosen by the child's height.",
+    price: 100,
+    blurb: 'סט ילדים - חולצה ומכנס קצר, עם שם ומספר מאחורה. הכול במחיר אחד.',
+    blurbEn: 'A kids kit - shirt and matching shorts, with a name and number on the back. One price for all of it.',
     kids: true,
   },
 ];

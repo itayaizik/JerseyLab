@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Baby, Ban, Gift, Shirt, Sparkles, User } from 'lucide-react';
+import { Baby, Ban, Check, Gift, Shirt, Sparkles, User } from 'lucide-react';
 import { EXTRA_PRICES } from '@/lib/cart';
 import { BOX_TYPES, NAME_PRICE, PATCHES_PRICE, EXCLUDE_COLORS, isKidsType } from '@/lib/mysteryBox';
 import { kidsSizeHint } from '@/lib/kidsKit';
-import { typeOf, shortsAllowed, sizesFor, LONG_SLEEVE_TEXT, SHORTS_TEXT } from '@/lib/mysteryBoxes';
+import { typeOf, shortsAllowed, longSleeveAllowed, sizesFor, LONG_SLEEVE_TEXT, SHORTS_TEXT } from '@/lib/mysteryBoxes';
 import { t } from '@/lib/i18n';
 
 // The questions for one mystery box: who it is for, the style, the size, the
@@ -82,16 +82,39 @@ export default function MysteryBoxFields({ box, onChange, fid, missingSize = fal
 
       <div>
         <p className="mb-2 text-sm font-medium text-brand-navy/70">{t('תוספות', 'Extras')}</p>
+        {/* A kids box is a kit: the shorts and the printing are in the ₪100,
+            and there is no long-sleeved version to offer. */}
+        {kids && (
+          <div className="mb-2 rounded-2xl border border-brand-orange/40 bg-brand-orange-soft/50 p-3">
+            <p className="text-[14px] font-semibold text-brand-navy">{t('כלול במחיר', 'Included in the price')}</p>
+            <ul className="mt-1.5 space-y-1">
+              <li className="flex items-center gap-2 text-[13px] text-brand-navy/70">
+                <Check className="h-4 w-4 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
+                {box.size
+                  ? t(`מכנס תואם במידה ${box.size}`, `Matching shorts, size ${box.size}`)
+                  : t('מכנס קצר תואם באותה מידה', 'Matching shorts, same size')}
+              </li>
+              <li className="flex items-center gap-2 text-[13px] text-brand-navy/70">
+                <Check className="h-4 w-4 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
+                {t('שם ומספר מאחורה', 'Name and number on the back')}
+              </li>
+            </ul>
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-2 min-[440px]:grid-cols-2">
-          <Extra checked={box.addName} onChange={v => onChange({ addName: v })}
-            label={t('שם ומספר מאחורה', 'Name and number')} price={NAME_PRICE}
-            hint={t('שחקן שמתאים לחולצה - גם הוא הפתעה', 'A player to match the shirt - a surprise too')} />
+          {!kids && (
+            <Extra checked={box.addName} onChange={v => onChange({ addName: v })}
+              label={t('שם ומספר מאחורה', 'Name and number')} price={NAME_PRICE}
+              hint={t('שחקן שמתאים לחולצה - גם הוא הפתעה', 'A player to match the shirt - a surprise too')} />
+          )}
           <Extra checked={box.patches} onChange={v => onChange({ patches: v })}
             label={t("כל הפאצ'ים", 'All patches')} price={PATCHES_PRICE}
             hint={t('של הליגה והטורניר', 'League and tournament')} />
-          <Extra checked={box.longSleeve} onChange={v => onChange({ longSleeve: v })}
-            label={LONG_SLEEVE_TEXT} price={EXTRA_PRICES.longSleeve}
-            hint={t('אותה חולצה, שרוול ארוך', 'The same shirt, long sleeved')} />
+          {longSleeveAllowed(box) && (
+            <Extra checked={box.longSleeve} onChange={v => onChange({ longSleeve: v })}
+              label={LONG_SLEEVE_TEXT} price={EXTRA_PRICES.longSleeve}
+              hint={t('אותה חולצה, שרוול ארוך', 'The same shirt, long sleeved')} />
+          )}
           {shortsAllowed(box) && (
             <Extra checked={box.shorts} onChange={v => onChange({ shorts: v })}
               label={SHORTS_TEXT} price={EXTRA_PRICES.shorts}

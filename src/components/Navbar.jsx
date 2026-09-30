@@ -6,6 +6,7 @@ import { t, isEn, setLang } from '@/lib/i18n';
 import { term, shirtName } from '@/lib/english';
 import { base44 } from '@/api/base44Client';
 import CartDrawer from '@/components/cart/CartDrawer';
+import AddedToCart, { AddedToCartAnnouncer } from '@/components/cart/AddedToCart';
 import SideDrawer from '@/components/shop/SideDrawer';
 import Disclosure from '@/components/shop/Disclosure';
 import PromoBar from '@/components/PromoBar';
@@ -477,6 +478,9 @@ export default function Navbar() {
   return (
     <>
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} user={user} />
+      {/* On every page, because the header is. */}
+      <AddedToCart />
+      <AddedToCartAnnouncer />
 
       <div aria-hidden="true" style={{ height: headerHeight }} />
 

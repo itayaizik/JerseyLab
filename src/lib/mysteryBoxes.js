@@ -27,18 +27,28 @@ export const newBox = (from) => ({
 export const typeOf = (box) => BOX_TYPES.find(b => b.id === box.type) || BOX_TYPES[0];
 // A kids box is sized by the child's height, an adult one by S/M/L.
 export const sizesFor = (box) => (isKidsType(box.type) ? KIDS_SIZES : SIZES);
-// Same rule as a catalogue shirt: retro comes without shorts.
-export const shortsAllowed = (box) => box.type !== 'retro';
-export const wantsShorts = (box) => box.shorts && shortsAllowed(box);
+// A kids box is the catalogue's kids kit: one price, ₪100, with matching
+// shorts and a name and number on the back already in it, and no long sleeve -
+// the kit is not made in one. So for a kids box these three are not choices,
+// and the extras a grown-up ticks are shown as already included instead.
+export const kidsBox = (box) => isKidsType(box.type);
+
+// Same rule as a catalogue shirt: retro comes without shorts. Kids shorts are
+// in the price rather than an extra, so there is nothing to tick.
+export const shortsAllowed = (box) => box.type !== 'retro' && !kidsBox(box);
+export const longSleeveAllowed = (box) => !kidsBox(box);
+export const wantsShorts = (box) => (kidsBox(box) ? true : box.shorts && shortsAllowed(box));
+export const wantsName = (box) => kidsBox(box) || box.addName;
+export const wantsLongSleeve = (box) => box.longSleeve && longSleeveAllowed(box);
 
 // `discount` is what the order's quantity earns off every box in it
 // (lib/mysteryTiers). Extras are never discounted: the ladder is a reason to
 // order more shirts, not cheaper printing.
 export const boxPrice = (box, discount = 0) => Math.max(0, typeOf(box).price - Math.max(0, discount))
-  + (box.addName ? NAME_PRICE : 0)
+  + (!kidsBox(box) && box.addName ? NAME_PRICE : 0)
   + (box.patches ? PATCHES_PRICE : 0)
-  + (box.longSleeve ? EXTRA_PRICES.longSleeve : 0)
-  + (wantsShorts(box) ? EXTRA_PRICES.shorts : 0);
+  + (wantsLongSleeve(box) ? EXTRA_PRICES.longSleeve : 0)
+  + (!kidsBox(box) && wantsShorts(box) ? EXTRA_PRICES.shorts : 0);
 
 export const LONG_SLEEVE_TEXT = t(LONG_SLEEVE_LABEL, 'Long sleeve');
 export const SHORTS_TEXT = t(SHORTS_LABEL, 'Shorts');
@@ -49,9 +59,9 @@ export function boxSummary(box) {
   return [
     t(type.label, type.labelEn),
     box.size || t('בלי מידה', 'No size yet'),
-    box.addName && t('שם ומספר', 'Name and number'),
+    wantsName(box) && t('שם ומספר', 'Name and number'),
     box.patches && t("פאצ'ים", 'Patches'),
-    box.longSleeve && LONG_SLEEVE_TEXT,
+    wantsLongSleeve(box) && LONG_SLEEVE_TEXT,
     wantsShorts(box) && SHORTS_TEXT,
   ].filter(Boolean).join(' · ');
 }

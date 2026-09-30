@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { addToCart, openCart, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID, EXCLUDE_COLORS as COLORS } from '@/lib/mysteryBox';
-import { newBox, newBoxId, typeOf, wantsShorts, boxPrice, boxesTotal, boxesSaving, boxSummary, isBlank, cleanBox } from '@/lib/mysteryBoxes';
+import { newBox, newBoxId, typeOf, kidsBox, wantsShorts, wantsName, wantsLongSleeve, boxPrice, boxesTotal, boxesSaving, boxSummary, isBlank, cleanBox } from '@/lib/mysteryBoxes';
 import { fetchTiers, discountFor, hasLadder, nextTier } from '@/lib/mysteryTiers';
 import {
   MAX_GROUP_BOXES, loadDraft, saveDraft, createGroup, fetchGroup, closeGroup, joinLink, findGroupByCode,
@@ -277,12 +277,15 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
     boxes.forEach(box => {
       const type = typeOf(box);
+      const kids = kidsBox(box);
       const extras = [];
-      if (box.addName) extras.push({ label: 'שם ומספר מאחורה (לבחירתנו)', labelEn: 'Name and number on the back (our pick)', price: NAME_PRICE });
+      // A kids box carries its shorts and its printing at ₪0: the packer has to
+      // see them on the line, and the price must not move.
+      if (wantsName(box)) extras.push({ label: 'שם ומספר מאחורה (לבחירתנו)', labelEn: 'Name and number on the back (our pick)', price: kids ? 0 : NAME_PRICE });
       if (box.patches) extras.push({ label: 'כל הפאצ\'ים', labelEn: 'All patches', price: PATCHES_PRICE });
       // The same words a catalogue shirt uses, so the supplier text reads them.
-      if (box.longSleeve) extras.push({ label: LONG_SLEEVE_LABEL, labelEn: 'Long sleeve', price: EXTRA_PRICES.longSleeve });
-      if (wantsShorts(box)) extras.push({ label: `${SHORTS_LABEL} במידה ${box.size}`, labelEn: `Shorts, size ${box.size}`, price: EXTRA_PRICES.shorts });
+      if (wantsLongSleeve(box)) extras.push({ label: LONG_SLEEVE_LABEL, labelEn: 'Long sleeve', price: EXTRA_PRICES.longSleeve });
+      if (wantsShorts(box)) extras.push({ label: `${SHORTS_LABEL} במידה ${box.size}`, labelEn: `Shorts, size ${box.size}`, price: kids ? 0 : EXTRA_PRICES.shorts });
 
       const details = [];
       if (box.forWhom.trim()) details.push({ label: 'עבור', labelEn: 'For', value: box.forWhom.trim() });

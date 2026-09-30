@@ -263,6 +263,24 @@ html[dir="ltr"] svg:is(.lucide-chevron-left, .lucide-chevron-right, .lucide-arro
   clip-path: polygon(0% 100%, 2% 60%, 5% 90%, 8% 40%, 11% 80%, 14% 30%, 17% 70%, 20% 20%, 23% 65%, 26% 35%, 29% 75%, 32% 25%, 35% 60%, 38% 30%, 41% 80%, 44% 40%, 47% 70%, 50% 20%, 53% 60%, 56% 35%, 59% 75%, 62% 45%, 65% 80%, 68% 30%, 71% 65%, 74% 25%, 77% 70%, 80% 40%, 83% 80%, 86% 30%, 89% 65%, 92% 20%, 95% 60%, 98% 40%, 100% 100%);
 }
 
+/* "Added to the cart" (components/cart/AddedToCart). The panel rises and
+   settles; the tick lands a beat after it, which is what makes it read as a
+   confirmation rather than as something merely appearing. Both fade out on
+   their own - the component removes them once the animation has finished. */
+@keyframes jl-added-in {
+  0%   { opacity: 0; transform: translateY(10px) scale(0.92); }
+  45%  { opacity: 1; transform: translateY(0) scale(1); }
+  80%  { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-6px) scale(0.98); }
+}
+@keyframes jl-added-mark {
+  0%, 15% { transform: scale(0); }
+  45%     { transform: scale(1.15); }
+  60%     { transform: scale(1); }
+}
+.jl-added { animation: jl-added-in 1.5s ease-out forwards; }
+.jl-added-mark { animation: jl-added-mark 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
 /* Skeleton loader */
 @keyframes shimmer {
   0% { background-position: -200px 0; }

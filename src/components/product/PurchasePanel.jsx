@@ -12,7 +12,7 @@ import ProductImage from '@/components/ui/ProductImage';
 import TrustBar from '@/components/TrustBar';
 import { showsLocalStock, showsLocalStockForSize } from '@/components/ShippingBadge';
 import { itemsForSize, stockPrint } from '@/lib/localStock';
-import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
+import { addToCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { allowsPlayerVersion, allowsPatches, allowsLongSleeve, allowsShorts, allowsKids } from '@/lib/shirtOptions';
 import { KIDS_PRICE, KIDS_KIT_LABEL, KIDS_KIT_VALUE, KIDS_PRINT_LABEL, kidsSizeHint } from '@/lib/kidsKit';
 import { BUSINESS, isPlaceholder } from '@/lib/business';
@@ -196,7 +196,9 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
     });
     base44.entities.Shirt.update(shirt.id, { interest_count: (shirt.interest_count || 0) + 1 }).catch(() => {});
     setAdded(true);
-    openCart();
+    // The confirmation is the panel in the middle of the screen now
+    // (components/cart/AddedToCart), not the whole drawer sliding in over the
+    // shirt somebody may still be deciding about.
     setTimeout(() => setAdded(false), 2500);
   };
 

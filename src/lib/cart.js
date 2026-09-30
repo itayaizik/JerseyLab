@@ -18,6 +18,12 @@ export function addToCart(item) {
   const cart = getCart();
   cart.push(item);
   setCart(cart);
+  // Everything that adds to the cart goes through here, so the confirmation
+  // customers see is announced here too rather than by each caller
+  // (components/cart/AddedToCart). A basket badge going from 2 to 3 in the
+  // corner is easy to miss on a phone, and a tap you are not sure landed gets
+  // made twice.
+  window.dispatchEvent(new CustomEvent('cart_added', { detail: item }));
   return cart;
 }
 

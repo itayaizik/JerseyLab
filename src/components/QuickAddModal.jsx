@@ -12,7 +12,7 @@ import OrderSummary from '@/components/configurator/OrderSummary';
 import { getShirtTypeTip, getPersonalizationTip } from '@/components/configurator/recommendations';
 import { showsLocalStockForSize } from '@/components/ShippingBadge';
 import { itemsForSize, stockPrint } from '@/lib/localStock';
-import { addToCart, openCart, shirtBasePrice, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
+import { addToCart, shirtBasePrice, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { allowsPlayerVersion, allowsPatches, allowsLongSleeve, allowsShorts } from '@/lib/shirtOptions';
 import { t } from '@/lib/i18n';
 import { shirtName, shirtNameEn } from '@/lib/english';
@@ -128,7 +128,10 @@ export default function QuickAddModal({ shirt, open, onClose }) {
       stockItemId: buyingExact ? stockItem?.id || '' : '',
     });
     setAdded(true);
-    setTimeout(() => { handleClose(); openCart(); }, 650);
+    // Close and let the confirmation in the middle of the screen say so
+    // (components/cart/AddedToCart), rather than swapping this window for the
+    // cart drawer.
+    setTimeout(handleClose, 650);
   };
 
   // The yes-or-no extras are asked on the summary rather than as steps of their
