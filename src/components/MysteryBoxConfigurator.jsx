@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  Gift, Check, ShoppingBag, Ban, MessageSquare,
+  Gift, Check, ShoppingBag,
   Plus, Minus, Copy, Trash2, ChevronDown, CheckCircle2, Share2, Link2, Users, Loader2, RefreshCw, X,
 } from 'lucide-react';
 import { addToCart, openCart, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
@@ -11,6 +11,7 @@ import {
   MAX_GROUP_BOXES, loadDraft, saveDraft, createGroup, fetchGroup, closeGroup, joinLink, findGroupByCode,
 } from '@/lib/mysteryGroup';
 import MysteryBoxFields from '@/components/mystery/MysteryBoxFields';
+import Modal from '@/components/shop/Modal';
 import { t } from '@/lib/i18n';
 
 // Building mystery boxes - one, or a whole group's worth.
@@ -28,8 +29,8 @@ import { t } from '@/lib/i18n';
 // refresh or a closed tab loses nothing (lib/mysteryGroup).
 //
 // One card is open at a time; the rest collapse to a line with their choices
-// and price. What to leave out (teams, colours, notes) is asked once, for the
-// whole order, with a note per box for anything personal.
+// and price. What to leave out - teams, colours - is asked per box rather than
+// per order: friends ordering together do not share a taste.
 //
 // What goes into the cart stays in Hebrew, since it becomes the order the
 // owner reads; the English words travel beside it (labelEn) for the cart to
@@ -47,8 +48,6 @@ const STEPS = [
   { id: 3, label: 'סיכום', labelEn: 'Summary', short: 'סיכום', shortEn: 'Summary' },
 ];
 const POLL_MS = 15000;
-
-const colorName = (label) => t(label, COLORS.find(c => c.label === label)?.en);
 
 const boxTitle = (box, i) => box.forWhom.trim() || t(`בוקס ${i + 1}`, `Box ${i + 1}`);
 const boxesLabel = (n) => (n === 1 ? t('בוקס אחד', '1 box') : t(`${n} בוקסים`, `${n} boxes`));
@@ -69,10 +68,6 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   const [draft] = useState(() => loadDraft());
   const [boxes, setBoxes] = useState(() => draft?.boxes || [newBox()]);
   const [openId, setOpenId] = useState(() => null);
-  const [prefsOpen, setPrefsOpen] = useState(false);
-  const [excludeClubs, setExcludeClubs] = useState(draft?.excludeClubs || '');
-  const [excludeColors, setExcludeColors] = useState(draft?.excludeColors || []);
-  const [notes, setNotes] = useState(draft?.notes || '');
   const [group, setGroup] = useState(draft?.group || null);
   const [error, setError] = useState('');
   const [missingSize, setMissingSize] = useState([]);
@@ -97,8 +92,8 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
   // Remembered on every change: a refresh brings all of it back.
   useEffect(() => {
-    saveDraft({ boxes, excludeClubs, excludeColors, notes, group });
-  }, [boxes, excludeClubs, excludeColors, notes, group]);
+    saveDraft({ boxes, group });
+  }, [boxes, group]);
 
   // The first box starts open.
   const currentOpen = openId ?? boxes[0]?.id;
@@ -134,11 +129,6 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
       return [newBox(prev[0])];
     });
     if (currentOpen === id) setOpenId(null);
-  };
-
-  const toggleColor = (label) => {
-    touched();
-    setExcludeColors(prev => prev.includes(label) ? prev.filter(c => c !== label) : [...prev, label]);
   };
 
   // --- the group -------------------------------------------------------------
@@ -285,19 +275,6 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     }
     setError('');
 
-    // Preferences for the whole order, carried by every box: they carry no
-    // price, but they have to reach the order, or asking was theatre.
-    const shared = [];
-    if (excludeClubs.trim()) shared.push({ label: 'לא לשלוח קבוצות', labelEn: "Don't send teams", value: excludeClubs.trim() });
-    if (excludeColors.length) {
-      shared.push({
-        label: 'לא לשלוח צבעים', labelEn: "Don't send colours",
-        value: excludeColors.join(', '),
-        valueEn: excludeColors.map(c => COLORS.find(x => x.label === c)?.en || c).join(', '),
-      });
-    }
-    if (notes.trim()) shared.push({ label: 'הערות', labelEn: 'Notes', value: notes.trim() });
-
     boxes.forEach(box => {
       const type = typeOf(box);
       const extras = [];
@@ -310,6 +287,16 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
       const details = [];
       if (box.forWhom.trim()) details.push({ label: 'עבור', labelEn: 'For', value: box.forWhom.trim() });
       if (box.note.trim()) details.push({ label: 'הערה לבוקס', labelEn: 'Note for this box', value: box.note.trim() });
+      // What to leave out carries no price, but it has to reach the order or
+      // asking was theatre.
+      if (box.excludeClubs.trim()) details.push({ label: 'לא לשלוח קבוצות', labelEn: "Don't send teams", value: box.excludeClubs.trim() });
+      if (box.excludeColors.length) {
+        details.push({
+          label: 'לא לשלוח צבעים', labelEn: "Don't send colours",
+          value: box.excludeColors.join(', '),
+          valueEn: box.excludeColors.map(c => COLORS.find(x => x.label === c)?.en || c).join(', '),
+        });
+      }
 
       addToCart({
         shirtId: MYSTERY_BOX_ID,
@@ -319,7 +306,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         basePrice: type.price,
         unitPrice: boxPrice(box, discount),
         extras,
-        details: [...details, ...shared],
+        details,
         deliveryNote: 'מיסטרי בוקס — הפתעה עד הפתיחה',
         deliveryNoteEn: 'Mystery Box — a surprise until you open it',
       });
@@ -575,68 +562,6 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
       </div>
       )}
 
-      {step === 2 && (
-      <>
-      {/* What to leave out - once, for the whole order. */}
-      <div className={`pb-5 ${pad}`}>
-        <div className="overflow-hidden rounded-2xl border border-brand-line">
-          <button type="button" onClick={() => setPrefsOpen(o => !o)} aria-expanded={prefsOpen}
-            className="flex min-h-[3.5rem] w-full items-center gap-3 bg-brand-mist px-4 text-start">
-            <Ban className="h-5 w-5 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
-            <span className="min-w-0 flex-1">
-              <span className="block text-[15px] font-semibold text-brand-navy">{t('מה לא לשלוח', 'What not to send')}</span>
-              <span className="block text-[12px] text-brand-navy/55">{t('לכל הבוקסים · לא חובה', 'For all the boxes · optional')}</span>
-            </span>
-            <ChevronDown className={`h-4 w-4 flex-shrink-0 text-brand-navy/40 transition-transform ${prefsOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
-          </button>
-          {prefsOpen && (
-            <div className="bg-white px-4 pb-4 pt-3">
-              <p className="mb-4 text-[13px] leading-relaxed text-brand-navy/55">
-                {t('ההפתעה נשארת הפתעה, אבל אנחנו נמנע ממה שתסמנו כאן.', "The surprise stays a surprise, but we'll avoid whatever you mark here.")}
-              </p>
-
-              <label htmlFor={fid('clubs')} className="mb-1.5 block text-sm font-medium text-brand-navy/70">
-                {t('קבוצות שלא תרצו לקבל', "Teams you don't want")}
-              </label>
-              <input id={fid('clubs')} value={excludeClubs} maxLength={200}
-                onChange={e => { setExcludeClubs(e.target.value); touched(); }}
-                placeholder={t('למשל: ברצלונה, מכבי תל אביב', 'For example: Barcelona, Maccabi Tel Aviv')}
-                className="shop-field" />
-
-              <p className="mb-2 mt-5 text-sm font-medium text-brand-navy/70">{t('צבעים שלא תרצו לקבל', "Colours you don't want")}</p>
-              <div className="flex flex-wrap gap-2">
-                {COLORS.map(c => {
-                  const off = excludeColors.includes(c.label);
-                  return (
-                    <button key={c.label} type="button" onClick={() => toggleColor(c.label)}
-                      aria-pressed={off}
-                      className={`shop-chip px-3.5 ${off ? 'border-brand-navy bg-brand-navy text-white line-through hover:border-brand-navy hover:text-white' : ''}`}>
-                      <span className="h-4 w-4 flex-shrink-0 rounded-full ring-1 ring-brand-navy/20" style={{ background: c.hex }} aria-hidden="true" />
-                      {t(c.label, c.en)}
-                    </button>
-                  );
-                })}
-              </div>
-              {excludeColors.length > 0 && (
-                <p className="mt-2 text-[13px] text-brand-navy/60">
-                  {t('לא נשלח:', "We won't send:")} <strong className="font-semibold text-brand-navy">{excludeColors.map(colorName).join(', ')}</strong>
-                </p>
-              )}
-
-              <label htmlFor={fid('notes')} className="mb-1.5 mt-5 flex items-center gap-1.5 text-sm font-medium text-brand-navy/70">
-                <MessageSquare className="h-4 w-4 text-brand-orange-ink" aria-hidden="true" />
-                {t('הערות', 'Notes')}
-              </label>
-              <textarea id={fid('notes')} value={notes} maxLength={500} rows={3}
-                onChange={e => { setNotes(e.target.value); touched(); }}
-                placeholder={t('ליגה שאתם מעדיפים, מתנה למישהו. כל דבר שחשוב לכם.', 'A league you prefer, a gift for someone. Anything that matters to you.')}
-                className="shop-field resize-none py-3" />
-            </div>
-          )}
-        </div>
-      </div>
-      </>
-      )}
 
       {/* Total */}
       {step === 3 && (
@@ -714,7 +639,6 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 // worst a guessed code reaches is somebody else's shirt sizes - so this asks
 // for nothing but the code.
 function ReturnByCode({ fid, onFound }) {
-  const [open, setOpen] = useState(false);
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -731,16 +655,8 @@ function ReturnByCode({ fid, onFound }) {
     onFound(result);
   };
 
-  if (!open) {
-    return (
-      <button type="button" onClick={() => setOpen(true)} className="shop-link mt-3 w-full justify-center text-[13px]">
-        {t('כבר יצרתם קבוצה? כניסה עם קוד', 'Already started a group? Enter your code')}
-      </button>
-    );
-  }
-
   return (
-    <form onSubmit={submit} noValidate className="mt-3 space-y-2">
+    <form onSubmit={submit} noValidate className="space-y-2">
       <label htmlFor={fid('group-code')} className="block text-sm font-medium text-brand-navy/70">
         {t('קוד הניהול', 'Your organiser code')}
       </label>
@@ -756,15 +672,14 @@ function ReturnByCode({ fid, onFound }) {
     </form>
   );
 }
-
 // Starting a group, and once there is one, sharing its link.
+//
+// The card here says only where things stand; the work itself - the name, the
+// code, the link, the share buttons - happens in a panel of its own. Inline it
+// buried the order it was supposed to serve.
 function GroupPanel({ group, closed, syncing, fid, onStart, onResume, onRefresh, onEnd, filled = 0, count = 0 }) {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [copied, setCopied] = useState(false);
+  const [codeOpen, setCodeOpen] = useState(false);
 
   const heading = (
     <p className="flex items-center gap-2 text-[15px] font-semibold text-brand-navy">
@@ -774,59 +689,120 @@ function GroupPanel({ group, closed, syncing, fid, onStart, onResume, onRefresh,
   );
 
   if (!group) {
-    const start = async (e) => {
-      e.preventDefault();
-      if (!name.trim()) { setError(t('צריך למלא את השם שלך', 'Please fill in your name')); return; }
-      setBusy(true);
-      setError('');
-      const result = await onStart(name.trim(), phone.trim());
-      setBusy(false);
-      if (!result.ok) setError(result.message);
-    };
-
     return (
-      <div className="rounded-2xl border border-brand-line p-4">
-        {heading}
-        <p className="mt-1 text-[13px] leading-relaxed text-brand-navy/60">
-          {t('שולחים לחברים קישור, כל אחד ממלא את הבוקס שלו בדף משלו, והבוקסים מופיעים כאן אצלך.',
-            'Send your friends a link; each fills in their own box on a page of their own, and the boxes show up here for you.')}
-        </p>
-        {!open ? (
-          <>
-            <button type="button" onClick={() => setOpen(true)} className="shop-btn-secondary mt-3 min-h-[2.75rem] w-full text-sm">
-              <Users className="h-4 w-4" aria-hidden="true" />
-              {t('יצירת קישור לחברים', 'Create a link for friends')}
-            </button>
-            <ReturnByCode fid={fid} onFound={onResume} />
-          </>
-        ) : (
-          <form onSubmit={start} noValidate className="mt-3 space-y-3">
-            <div>
-              <label htmlFor={fid('owner-name')} className="mb-1.5 block text-sm font-medium text-brand-navy/70">
-                {t('השם שלך', 'Your name')} <span className="text-brand-orange-ink">*</span>
-              </label>
-              <input id={fid('owner-name')} value={name} onChange={e => { setName(e.target.value); setError(''); }} maxLength={40}
-                autoComplete="given-name" placeholder={t('החברים יראו מי הזמין אותם', 'Your friends will see who invited them')} className="shop-field" />
-            </div>
-            <div>
-              <label htmlFor={fid('owner-phone')} className="mb-1.5 block text-sm font-medium text-brand-navy/70">
-                {t('הטלפון שלך', 'Your phone')} <span className="font-normal text-brand-navy/40">{t('(לא חובה)', '(optional)')}</span>
-              </label>
-              <input id={fid('owner-phone')} value={phone} onChange={e => setPhone(e.target.value)} type="tel" dir="ltr" maxLength={20}
-                autoComplete="tel" className="shop-field text-start" />
-              <p className="mt-1 text-[12px] text-brand-navy/50">{t('כדי שחבר שסיים יוכל לעדכן אותך בוואטסאפ בלחיצה.', 'So a friend who is done can let you know on WhatsApp in one tap.')}</p>
-            </div>
-            {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
-            <button type="submit" disabled={busy} className="shop-btn min-h-[2.75rem] w-full text-sm">
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" aria-hidden="true" />}
-              {t('יצירת הקישור', 'Create the link')}
-            </button>
-          </form>
-        )}
-      </div>
+      <>
+        <div className="rounded-2xl border border-brand-line p-4">
+          {heading}
+          <p className="mt-1 text-[13px] leading-relaxed text-brand-navy/60">
+            {t('שולחים לחברים קישור, כל אחד ממלא את הבוקס שלו בדף משלו, והבוקסים מופיעים כאן אצלך.',
+              'Send your friends a link; each fills in their own box on a page of their own, and the boxes show up here for you.')}
+          </p>
+          <button type="button" onClick={() => setOpen(true)} className="shop-btn-secondary mt-3 min-h-[2.75rem] w-full text-sm">
+            <Users className="h-4 w-4" aria-hidden="true" />
+            {t('יצירת קישור לחברים', 'Create a link for friends')}
+          </button>
+          <button type="button" onClick={() => setCodeOpen(true)} className="shop-link mt-3 w-full justify-center text-[13px]">
+            {t('כבר יצרתם קבוצה? כניסה עם קוד', 'Already started a group? Enter your code')}
+          </button>
+        </div>
+
+        <Modal open={open} onClose={() => setOpen(false)} title={t('קישור לחברים', 'A link for friends')}>
+          <StartGroupForm fid={fid} onStart={onStart} />
+        </Modal>
+        <Modal open={codeOpen} onClose={() => setCodeOpen(false)} title={t('כניסה עם קוד', 'Enter your code')}>
+          <ReturnByCode fid={fid} onFound={(result) => { setCodeOpen(false); onResume(result); }} />
+        </Modal>
+      </>
     );
   }
 
+  return (
+    <>
+      <div className="rounded-2xl border border-brand-orange/40 bg-brand-orange-soft/40 p-4">
+        {heading}
+        <p className="mt-1 text-[13px] leading-relaxed text-brand-navy/65">
+          {closed
+            ? t('הקבוצה סגורה, אז אי אפשר להוסיף אליה עוד בוקסים.', 'The group is closed, so no more boxes can be added.')
+            : filled > 0
+              ? t(`${filled} מתוך ${count} מילאו את הבוקס שלהם.`, `${filled} of ${count} have filled in their box.`)
+              : t('הקבוצה פתוחה. שלחו את הקישור ונחכה שימלאו.', 'The group is open. Send the link and wait for them to fill in.')}
+        </p>
+
+        {filled > 0 && (
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-white" role="presentation">
+            <div className="h-full rounded-full bg-brand-orange transition-all" style={{ width: `${Math.round((filled / Math.max(count, 1)) * 100)}%` }} />
+          </div>
+        )}
+
+        <button type="button" onClick={() => setOpen(true)} className="shop-btn mt-3 min-h-[2.75rem] w-full text-sm">
+          <Share2 className="h-4 w-4" aria-hidden="true" />
+          {t('הקישור והקוד', 'The link and the code')}
+        </button>
+        <button type="button" onClick={onRefresh} disabled={syncing} className="shop-link mt-3 w-full justify-center text-[13px]">
+          <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} aria-hidden="true" />
+          {t('בדיקת בוקסים חדשים', 'Check for new boxes')}
+        </button>
+      </div>
+
+      <Modal open={open} onClose={() => setOpen(false)} title={t('הקישור והקוד', 'The link and the code')}>
+        <GroupShare group={group} closed={closed} filled={filled} count={count}
+          onEnd={() => { setOpen(false); onEnd(); }} />
+      </Modal>
+    </>
+  );
+}
+
+// Who is organising, which is all we need before a group can exist.
+function StartGroupForm({ fid, onStart }) {
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  const start = async (e) => {
+    e.preventDefault();
+    if (!name.trim()) { setError(t('צריך למלא את השם שלך', 'Please fill in your name')); return; }
+    setBusy(true);
+    setError('');
+    const result = await onStart(name.trim(), phone.trim());
+    setBusy(false);
+    if (!result.ok) setError(result.message);
+  };
+
+  return (
+    <form onSubmit={start} noValidate className="space-y-4">
+      <p className="text-[13px] leading-relaxed text-brand-navy/60">
+        {t('אחרי שתמלאו, נייצר קישור שאפשר לשלוח לחברים. כל אחד ימלא את הבוקס שלו והוא יופיע אצלכם.',
+          "Once you're done we'll make a link to send your friends. Each fills in their own box and it shows up here.")}
+      </p>
+      <div>
+        <label htmlFor={fid('owner-name')} className="mb-1.5 block text-sm font-medium text-brand-navy/70">
+          {t('השם שלך', 'Your name')} <span className="text-brand-orange-ink">*</span>
+        </label>
+        <input id={fid('owner-name')} value={name} onChange={e => { setName(e.target.value); setError(''); }} maxLength={40}
+          autoComplete="given-name" placeholder={t('החברים יראו מי הזמין אותם', 'Your friends will see who invited them')} className="shop-field" />
+      </div>
+      <div>
+        <label htmlFor={fid('owner-phone')} className="mb-1.5 block text-sm font-medium text-brand-navy/70">
+          {t('הטלפון שלך', 'Your phone')} <span className="font-normal text-brand-navy/40">{t('(לא חובה)', '(optional)')}</span>
+        </label>
+        <input id={fid('owner-phone')} value={phone} onChange={e => setPhone(e.target.value)} type="tel" dir="ltr" maxLength={20}
+          autoComplete="tel" className="shop-field text-start" />
+        <p className="mt-1 text-[12px] text-brand-navy/50">{t('כדי שחבר שסיים יוכל לעדכן אותך בוואטסאפ בלחיצה.', 'So a friend who is done can let you know on WhatsApp in one tap.')}</p>
+      </div>
+      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+      <button type="submit" disabled={busy} className="shop-btn min-h-[3rem] w-full text-sm">
+        {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" aria-hidden="true" />}
+        {t('יצירת הקישור', 'Create the link')}
+      </button>
+    </form>
+  );
+}
+
+// The group once it exists: the code to come back with, the link to send, and
+// the way to stop taking boxes.
+function GroupShare({ group, closed, filled, count, onEnd }) {
+  const [copied, setCopied] = useState(false);
   const link = joinLink(group.id);
   const message = t(
     `${group.ownerName} מזמין מיסטרי בוקס 🎁 מלאו כאן את הבוקס שלכם (שם, מידה ותוספות):`,
@@ -841,63 +817,60 @@ function GroupPanel({ group, closed, syncing, fid, onStart, onResume, onRefresh,
   };
 
   return (
-    <div className="rounded-2xl border border-brand-orange/40 bg-brand-orange-soft/40 p-4">
-      {heading}
-      <p className="mt-1 text-[13px] leading-relaxed text-brand-navy/65">
-        {closed
-          ? t('הקבוצה סגורה, אז אי אפשר להוסיף אליה עוד בוקסים.', 'The group is closed, so no more boxes can be added.')
-          : t('שלחו את הקישור. כל בוקס שחבר שומר מופיע כאן אוטומטית, גם אם תצאו ותחזרו.', 'Send the link. Every box a friend saves appears here automatically, even if you leave and come back.')}
-      </p>
+    <div>
       {/* The code, before the link. A link is something you have to still
           have; five digits are something you can read off this screen and
           type into another phone a week later. */}
       {group.code && (
-        <div className="mt-3 rounded-2xl bg-white p-3 text-center">
+        <div className="rounded-2xl bg-brand-mist p-4 text-center">
           <p className="text-[12px] text-brand-navy/55">{t('קוד הניהול שלכם', 'Your organiser code')}</p>
-          <p dir="ltr" className="mt-0.5 text-3xl font-bold tracking-[0.3em] tabular-nums text-brand-navy">{group.code}</p>
-          <p className="mt-1 text-[12px] leading-relaxed text-brand-navy/55">
+          <p dir="ltr" className="mt-0.5 text-4xl font-bold tracking-[0.3em] tabular-nums text-brand-navy">{group.code}</p>
+          <p className="mt-1.5 text-[12px] leading-relaxed text-brand-navy/55">
             {t('שמרו אותו. אם תאבדו את הקישור, הקוד מחזיר אתכם לקבוצה מכל מכשיר.',
                'Keep it. If you lose the link, the code brings you back to this group from any device.')}
           </p>
         </div>
       )}
 
-      {/* How many of the boxes here came from a friend, so the organiser can
-          see who is still outstanding without counting cards. */}
       {filled > 0 && (
-        <div className="mt-3">
+        <div className="mt-4">
           <div className="flex items-baseline justify-between text-[13px]">
             <span className="font-medium text-brand-navy">{t(`${filled} מתוך ${count} מילאו`, `${filled} of ${count} filled in`)}</span>
             {filled < count && <span className="text-brand-navy/55">{t(`${count - filled} ממתינים`, `${count - filled} waiting`)}</span>}
           </div>
-          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-white" role="presentation">
+          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-brand-mist" role="presentation">
             <div className="h-full rounded-full bg-brand-orange transition-all" style={{ width: `${Math.round((filled / Math.max(count, 1)) * 100)}%` }} />
           </div>
         </div>
       )}
 
-      <p dir="ltr" className="mt-3 truncate rounded-xl bg-white px-3 py-2 text-start text-[13px] text-brand-navy/70">{link}</p>
-      <div className="mt-3 grid grid-cols-1 gap-2 min-[440px]:grid-cols-2">
+      {closed && (
+        <p className="mt-4 rounded-xl bg-brand-mist p-3 text-[13px] text-brand-navy/70">
+          {t('הקבוצה סגורה, אז אי אפשר להוסיף אליה עוד בוקסים.', 'The group is closed, so no more boxes can be added.')}
+        </p>
+      )}
+
+      <p className="mt-4 mb-1.5 text-sm font-medium text-brand-navy/70">{t('הקישור לחברים', 'The link for your friends')}</p>
+      <p dir="ltr" className="truncate rounded-xl border border-brand-line bg-brand-mist px-3 py-2.5 text-start text-[13px] text-brand-navy/70">{link}</p>
+      <div className="mt-3 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">
         <a href={`https://wa.me/?text=${encodeURIComponent(`${message}\n${link}`)}`} target="_blank" rel="noopener noreferrer"
-          className="shop-btn min-h-[2.75rem] text-sm">
+          className="shop-btn min-h-[3rem] text-sm">
           <Share2 className="h-4 w-4" aria-hidden="true" />
           {t('שליחה בוואטסאפ', 'Send on WhatsApp')}
         </a>
-        <button type="button" onClick={copy} className="shop-btn-secondary min-h-[2.75rem] text-sm">
+        <button type="button" onClick={copy} className="shop-btn-secondary min-h-[3rem] text-sm">
           {copied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
           {copied ? t('הקישור הועתק', 'Link copied') : t('העתקת קישור', 'Copy link')}
         </button>
       </div>
       <p className="sr-only" aria-live="polite">{copied ? t('הקישור הועתק', 'Link copied') : ''}</p>
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[13px]">
-        <button type="button" onClick={onRefresh} disabled={syncing} className="shop-link">
-          <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} aria-hidden="true" />
-          {t('בדיקת בוקסים חדשים', 'Check for new boxes')}
-        </button>
-        <button type="button" onClick={onEnd} className="text-brand-navy/55 underline underline-offset-2 hover:text-red-600">
+
+      {!closed && (
+        <button type="button" onClick={onEnd}
+          className="mt-5 w-full text-center text-[13px] text-brand-navy/55 underline underline-offset-2 hover:text-red-600">
           {t('סגירת הקבוצה', 'Close the group')}
         </button>
-      </div>
+      )}
     </div>
   );
 }

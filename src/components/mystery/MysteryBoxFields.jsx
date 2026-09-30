@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Baby, Gift, Shirt, Sparkles, User } from 'lucide-react';
+import { Baby, Ban, Gift, Shirt, Sparkles, User } from 'lucide-react';
 import { EXTRA_PRICES } from '@/lib/cart';
-import { BOX_TYPES, NAME_PRICE, PATCHES_PRICE, isKidsType } from '@/lib/mysteryBox';
+import { BOX_TYPES, NAME_PRICE, PATCHES_PRICE, EXCLUDE_COLORS, isKidsType } from '@/lib/mysteryBox';
 import { kidsSizeHint } from '@/lib/kidsKit';
 import { typeOf, shortsAllowed, sizesFor, LONG_SLEEVE_TEXT, SHORTS_TEXT } from '@/lib/mysteryBoxes';
 import { t } from '@/lib/i18n';
@@ -100,13 +100,45 @@ export default function MysteryBoxFields({ box, onChange, fid, missingSize = fal
         </div>
       </div>
 
+      {/* What to leave out. Per box, because a group of friends does not share
+          a taste: one will not wear red, another does not want Maccabi. */}
+      <div>
+        <p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-brand-navy/70">
+          <Ban className="h-4 w-4 text-brand-orange-ink" aria-hidden="true" />
+          {t('מה לא לשלוח בבוקס הזה', "What not to send in this box")}
+          <span className="font-normal text-brand-navy/40">{t('(לא חובה)', '(optional)')}</span>
+        </p>
+        <input id={fid('clubs')} value={box.excludeClubs} maxLength={200}
+          onChange={e => onChange({ excludeClubs: e.target.value })}
+          placeholder={t('קבוצות - למשל: ברצלונה, מכבי תל אביב', 'Teams - for example: Barcelona, Maccabi Tel Aviv')}
+          aria-label={t('קבוצות שלא לשלוח', "Teams not to send")}
+          className="shop-field" />
+        <div role="group" aria-label={t('צבעים שלא לשלוח', 'Colours not to send')} className="mt-2 flex flex-wrap gap-1.5">
+          {EXCLUDE_COLORS.map(c => {
+            const off = box.excludeColors.includes(c.label);
+            return (
+              <button key={c.label} type="button" aria-pressed={off}
+                onClick={() => onChange({
+                  excludeColors: off
+                    ? box.excludeColors.filter(x => x !== c.label)
+                    : [...box.excludeColors, c.label],
+                })}
+                className={`shop-chip gap-1.5 text-[13px] ${off ? 'shop-chip-active' : ''}`}>
+                <span className="h-3.5 w-3.5 flex-shrink-0 rounded-full border border-brand-navy/15" style={{ background: c.hex }} aria-hidden="true" />
+                {t(c.label, c.en)}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div>
         <label htmlFor={fid('note')} className="mb-1.5 block text-sm font-medium text-brand-navy/70">
           {t('הערה לבוקס הזה', 'A note for this box')} <span className="font-normal text-brand-navy/40">{t('(לא חובה)', '(optional)')}</span>
         </label>
         <input id={fid('note')} value={box.note} maxLength={200}
           onChange={e => onChange({ note: e.target.value })}
-          placeholder={t('למשל: אוהד מכבי, בלי הפועל', 'For example: a Liverpool fan, nothing from Everton')}
+          placeholder={t('כל דבר שחשוב לדעת', 'Anything else worth knowing')}
           className="shop-field" />
       </div>
     </div>

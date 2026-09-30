@@ -3,7 +3,7 @@
 // their own box, so both price and describe a box the same way.
 
 import { EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
-import { BOX_TYPES, SIZES, NAME_PRICE, PATCHES_PRICE, isKidsType } from '@/lib/mysteryBox';
+import { BOX_TYPES, SIZES, NAME_PRICE, PATCHES_PRICE, EXCLUDE_COLORS, isKidsType } from '@/lib/mysteryBox';
 import { KIDS_SIZES } from '@/lib/kidsKit';
 import { t } from '@/lib/i18n';
 
@@ -20,6 +20,8 @@ export const newBox = (from) => ({
   longSleeve: false,
   shorts: false,
   note: '',
+  excludeClubs: '',
+  excludeColors: [],
 });
 
 export const typeOf = (box) => BOX_TYPES.find(b => b.id === box.type) || BOX_TYPES[0];
@@ -75,6 +77,10 @@ export function cleanBox(raw) {
     longSleeve: !!raw?.longSleeve,
     shorts: !!raw?.shorts,
     note: text(raw?.note, 200),
+    excludeClubs: text(raw?.excludeClubs, 200),
+    excludeColors: Array.isArray(raw?.excludeColors)
+      ? raw.excludeColors.filter(c => EXCLUDE_COLORS.some(x => x.label === c)).slice(0, EXCLUDE_COLORS.length)
+      : [],
     ...(raw?.remoteId ? { remoteId: String(raw.remoteId) } : {}),
   };
 }

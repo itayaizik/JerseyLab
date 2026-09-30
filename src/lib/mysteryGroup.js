@@ -29,19 +29,25 @@ const write = (key, value) => {
   } catch { /* private mode - the page still works, it just forgets */ }
 };
 
-// The organiser's builder: the boxes, what to leave out, and the group if one
-// was started. { boxes, excludeClubs, excludeColors, notes, group }
+// The organiser's builder: the boxes and the group if one was started.
+// { boxes, group } - what to leave out lives on each box now.
 const DRAFT_KEY = 'jl_mystery_draft';
 
 export function loadDraft() {
   const draft = read(DRAFT_KEY);
   if (!draft || !Array.isArray(draft.boxes) || !draft.boxes.length) return null;
   const g = draft.group;
+  // A draft written before the exclusions moved onto the box kept them once
+  // for the whole order. Give every box the old answers rather than throwing
+  // away something the customer typed.
+  const old = {
+    excludeClubs: typeof draft.excludeClubs === 'string' ? draft.excludeClubs : '',
+    excludeColors: Array.isArray(draft.excludeColors) ? draft.excludeColors : [],
+  };
+  const inherited = old.excludeClubs || old.excludeColors.length;
   return {
-    boxes: draft.boxes.slice(0, MAX_GROUP_BOXES).map(cleanBox),
-    excludeClubs: typeof draft.excludeClubs === 'string' ? draft.excludeClubs.slice(0, 200) : '',
-    excludeColors: Array.isArray(draft.excludeColors) ? draft.excludeColors.filter(c => typeof c === 'string') : [],
-    notes: typeof draft.notes === 'string' ? draft.notes.slice(0, 500) : '',
+    boxes: draft.boxes.slice(0, MAX_GROUP_BOXES)
+      .map(box => cleanBox(inherited ? { ...old, ...box } : box)),
     group: g && typeof g.id === 'string' && typeof g.ownerToken === 'string'
       ? {
         id: g.id, ownerToken: g.ownerToken, ownerName: String(g.ownerName || ''),
@@ -100,6 +106,8 @@ const fromServer = (b) => ({
   forWhom: b.for_whom, type: b.type, size: b.size,
   addName: b.add_name, patches: b.patches, longSleeve: b.long_sleeve, shorts: b.shorts,
   note: b.note || '',
+  excludeClubs: b.exclude_clubs || '',
+  excludeColors: Array.isArray(b.exclude_colors) ? b.exclude_colors : [],
 });
 
 export async function fetchGroup(groupId) {
@@ -122,6 +130,8 @@ export const saveGroupBox = (groupId, { boxId, token, box }) => call('save_myste
     for_whom: box.forWhom.trim(), type: box.type, size: box.size,
     add_name: box.addName, patches: box.patches, long_sleeve: box.longSleeve, shorts: box.shorts,
     note: box.note.trim(),
+    exclude_clubs: (box.excludeClubs || '').trim(),
+    exclude_colors: box.excludeColors || [],
   },
 });
 
