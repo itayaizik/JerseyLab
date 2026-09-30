@@ -251,7 +251,7 @@ const PLAYERS = [
   // --- added with the player shirts: the names those shirts carry, and the
   // ones customers type when looking for them. Teams are the catalogue's own
   // spelling, and a player whose clubs the shop does not stock is left out.
-  { names: ['שבצנקו', 'שבchenko', 'shevchenko', 'sheva'], label: 'שבצנקו',
+  { names: ['שבצנקו', 'שבצ׳נקו', 'shevchenko', 'sheva'], label: 'שבצנקו',
     teams: [['מילאן', 1999, 2005], ['צלסי', 2006, 2007], ['מילאן', 2008, 2008]] },
   { names: ['פיגו', 'לואיש פיגו', 'figo', 'luis figo'], label: 'פיגו',
     teams: [['ברצלונה', 1995, 1999], ['ריאל מדריד', 2000, 2004], ['אינטר', 2005, 2008], ['פורטוגל', 1991, 2006]] },
