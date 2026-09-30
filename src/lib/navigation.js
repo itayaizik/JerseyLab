@@ -97,15 +97,18 @@ export const NATIONAL_MENU = {
 };
 
 export const SHIRTS_MENU = {
+  // "כל החולצות" leads first, in the position the eye starts from, because it
+  // is the one card that cannot be a dead end. It used to sit as small print
+  // under the row, which is the wrong size for the most-wanted link on the
+  // menu.
   cards: withStock([
+    { label: t('כל החולצות', 'All shirts'), href: '/catalog', image: 'all' },
     { label: t('חדשים באתר', 'New arrivals'), href: '/catalog?new=true', image: 'new=true' },
     { label: t('נבחרות', 'National teams'), href: collectionHref('national-teams'), image: 'collection:national-teams' },
     { label: t('רטרו', 'Retro'), href: collectionHref('retro'), image: 'collection:retro' },
-    { label: t('ליגת האלופות', 'Champions League'), href: collectionHref('champions-league'), image: 'collection:champions-league' },
     { label: t('הנמכרים ביותר', 'Best sellers'), href: '/catalog?best=true', image: 'best=true' },
   ]).slice(0, 5),
   links: withStock([
-    { label: t('כל החולצות', 'All shirts'), href: '/catalog' },
     { label: t('מיסטרי בוקס', 'Mystery Box'), href: '/mystery-box' },
     { label: t('לא מצאתם? בקשו חולצה', "Can't find it? Request a shirt"), href: '/request-shirt' },
     { label: t('מדריך מידות', 'Size guide'), href: '/size-guide' },

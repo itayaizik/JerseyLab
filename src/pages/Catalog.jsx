@@ -12,12 +12,13 @@ import SortSelect from '@/components/catalog/SortSelect';
 import Seo from '@/components/Seo';
 import { showsLocalStock } from '@/components/ShippingBadge';
 import { toast } from '@/components/ui/use-toast';
-import { shirtSizes, sortSizes } from '@/lib/sizes';
 import { searchShirts, formatEra, toDisplay } from '@/lib/search';
 import { matchPages } from '@/lib/sitePages';
 import { sortShirts } from '@/lib/sortShirts';
 import { COLLECTIONS, localizeCollection } from '@/lib/collections';
 import { withStock } from '@/lib/catalogFacets';
+import { EMPTY_FILTERS, CONDITION_LABELS, filterOptions, applyFilters } from '@/lib/shirtFilters';
+import { preferredClubs } from '@/lib/taste';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
 import { t, isEn } from '@/lib/i18n';
 import { term } from '@/lib/english';
@@ -97,8 +98,6 @@ const DEFAULT_DESCRIPTION = t(
   'כל החולצות באתר במקום אחד: קבוצות, נבחרות ורטרו. אפשר לסנן לפי מידה, ליגה ומחיר.',
   'Every shirt on the site in one place: clubs, national teams and retro. Filter by size, league and price.',
 );
-const EMPTY_FILTERS = { condition: '', minPrice: '', maxPrice: '', league: '', national_team: '', size: '' };
-const CONDITION_LABELS = { new: t('חדש', 'New'), like_new: t('כמו חדש', 'Like new'), used: t('משומש', 'Used') };
 const PAGE_SIZE = 24;
 
 export default function Catalog() {
@@ -114,6 +113,8 @@ export default function Catalog() {
   const [wishlistIds, setWishlistIds] = useState([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState(EMPTY_FILTERS);
+  // Read once: localStorage is not reactive, and it only changes at checkout.
+  const [taste] = useState(preferredClubs);
   const [sort, setSort] = useState('featured');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
@@ -177,14 +178,9 @@ export default function Catalog() {
     if (best === 'true') result = result.filter(s => s.best_seller === true);
     if (league) result = result.filter(s => s.league && s.league.toLowerCase().includes(league.toLowerCase()));
 
-    if (filters.condition) result = result.filter(s => s.condition === filters.condition);
-    if (filters.minPrice) result = result.filter(s => s.price >= Number(filters.minPrice));
-    if (filters.maxPrice) result = result.filter(s => s.price <= Number(filters.maxPrice));
-    if (filters.league) result = result.filter(s => s.league === filters.league);
-    if (filters.national_team) result = result.filter(s => s.national_team === filters.national_team);
-    if (filters.size) result = result.filter(s => shirtSizes(s).includes(filters.size));
+    result = applyFilters(result, filters);
 
-    setShirts(sortShirts(result, sort, { keepOrder: !!q }));
+    setShirts(sortShirts(result, sort, { keepOrder: !!q, preferredClubs: taste }));
     setVisibleCount(PAGE_SIZE);
     setSearchInfo(searchResult);
 
@@ -196,15 +192,9 @@ export default function Catalog() {
       loggedQueryRef.current = q;
       base44.entities.SearchLog.create({ search_term: q.trim(), results_count: searchResult.results.length }).catch(() => {});
     }
-  }, [searchParams, filters, allShirtsRaw, sort]);
+  }, [searchParams, filters, allShirtsRaw, sort, taste]);
 
-  const { leagues, nationalTeams, allSizes, conditions } = useMemo(() => {
-    const leagues = [...new Set(allShirtsRaw.map(s => s.league).filter(Boolean))].sort();
-    const nationalTeams = [...new Set(allShirtsRaw.map(s => s.national_team).filter(Boolean))].sort();
-    const allSizes = sortSizes([...new Set(allShirtsRaw.flatMap(shirtSizes))]);
-    const conditions = [...new Set(allShirtsRaw.map(s => s.condition).filter(Boolean))];
-    return { leagues, nationalTeams, allSizes, conditions };
-  }, [allShirtsRaw]);
+  const { leagues, nationalTeams, allSizes, conditions } = useMemo(() => filterOptions(allShirtsRaw), [allShirtsRaw]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));

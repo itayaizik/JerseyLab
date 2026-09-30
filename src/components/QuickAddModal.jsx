@@ -113,7 +113,7 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   const handleAdd = () => {
     addToCart({
       // The Hebrew name goes into the order; the English one is for the cart.
-      shirtId: shirt.id, shirtName: shirt.name, shirtNameEn: shirtNameEn(shirt), image: shirt.main_image,
+      shirtId: shirt.id, shirtName: shirt.name, shirtNameEn: shirtNameEn(shirt), image: shirt.main_image, club: shirt.club || shirt.national_team || "",
       size: selectedSize, basePrice,
       addName: buyingExact ? !!stockPrint(stockItem) : addName === 'yes',
       customName: buyingExact ? stockPrint(stockItem) : (addName === 'yes' ? `${customName} ${customNumber}`.trim() : ''),

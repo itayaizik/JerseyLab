@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 import ShirtCard from '@/components/ShirtCard';
 import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
 import CollectionHero from '@/components/catalog/CollectionHero';
-import SortSelect from '@/components/catalog/SortSelect';
+import FilterBar from '@/components/catalog/FilterBar';
 import Seo from '@/components/Seo';
 import PageNotFound from '@/lib/PageNotFound';
 import { toast } from '@/components/ui/use-toast';
@@ -14,6 +14,8 @@ import { SITE_ORIGIN } from '@/lib/siteUrl';
 import { COLLECTIONS, findCollection, collectionShirts, localizeCollection } from '@/lib/collections';
 import { sortShirts } from '@/lib/sortShirts';
 import { withStock } from '@/lib/catalogFacets';
+import { EMPTY_FILTERS, filterOptions, applyFilters, hasAnyFilter } from '@/lib/shirtFilters';
+import { preferredClubs } from '@/lib/taste';
 import { t, isEn } from '@/lib/i18n';
 
 // A landing page per subject - "חולצות רטרו", "חולצות ברצלונה" - rather than a
@@ -32,6 +34,9 @@ export default function Collection() {
   const [user, setUser] = useState(null);
   const [wishlistIds, setWishlistIds] = useState([]);
   const [sort, setSort] = useState('featured');
+  const [filters, setFilters] = useState(EMPTY_FILTERS);
+  // Read once: localStorage is not reactive, and it only changes at checkout.
+  const [taste] = useState(preferredClubs);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -77,9 +82,13 @@ export default function Collection() {
     }
   }, [user, navigate]);
 
-  // A collection already arrives newest season first, which is what
-  // "recommended" means here.
-  const sorted = useMemo(() => sortShirts(shirts, sort, { keepOrder: true }), [shirts, sort]);
+  // What there is to filter by on this page, taken from this collection's own
+  // shirts rather than the whole catalogue.
+  const options = useMemo(() => filterOptions(shirts), [shirts]);
+  const sorted = useMemo(
+    () => sortShirts(applyFilters(shirts, filters), sort, { preferredClubs: taste }),
+    [shirts, filters, sort, taste],
+  );
 
   // An unknown slug is a genuine 404, not an empty collection page - otherwise
   // every typo becomes a thin page competing with the real ones.
@@ -135,12 +144,19 @@ export default function Collection() {
       />
 
       <div className="shop-container">
-        <div className="mt-6 flex items-center justify-between gap-3 sm:mt-8">
-          <h2 className="text-2xl font-bold text-brand-navy sm:text-[1.75rem]" aria-live="polite">
-            {loading ? ' ' : sorted.length === 1 ? t('חולצה אחת', '1 shirt') : t(`${sorted.length} חולצות`, `${sorted.length} shirts`)}
-          </h2>
-          {sorted.length > 1 && <SortSelect value={sort} onChange={setSort} />}
-        </div>
+        <FilterBar
+          className="mt-6 sm:mt-8"
+          filters={filters}
+          onChange={setFilters}
+          options={options}
+          resultCount={sorted.length}
+          sort={sort}
+          onSortChange={setSort}
+        />
+
+        <h2 className="mt-6 text-2xl font-bold text-brand-navy sm:mt-8 sm:text-[1.75rem]" aria-live="polite">
+          {loading ? ' ' : sorted.length === 1 ? t('חולצה אחת', '1 shirt') : t(`${sorted.length} חולצות`, `${sorted.length} shirts`)}
+        </h2>
 
         {loading ? (
           <ul className="mt-5 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-4" aria-busy="true">
@@ -162,6 +178,17 @@ export default function Collection() {
               );
             })}
           </ul>
+        ) : hasAnyFilter(filters) ? (
+          // Nothing left after filtering is not the same as an empty category,
+          // and telling someone the shelf is bare when they narrowed it to one
+          // size sends them away for no reason.
+          <div className="mt-6 rounded-3xl border border-brand-line bg-brand-mist p-8 text-center">
+            <p className="text-[17px] font-semibold text-brand-navy">{t('אין חולצה שעונה על הסינון', 'No shirt matches these filters')}</p>
+            <p className="mt-1.5 text-[15px] text-brand-navy/65">{t('נסו להוריד סינון אחד, או לנקות הכל.', 'Try removing one filter, or clearing them all.')}</p>
+            <button type="button" onClick={() => setFilters(EMPTY_FILTERS)} className="shop-btn-secondary mt-5">
+              {t('ניקוי הסינון', 'Clear filters')}
+            </button>
+          </div>
         ) : (
           <div className="mt-6 flex flex-col items-start justify-between gap-5 rounded-3xl bg-brand-navy p-7 text-white sm:flex-row sm:items-center sm:p-9">
             <div>

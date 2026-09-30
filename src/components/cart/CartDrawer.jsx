@@ -6,6 +6,7 @@ import ProductImage from '@/components/ui/ProductImage';
 import EmptyState from '@/components/ui/EmptyState';
 import ContactChannelChoice from '@/components/configurator/ContactChannelChoice';
 import HowItWorksNotice from '@/components/HowItWorksNotice';
+import { rememberClubs } from '@/lib/taste';
 import { friendlyError } from '@/lib/errorMessages';
 import { sendOrderConfirmation } from '@/lib/orderEmail';
 import { notifyNewOrder } from '@/lib/adminNotify';
@@ -342,6 +343,9 @@ export default function CartDrawer({ open, onClose, user }) {
           status: 'new', user_id: user?.id || '', order_id: orderId,
         });
       }
+
+      // What they bought decides what "מומלצות" shows them next time.
+      rememberClubs(order.items.map(item => item.club));
 
       try {
         localStorage.setItem(CONTACT_KEY, JSON.stringify({

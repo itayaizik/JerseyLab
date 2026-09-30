@@ -150,7 +150,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
     }
     addToCart({
       // The Hebrew name goes into the order; the English one is for the cart.
-      shirtId: shirt.id, shirtName: shirt.name, shirtNameEn: shirtNameEn(shirt), image: shirt.main_image,
+      shirtId: shirt.id, shirtName: shirt.name, shirtNameEn: shirtNameEn(shirt), image: shirt.main_image, club: shirt.club || shirt.national_team || "",
       size, basePrice,
       addName: buyingExact ? !!stockPrint(stockItem) : printing,
       customName: buyingExact ? stockPrint(stockItem) : (printing ? `${customName} ${customNumber}`.trim() : ''),

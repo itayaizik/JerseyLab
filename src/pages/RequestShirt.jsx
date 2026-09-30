@@ -4,7 +4,6 @@ import { Search, Upload, X, Check, Loader2, Image as ImageIcon } from 'lucide-re
 import { base44 } from '@/api/base44Client';
 import Seo from '@/components/Seo';
 import ContactChannelChoice from '@/components/configurator/ContactChannelChoice';
-import HowItWorksNotice from '@/components/HowItWorksNotice';
 import { friendlyError } from '@/lib/errorMessages';
 import { notifyShirtRequest } from '@/lib/adminNotify';
 import { SIZE_ORDER } from '@/lib/sizes';
@@ -315,8 +314,6 @@ export default function RequestShirt() {
                 className={`${fieldClass()} resize-none py-3`} />
             </FormField>
           </Section>
-
-          <HowItWorksNotice />
 
           <Honeypot value={trap} onChange={setTrap} />
 
