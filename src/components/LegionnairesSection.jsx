@@ -75,13 +75,16 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
               <button key={player.id} type="button" role="tab"
                 id={`legionnaire-tab-${player.id}`} aria-selected={selected} aria-controls="legionnaire-panel"
                 onClick={() => setActiveName(player.name)}
-                className={`shop-chip ${player.image_url ? 'ps-1.5 pe-5' : 'px-5'} ${selected ? 'shop-chip-active' : ''}`}>
-                {/* A face, when the owner has uploaded one. The chip keeps its
-                    height and loses the padding on that side instead, so a row
-                    of players with and without photos still lines up. */}
+                className={`shop-chip min-h-[3.5rem] ${player.image_url ? 'ps-1 pe-5' : 'px-5'} ${selected ? 'shop-chip-active' : ''}`}>
+                {/* A face, when the owner has uploaded one. Every chip is the
+                    taller height whether it carries a photo or not, so a row of
+                    players with and without still lines up.
+                    `object-top`, because these are head-and-shoulders portraits
+                    with the head in the upper third: a square crop taken from
+                    the middle of one cuts the face off at the eyebrows. */}
                 {player.image_url && (
-                  <img src={resized(player.image_url, 96)} alt="" loading="lazy" width="32" height="32"
-                    className="h-8 w-8 flex-shrink-0 rounded-full bg-brand-mist object-cover" />
+                  <img src={resized(player.image_url, 144)} alt="" loading="lazy" width="48" height="48"
+                    className="h-12 w-12 flex-shrink-0 rounded-full bg-brand-mist object-cover object-top" />
                 )}
                 {term(player.name)}
                 {count > 0 && <span className="tabular-nums text-brand-navy/45">{count}</span>}
@@ -101,8 +104,8 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
             <div className="flex flex-col items-start justify-between gap-5 rounded-3xl bg-brand-mist p-7 sm:flex-row sm:items-center sm:p-9">
               <div className="flex items-center gap-4">
                 {active.image_url && (
-                  <img src={resized(active.image_url, 160)} alt="" loading="lazy" width="64" height="64"
-                    className="h-16 w-16 flex-shrink-0 rounded-full bg-white object-cover" />
+                  <img src={resized(active.image_url, 288)} alt="" loading="lazy" width="96" height="96"
+                    className="h-24 w-24 flex-shrink-0 rounded-full bg-white object-cover object-top" />
                 )}
                 <div>
                 <p className="text-[17px] font-semibold text-brand-navy">

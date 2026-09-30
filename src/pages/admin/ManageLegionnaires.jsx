@@ -179,7 +179,7 @@ export default function ManageLegionnaires() {
                     in this row could be for. */}
                 <label className="relative flex-shrink-0 cursor-pointer group" title={player.image_url ? 'החלפת התמונה' : 'העלאת תמונה'}>
                   {player.image_url ? (
-                    <img src={player.image_url} alt="" className="h-11 w-11 rounded-full border border-brand-line object-cover group-hover:opacity-75 transition-opacity" />
+                    <img src={player.image_url} alt="" className="h-11 w-11 rounded-full border border-brand-line object-cover object-top group-hover:opacity-75 transition-opacity" />
                   ) : (
                     <span className="flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-brand-line bg-brand-mist text-brand-navy/40 group-hover:border-turf group-hover:text-turf transition-colors">
                       {uploadingId === player.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
