@@ -66,12 +66,13 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
                       'Shirts of the Israelis playing abroad, from the seasons they were actually there.')}
         />
 
-        {/* Wrapped and centred once there is room, and a single scrolling line
-            on a phone. Faces this size wrap to one per row on a 375px screen,
-            which put five rows of chips between the heading and the shirts -
-            the section would have pushed what it is selling off the screen. */}
+        {/* The face above the name rather than beside it, which is the only
+            way to give a portrait real size without stretching a pill across
+            the screen. A scrolling line on a phone, wrapped and centred once
+            there is room: at this size they would otherwise stack one per row
+            and push the shirts off the bottom. */}
         <div role="tablist" aria-label={t('בחירת שחקן', 'Choose a player')}
-          className="scrollbar-hide -mx-4 mt-6 flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:justify-center sm:overflow-x-visible sm:px-0">
+          className="scrollbar-hide -mx-4 mt-8 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:justify-center sm:gap-4 sm:overflow-x-visible sm:px-0">
           {players.map(player => {
             const count = (byPlayer.get(player.name) || []).length;
             const selected = active?.id === player.id;
@@ -79,19 +80,33 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
               <button key={player.id} type="button" role="tab"
                 id={`legionnaire-tab-${player.id}`} aria-selected={selected} aria-controls="legionnaire-panel"
                 onClick={() => setActiveName(player.name)}
-                className={`shop-chip min-h-[4.5rem] flex-shrink-0 snap-start ${player.image_url ? 'ps-1.5 pe-6' : 'px-6'} ${selected ? 'shop-chip-active' : ''}`}>
-                {/* A face, when the owner has uploaded one. Every chip is the
-                    taller height whether it carries a photo or not, so a row of
-                    players with and without still lines up.
-                    `object-top`, because these are head-and-shoulders portraits
+                className="group flex w-[6.5rem] flex-shrink-0 snap-start flex-col items-center gap-2.5 sm:w-[7.25rem]">
+                {/* `object-top`, because these are head-and-shoulders portraits
                     with the head in the upper third: a square crop taken from
                     the middle of one cuts the face off at the eyebrows. */}
-                {player.image_url && (
-                  <img src={resized(player.image_url, 192)} alt="" loading="lazy" width="64" height="64"
-                    className="h-16 w-16 flex-shrink-0 rounded-full bg-brand-mist object-cover object-top" />
-                )}
-                {term(player.name)}
-                {count > 0 && <span className="tabular-nums text-brand-navy/45">{count}</span>}
+                <span className={`flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-brand-mist ring-2 ring-offset-2 ring-offset-white transition sm:h-28 sm:w-28 ${
+                  selected ? 'ring-brand-orange' : 'ring-transparent group-hover:ring-brand-navy/20'}`}>
+                  {player.image_url ? (
+                    <img src={resized(player.image_url, 336)} alt="" loading="lazy" width="112" height="112"
+                      className="h-full w-full object-cover object-top" />
+                  ) : (
+                    // A player photographed later still needs to look like a
+                    // player now, not like a picture that failed to load.
+                    <span aria-hidden="true" className="text-2xl font-bold text-brand-navy/30">
+                      {player.name.trim().charAt(0)}
+                    </span>
+                  )}
+                </span>
+                <span className="text-center leading-tight">
+                  <span className={`block text-[13px] sm:text-sm ${selected ? 'font-bold text-brand-orange-ink' : 'font-medium text-brand-navy/80 group-hover:text-brand-navy'}`}>
+                    {term(player.name)}
+                  </span>
+                  <span className="mt-0.5 block text-[11px] text-brand-navy/45">
+                    {count > 0
+                      ? t(`${count} חולצות`, `${count} shirts`)
+                      : player.club ? term(player.club) : t('בקרוב', 'Soon')}
+                  </span>
+                </span>
               </button>
             );
           })}
