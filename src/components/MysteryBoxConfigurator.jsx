@@ -39,6 +39,13 @@ import { t } from '@/lib/i18n';
 // say what came out.
 
 const MAX_BOXES = MAX_GROUP_BOXES;
+
+const STEPS = [
+  // A short name too: at 375px the full ones truncate to 'כמות ומ…'.
+  { id: 1, label: 'כמות ומחיר', labelEn: 'Quantity', short: 'כמות', shortEn: 'Quantity' },
+  { id: 2, label: 'התאמה אישית', labelEn: 'Personalise', short: 'התאמה', shortEn: 'Details' },
+  { id: 3, label: 'סיכום', labelEn: 'Summary', short: 'סיכום', shortEn: 'Summary' },
+];
 const POLL_MS = 15000;
 
 const colorName = (label) => t(label, COLORS.find(c => c.label === label)?.en);
@@ -77,6 +84,10 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   // The quantity ladder, if the shop has one (lib/mysteryTiers). Until it
   // loads, and forever if there is none, every box costs what its style costs.
   const [tiers, setTiers] = useState([]);
+  // Which of the three steps is on screen. The whole order lives in state the
+  // whole time; a step only decides what is drawn.
+  const [step, setStep] = useState(1);
+  const rootRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -241,6 +252,27 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
   const ladder = hasLadder(tiers);
   const upsell = ladder ? nextTier(tiers, count) : null;
 
+  // The summary is never reached with a box that has no size: it would show a
+  // price for something that cannot be ordered.
+  const goToStep = (next) => {
+    if (next === 3) {
+      const noSize = boxes.filter(b => !b.size).map(b => b.id);
+      if (noSize.length) {
+        setStep(2);
+        setMissingSize(noSize);
+        setOpenId(noSize[0]);
+        setError(noSize.length === 1
+          ? t('חסרה מידה לאחד הבוקסים', 'One of the boxes has no size')
+          : t(`חסרה מידה ל-${noSize.length} בוקסים`, `${noSize.length} boxes have no size`));
+        return;
+      }
+    }
+    setError('');
+    setStep(Math.min(3, Math.max(1, next)));
+    // A new step starts at its own top rather than wherever the last one ended.
+    try { window.scrollTo({ top: Math.max(0, (rootRef.current?.getBoundingClientRect().top || 0) + window.scrollY - 80), behavior: 'smooth' }); } catch { /* older browsers */ }
+  };
+
   const handleAdd = () => {
     const noSize = boxes.filter(b => !b.size).map(b => b.id);
     if (noSize.length) {
@@ -301,12 +333,13 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     setBoxes([fresh]);
     setOpenId(fresh.id);
     setMissingSize([]);
+    setStep(1);
   };
 
   const pad = lg ? 'px-5 sm:px-8' : 'px-5';
 
   return (
-    <div className={`shop-card overflow-hidden ${className}`}>
+    <div ref={rootRef} className={`shop-card overflow-hidden ${className}`}>
       <div className={`flex items-center gap-3 pt-6 ${pad}`}>
         <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-orange-soft text-brand-orange-ink">
           <Gift className="h-5 w-5" aria-hidden="true" />
@@ -320,10 +353,39 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         {headerAction && <span className="ms-auto">{headerAction}</span>}
       </div>
 
+      {/* Where you are, and a way back. Steps already passed are links; the one
+          ahead is not, because it is reached by the button that checks the
+          step you are on is finished. */}
+      <nav aria-label={t('שלבי ההזמנה', 'Order steps')} className={`mt-5 ${pad}`}>
+        <ol className="flex gap-1.5">
+          {STEPS.map(({ id, label, labelEn, short, shortEn }) => {
+            const done = step > id;
+            const here = step === id;
+            return (
+              <li key={id} className="min-w-0 flex-1">
+                <button type="button" disabled={!done && !here} onClick={() => setStep(id)}
+                  aria-current={here ? 'step' : undefined}
+                  className={`flex w-full items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-[13px] font-semibold transition ${
+                    here ? 'bg-brand-navy text-white'
+                      : done ? 'bg-brand-mist text-brand-navy hover:bg-brand-mist-dark'
+                        : 'bg-brand-mist/50 text-brand-navy/35'}`}>
+                  <span className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-[11px] ${
+                    here ? 'bg-white/20' : done ? 'bg-brand-orange text-white' : 'bg-white/60'}`}>
+                    {done ? <Check className="h-3 w-3" aria-hidden="true" /> : id}
+                  </span>
+                  <span className="truncate sm:hidden">{t(short, shortEn)}</span>
+                  <span className="hidden truncate sm:inline">{t(label, labelEn)}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      </nav>
+
       {/* How many, before anything else - and what that quantity is worth.
           Only drawn when the shop has a ladder to show: a row of tiers that
           all take nothing off is an ornament, not an offer. */}
-      {ladder && (
+      {step === 1 && ladder && (
         <div className={`mt-5 ${pad}`}>
           <div className="rounded-2xl border border-brand-line bg-brand-mist/60 p-4">
             <div className="flex items-center justify-between gap-3">
@@ -381,6 +443,30 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         </div>
       )}
 
+      {step === 1 && !ladder && (
+        <div className={`mt-5 ${pad}`}>
+          <div className="flex items-center justify-between gap-3 rounded-2xl border border-brand-line bg-brand-mist/60 p-4">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-brand-navy">{t('כמה בוקסים?', 'How many boxes?')}</p>
+              <p className="text-[12px] text-brand-navy/55">{t('אפשר לשנות גם אחר כך.', 'You can change this later too.')}</p>
+            </div>
+            <div className="flex flex-shrink-0 items-center gap-1">
+              <button type="button" onClick={() => removeBox(boxes[boxes.length - 1].id)} disabled={count <= 1}
+                aria-label={t('בוקס אחד פחות', 'One box fewer')}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-line bg-white text-brand-navy transition hover:border-brand-navy/30 disabled:opacity-30">
+                <Minus className="h-4 w-4" aria-hidden="true" />
+              </button>
+              <span aria-live="polite" className="w-10 text-center text-xl font-bold tabular-nums text-brand-navy">{count}</span>
+              <button type="button" onClick={() => addBox()} disabled={count >= MAX_BOXES}
+                aria-label={t('בוקס אחד נוסף', 'One box more')}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-line bg-white text-brand-navy transition hover:border-brand-navy/30 disabled:opacity-30">
+                <Plus className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {arrivals.length > 0 && (
         <div role="status" className={`mt-4 ${pad}`}>
           <div className="flex items-start gap-3 rounded-2xl bg-brand-orange-soft px-4 py-3 text-[14px] leading-relaxed text-brand-navy">
@@ -412,6 +498,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         </div>
       )}
 
+      {step === 2 && (
       <ol className={`space-y-2.5 py-5 ${pad}`}>
         {boxes.map((box, i) => {
           const open = box.id === currentOpen;
@@ -478,13 +565,18 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           </button>
         </li>
       </ol>
+      )}
 
-      <div className={`pb-5 ${pad}`}>
+      {step === 1 && (
+      <div className={`pb-5 pt-5 ${pad}`}>
         <GroupPanel group={group} closed={groupClosed} syncing={syncing} fid={fid}
           onStart={startGroup} onResume={resumeGroup} onRefresh={sync} onEnd={endGroup}
           filled={boxes.filter(b => b.remoteId).length} count={count} />
       </div>
+      )}
 
+      {step === 2 && (
+      <>
       {/* What to leave out - once, for the whole order. */}
       <div className={`pb-5 ${pad}`}>
         <div className="overflow-hidden rounded-2xl border border-brand-line">
@@ -543,8 +635,11 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           )}
         </div>
       </div>
+      </>
+      )}
 
       {/* Total */}
+      {step === 3 && (
       <div className={`border-t border-brand-line bg-brand-mist/60 py-6 ${pad}`}>
         <ul className="space-y-1.5 text-sm">
           {boxes.map((box, i) => (
@@ -578,7 +673,38 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         <p className="mt-2 text-center text-xs text-brand-navy/50">
           {t('בלי תשלום באתר, שליחת בקשה בלבד.', 'No payment on the site - you only send a request.')}
         </p>
+        <button type="button" onClick={() => setStep(2)} className="mt-3 w-full text-center text-[13px] text-brand-navy/55 underline underline-offset-2 hover:text-brand-navy">
+          {t('חזרה לעריכת הבוקסים', 'Back to editing the boxes')}
+        </button>
       </div>
+      )}
+
+      {/* Getting from one step to the next. On the middle step the bar carries
+          the running total, so the price is on screen while the choices that
+          move it are being made. */}
+      {step < 3 && (
+        <div className={`sticky bottom-0 border-t border-brand-line bg-white/95 py-4 backdrop-blur ${pad}`}>
+          {step === 2 && (
+            <div className="mb-3 flex items-baseline justify-between">
+              <span className="text-[13px] text-brand-navy/60">
+                {boxesLabel(count)}{saving > 0 && <span className="ms-1.5 font-semibold text-emerald-700 dark:text-emerald-400">{t(`· חסכתם ₪${saving}`, `· saving ₪${saving}`)}</span>}
+              </span>
+              <span className="text-xl font-bold tabular-nums text-brand-navy">₪{total}</span>
+            </div>
+          )}
+          {error && <p role="alert" className="mb-2 text-sm text-red-600">{error}</p>}
+          <div className="flex gap-2">
+            {step > 1 && (
+              <button type="button" onClick={() => setStep(step - 1)} className="shop-btn-secondary min-h-[3.25rem] flex-shrink-0 px-5 text-sm">
+                {t('חזרה', 'Back')}
+              </button>
+            )}
+            <button type="button" onClick={() => goToStep(step + 1)} className="shop-btn min-h-[3.25rem] flex-1 text-[15px]">
+              {step === 1 ? t('המשך להתאמה אישית', 'Continue to personalising') : t('המשך לסיכום', 'Continue to the summary')}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
