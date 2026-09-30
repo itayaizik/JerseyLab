@@ -146,6 +146,7 @@ const ALIAS_GROUPS = {
   'בית': ['home'],
   'חוץ': ['away'],
   'שלישית': ['third'],
+  'רביעית': ['fourth', '4th'],
 };
 
 // normalised phrase -> normalised canonical. Canonical names map to themselves,
@@ -457,8 +458,9 @@ function buildIndex(shirts) {
 
     const fields = {
       team: normalize(`${shirt.club || ''} ${shirt.national_team || ''}`),
-      // Until the player shirts were added nothing in the catalogue carried a
-      // player, and this field was not worth indexing. It is now.
+      // Empty on every shirt in the shop today, and skipped for free when it
+      // is: the admin form offers the field, so a shirt entered with a player
+      // on it is findable by that name without anything here changing.
       player: normalize(shirt.player_name),
       name: normalize(shirt.name),
       league: normalize(shirt.league),
@@ -495,7 +497,7 @@ function buildIndex(shirts) {
 // --- query understanding --------------------------------------------------
 
 // `player` sits just under the team: a shirt that names the player is a better
-// answer for "מסי" than one that merely mentions him in its description.
+// answer for "מסי" than one that merely mentions him in a description.
 const FIELD_WEIGHT = { team: 10, player: 8, name: 6, league: 5, tags: 4, season: 4, description: 1 };
 
 // The closest catalogue word to a misspelled one, or null.
