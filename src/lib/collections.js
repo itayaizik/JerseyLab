@@ -362,6 +362,22 @@ export const COLLECTIONS = [
     match: byClub('ליברפול'),
   },
   {
+    slug: 'tottenham',
+    name: "טוטנהאם",
+    title: "חולצות טוטנהאם | JerseyLab",
+    h1: "חולצות טוטנהאם",
+    description: "חולצות טוטנהאם - בית, חוץ ורטרו. הלבן של צפון לונדון, מהעונות האחרונות ומדגמים קלאסיים.",
+    intro: "הלבן של צפון לונדון. חולצות מהעונות האחרונות, וגם הדגם של 2018/19 - העונה שנגמרה בגמר ליגת האלופות במדריד.",
+    en: {
+      name: "Tottenham",
+      title: "Tottenham Shirts | JerseyLab",
+      h1: "Tottenham Shirts",
+      description: "Tottenham shirts - home, away and retro. The white of north London, from recent seasons and classic designs.",
+      intro: "The white of north London. Shirts from recent seasons, and the 2018/19 design - the season that ended in the Champions League final in Madrid.",
+    },
+    match: byClub('טוטנהאם'),
+  },
+  {
     slug: 'brazil',
     name: "ברזיל",
     title: "חולצות נבחרת ברזיל | JerseyLab",
