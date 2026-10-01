@@ -407,7 +407,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                 sees until the bag is open. */}
             <div className="flex justify-center">
               <img src="/mystery-box.png" alt={t('מיסטרי בוקס של JerseyLab', 'A JerseyLab mystery box')}
-                width="800" height="826" loading="eager"
+                width="900" height="728" loading="eager"
                 className="h-36 w-auto object-contain drop-shadow-[0_18px_28px_rgba(27,42,74,0.28)] sm:h-44" />
             </div>
 
