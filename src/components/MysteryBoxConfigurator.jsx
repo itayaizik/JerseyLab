@@ -397,21 +397,12 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           })}
         </ol>
       </nav>
-      {/* Step 1, as one card: the thing being bought, how many of it, what one
-          costs at that quantity, and the rungs either side. The bag sits inside
-          the card rather than above it so the step reads as a single object. */}
+      {/* Step 1, as one card: how many boxes, what one costs at that quantity,
+          and the rungs either side of it. */}
       {step === 1 && (
         <div className={`mt-4 ${pad}`}>
           <div className="rounded-3xl border border-brand-line bg-brand-mist/60 p-5 shadow-card">
-            {/* The packaging rather than a shirt: the shirt is the part nobody
-                sees until the bag is open. */}
-            <div className="flex justify-center">
-              <img src="/mystery-box.png" alt={t('מיסטרי בוקס של JerseyLab', 'A JerseyLab mystery box')}
-                width="900" height="728" loading="eager"
-                className="h-36 w-auto object-contain drop-shadow-[0_18px_28px_rgba(27,42,74,0.28)] sm:h-44" />
-            </div>
-
-            <div className="mt-5 flex items-center justify-center gap-3">
+            <div className="flex items-center justify-center gap-3">
               <button type="button" onClick={() => removeBox(boxes[boxes.length - 1].id)} disabled={count <= 1}
                 aria-label={t('בוקס אחד פחות', 'One box fewer')}
                 className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-line bg-white text-brand-navy shadow-card transition hover:border-brand-navy/30 disabled:opacity-30 disabled:shadow-none">
