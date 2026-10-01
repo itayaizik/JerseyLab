@@ -20,7 +20,10 @@ const PUB = path.join(__dirname, '..', 'public');
 // The square original, kept out of public/ so it is never served and never
 // overwritten by a run of this script.
 const SRC = path.join(__dirname, 'icon-master.png');
-const SIZES = [512, 192, 32, 16];
+// 48 and 96 are there for Google: the favicon it puts beside a search result
+// is asked for as a multiple of 48, and left to scale 32 up to it the circle's
+// edge goes soft.
+const SIZES = [512, 192, 96, 48, 32, 16];
 
 // A hair of inset so the circle's edge is not clipped by the canvas.
 const mask = (size) => Buffer.from(
