@@ -266,6 +266,57 @@ export const COLLECTIONS = [
   },
 
   {
+    slug: 'maccabi-haifa',
+    name: 'מכבי חיפה',
+    title: 'חולצות מכבי חיפה | JerseyLab',
+    h1: 'חולצות מכבי חיפה',
+    description: 'חולצות מכבי חיפה - בית וחוץ, מהעונה הנוכחית והקודמת. הירוקים מסמי עופר, עם הדפסת שם ומספר.',
+    intro: 'הירוקים מסמי עופר. חולצות בית וחוץ של שתי העונות האחרונות, עם אפשרות להדפסת שם ומספר מאחורה.',
+    en: {
+      name: 'Maccabi Haifa',
+      title: 'Maccabi Haifa Shirts | JerseyLab',
+      h1: 'Maccabi Haifa Shirts',
+      description: 'Maccabi Haifa shirts - home and away, this season and last. The greens of Sammy Ofer, with name and number printing.',
+      intro: 'The greens of Sammy Ofer. Home and away shirts from the last two seasons, with name and number printing on the back.',
+    },
+    match: byClub('מכבי חיפה'),
+  },
+
+  {
+    slug: 'hapoel-haifa',
+    name: 'הפועל חיפה',
+    title: 'חולצות הפועל חיפה | JerseyLab',
+    h1: 'חולצות הפועל חיפה',
+    description: 'חולצות הפועל חיפה - בית וחוץ של העונה הנוכחית, עם אפשרות להדפסת שם ומספר.',
+    intro: 'האדומים מחיפה. חולצות הבית והחוץ של העונה הנוכחית, עם אפשרות להדפסת שם ומספר מאחורה.',
+    en: {
+      name: 'Hapoel Haifa',
+      title: 'Hapoel Haifa Shirts | JerseyLab',
+      h1: 'Hapoel Haifa Shirts',
+      description: 'Hapoel Haifa shirts - home and away for the current season, with name and number printing.',
+      intro: 'The reds of Haifa. Home and away shirts for the current season, with name and number printing on the back.',
+    },
+    match: byClub('הפועל חיפה'),
+  },
+
+  {
+    slug: 'hapoel-petah-tikva',
+    name: 'הפועל פתח תקווה',
+    title: 'חולצות הפועל פתח תקווה | JerseyLab',
+    h1: 'חולצות הפועל פתח תקווה',
+    description: 'חולצות הפועל פתח תקווה - בית, חוץ ושלישית של העונה הנוכחית, עם הדפסת שם ומספר.',
+    intro: 'שלוש החולצות של העונה - בית, חוץ ושלישית - עם אפשרות להדפסת שם ומספר מאחורה.',
+    en: {
+      name: 'Hapoel Petah Tikva',
+      title: 'Hapoel Petah Tikva Shirts | JerseyLab',
+      h1: 'Hapoel Petah Tikva Shirts',
+      description: 'Hapoel Petah Tikva shirts - home, away and third for the current season, with name and number printing.',
+      intro: "All three of this season's shirts - home, away and third - with name and number printing on the back.",
+    },
+    match: byClub('הפועל פתח תקווה'),
+  },
+
+  {
     slug: 'juventus',
     name: "יובנטוס",
     title: "חולצות יובנטוס | JerseyLab",

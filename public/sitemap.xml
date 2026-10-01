@@ -495,6 +495,54 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/beitar-jerusalem" />
   </url>
   <url>
+    <loc>https://www.jerseylab.co/collections/maccabi-haifa</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/maccabi-haifa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/maccabi-haifa" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/maccabi-haifa" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/collections/maccabi-haifa</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/maccabi-haifa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/maccabi-haifa" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/maccabi-haifa" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/collections/hapoel-haifa</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/hapoel-haifa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/hapoel-haifa" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/hapoel-haifa" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/collections/hapoel-haifa</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/hapoel-haifa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/hapoel-haifa" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/hapoel-haifa" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/collections/hapoel-petah-tikva</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/hapoel-petah-tikva" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/hapoel-petah-tikva" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/hapoel-petah-tikva" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/collections/hapoel-petah-tikva</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/hapoel-petah-tikva" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/hapoel-petah-tikva" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/hapoel-petah-tikva" />
+  </url>
+  <url>
     <loc>https://www.jerseylab.co/collections/juventus</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
