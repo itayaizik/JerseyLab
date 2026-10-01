@@ -21,6 +21,7 @@ import {
 import { COLLECTIONS, collectionShirts } from '../src/lib/collections.js';
 import { shirtNameEn, shirtDescriptionIn, termIn } from '../src/lib/english.js';
 import { GUIDES } from '../src/lib/guides.js';
+import { shirtPath } from '../src/lib/shirtSlug.js';
 import { resized } from '../src/lib/imageUrl.js';
 
 const DIST = resolve(ROOT, 'dist');
@@ -415,7 +416,11 @@ for (const page of STATIC_PAGES) {
 const shirts = await fetchShirts({ label: 'prerender' });
 
 for (const shirt of shirts) {
-  const path = `/shirt/${shirt.id}`;
+  const path = shirtPath(shirt);
+  // The address this shirt used to live at. Still written, still complete,
+  // but pointing its canonical at the slug - search results and links sent
+  // before slugs existed must not break, and must not compete either.
+  const legacyPath = `/shirt/${shirt.id}`;
   const price = shirtPrice(shirt);
 
   // The English page only exists where the shirt has an English name; a
@@ -488,6 +493,7 @@ for (const shirt of shirts) {
     `<p><a href="${escapeHtml(url)}">${en ? `Order the ${escapeHtml(name)}` : `להזמנת ${escapeHtml(name)}`}</a></p></main>`;
 
   writePage(en ? enPath(path) : path, withBody(html, inner));
+  writePage(en ? enPath(legacyPath) : legacyPath, withBody(html, inner));
   }
 }
 
@@ -532,7 +538,7 @@ for (const source of COLLECTIONS) {
         itemListElement: items.slice(0, 40).map((s, i) => ({
           '@type': 'ListItem',
           position: i + 1,
-          url: SITE_ORIGIN + (en && shirtNameEn(s) ? enPath(`/shirt/${s.id}`) : `/shirt/${s.id}`),
+          url: SITE_ORIGIN + (en && shirtNameEn(s) ? enPath(shirtPath(s)) : shirtPath(s)),
           name: (en && shirtNameEn(s)) || s.name,
         })),
       },
@@ -561,8 +567,8 @@ for (const source of COLLECTIONS) {
     ? `<ul>${items.map(s => {
         const price = shirtPrice(s);
         const shirtName = (en && shirtNameEn(s)) || s.name;
-        const shirtPath = en && shirtNameEn(s) ? enPath(`/shirt/${s.id}`) : `/shirt/${s.id}`;
-        return `<li><a href="${escapeHtml(shirtPath)}">${escapeHtml(shirtName)}</a>${price ? ` - ₪${escapeHtml(price)}` : ''}</li>`;
+        const href = en && shirtNameEn(s) ? enPath(shirtPath(s)) : shirtPath(s);
+        return `<li><a href="${escapeHtml(href)}">${escapeHtml(shirtName)}</a>${price ? ` - ₪${escapeHtml(price)}` : ''}</li>`;
       }).join('')}</ul>`
     : en
       ? `<p>Nothing in this category right now. <a href="${enPath('/request-shirt')}">Send us a request</a> and we'll see if we can get it.</p>`

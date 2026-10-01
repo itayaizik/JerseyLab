@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { shirtPath } from '@/lib/shirtSlug';
 import { Link } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -100,7 +101,7 @@ export default function ChatProofsSection({ title }) {
                 const photo = reviewPhoto(review);
                 const shot = photo || shirt?.main_image || '';
                 const ownPhoto = Boolean(photo);
-                const href = review.shirt_id === MYSTERY_BOX_ID ? '/mystery-box' : shirt ? `/shirt/${shirt.id}` : '';
+                const href = review.shirt_id === MYSTERY_BOX_ID ? '/mystery-box' : shirt ? shirtPath(shirt) : '';
                 return (
                   <figure key={`review-${review.id}`} className="flex h-full flex-col rounded-3xl bg-white p-2 shadow-card">
                     {!shot && (

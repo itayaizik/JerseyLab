@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useId } from 'react';
+import { shirtPath } from '@/lib/shirtSlug';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, Search, Heart, User, ShoppingBag, ChevronDown, ChevronLeft, LogOut, X, ArrowLeft, FileText, Shield, Moon, Sun, Languages } from 'lucide-react';
 import { getTheme, setTheme } from '@/lib/theme';
@@ -90,7 +91,7 @@ function SearchBox({ className = '', onNavigate }) {
   // Pages first, then shirts, as one list the arrow keys walk through.
   const options = [
     ...pages.map(page => ({ key: `page-${page.href}`, href: page.href, page })),
-    ...results.map(shirt => ({ key: shirt.id, href: `/shirt/${shirt.id}`, shirt })),
+    ...results.map(shirt => ({ key: shirt.id, href: shirtPath(shirt), shirt })),
   ];
   const go = (option) => { navigate(option.href); finish(); };
 

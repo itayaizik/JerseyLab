@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { shirtPath } from '@/lib/shirtSlug';
 import { Link } from 'react-router-dom';
 import { Check, Info, Pencil, ShoppingBag, Star } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -239,7 +240,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
             </li>
             {siblings.slice(0, 5).map(s => (
               <li key={s.id}>
-                <Link to={`/shirt/${s.id}`} title={shirtName(s)}
+                <Link to={shirtPath(s)} title={shirtName(s)}
                   className="relative block h-16 w-16 overflow-hidden rounded-xl bg-brand-mist ring-1 ring-brand-line transition hover:ring-2 hover:ring-brand-navy/40">
                   <ProductImage src={s.main_image} alt={shirtName(s)} sizes="64px" className="h-full w-full object-cover" />
                 </Link>

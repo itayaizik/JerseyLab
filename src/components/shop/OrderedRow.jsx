@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { shirtPath } from '@/lib/shirtSlug';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, X } from 'lucide-react';
@@ -145,7 +146,7 @@ export function reviewItems(review, shirts) {
   if (!id) return typed ? [{ id: `typed-${review.id}`, href: '', label: typed, image: '' }] : [];
   if (id === MYSTERY_BOX_ID) return [{ id, href: '/mystery-box', label: t('מיסטרי בוקס', 'Mystery box'), image: '' }];
   const shirt = shirts[id];
-  if (shirt) return [{ id, href: `/shirt/${id}`, label: shirt.name, image: shirt.main_image }];
+  if (shirt) return [{ id, href: shirtPath(shirt), label: shirt.name, image: shirt.main_image }];
   return typed ? [{ id: `typed-${review.id}`, href: '', label: typed, image: '' }] : [];
 }
 
@@ -155,5 +156,5 @@ export function proofItems(proof, shirts) {
   return (proof?.shirt_ids || [])
     .map(id => shirts[id])
     .filter(Boolean)
-    .map(shirt => ({ id: shirt.id, href: `/shirt/${shirt.id}`, label: shirt.name, image: shirt.main_image }));
+    .map(shirt => ({ id: shirt.id, href: shirtPath(shirt), label: shirt.name, image: shirt.main_image }));
 }

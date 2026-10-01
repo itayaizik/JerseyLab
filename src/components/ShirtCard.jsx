@@ -1,6 +1,7 @@
 import React, { useState, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Plus } from 'lucide-react';
+import { shirtPath } from '@/lib/shirtSlug';
 import QuickAddModal from '@/components/QuickAddModal';
 import { showsLocalStock } from '@/components/ShippingBadge';
 import ProductImage, { IMAGE_SIZES } from '@/components/ui/ProductImage';
@@ -92,7 +93,7 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false,
       <div className={`flex flex-1 flex-col px-1.5 sm:px-2 ${featured ? 'pb-2 pt-5 sm:pt-6' : 'pb-1.5 pt-4'}`}>
         <h3 className={`font-semibold leading-snug tracking-[-0.01em] text-brand-navy ${featured ? 'line-clamp-2 text-lg sm:text-2xl' : 'line-clamp-2 min-h-[2.75em] text-[15px] sm:text-base'}`}>
           <Link
-            to={`/shirt/${shirt.id}`}
+            to={shirtPath(shirt)}
             className="before:absolute before:inset-0 before:rounded-3xl before:content-[''] focus-visible:!outline-none focus-visible:before:ring-2 focus-visible:before:ring-brand-orange"
           >
             {name}

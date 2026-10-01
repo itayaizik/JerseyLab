@@ -11,6 +11,7 @@ import { ROOT, SITE_ORIGIN, escapeHtml, fetchShirts } from './lib/build-data.mjs
 import { COLLECTIONS } from '../src/lib/collections.js';
 import { shirtNameEn } from '../src/lib/english.js';
 import { GUIDES } from '../src/lib/guides.js';
+import { shirtPath } from '../src/lib/shirtSlug.js';
 
 const OUT = resolve(ROOT, 'public/sitemap.xml');
 
@@ -82,7 +83,7 @@ const entries = [
     priority: '0.85',
   }, !!c.en)),
   ...shirts.flatMap(s => pageEntries({
-    path: `/shirt/${s.id}`,
+    path: shirtPath(s),
     changefreq: 'weekly',
     priority: '0.8',
     lastmod: isoDay(s.updated_date) || isoDay(s.created_date),

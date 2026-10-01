@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
+import { shirtPath, shortIdFromKey } from '@/lib/shirtSlug';
 import { Heart, Share2, Shirt, ChevronLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ProductGallery from '@/components/product/ProductGallery';
@@ -96,7 +97,10 @@ function ShippingDetails() {
 }
 
 export default function ShirtDetail() {
-  const { id } = useParams();
+  // Either shape of URL lands here: the readable slug, or the bare id from a
+  // link sent before slugs existed or a search result not yet recrawled.
+  const { id: routeKey } = useParams();
+  const id = routeKey;
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [shirt, setShirt] = useState(null);
@@ -124,13 +128,26 @@ export default function ShirtDetail() {
     setRelated([]);
     setReviewSummary(null);
     try {
-      // Direct single-shirt fetch - never loads the whole catalog
-      const s = await base44.entities.Shirt.get(id);
+      // Direct single-shirt fetch - never loads the whole catalog. A slug is
+      // resolved by the eight characters on its end rather than by its words,
+      // so a renamed shirt still answers at the URL already out in the world.
+      const tail = shortIdFromKey(id);
+      const s = tail
+        ? (await base44.entities.Shirt.filter({ short_id: tail }, null, 1))[0]
+        : await base44.entities.Shirt.get(id);
+      if (!s) throw new Error('not found');
       setShirt(s);
       setLoading(false);
 
+      // Send the visitor on to the spelling this shirt should be at, so the
+      // old id URLs do not sit alongside the new ones as duplicates.
+      const canonical = shirtPath(s);
+      if (canonical !== `/shirt/${id}`) {
+        navigate(canonical + window.location.search, { replace: true });
+      }
+
       // Fire-and-forget view increment - never block the UI
-      base44.entities.Shirt.update(id, { views_count: (s.views_count || 0) + 1 }).catch(() => {});
+      base44.entities.Shirt.update(s.id, { views_count: (s.views_count || 0) + 1 }).catch(() => {});
 
       // Related shirts load in the background, after the shirt is visible.
       loadRelated(s);
@@ -327,7 +344,7 @@ export default function ShirtDetail() {
 
   return (
     <div>
-      <Seo title={seoTitle} description={seoDesc} image={shirt.main_image} type="product" canonicalPath={`/shirt/${shirt.id}`} jsonLd={productJsonLd} />
+      <Seo title={seoTitle} description={seoDesc} image={shirt.main_image} type="product" canonicalPath={shirtPath(shirt)} jsonLd={productJsonLd} />
 
       <div className="shop-container pb-12 pt-5 lg:pb-16 lg:pt-8">
         <nav aria-label={t('נתיב ניווט', 'Breadcrumb')} className="mb-5 flex min-w-0 items-center gap-1.5 text-sm text-brand-navy/50 lg:mb-8">
