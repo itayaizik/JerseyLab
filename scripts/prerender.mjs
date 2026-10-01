@@ -536,6 +536,16 @@ for (const source of COLLECTIONS) {
           name: (en && shirtNameEn(s)) || s.name,
         })),
       },
+      // Only where the questions are actually on the page; marking up an FAQ
+      // that is not shown is what gets structured data ignored.
+      ...((collection.faq || []).length ? [{
+        '@type': 'FAQPage',
+        mainEntity: collection.faq.map(f => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      }] : []),
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
@@ -568,12 +578,26 @@ for (const source of COLLECTIONS) {
       .join(' ')
   }</nav>`;
 
+  // The prose and questions a collection carries, for the collections that
+  // have them. This is the half that search engines actually read, so it has
+  // to be in the served HTML and not only in the React tree.
+  const sections = (collection.sections || [])
+    .map(s => `<section><h2>${escapeHtml(s.heading)}</h2><p>${escapeHtml(s.body)}</p></section>`)
+    .join('');
+  const faq = (collection.faq || []).length
+    ? `<section><h2>${en ? 'Common questions' : 'שאלות נפוצות'}</h2><dl>${
+        collection.faq.map(f => `<dt>${escapeHtml(f.q)}</dt><dd>${escapeHtml(f.a)}</dd>`).join('')
+      }</dl></section>`
+    : '';
+
   const inner =
     `<header><a href="${en ? '/en' : '/'}">JerseyLab</a> · <a href="${en ? enPath('/catalog') : '/catalog'}">${en ? 'All shirts' : 'קטלוג'}</a></header>` +
     `<main><h1>${escapeHtml(collection.h1)}</h1>` +
     `<p>${escapeHtml(collection.intro)}</p>` +
     `<p>${en ? `${escapeHtml(items.length)} shirts in this category.` : `${escapeHtml(items.length)} חולצות בקטגוריה.`}</p>` +
     list +
+    sections +
+    faq +
     `</main>${related}`;
 
   writePage(en ? enPath(path) : path, withBody(html, inner));

@@ -52,6 +52,43 @@ export const COLLECTIONS = [
       description: 'Retro shirts from the big clubs - classic seasons and designs no longer made. Barcelona, Real Madrid, AC Milan and more.',
       intro: "The shirts they don't make anymore. Seasons that ended, sponsors that vanished, the cuts of the time - the designs collectors look for and can't find in shops. Every shirt here was checked before it went on the site.",
     },
+    // Retro is the one collection carrying a third of the catalogue and the
+    // strongest commercial query in Hebrew, so it gets prose and questions of
+    // its own rather than a grid and one line. Nothing here is templated: the
+    // same three paragraphs repeated across thirty pages would be the thin
+    // content this file's header warns about.
+    sections: [
+      {
+        heading: 'מה נחשב חולצת רטרו',
+        body: 'חולצת רטרו היא חולצה של עונה שכבר הסתיימה ושהיצרן הפסיק לייצר. אין לה "מלאי" במובן הרגיל - מה שיש זה מה שיש, ודגם שנגמר לא חוזר. בפועל זה אומר שחולצה שאתם מחפשים שנים עשויה להופיע פעם אחת ואז להיעלם.',
+      },
+      {
+        heading: 'למה דווקא חולצות ישנות',
+        body: 'כי הן מסמנות רגע. עונה שבה הקבוצה זכתה, שחקן שעזב, ספונסר שכבר לא קיים, גזרה רחבה שהיום נראית אחרת לגמרי. חולצה של העונה הנוכחית אפשר לקנות בכל מקום; חולצה של 2009 כבר לא.',
+      },
+      {
+        heading: 'איך לבחור מידה בחולצת רטרו',
+        body: 'חולצות מהעשורים הקודמים נתפרו רחבות וארוכות יותר ממה שמקובל היום. מי שלובש M בחולצה מודרנית עשוי להרגיש ש-M רטרו גדולה עליו. בדף של כל חולצה יש טבלת מידות, וכשיש ספק עדיף לשאול אותנו לפני שמזמינים - החלפה של דגם שנגמר היא לא תמיד אפשרית.',
+      },
+    ],
+    faq: [
+      {
+        q: 'החולצות רטרו מקוריות?',
+        a: 'אלה חולצות רטרו באיכות גבוהה - לא פריטי אספנות משומשים מהעונה המקורית. הן חדשות, נבדקות לפני שהן עולות לאתר, ומגיעות ארוזות.',
+      },
+      {
+        q: 'אפשר להוסיף שם ומספר לחולצת רטרו?',
+        a: 'כן, בתוספת תשלום. בדף של כל חולצה יש את האפשרות, כולל הדפסה של שחקן מהעונה הרלוונטית.',
+      },
+      {
+        q: 'כמה זמן לוקח משלוח של חולצת רטרו?',
+        a: 'חולצות שנמצאות במלאי בארץ מגיעות תוך עד 7 ימי עסקים. חולצה שמוזמנת במיוחד עשויה לקחת עד 3 שבועות.',
+      },
+      {
+        q: 'יש חולצת רטרו שאני מחפש ולא רואה באתר',
+        a: 'אפשר לשלוח לנו בקשה עם הקבוצה, העונה והמידה, ונבדוק אם אפשר להשיג אותה ובכמה.',
+      },
+    ],
     match: (shirt) => !!shirt.is_retro,
   },
   {

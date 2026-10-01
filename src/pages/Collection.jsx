@@ -116,6 +116,16 @@ export default function Collection() {
               url,
               inLanguage: 'he-IL',
             },
+            // Only where there are real questions on the page; marking up an
+            // FAQ that is not shown is what gets structured data ignored.
+            ...(copy.faq?.length ? [{
+              '@type': 'FAQPage',
+              mainEntity: copy.faq.map(item => ({
+                '@type': 'Question',
+                name: item.q,
+                acceptedAnswer: { '@type': 'Answer', text: item.a },
+              })),
+            }] : []),
             {
               '@type': 'BreadcrumbList',
               itemListElement: [
@@ -200,6 +210,39 @@ export default function Collection() {
               {t('בקשת חולצה', 'Request a shirt')}
             </Link>
           </div>
+        )}
+
+        {/* Prose and questions, for the collections big enough to deserve them.
+            Most carry none: the same paragraphs on thirty pages with a name
+            swapped in is the thin content these pages exist to avoid. */}
+        {copy.sections?.length > 0 && (
+          <section aria-labelledby="about-collection" className="mt-16 border-t border-brand-line pt-10">
+            <h2 id="about-collection" className="text-xl font-semibold text-brand-navy">
+              {t(`על ${copy.name}`, `About ${copy.name}`)}
+            </h2>
+            <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {copy.sections.map(section => (
+                <div key={section.heading}>
+                  <h3 className="text-[16px] font-semibold text-brand-navy">{section.heading}</h3>
+                  <p className="mt-1.5 text-[15px] leading-relaxed text-brand-navy/70">{section.body}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {copy.faq?.length > 0 && (
+          <section aria-labelledby="collection-faq" className="mt-12">
+            <h2 id="collection-faq" className="text-xl font-semibold text-brand-navy">{t('שאלות נפוצות', 'Common questions')}</h2>
+            <dl className="mt-4 divide-y divide-brand-line border-y border-brand-line">
+              {copy.faq.map(item => (
+                <div key={item.q} className="py-4">
+                  <dt className="text-[16px] font-semibold text-brand-navy">{item.q}</dt>
+                  <dd className="mt-1.5 text-[15px] leading-relaxed text-brand-navy/70">{item.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
         )}
 
         {/* Internal links between collections: they give crawlers a path from any
