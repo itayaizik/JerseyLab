@@ -1,12 +1,12 @@
-// Rounds the site icon into a circle.
+// Rounds off the corners of the site icon.
 //
 // The tab icon was a navy square, which next to the round avatars every other
 // tab shows read as a block of colour rather than as a logo. This cuts the same
-// artwork to a circle and leaves the corners transparent.
+// artwork with its corners taken off, leaving them transparent.
 //
 // Two files are deliberately left square:
 //   - icon-maskable-512.png, which Android crops to its own shape and which
-//     must bleed to the edges or it ends up a circle inside a circle.
+//     must bleed to the edges or it ends up rounded twice.
 //   - apple-touch-icon.png, because iOS applies its own rounded mask and fills
 //     transparency with black.
 //
@@ -25,9 +25,15 @@ const SRC = path.join(__dirname, 'icon-master.png');
 // edge goes soft.
 const SIZES = [512, 192, 96, 48, 32, 16];
 
-// A hair of inset so the circle's edge is not clipped by the canvas.
+// A square with its corners taken off, at the proportion app icons use - about
+// 22% of the side. Rounding by a fixed number of pixels instead would leave the
+// 16px icon almost square and the 512px one barely touched.
+const RADIUS = 0.22;
+
 const mask = (size) => Buffer.from(
-  `<svg width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 0.5}" fill="#fff"/></svg>`,
+  `<svg width="${size}" height="${size}"><rect x="0" y="0" width="${size}" height="${size}" rx="${
+    Math.max(1, Math.round(size * RADIUS))
+  }" fill="#fff"/></svg>`,
 );
 
 (async () => {
