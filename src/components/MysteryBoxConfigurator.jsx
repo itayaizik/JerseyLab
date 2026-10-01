@@ -557,15 +557,6 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
       </ol>
       )}
 
-      {step === 1 && (
-      <div className={`pb-5 pt-5 ${pad}`}>
-        <GroupPanel group={group} closed={groupClosed} syncing={syncing} fid={fid}
-          onStart={startGroup} onResume={resumeGroup} onRefresh={sync} onEnd={endGroup}
-          filled={boxes.filter(b => b.remoteId).length} count={count} />
-      </div>
-      )}
-
-
       {/* Total */}
       {step === 3 && (
       <div className={`border-t border-brand-line bg-brand-mist/60 py-6 ${pad}`}>
@@ -631,6 +622,16 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
               {step === 1 ? t('המשך להתאמה אישית', 'Continue to personalising') : t('המשך לסיכום', 'Continue to the summary')}
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Ordering with friends is the alternative to carrying on alone, so it
+          reads after the button that carries on alone rather than before it. */}
+      {step === 1 && (
+        <div className={`pb-5 pt-5 ${pad}`}>
+          <GroupPanel group={group} closed={groupClosed} syncing={syncing} fid={fid}
+            onStart={startGroup} onResume={resumeGroup} onRefresh={sync} onEnd={endGroup}
+            filled={boxes.filter(b => b.remoteId).length} count={count} />
         </div>
       )}
     </div>
@@ -721,7 +722,7 @@ function GroupPanel({ group, closed, syncing, fid, onStart, onResume, onRefresh,
 
   return (
     <>
-      <div className="rounded-2xl border border-brand-orange/40 bg-brand-orange-soft/40 p-4">
+      <div className="rounded-2xl border border-brand-line bg-brand-mist/50 p-4">
         {heading}
         <p className="mt-1 text-[13px] leading-relaxed text-brand-navy/65">
           {closed
@@ -737,7 +738,10 @@ function GroupPanel({ group, closed, syncing, fid, onStart, onResume, onRefresh,
           </div>
         )}
 
-        <button type="button" onClick={() => setOpen(true)} className="shop-btn mt-3 min-h-[2.75rem] w-full text-sm">
+        {/* Secondary, like its twin before a group exists: the orange button on
+            this page is the one that carries the order forward, and two of them
+            one above the other say neither. */}
+        <button type="button" onClick={() => setOpen(true)} className="shop-btn-secondary mt-3 min-h-[2.75rem] w-full text-sm">
           <Share2 className="h-4 w-4" aria-hidden="true" />
           {t('הקישור והקוד', 'The link and the code')}
         </button>

@@ -47,12 +47,14 @@ const STATIC_PAGES = [
   {
     path: '/',
     en: {
-      title: "JerseyLab - Football Shirts for Collectors and Fans",
+      title: 'JerseyLab',
+      shareTitle: "JerseyLab - Football Shirts for Collectors and Fans",
       description: "Football shirts for collectors and fans: club and national team kits, current seasons and retro, with name and number printing. Delivery across Israel.",
       h1: "Football shirts, rare ones included, at fair prices",
       body: "<p>JerseyLab sells football shirts - club kits, national teams, retro and player versions - and can source shirts that are not in the catalog.</p>",
     },
-    title: 'JerseyLab - חולצות כדורגל נדירות לאספנים ואוהדים',
+    title: 'JerseyLab',
+    shareTitle: 'JerseyLab - חולצות כדורגל נדירות לאספנים ואוהדים',
     description: 'חולצות כדורגל איכותיות ונדירות לאספנים ואוהדים. מצא חולצות של קבוצות, נבחרות ושחקנים אהובים - חדשות, רטרו ומהדורות מיוחדות במחירים טובים.',
     h1: 'חולצות כדורגל איכותיות, נדירות ובמחירים טובים',
     body: `<p>JerseyLab מוכר חולצות כדורגל - חולצות מועדון, נבחרות, רטרו וגרסאות שחקן, ואפשר להזמין גם חולצות שלא נמצאות בקטלוג.</p>`,
@@ -199,18 +201,22 @@ export const enPath = (path) => (path === '/' ? '/en' : `/en${path}`);
 // with the HTML rather than after the app has booted.
 const hero = await fetchHeroImages({ label: 'prerender' });
 
-function buildHead(html, { path, title, description, image, lang = 'he', alternate = true, preloadHero = false }) {
+// `shareTitle` splits the tab from the card a shared link draws. Only the home
+// page uses it: its tab is just the brand name, while the card still has to say
+// what the site sells.
+function buildHead(html, { path, title, shareTitle, description, image, lang = 'he', alternate = true, preloadHero = false }) {
   const en = lang === 'en';
   const url = SITE_ORIGIN + (en ? enPath(path) : path);
+  const social = shareTitle || title;
   let out = setTitle(html, title);
   if (en) {
     out = out.replace('<html lang="he" dir="rtl">', '<html lang="en" dir="ltr">');
   }
   out = setMeta(out, /<meta name="description"[^>]*>/, 'name', 'description', description);
-  out = setMeta(out, /<meta property="og:title"[^>]*>/, 'property', 'og:title', title);
+  out = setMeta(out, /<meta property="og:title"[^>]*>/, 'property', 'og:title', social);
   out = setMeta(out, /<meta property="og:description"[^>]*>/, 'property', 'og:description', description);
   out = setMeta(out, /<meta property="og:image"[^>]*>/, 'property', 'og:image', image || DEFAULT_IMAGE);
-  out = setMeta(out, /<meta name="twitter:title"[^>]*>/, 'name', 'twitter:title', title);
+  out = setMeta(out, /<meta name="twitter:title"[^>]*>/, 'name', 'twitter:title', social);
   out = setMeta(out, /<meta name="twitter:description"[^>]*>/, 'name', 'twitter:description', description);
   out = setMeta(out, /<meta name="twitter:image"[^>]*>/, 'name', 'twitter:image', image || DEFAULT_IMAGE);
   out = setMeta(out, /<meta property="og:url"[^>]*>/, 'property', 'og:url', url);

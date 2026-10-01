@@ -280,6 +280,10 @@ html[dir="ltr"] svg:is(.lucide-chevron-left, .lucide-chevron-right, .lucide-arro
 }
 .jl-added { animation: jl-added-in 1.5s ease-out forwards; }
 .jl-added-mark { animation: jl-added-mark 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+/* Navy on white reads as a stamp; navy on a dark page is a circle you cannot
+   see, so there it swaps round. */
+html.dark .jl-added-mark { background: rgb(var(--c-ink)); }
+html.dark .jl-added-mark svg { color: rgb(var(--c-surface)); }
 
 /* Skeleton loader */
 @keyframes shimmer {

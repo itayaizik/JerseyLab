@@ -32,7 +32,11 @@ function removeLink(rel, hreflang) {
   document.head.querySelector(`link[rel="${rel}"][hreflang="${hreflang}"]`)?.remove();
 }
 
-export default function Seo({ title, description, image, type = 'website', canonicalPath, jsonLd, noindex = false, hebrewOnly = false }) {
+// `shareTitle` is for the card WhatsApp and Facebook draw when the link is
+// pasted. It defaults to `title`, and is worth setting apart only where the tab
+// wants to be short and the shared card still wants to say what the page is -
+// the home page, whose tab is just the brand name.
+export default function Seo({ title, shareTitle, description, image, type = 'website', canonicalPath, jsonLd, noindex = false, hebrewOnly = false }) {
   // The Hebrew path of this page, whichever side we are on: what the two
   // hreflang links are built from.
   const jsonLdStr = jsonLd ? JSON.stringify(jsonLd) : '';
@@ -49,7 +53,7 @@ export default function Seo({ title, description, image, type = 'website', canon
     upsertMeta('meta[name="description"]', 'name', 'description', description);
 
     // Open Graph (Facebook / WhatsApp)
-    upsertMeta('meta[property="og:title"]', 'property', 'og:title', title);
+    upsertMeta('meta[property="og:title"]', 'property', 'og:title', shareTitle || title);
     upsertMeta('meta[property="og:description"]', 'property', 'og:description', description);
     upsertMeta('meta[property="og:image"]', 'property', 'og:image', image || DEFAULT_IMAGE);
     upsertMeta('meta[property="og:url"]', 'property', 'og:url', url);
@@ -59,7 +63,7 @@ export default function Seo({ title, description, image, type = 'website', canon
 
     // Twitter / X
     upsertMeta('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image');
-    upsertMeta('meta[name="twitter:title"]', 'name', 'twitter:title', title);
+    upsertMeta('meta[name="twitter:title"]', 'name', 'twitter:title', shareTitle || title);
     upsertMeta('meta[name="twitter:description"]', 'name', 'twitter:description', description);
     upsertMeta('meta[name="twitter:image"]', 'name', 'twitter:image', image || DEFAULT_IMAGE);
 
@@ -93,7 +97,7 @@ export default function Seo({ title, description, image, type = 'website', canon
     } else if (script) {
       script.remove();
     }
-  }, [title, description, image, type, canonicalPath, jsonLdStr, noindex, hebrewOnly]);
+  }, [title, shareTitle, description, image, type, canonicalPath, jsonLdStr, noindex, hebrewOnly]);
 
   return null;
 }

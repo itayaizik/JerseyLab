@@ -152,7 +152,8 @@ export default function Home() {
   return (
     <div>
       <Seo
-        title={t('JerseyLab - חולצות כדורגל נדירות לאספנים ואוהדים', 'JerseyLab - Football shirts for fans and collectors')}
+        title="JerseyLab"
+        shareTitle={t('JerseyLab - חולצות כדורגל נדירות לאספנים ואוהדים', 'JerseyLab - Football shirts for fans and collectors')}
         description={t(
           'חולצות כדורגל איכותיות ונדירות לאספנים ואוהדים. מצא חולצות של קבוצות, נבחרות ושחקנים אהובים - חדשות, רטרו ומהדורות מיוחדות במחירים טובים.',
           'Football shirts for fans and collectors. Clubs, national teams and favourite players - new, retro and special editions.',

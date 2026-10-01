@@ -41,13 +41,13 @@ export default function AddedToCart() {
       className="pointer-events-none fixed inset-0 z-[95] flex items-center justify-center p-6">
       {/* `key` restarts the animation when a second shirt is added while the
           first confirmation is still on screen. */}
-      <div key={item.at} className="jl-added flex max-w-[16rem] flex-col items-center gap-3 rounded-3xl bg-brand-navy/95 px-7 py-6 text-center shadow-lift">
-        <span className="jl-added-mark flex h-14 w-14 items-center justify-center rounded-full bg-brand-orange">
+      <div key={item.at} className="jl-added flex max-w-[16rem] flex-col items-center gap-3 rounded-3xl border border-brand-line bg-white px-7 py-6 text-center shadow-lift">
+        <span className="jl-added-mark flex h-14 w-14 items-center justify-center rounded-full bg-brand-navy">
           <Check className="h-8 w-8 text-white" strokeWidth={3} />
         </span>
-        <span className="text-[15px] font-bold text-white">{t('נוסף לסל', 'Added to the cart')}</span>
+        <span className="text-[15px] font-bold text-brand-navy">{t('נוסף לסל', 'Added to the cart')}</span>
         {item.name && (
-          <span className="line-clamp-2 text-[13px] leading-snug text-white/70">
+          <span className="line-clamp-2 text-[13px] leading-snug text-brand-navy/60">
             {item.name}{item.size ? ` · ${item.size}` : ''}
           </span>
         )}
