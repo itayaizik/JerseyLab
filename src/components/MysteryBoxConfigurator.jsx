@@ -600,9 +600,11 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
       {/* Getting from one step to the next. On the middle step the bar carries
           the running total, so the price is on screen while the choices that
-          move it are being made. */}
+          move it are being made - and the rule that holds it off the boxes
+          scrolling under it. Step 1 has nothing above the bar to hold off, so
+          there the rule would just be a line sitting in the open. */}
       {step < 3 && (
-        <div className={`sticky bottom-0 border-t border-brand-line bg-white/95 py-4 backdrop-blur ${pad}`}>
+        <div className={`sticky bottom-0 bg-white/95 py-4 backdrop-blur ${pad} ${step === 2 ? 'border-t border-brand-line' : ''}`}>
           {step === 2 && (
             <div className="mb-3 flex items-baseline justify-between">
               <span className="text-[13px] text-brand-navy/60">
