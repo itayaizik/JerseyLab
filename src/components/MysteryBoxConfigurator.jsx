@@ -385,9 +385,12 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                     here ? 'bg-brand-navy text-white'
                       : done ? 'bg-brand-mist text-brand-navy hover:bg-brand-mist-dark'
                         : 'bg-brand-mist/50 text-brand-navy/35'}`}>
+                  {/* A finished step keeps its number and goes green. A tick in
+                      place of the number loses the one thing the badge is for,
+                      which is saying which step this is. */}
                   <span className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-[11px] ${
-                    here ? 'bg-white/20' : done ? 'bg-brand-orange text-white' : 'bg-white/60'}`}>
-                    {done ? <Check className="h-3 w-3" aria-hidden="true" /> : id}
+                    here ? 'bg-white/20' : done ? 'bg-emerald-600 text-white' : 'bg-white/60'}`}>
+                    {id}
                   </span>
                   <span className="truncate sm:hidden">{t(short, shortEn)}</span>
                   <span className="hidden truncate sm:inline">{t(label, labelEn)}</span>
