@@ -379,19 +379,25 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
             const here = step === id;
             return (
               <li key={id} className="min-w-0 flex-1">
+                {/* The step ahead carries no outline at all - it is not
+                    somewhere you can go yet, so it has nothing to announce. Its
+                    border stays, transparent, so the three chips keep the same
+                    size. */}
                 <button type="button" disabled={!done && !here} onClick={() => setStep(id)}
                   aria-current={here ? 'step' : undefined}
-                  className={`flex w-full items-center justify-center gap-1.5 rounded-xl border-2 bg-white px-2 py-2 text-[13px] font-semibold transition ${
+                  className={`flex w-full items-center justify-center gap-1.5 rounded-xl border bg-white px-2 py-2 text-[13px] font-semibold transition ${
                     here ? 'border-brand-navy text-brand-navy'
                       : done ? 'border-emerald-600 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
-                        : 'border-brand-line text-brand-navy/35'}`}>
+                        : 'border-transparent text-brand-navy/35'}`}>
                   {/* A finished step keeps its number rather than swapping it
                       for a tick: the badge is there to say which step this is,
                       and the green already says it is done. `leading-none`
                       because the font's line box sits the digit low in a circle
                       this small. */}
-                  <span className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-[11px] leading-none tabular-nums text-white ${
-                    here ? 'bg-brand-navy' : done ? 'bg-emerald-600' : 'bg-brand-navy/20'}`}>
+                  <span className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-[11px] leading-none tabular-nums ${
+                    here ? 'bg-brand-navy text-white'
+                      : done ? 'bg-emerald-600 text-white'
+                        : 'bg-brand-mist text-brand-navy/40'}`}>
                     {id}
                   </span>
                   <span className="truncate sm:hidden">{t(short, shortEn)}</span>
