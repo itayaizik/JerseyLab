@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Gift, Check, ShoppingBag,
-  Plus, Minus, Copy, Trash2, ChevronDown, CheckCircle2, Share2, Link2, Users, Loader2, RefreshCw, X,
+  Plus, Minus, Copy, Trash2, ChevronDown, CheckCircle2, Share2, Link2, Users, Loader2, RefreshCw, RotateCcw, X,
 } from 'lucide-react';
 import { addToCart, openCart, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { BOX_TYPES, NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID, FREE_PATCHES_FROM, patchesAreFree, EXCLUDE_COLORS as COLORS } from '@/lib/mysteryBox';
@@ -258,6 +258,27 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     setArrivals([]);
   };
 
+  // Back to an empty order. Everything goes: the boxes, the preferences on
+  // them, the step, and the group if one was started - leaving a group behind
+  // would mean friends still filling in boxes for an order that no longer
+  // exists. It asks first, because there is nothing to undo it with.
+  const resetAll = () => {
+    const warning = group
+      ? t('לאפס את ההזמנה? כל הבוקסים יימחקו והקבוצה תיסגר.', 'Start over? Every box is cleared and the group is closed.')
+      : t('לאפס את ההזמנה? כל הבוקסים יימחקו.', 'Start over? Every box is cleared.');
+    if (!window.confirm(warning)) return;
+    if (group) closeGroup(group).catch(() => {});
+    setBoxes([newBox()]);
+    setGroup(null);
+    setArrivals([]);
+    setOpenId(null);
+    setMissingSize([]);
+    setLastAdded(null);
+    setError('');
+    setStep(1);
+    saveDraft(null);
+  };
+
   // --- adding to the cart ------------------------------------------------------
 
   const count = boxes.length;
@@ -366,7 +387,19 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
             {t('מזמינים לכמה אנשים? לכל בוקס סגנון, מידה ותוספות משלו.', 'Ordering for a few people? Every box gets its own style, size and extras.')}
           </p>
         </div>
-        {headerAction && <span className="ms-auto">{headerAction}</span>}
+        {/* Only once there is something to clear: an empty order has nothing to
+            start over from, and the button would just be a way to lose work. */}
+        <span className="ms-auto flex flex-shrink-0 items-center gap-2">
+          {(boxes.length > 1 || !isBlank(boxes[0]) || group) && (
+            <button type="button" onClick={resetAll}
+              title={t('מתחילים הזמנה מחדש', 'Start the order over')}
+              className="flex items-center gap-1.5 rounded-full border border-brand-line px-3 py-1.5 text-[12.5px] font-medium text-brand-navy/60 transition hover:border-red-300 hover:text-red-600">
+              <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+              {t('איפוס', 'Start over')}
+            </button>
+          )}
+          {headerAction}
+        </span>
       </div>
 
       {/* Where you are, and a way back. Steps already passed are links; the one
@@ -429,11 +462,16 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
             <p className="mt-1.5 text-center text-[13px] text-brand-navy/55">{t('כמה בוקסים?', 'How many boxes?')}</p>
 
             {/* What one costs right now, which is the number the quantity is
-                being chosen against. */}
-            <p className="mt-3 text-center">
-              <span className="text-4xl font-black tabular-nums text-brand-navy">₪{Math.max(0, LADDER_BASE - discount)}</span>
-              <span className="ms-2 text-[13px] text-brand-navy/55">{t('ליחידה', 'each')}</span>
-            </p>
+                being chosen against - and only worth saying when the quantity
+                can move it. With the ladder switched off in the admin panel,
+                this is just the style's own price restated, so the step goes
+                back to being a plain counter. */}
+            {ladder && (
+              <p className="mt-3 text-center">
+                <span className="text-4xl font-black tabular-nums text-brand-navy">₪{Math.max(0, LADDER_BASE - discount)}</span>
+                <span className="ms-2 text-[13px] text-brand-navy/55">{t('ליחידה', 'each')}</span>
+              </p>
+            )}
 
             {ladder && (
               <>

@@ -60,14 +60,33 @@ export default function ManageMysteryBox() {
     }
   };
 
+  // One switch for the whole ladder, so it can be taken down for a week and put
+  // back without retyping the numbers. Turning it off deactivates every tier,
+  // which is what the shop reads: with nothing active the table disappears from
+  // the mystery box page and the quantity step goes back to a plain counter.
+  const setLadderActive = async (on) => {
+    if (!on && !window.confirm('לכבות את הנחת הכמות? הטבלה תיעלם מהאתר והמחירים יחזרו למחיר המלא. המדרגות נשמרות ואפשר להחזיר אותן בלחיצה.')) return;
+    setLoading(true);
+    try {
+      await Promise.all(tiers.map(tier => base44.entities.MysteryTier.update(tier.id, { active: on })));
+    } catch {
+      alert('לא הצלחנו לעדכן את כל המדרגות. רענן ונסה שוב.');
+    }
+    await load();
+  };
+
   const remove = async (tier) => {
     if (!window.confirm(`למחוק את המדרגה שמתחילה ב-${tier.min_boxes} בוקסים?`)) return;
     await base44.entities.MysteryTier.delete(tier.id);
     setTiers(p => p.filter(x => x.id !== tier.id));
   };
 
-  const ladder = normalizeTiers(tiers);
+  // `live` is what the shop actually sees: normalizeTiers reads the rows as the
+  // site does, and an inactive row is not in them.
+  const ladder = normalizeTiers(tiers.filter(t => t.active));
   const live = ladder.some(tier => tier.discount > 0);
+  const anyActive = tiers.some(t => t.active);
+  const hasTiers = tiers.length > 0;
   // Quantities worth seeing priced: every rung, and one box either way of it.
   const samples = [...new Set([1, ...ladder.flatMap(tier => [tier.minBoxes])])].sort((a, b) => a - b);
 
@@ -97,6 +116,25 @@ export default function ManageMysteryBox() {
       </div>
 
       {error && <p role="alert" className="rounded-lg mb-6 border border-redcard/40 bg-redcard/10 p-3 text-sm text-redcard">{error}</p>}
+
+      {/* Off and on again without losing the numbers. */}
+      {hasTiers && (
+        <div className="rounded-2xl border border-brand-line bg-white p-4 mb-6 shadow-card flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-chalk">הנחת הכמות באתר</p>
+            <p className="text-xs text-varnish mt-0.5">
+              {anyActive
+                ? 'פעילה. כיבוי משאיר את המדרגות שמורות כאן ומסיר אותן מהאתר.'
+                : 'כבויה. הלקוחות רואים מחיר מלא, והמדרגות ממתינות כאן.'}
+            </p>
+          </div>
+          <button onClick={() => setLadderActive(!anyActive)} disabled={loading}
+            className={`rounded-2xl px-4 py-2.5 text-sm font-bold disabled:opacity-40 ${
+              anyActive ? 'border border-brand-line text-chalk hover:border-redcard hover:text-redcard' : 'bg-turf text-pitch'}`}>
+            {anyActive ? 'כיבוי ההנחה' : 'הפעלת ההנחה'}
+          </button>
+        </div>
+      )}
 
       {/* Add */}
       <div className="rounded-2xl border border-brand-line bg-white p-4 mb-6 shadow-card">

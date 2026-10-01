@@ -31,24 +31,27 @@ export default function MysteryBoxPromo() {
   return (
     <section className="shop-container mt-16 sm:mt-24" aria-labelledby="mystery-heading">
       <div className="grid overflow-hidden rounded-[2rem] bg-brand-navy lg:grid-cols-2">
-        <div className="flex flex-col justify-center p-7 text-white sm:p-12">
+        {/* On a phone this panel is the whole screen, so it is kept short: the
+            four prices sit two by two instead of as four full-width rows, which
+            is a third of the block's height on its own. */}
+        <div className="flex flex-col justify-center p-6 text-white sm:p-12">
           <span className="inline-flex w-fit items-center rounded-full bg-white/10 px-3.5 py-1.5 text-[13px] font-semibold text-brand-gold">
             {t('חדש באתר', 'New')}
           </span>
-          <h2 id="mystery-heading" className="mt-5 text-4xl font-bold leading-tight tracking-[-0.02em] sm:text-5xl">{t('מיסטרי בוקס', 'Mystery Box')}</h2>
-          <p className="mt-3 max-w-md text-base leading-relaxed text-white/70 sm:text-lg">
+          <h2 id="mystery-heading" className="mt-4 text-3xl font-bold leading-tight tracking-[-0.02em] sm:mt-5 sm:text-5xl">{t('מיסטרי בוקס', 'Mystery Box')}</h2>
+          <p className="mt-2.5 max-w-md text-[15px] leading-relaxed text-white/70 sm:mt-3 sm:text-lg">
             {t('אתם בוחרים סגנון ומידה, והחולצה יוצאת אקראית. אותה איכות ואותו מחיר כמו בקטלוג, רק בהפתעה.',
               'You choose the style and size, and the shirt comes out at random. The same quality and price as the catalog, just as a surprise.')}
           </p>
-          <ul className="mt-6 max-w-sm divide-y divide-white/10 border-y border-white/10">
+          <ul className="mt-4 grid max-w-sm grid-cols-2 gap-x-5 sm:mt-6 sm:grid-cols-1 sm:gap-0 sm:border-t sm:border-white/10">
             {BOX_TYPES.map(box => (
-              <li key={box.id} className="flex items-center justify-between py-2.5">
-                <span className="text-[15px] text-white/75">{t(box.label, box.labelEn)}</span>
-                <span className="text-base font-semibold tabular-nums text-white">₪{box.price}</span>
+              <li key={box.id} className="flex items-center justify-between border-b border-white/10 py-2 sm:py-2.5">
+                <span className="text-[14px] text-white/75 sm:text-[15px]">{t(box.label, box.labelEn)}</span>
+                <span className="text-[15px] font-semibold tabular-nums text-white sm:text-base">₪{box.price}</span>
               </li>
             ))}
           </ul>
-          <Link to="/mystery-box" className="shop-btn mt-8 self-start px-8">{t('לבניית הבוקס', 'Build your box')}</Link>
+          <Link to="/mystery-box" className="shop-btn mt-6 self-start px-8 sm:mt-8">{t('לבניית הבוקס', 'Build your box')}</Link>
         </div>
 
         {promoPanels.length > 0 && (

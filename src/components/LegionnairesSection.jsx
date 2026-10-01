@@ -85,7 +85,7 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
               <button key={player.id} type="button" role="tab"
                 id={`legionnaire-tab-${player.id}`} aria-selected={selected} aria-controls="legionnaire-panel"
                 onClick={() => setActiveName(player.name)}
-                className="group flex w-[6.5rem] flex-shrink-0 snap-start flex-col items-center gap-2.5 sm:w-[7.25rem]">
+                className="group flex w-[6.5rem] flex-shrink-0 snap-start flex-col items-center gap-2.5 sm:w-[7.25rem] sm:gap-4">
                 {/* `object-top`, because these are head-and-shoulders portraits
                     with the head in the upper third: a square crop taken from
                     the middle of one cuts the face off at the eyebrows. */}

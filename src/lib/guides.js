@@ -408,16 +408,20 @@ export const GUIDES = [
     en: {
       title: 'How to Wash a Football Shirt Without Ruining the Print | JerseyLab',
       h1: 'How to wash a football shirt',
-      description: 'How to wash a football shirt so the name, number and crest survive: temperature, inside out, no tumble dryer, no fabric softener, no ironing over the print.',
-      intro: 'A printed shirt does not fade in the wash. It cracks, and almost always for the same four reasons. Get those right and the print outlives the season.',
+      description: 'How to wash a football shirt so the name, number and crest survive: by hand rather than in the machine, inside out, no tumble dryer, no fabric softener, no ironing over the print.',
+      intro: 'A printed shirt does not fade in the wash. It cracks, and almost always for the same few reasons. Wash it by hand and get the rest right, and the print outlives the season by years.',
       sections: [
         {
-          h2: 'Inside out, always',
-          paragraphs: ['The print and the crest are on the outside, so turning the shirt inside out puts the fabric between them and everything else in the drum. This is the single habit that matters most, and it costs nothing.'],
+          h2: 'Best of all: by hand, not in the machine',
+          paragraphs: ['The safest way to keep a print intact is to wash the shirt by hand. A basin of cold water, a little mild detergent, ten minutes to soak and a gentle press - without rubbing the print and without wringing it out. It takes five minutes, and it is the difference between a print that lasts years and one that starts cracking after a season. Even the gentlest machine cycle still puts the shirt through tumbling and friction that washing by hand simply avoids.'],
         },
         {
-          h2: 'Cold, and gentle',
-          paragraphs: ['Wash at 30°C at most, on a delicate or sports cycle. Heat is what lifts a heat-pressed number off the fabric; there is nothing on a football shirt that needs hot water to come clean.'],
+          h2: 'Inside out, always',
+          paragraphs: ['The print and the crest are on the outside, so turning the shirt inside out puts the fabric between them and everything else. That holds by hand and in a machine alike, and it is the single habit that matters most - and it costs nothing.'],
+        },
+        {
+          h2: 'And if it has to be the machine',
+          paragraphs: ['We would rather you did not, but if there is no choice: 30°C at most, a delicate or sports cycle, the shirt inside out, and ideally inside a wash bag. Heat and tumbling together are what lift a heat-pressed number off the fabric, and there is nothing on a football shirt that needs hot water to come clean.'],
         },
         {
           h2: 'No fabric softener',
@@ -443,16 +447,20 @@ export const GUIDES = [
     },
     title: 'איך מכבסים חולצת כדורגל בלי להרוס את ההדפסה | JerseyLab',
     h1: 'איך מכבסים חולצת כדורגל',
-    description: 'איך לכבס חולצת כדורגל כדי שהשם, המספר והסמל ישרדו: טמפרטורה, כביסה הפוכה, בלי מייבש, בלי מרכך ובלי גיהוץ על ההדפסה.',
-    intro: 'חולצה מודפסת לא דוהה בכביסה. היא נסדקת, וכמעט תמיד מאותן ארבע סיבות. אם עושים אותן נכון, ההדפסה שורדת הרבה מעבר לעונה.',
+    description: 'איך לכבס חולצת כדורגל כדי שהשם, המספר והסמל ישרדו: כביסה ידנית ולא במכונה, הפוך על הפוך, בלי מייבש, בלי מרכך ובלי גיהוץ על ההדפסה.',
+    intro: 'חולצה מודפסת לא דוהה בכביסה. היא נסדקת, וכמעט תמיד מאותן סיבות. אם מכבסים ביד ועושים את השאר נכון, ההדפסה שורדת שנים ולא עונה.',
     sections: [
       {
-        h2: 'הפוך על הפוך, תמיד',
-        paragraphs: ['ההדפסה והסמל נמצאים בחוץ, אז כביסה כשהחולצה הפוכה שמה את הבד בין ההדפסה לכל השאר בתוף. זה ההרגל הכי משמעותי מכולם, והוא לא עולה כלום.'],
+        h2: 'הכי מומלץ: ביד, לא במכונה',
+        paragraphs: ['הדרך הבטוחה ביותר לשמור על ההדפסה היא לכבס את החולצה ביד. קערה או כיור עם מים קרים, מעט סבון עדין, השריה של עשר דקות ולחיצה קלה - בלי לשפשף את ההדפסה ובלי לסחוט בפיתול. זה לוקח חמש דקות, וזה ההבדל בין הדפסה שמחזיקה שנים לבין כזו שמתחילה להיסדק אחרי עונה. גם התוכנית העדינה ביותר במכונה חושפת את החולצה לסיבוב ולחיכוך שכביסה ידנית פשוט חוסכת.'],
       },
       {
-        h2: 'קר, ועדין',
-        paragraphs: ['עד 30 מעלות, בתוכנית עדינה או ספורט. חום הוא מה שמרים מספר מודבק מהבד, ואין שום דבר בחולצת כדורגל שצריך מים חמים כדי להתנקות.'],
+        h2: 'הפוך על הפוך, תמיד',
+        paragraphs: ['ההדפסה והסמל נמצאים בחוץ, אז כביסה כשהחולצה הפוכה שמה את הבד בין ההדפסה לכל השאר. זה נכון גם ביד וגם במכונה, וזה ההרגל הכי משמעותי מכולם - והוא לא עולה כלום.'],
+      },
+      {
+        h2: 'ואם בכל זאת במכונה',
+        paragraphs: ['אנחנו לא ממליצים על זה, אבל אם אין ברירה: עד 30 מעלות, תוכנית עדינה או ספורט, החולצה הפוכה, ועדיף בתוך שקית כביסה. חום וסיבוב ביחד הם מה שמרים מספר מודבק מהבד, ואין שום דבר בחולצת כדורגל שצריך מים חמים כדי להתנקות.'],
       },
       {
         h2: 'בלי מרכך כביסה',
