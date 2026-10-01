@@ -4,7 +4,7 @@ import {
   Plus, Minus, Copy, Trash2, ChevronDown, CheckCircle2, Share2, Link2, Users, Loader2, RefreshCw, X,
 } from 'lucide-react';
 import { addToCart, openCart, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
-import { BOX_TYPES, NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID, EXCLUDE_COLORS as COLORS } from '@/lib/mysteryBox';
+import { BOX_TYPES, NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID, FREE_PATCHES_FROM, patchesAreFree, EXCLUDE_COLORS as COLORS } from '@/lib/mysteryBox';
 import { newBox, newBoxId, typeOf, kidsBox, wantsShorts, wantsName, wantsLongSleeve, boxPrice, boxesTotal, boxesSaving, boxSummary, isBlank, cleanBox } from '@/lib/mysteryBoxes';
 import { fetchTiers, discountFor, hasLadder, nextTier } from '@/lib/mysteryTiers';
 import {
@@ -241,8 +241,9 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
   const count = boxes.length;
   const discount = discountFor(tiers, count);
-  const total = boxesTotal(boxes, discount);
-  const saving = boxesSaving(boxes, discount);
+  const freePatches = patchesAreFree(count);
+  const total = boxesTotal(boxes, discount, freePatches);
+  const saving = boxesSaving(boxes, discount, freePatches);
   const ladder = hasLadder(tiers);
   const upsell = ladder ? nextTier(tiers, count) : null;
 
@@ -286,7 +287,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
       // A kids box carries its shorts and its printing at ₪0: the packer has to
       // see them on the line, and the price must not move.
       if (wantsName(box)) extras.push({ label: 'שם ומספר מאחורה (לבחירתנו)', labelEn: 'Name and number on the back (our pick)', price: kids ? 0 : NAME_PRICE });
-      if (box.patches) extras.push({ label: 'כל הפאצ\'ים', labelEn: 'All patches', price: PATCHES_PRICE });
+      if (box.patches) extras.push({ label: 'פאצ\'ים', labelEn: 'Patches', price: freePatches ? 0 : PATCHES_PRICE });
       // The same words a catalogue shirt uses, so the supplier text reads them.
       if (wantsLongSleeve(box)) extras.push({ label: LONG_SLEEVE_LABEL, labelEn: 'Long sleeve', price: EXTRA_PRICES.longSleeve });
       if (wantsShorts(box)) extras.push({ label: `${SHORTS_LABEL} במידה ${box.size}`, labelEn: `Shorts, size ${box.size}`, price: kids ? 0 : EXTRA_PRICES.shorts });
@@ -311,7 +312,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         shirtNameEn: `Mystery Box — ${type.labelEn}`,
         size: box.size,
         basePrice: type.price,
-        unitPrice: boxPrice(box, discount),
+        unitPrice: boxPrice(box, discount, freePatches),
         extras,
         details,
         deliveryNote: 'מיסטרי בוקס — הפתעה עד הפתיחה',
@@ -436,6 +437,13 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
               {t('המחיר לבוקס רגיל. בכל סגנון יורד אותו סכום.',
                  'The price of a regular box. Every style comes down by the same amount.')}
             </p>
+            {/* The patches come free past a certain size, which is worth saying
+                where the quantity is being chosen rather than only on the box. */}
+            <p className={`mt-1.5 text-center text-[12px] font-medium ${freePatches ? 'text-emerald-700 dark:text-emerald-400' : 'text-brand-navy/55'}`}>
+              {freePatches
+                ? t("הפאצ'ים בהזמנה הזו חינם", 'Patches are free on this order')
+                : t(`מ-${FREE_PATCHES_FROM} בוקסים הפאצ'ים חינם`, `From ${FREE_PATCHES_FROM} boxes the patches are free`)}
+            </p>
 
             {upsell && (
               <p className="mt-2.5 text-center text-[13px] font-medium text-brand-orange-ink">
@@ -526,8 +534,10 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                     <span className={`block truncate text-[12px] ${missing ? 'text-red-600' : 'text-brand-navy/55'}`}>{boxSummary(box)}</span>
                   </span>
                   <span className="flex-shrink-0 text-[15px] font-semibold tabular-nums text-brand-navy">
-                    {discount > 0 && <span className="me-1.5 text-[13px] font-normal text-brand-navy/40 line-through">₪{boxPrice(box)}</span>}
-                    ₪{boxPrice(box, discount)}
+                    {(discount > 0 || (freePatches && box.patches)) && (
+                      <span className="me-1.5 text-[13px] font-normal text-brand-navy/40 line-through">₪{boxPrice(box, 0, false)}</span>
+                    )}
+                    ₪{boxPrice(box, discount, freePatches)}
                   </span>
                   <ChevronDown className={`h-4 w-4 flex-shrink-0 text-brand-navy/40 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
                 </button>
@@ -550,7 +560,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
               {open && (
                 <div className="space-y-5 bg-white px-4 pb-5 pt-2">
                   <MysteryBoxFields box={box} onChange={patch => update(box.id, patch)}
-                    fid={name => fid(`${name}-${box.id}`)} missingSize={missing} />
+                    fid={name => fid(`${name}-${box.id}`)} missingSize={missing} freePatches={freePatches} />
                   <button type="button" onClick={() => setOpenId(-1)} className="shop-btn-dark min-h-[2.75rem] w-full text-sm">
                     <Check className="h-4 w-4" aria-hidden="true" />
                     {t('הבוקס מוכן', 'Box done')}
@@ -578,7 +588,7 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           {boxes.map((box, i) => (
             <li key={box.id} className="flex items-center justify-between gap-3 text-brand-navy/70">
               <span className="min-w-0 truncate">{boxTitle(box, i)} · {boxSummary(box)}</span>
-              <span className="flex-shrink-0 font-semibold tabular-nums text-brand-navy">₪{boxPrice(box, discount)}</span>
+              <span className="flex-shrink-0 font-semibold tabular-nums text-brand-navy">₪{boxPrice(box, discount, freePatches)}</span>
             </li>
           ))}
         </ul>

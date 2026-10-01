@@ -52,6 +52,11 @@ export const isKidsType = (id) => BOX_TYPES.find(b => b.id === id)?.kids === tru
 export const NAME_PRICE = 10;
 export const PATCHES_PRICE = 5;
 
+// From this many boxes in one order, the patches stop being charged for - on
+// every box in it, not only the ones past the fifth.
+export const FREE_PATCHES_FROM = 5;
+export const patchesAreFree = (count) => count >= FREE_PATCHES_FROM;
+
 export const SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 
 // Colours a customer can rule out. Swatches rather than a text field: picking

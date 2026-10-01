@@ -44,9 +44,12 @@ export const wantsLongSleeve = (box) => box.longSleeve && longSleeveAllowed(box)
 // `discount` is what the order's quantity earns off every box in it
 // (lib/mysteryTiers). Extras are never discounted: the ladder is a reason to
 // order more shirts, not cheaper printing.
-export const boxPrice = (box, discount = 0) => Math.max(0, typeOf(box).price - Math.max(0, discount))
+// `freePatches` is the order's own doing - a big enough order stops being
+// charged for them (lib/mysteryBox) - so it is passed in rather than read off
+// the box, which cannot know how many others are beside it.
+export const boxPrice = (box, discount = 0, freePatches = false) => Math.max(0, typeOf(box).price - Math.max(0, discount))
   + (!kidsBox(box) && box.addName ? NAME_PRICE : 0)
-  + (box.patches ? PATCHES_PRICE : 0)
+  + (box.patches && !freePatches ? PATCHES_PRICE : 0)
   + (wantsLongSleeve(box) ? EXTRA_PRICES.longSleeve : 0)
   + (!kidsBox(box) && wantsShorts(box) ? EXTRA_PRICES.shorts : 0);
 
@@ -70,8 +73,12 @@ export function boxSummary(box) {
 export const isBlank = (box) => !box.forWhom.trim() && !box.size;
 
 // What the whole order costs, and what the ladder took off it.
-export const boxesTotal = (boxes, discount = 0) => boxes.reduce((sum, b) => sum + boxPrice(b, discount), 0);
-export const boxesSaving = (boxes, discount = 0) => boxesTotal(boxes, 0) - boxesTotal(boxes, discount);
+export const boxesTotal = (boxes, discount = 0, freePatches = false) =>
+  boxes.reduce((sum, b) => sum + boxPrice(b, discount, freePatches), 0);
+// Everything the order size is worth: the ladder off each box, and the patches
+// it stopped paying for.
+export const boxesSaving = (boxes, discount = 0, freePatches = false) =>
+  boxesTotal(boxes, 0, false) - boxesTotal(boxes, discount, freePatches);
 
 // A box read back from storage or from the server, which is not trusted to
 // have the right shape.

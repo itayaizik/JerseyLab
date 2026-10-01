@@ -108,7 +108,7 @@ function parseCustomization(message) {
   const playerVersion = message.includes('גרסת שחקן');
   const match = message.match(/הדפסת שם:\s*([^(|]+)/);
   const customText = match ? match[1].trim() : '';
-  // "פאצ'ים (+₪5)" from a shirt, "כל הפאצ'ים (+₪5)" from a mystery box; either
+  // "פאצ'ים (+₪5)" from a shirt or from a mystery box; either
   // apostrophe, in case one was typed by hand.
   const patches = /פאצ['׳]ים/.test(message);
   const longSleeve = message.includes('שרוול ארוך');

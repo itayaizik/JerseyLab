@@ -12,7 +12,8 @@ const SEP = ' | ';
 const PRICE_RE = /^מחיר סופי:\s*₪\s*(\d+(?:\.\d+)?)$/;
 const PLAYER_RE = /^גרסת שחקן/;
 const PRINT_RE = /^הדפסת שם:\s*(.*?)\s*(?:\(\+₪\d+\))?$/;
-// Starts with the word, so a mystery box's "כל הפאצ'ים" is not taken for it.
+// A mystery box's own parts never reach this (the `mystery` guard below), so
+// this only has to match a shirt's.
 const PATCHES_RE = /^פאצ['׳]ים/;
 const LONG_SLEEVE_RE = /^שרוול ארוך/;
 const SHORTS_RE = /^מכנס קצר/;

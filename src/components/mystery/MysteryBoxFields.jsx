@@ -13,7 +13,7 @@ import { t } from '@/lib/i18n';
 
 const TYPE_ICONS = { regular: Shirt, retro: Sparkles, mundial: Gift, kids: Baby };
 
-export default function MysteryBoxFields({ box, onChange, fid, missingSize = false, nameRequired = false, missingName = false }) {
+export default function MysteryBoxFields({ box, onChange, fid, missingSize = false, nameRequired = false, missingName = false, freePatches = false }) {
   const type = typeOf(box);
   const kids = isKidsType(box.type);
   const sizes = sizesFor(box);
@@ -108,8 +108,10 @@ export default function MysteryBoxFields({ box, onChange, fid, missingSize = fal
               hint={t('שחקן שמתאים לחולצה - גם הוא הפתעה', 'A player to match the shirt - a surprise too')} />
           )}
           <Extra checked={box.patches} onChange={v => onChange({ patches: v })}
-            label={t("כל הפאצ'ים", 'All patches')} price={PATCHES_PRICE}
-            hint={t('של הליגה והטורניר', 'League and tournament')} />
+            label={t("פאצ'ים", 'Patches')} price={freePatches ? 0 : PATCHES_PRICE}
+            hint={freePatches
+              ? t('חינם בהזמנה הזו', 'Free on this order')
+              : t('של הליגה והטורניר', 'League and tournament')} />
           {longSleeveAllowed(box) && (
             <Extra checked={box.longSleeve} onChange={v => onChange({ longSleeve: v })}
               label={LONG_SLEEVE_TEXT} price={EXTRA_PRICES.longSleeve}
@@ -178,7 +180,7 @@ function Extra({ checked, onChange, label, price, hint }) {
       <span className="min-w-0 flex-1">
         <span className="flex items-center justify-between gap-2">
           <span className="text-[14px] font-semibold text-brand-navy">{label}</span>
-          <span className="flex-shrink-0 text-[13px] font-semibold tabular-nums text-brand-orange-ink">+₪{price}</span>
+          <span className="flex-shrink-0 text-[13px] font-semibold tabular-nums text-brand-orange-ink">{price > 0 ? `+₪${price}` : t('חינם', 'Free')}</span>
         </span>
         <span className="mt-0.5 block text-[12px] text-brand-navy/55">{hint}</span>
       </span>
