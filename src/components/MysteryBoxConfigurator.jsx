@@ -135,6 +135,27 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
     if (currentOpen === id) setOpenId(null);
   };
 
+  // Jumping straight to a quantity, for the price table: tapping the rung you
+  // want is one move where pressing plus eleven times is eleven. Boxes already
+  // filled in are never dropped - it only ever adds, or takes blank ones off
+  // the end.
+  const setCount = (want) => {
+    const target = Math.max(1, Math.min(MAX_BOXES, want));
+    touched();
+    setBoxes(prev => {
+      if (prev.length === target) return prev;
+      if (prev.length < target) {
+        const next = [...prev];
+        while (next.length < target) next.push(newBox(next[next.length - 1]));
+        return next;
+      }
+      const next = [...prev];
+      while (next.length > target && isBlank(next[next.length - 1])) next.pop();
+      return next;
+    });
+    setOpenId(null);
+  };
+
   // --- the group -------------------------------------------------------------
 
   const groupRef = useRef(group);
@@ -376,91 +397,97 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           })}
         </ol>
       </nav>
-
-      {/* What is actually being bought, before the sums. It is the packaging
-          rather than a shirt on purpose: the shirt is the part nobody gets to
-          see until the bag is open. */}
+      {/* Step 1, as one card: the thing being bought, how many of it, what one
+          costs at that quantity, and the rungs either side. The bag sits inside
+          the card rather than above it so the step reads as a single object. */}
       {step === 1 && (
-        <div className={`mt-5 flex justify-center ${pad}`}>
-          <img src="/mystery-box.png" alt={t('מיסטרי בוקס של JerseyLab', 'A JerseyLab mystery box')}
-            width="800" height="826" loading="eager"
-            className="h-40 w-auto object-contain sm:h-48" />
-        </div>
-      )}
-
-      {/* How many, before anything else - and what that quantity is worth.
-          Only drawn when the shop has a ladder to show: a row of tiers that
-          all take nothing off is an ornament, not an offer. */}
-      {step === 1 && ladder && (
         <div className={`mt-4 ${pad}`}>
-          <div className="rounded-2xl border border-brand-line bg-brand-mist/60 p-4">
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-brand-navy">{t('כמה בוקסים?', 'How many boxes?')}</p>
-                <p className="text-[12px] text-brand-navy/55">
-                  {t('ככל שיש יותר בוקסים בהזמנה, כל אחד עולה פחות.', 'The more boxes in one order, the less each one costs.')}
-                </p>
-              </div>
-              <div className="flex flex-shrink-0 items-center gap-1">
-                <button type="button" onClick={() => removeBox(boxes[boxes.length - 1].id)} disabled={count <= 1}
-                  aria-label={t('בוקס אחד פחות', 'One box fewer')}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-line bg-white text-brand-navy transition hover:border-brand-navy/30 disabled:opacity-30">
-                  <Minus className="h-4 w-4" aria-hidden="true" />
-                </button>
-                <span aria-live="polite" className="w-10 text-center text-xl font-bold tabular-nums text-brand-navy">{count}</span>
-                <button type="button" onClick={() => addBox()} disabled={count >= MAX_BOXES}
-                  aria-label={t('בוקס אחד נוסף', 'One box more')}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-line bg-white text-brand-navy transition hover:border-brand-navy/30 disabled:opacity-30">
-                  <Plus className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </div>
+          <div className="rounded-3xl border border-brand-line bg-brand-mist/60 p-5 shadow-card">
+            {/* The packaging rather than a shirt: the shirt is the part nobody
+                sees until the bag is open. */}
+            <div className="flex justify-center">
+              <img src="/mystery-box.png" alt={t('מיסטרי בוקס של JerseyLab', 'A JerseyLab mystery box')}
+                width="800" height="826" loading="eager"
+                className="h-36 w-auto object-contain drop-shadow-[0_18px_28px_rgba(27,42,74,0.28)] sm:h-44" />
             </div>
 
-            {/* Above the table rather than below it: it is the reason to press
-                the plus button, which is right here, not a footnote to prices
-                already read past. */}
-            {upsell && (
-              <p className="mt-3 rounded-xl bg-brand-orange-soft px-3 py-2 text-center text-[13px] font-medium text-brand-orange-ink">
-                {t(`עוד ${upsell.boxesAway} בוקסים ותחסכו עוד ₪${upsell.extraPerBox} על כל אחד`,
-                   `${upsell.boxesAway} more boxes and each one drops another ₪${upsell.extraPerBox}`)}
-              </p>
+            <div className="mt-5 flex items-center justify-center gap-3">
+              <button type="button" onClick={() => removeBox(boxes[boxes.length - 1].id)} disabled={count <= 1}
+                aria-label={t('בוקס אחד פחות', 'One box fewer')}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-line bg-white text-brand-navy shadow-card transition hover:border-brand-navy/30 disabled:opacity-30 disabled:shadow-none">
+                <Minus className="h-4 w-4" aria-hidden="true" />
+              </button>
+              <span aria-live="polite" className="min-w-[2.5rem] text-center text-3xl font-black tabular-nums text-brand-navy">{count}</span>
+              <button type="button" onClick={() => addBox()} disabled={count >= MAX_BOXES}
+                aria-label={t('בוקס אחד נוסף', 'One box more')}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-line bg-white text-brand-navy shadow-card transition hover:border-brand-navy/30 disabled:opacity-30 disabled:shadow-none">
+                <Plus className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+            <p className="mt-1.5 text-center text-[13px] text-brand-navy/55">{t('כמה בוקסים?', 'How many boxes?')}</p>
+
+            {/* What one costs right now, which is the number the quantity is
+                being chosen against. */}
+            <p className="mt-3 text-center">
+              <span className="text-4xl font-black tabular-nums text-brand-navy">₪{Math.max(0, LADDER_BASE - discount)}</span>
+              <span className="ms-2 text-[13px] text-brand-navy/55">{t('ליחידה', 'each')}</span>
+            </p>
+
+            {ladder && (
+              <>
+                {upsell && (
+                  <p className="mt-4 rounded-xl bg-brand-orange-soft px-3 py-2 text-center text-[13px] font-medium text-brand-orange-ink">
+                    {t(`עוד ${upsell.boxesAway} בוקסים ותחסכו עוד ₪${upsell.extraPerBox} על כל אחד`,
+                       `${upsell.boxesAway} more boxes and each one drops another ₪${upsell.extraPerBox}`)}
+                  </p>
+                )}
+
+                <p className="mt-4 border-t border-brand-line pt-4 text-center text-[12.5px] font-semibold text-brand-navy">
+                  {t('המחירון - לוחצים על מדרגה וקופצים אליה', 'The price list - tap a tier to jump to it')}
+                </p>
+
+                <ul className="mt-2.5 grid grid-cols-2 gap-1.5 min-[420px]:grid-cols-3">
+                  {tiers.map((tier, i) => {
+                    const upto = tiers[i + 1] ? tiers[i + 1].minBoxes - 1 : null;
+                    const here = count >= tier.minBoxes && (upto === null || count <= upto);
+                    return (
+                      <li key={tier.minBoxes}>
+                        <button type="button" onClick={() => setCount(tier.minBoxes)} aria-pressed={here}
+                          className={`w-full rounded-xl border px-2 py-1.5 text-center transition ${
+                            here
+                              ? 'border-brand-orange bg-brand-orange-soft shadow-card'
+                              : 'border-brand-line bg-white hover:border-brand-navy/30'}`}>
+                          <span className="block text-[11px] text-brand-navy/55">
+                            {upto === null
+                              ? t(`${tier.minBoxes}+ בוקסים`, `${tier.minBoxes}+ boxes`)
+                              : tier.minBoxes === upto
+                                ? t(`${tier.minBoxes} בוקסים`, `${tier.minBoxes} boxes`)
+                                : `${tier.minBoxes}-${upto}`}
+                          </span>
+                          <span className={`block text-[15px] font-bold tabular-nums ${here ? 'text-brand-orange-ink' : 'text-brand-navy'}`}>
+                            ₪{Math.max(0, LADDER_BASE - tier.discount)}
+                          </span>
+                          {tier.discount > 0 && (
+                            <span className="block text-[11px] tabular-nums text-brand-navy/40 line-through">₪{LADDER_BASE}</span>
+                          )}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+
+                {/* The table can only carry one price, and the four styles do
+                    not share one. It shows the commonest - a regular box - and
+                    says so, rather than quoting a number half the orders would
+                    not pay. */}
+                <p className="mt-2 text-center text-[11px] text-brand-navy/50">
+                  {t('המחיר לבוקס רגיל. בכל סגנון יורד אותו סכום.',
+                     'The price of a regular box. Every style comes down by the same amount.')}
+                </p>
+              </>
             )}
 
-            <ul className="mt-3 grid grid-cols-2 gap-1.5 min-[420px]:grid-cols-3">
-              {tiers.map((tier, i) => {
-                const upto = tiers[i + 1] ? tiers[i + 1].minBoxes - 1 : null;
-                const here = count >= tier.minBoxes && (upto === null || count <= upto);
-                return (
-                  <li key={tier.minBoxes}
-                    className={`rounded-xl border px-2 py-1.5 text-center transition ${
-                      here ? 'border-brand-orange bg-brand-orange-soft' : 'border-brand-line bg-white'}`}>
-                    <span className="block text-[11px] text-brand-navy/55">
-                      {upto === null
-                        ? t(`${tier.minBoxes}+ בוקסים`, `${tier.minBoxes}+ boxes`)
-                        : tier.minBoxes === upto
-                          ? t(`${tier.minBoxes} בוקסים`, `${tier.minBoxes} boxes`)
-                          : `${tier.minBoxes}-${upto}`}
-                    </span>
-                    <span className={`block text-[15px] font-bold tabular-nums ${here ? 'text-brand-orange-ink' : 'text-brand-navy'}`}>
-                      ₪{Math.max(0, LADDER_BASE - tier.discount)}
-                    </span>
-                    {tier.discount > 0 && (
-                      <span className="block text-[11px] tabular-nums text-brand-navy/40 line-through">₪{LADDER_BASE}</span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-            {/* The table can only carry one price, and the four styles do not
-                share one. It shows the commonest - a regular box - and says so,
-                rather than quoting a number half the orders would not pay. */}
-            <p className="mt-2 text-center text-[11px] text-brand-navy/50">
-              {t('המחיר לבוקס רגיל. בכל סגנון יורד אותו סכום.',
-                 'The price of a regular box. Every style comes down by the same amount.')}
-            </p>
-            {/* The patches come free past a certain size, which is worth saying
-                where the quantity is being chosen rather than only on the box.
-                Green, because it is a gift rather than a discount - and the
+            {/* Green, because it is a gift rather than a discount - and the
                 orange here already belongs to the quantity the order is on. */}
             <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-[12.5px] font-semibold text-emerald-700 dark:text-emerald-400">
               <Gift className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
@@ -468,30 +495,6 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                 ? t("הפאצ'ים בהזמנה הזו חינם", 'Patches are free on this order')
                 : t(`מ-${FREE_PATCHES_FROM} בוקסים: פאצ'ים מתנה`, `From ${FREE_PATCHES_FROM} boxes: patches on us`)}
             </p>
-          </div>
-        </div>
-      )}
-
-      {step === 1 && !ladder && (
-        <div className={`mt-5 ${pad}`}>
-          <div className="flex items-center justify-between gap-3 rounded-2xl border border-brand-line bg-brand-mist/60 p-4">
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-brand-navy">{t('כמה בוקסים?', 'How many boxes?')}</p>
-              <p className="text-[12px] text-brand-navy/55">{t('אפשר לשנות גם אחר כך.', 'You can change this later too.')}</p>
-            </div>
-            <div className="flex flex-shrink-0 items-center gap-1">
-              <button type="button" onClick={() => removeBox(boxes[boxes.length - 1].id)} disabled={count <= 1}
-                aria-label={t('בוקס אחד פחות', 'One box fewer')}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-line bg-white text-brand-navy transition hover:border-brand-navy/30 disabled:opacity-30">
-                <Minus className="h-4 w-4" aria-hidden="true" />
-              </button>
-              <span aria-live="polite" className="w-10 text-center text-xl font-bold tabular-nums text-brand-navy">{count}</span>
-              <button type="button" onClick={() => addBox()} disabled={count >= MAX_BOXES}
-                aria-label={t('בוקס אחד נוסף', 'One box more')}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-line bg-white text-brand-navy transition hover:border-brand-navy/30 disabled:opacity-30">
-                <Plus className="h-4 w-4" aria-hidden="true" />
-              </button>
-            </div>
           </div>
         </div>
       )}
