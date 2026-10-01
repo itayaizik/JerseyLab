@@ -4,7 +4,7 @@ import {
   Plus, Minus, Copy, Trash2, ChevronDown, CheckCircle2, Share2, Link2, Users, Loader2, RefreshCw, X,
 } from 'lucide-react';
 import { addToCart, openCart, EXTRA_PRICES, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
-import { NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID, EXCLUDE_COLORS as COLORS } from '@/lib/mysteryBox';
+import { BOX_TYPES, NAME_PRICE, PATCHES_PRICE, MYSTERY_BOX_ID, EXCLUDE_COLORS as COLORS } from '@/lib/mysteryBox';
 import { newBox, newBoxId, typeOf, kidsBox, wantsShorts, wantsName, wantsLongSleeve, boxPrice, boxesTotal, boxesSaving, boxSummary, isBlank, cleanBox } from '@/lib/mysteryBoxes';
 import { fetchTiers, discountFor, hasLadder, nextTier } from '@/lib/mysteryTiers';
 import {
@@ -48,6 +48,10 @@ const STEPS = [
   { id: 3, label: 'סיכום', labelEn: 'Summary', short: 'סיכום', shortEn: 'Summary' },
 ];
 const POLL_MS = 15000;
+
+// The price the ladder quotes: a regular box, which is both the cheapest and
+// the one most orders are made of.
+const LADDER_BASE = Math.min(...BOX_TYPES.map(b => b.price));
 
 const boxTitle = (box, i) => box.forWhom.trim() || t(`בוקס ${i + 1}`, `Box ${i + 1}`);
 const boxesLabel = (n) => (n === 1 ? t('בוקס אחד', '1 box') : t(`${n} בוקסים`, `${n} boxes`));
@@ -415,13 +419,23 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                           ? t(`${tier.minBoxes} בוקסים`, `${tier.minBoxes} boxes`)
                           : `${tier.minBoxes}-${upto}`}
                     </span>
-                    <span className={`block text-[13px] font-bold tabular-nums ${here ? 'text-brand-orange-ink' : 'text-brand-navy'}`}>
-                      {tier.discount > 0 ? t(`₪${tier.discount}- לבוקס`, `₪${tier.discount} off each`) : t('מחיר מלא', 'Full price')}
+                    <span className={`block text-[15px] font-bold tabular-nums ${here ? 'text-brand-orange-ink' : 'text-brand-navy'}`}>
+                      ₪{Math.max(0, LADDER_BASE - tier.discount)}
                     </span>
+                    {tier.discount > 0 && (
+                      <span className="block text-[11px] tabular-nums text-brand-navy/40 line-through">₪{LADDER_BASE}</span>
+                    )}
                   </li>
                 );
               })}
             </ul>
+            {/* The table can only carry one price, and the four styles do not
+                share one. It shows the commonest - a regular box - and says so,
+                rather than quoting a number half the orders would not pay. */}
+            <p className="mt-2 text-center text-[11px] text-brand-navy/50">
+              {t('המחיר לבוקס רגיל. בכל סגנון יורד אותו סכום.',
+                 'The price of a regular box. Every style comes down by the same amount.')}
+            </p>
 
             {upsell && (
               <p className="mt-2.5 text-center text-[13px] font-medium text-brand-orange-ink">

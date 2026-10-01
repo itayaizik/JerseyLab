@@ -504,10 +504,15 @@ export default function Navbar() {
                 <button type="button" onClick={() => setMobileOpen(true)} aria-label={t('פתיחת התפריט', 'Open menu')} className="shop-icon-btn -ms-2 lg:hidden">
                   <Menu className="h-6 w-6" />
                 </button>
-                <Link to="/" aria-label={t('JerseyLab - דף הבית', 'JerseyLab - Home')} className="flex items-center rounded-lg">
+                {/* On a phone the logo is centred in the bar rather than sat
+                    beside the menu button, so it is taken out of the row and
+                    pinned to the middle of the header. From lg the bar is a
+                    three-column grid and it goes back into the first one. */}
+                <Link to="/" aria-label={t('JerseyLab - דף הבית', 'JerseyLab - Home')}
+                  className="absolute left-1/2 flex -translate-x-1/2 items-center rounded-lg lg:static lg:translate-x-0">
                   {/* The navy logo on a light header, the white one on a dark header. */}
-                  <img src="/logo-navbar-dark.png" alt="JerseyLab" width="391" height="128" className="h-9 w-auto dark:hidden lg:h-11" />
-                  <img src="/logo-navbar.png" alt="JerseyLab" width="391" height="128" className="hidden h-9 w-auto dark:block lg:h-11" />
+                  <img src="/logo-navbar-dark.png" alt="JerseyLab" width="391" height="128" className="h-10 w-auto dark:hidden lg:h-11" />
+                  <img src="/logo-navbar.png" alt="JerseyLab" width="391" height="128" className="hidden h-10 w-auto dark:block lg:h-11" />
                 </Link>
               </div>
 

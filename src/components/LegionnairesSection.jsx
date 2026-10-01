@@ -70,9 +70,14 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
             way to give a portrait real size without stretching a pill across
             the screen. A scrolling line on a phone, wrapped and centred once
             there is room: at this size they would otherwise stack one per row
-            and push the shirts off the bottom. */}
+            and push the shirts off the bottom.
+
+            `overflow-x-auto` clips vertically too, and the ring on a chosen
+            player sits 4px outside its circle, so its top was being cut off.
+            The padding gives it room and the negative margin takes the space
+            back, leaving the row where it was. */}
         <div role="tablist" aria-label={t('בחירת שחקן', 'Choose a player')}
-          className="scrollbar-hide -mx-4 mt-8 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:justify-center sm:gap-4 sm:overflow-x-visible sm:px-0">
+          className="scrollbar-hide -mx-4 -my-1.5 mt-8 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 py-1.5 sm:mx-0 sm:my-0 sm:flex-wrap sm:justify-center sm:gap-4 sm:overflow-x-visible sm:px-0 sm:py-0">
           {players.map(player => {
             const count = (byPlayer.get(player.name) || []).length;
             const selected = active?.id === player.id;
