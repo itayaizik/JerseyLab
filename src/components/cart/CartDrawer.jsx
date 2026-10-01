@@ -157,7 +157,7 @@ function CartItem({ item, onRemove }) {
           {/* The mystery box has no shirt photo of its own, so it shows the
               JerseyLab bag it arrives in. Chosen here rather than stored on the
               item, so boxes already sitting in a cart get it too. */}
-          <ProductImage src={item.image || (item.shirtId === MYSTERY_BOX_ID ? '/mystery-box.jpg' : undefined)}
+          <ProductImage src={item.image || (item.shirtId === MYSTERY_BOX_ID ? '/mystery-box.png' : undefined)}
             alt="" sizes="96px" className="h-full w-full object-cover" />
         </div>
         <div className="min-w-0 flex-1">

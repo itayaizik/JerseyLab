@@ -108,7 +108,7 @@ export default function MysteryBoxFields({ box, onChange, fid, missingSize = fal
               hint={t('שחקן שמתאים לחולצה - גם הוא הפתעה', 'A player to match the shirt - a surprise too')} />
           )}
           <Extra checked={box.patches} onChange={v => onChange({ patches: v })}
-            label={t("פאצ'ים", 'Patches')} price={freePatches ? 0 : PATCHES_PRICE}
+            label={t("פאצ'ים", 'Patches')} price={freePatches ? 0 : PATCHES_PRICE} wasPrice={PATCHES_PRICE}
             hint={freePatches
               ? t('חינם בהזמנה הזו', 'Free on this order')
               : t('של הליגה והטורניר', 'League and tournament')} />
@@ -170,7 +170,10 @@ export default function MysteryBoxFields({ box, onChange, fid, missingSize = fal
   );
 }
 
-function Extra({ checked, onChange, label, price, hint }) {
+// `wasPrice` is what the extra costs when the order is not big enough to get
+// it free: struck through beside the word, so the saving is visible rather than
+// merely stated.
+function Extra({ checked, onChange, label, price, wasPrice = 0, hint }) {
   return (
     <label className={`flex cursor-pointer items-start gap-2.5 rounded-2xl border p-3 transition ${
       checked ? 'border-brand-orange bg-brand-orange-soft ring-1 ring-inset ring-brand-orange' : 'border-brand-line bg-white hover:border-brand-navy/30'
@@ -180,7 +183,14 @@ function Extra({ checked, onChange, label, price, hint }) {
       <span className="min-w-0 flex-1">
         <span className="flex items-center justify-between gap-2">
           <span className="text-[14px] font-semibold text-brand-navy">{label}</span>
-          <span className="flex-shrink-0 text-[13px] font-semibold tabular-nums text-brand-orange-ink">{price > 0 ? `+₪${price}` : t('חינם', 'Free')}</span>
+          <span className="flex flex-shrink-0 items-baseline gap-1.5 text-[13px] font-semibold tabular-nums">
+            {price <= 0 && wasPrice > 0 && (
+              <span className="font-normal text-brand-navy/40 line-through">₪{wasPrice}</span>
+            )}
+            <span className={price > 0 ? 'text-brand-orange-ink' : 'text-emerald-700 dark:text-emerald-400'}>
+              {price > 0 ? `+₪${price}` : t('חינם', 'Free')}
+            </span>
+          </span>
         </span>
         <span className="mt-0.5 block text-[12px] text-brand-navy/55">{hint}</span>
       </span>

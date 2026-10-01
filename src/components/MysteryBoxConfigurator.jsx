@@ -382,9 +382,9 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           see until the bag is open. */}
       {step === 1 && (
         <div className={`mt-5 flex justify-center ${pad}`}>
-          <img src="/mystery-box.jpg" alt={t('מיסטרי בוקס של JerseyLab', 'A JerseyLab mystery box')}
-            width="1200" height="1104" loading="eager"
-            className="h-36 w-auto rounded-2xl object-contain sm:h-44" />
+          <img src="/mystery-box.png" alt={t('מיסטרי בוקס של JerseyLab', 'A JerseyLab mystery box')}
+            width="800" height="826" loading="eager"
+            className="h-40 w-auto object-contain sm:h-48" />
         </div>
       )}
 
