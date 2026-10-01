@@ -377,11 +377,22 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
         </ol>
       </nav>
 
+      {/* What is actually being bought, before the sums. It is the packaging
+          rather than a shirt on purpose: the shirt is the part nobody gets to
+          see until the bag is open. */}
+      {step === 1 && (
+        <div className={`mt-5 flex justify-center ${pad}`}>
+          <img src="/mystery-box.jpg" alt={t('מיסטרי בוקס של JerseyLab', 'A JerseyLab mystery box')}
+            width="1200" height="1104" loading="eager"
+            className="h-36 w-auto rounded-2xl object-contain sm:h-44" />
+        </div>
+      )}
+
       {/* How many, before anything else - and what that quantity is worth.
           Only drawn when the shop has a ladder to show: a row of tiers that
           all take nothing off is an ornament, not an offer. */}
       {step === 1 && ladder && (
-        <div className={`mt-5 ${pad}`}>
+        <div className={`mt-4 ${pad}`}>
           <div className="rounded-2xl border border-brand-line bg-brand-mist/60 p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
@@ -404,6 +415,16 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                 </button>
               </div>
             </div>
+
+            {/* Above the table rather than below it: it is the reason to press
+                the plus button, which is right here, not a footnote to prices
+                already read past. */}
+            {upsell && (
+              <p className="mt-3 rounded-xl bg-brand-orange-soft px-3 py-2 text-center text-[13px] font-medium text-brand-orange-ink">
+                {t(`עוד ${upsell.boxesAway} בוקסים ותחסכו עוד ₪${upsell.extraPerBox} על כל אחד`,
+                   `${upsell.boxesAway} more boxes and each one drops another ₪${upsell.extraPerBox}`)}
+              </p>
+            )}
 
             <ul className="mt-3 grid grid-cols-2 gap-1.5 min-[420px]:grid-cols-3">
               {tiers.map((tier, i) => {
@@ -438,19 +459,15 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                  'The price of a regular box. Every style comes down by the same amount.')}
             </p>
             {/* The patches come free past a certain size, which is worth saying
-                where the quantity is being chosen rather than only on the box. */}
-            <p className={`mt-1.5 text-center text-[12px] font-medium ${freePatches ? 'text-emerald-700 dark:text-emerald-400' : 'text-brand-navy/55'}`}>
+                where the quantity is being chosen rather than only on the box.
+                Green, because it is a gift rather than a discount - and the
+                orange here already belongs to the quantity the order is on. */}
+            <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-[12.5px] font-semibold text-emerald-700 dark:text-emerald-400">
+              <Gift className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
               {freePatches
                 ? t("הפאצ'ים בהזמנה הזו חינם", 'Patches are free on this order')
-                : t(`מ-${FREE_PATCHES_FROM} בוקסים הפאצ'ים חינם`, `From ${FREE_PATCHES_FROM} boxes the patches are free`)}
+                : t(`מ-${FREE_PATCHES_FROM} בוקסים: פאצ'ים מתנה`, `From ${FREE_PATCHES_FROM} boxes: patches on us`)}
             </p>
-
-            {upsell && (
-              <p className="mt-2.5 text-center text-[13px] font-medium text-brand-orange-ink">
-                {t(`עוד ${upsell.boxesAway} בוקסים ותחסכו עוד ₪${upsell.extraPerBox} על כל אחד`,
-                   `${upsell.boxesAway} more boxes and each one drops another ₪${upsell.extraPerBox}`)}
-              </p>
-            )}
           </div>
         </div>
       )}
