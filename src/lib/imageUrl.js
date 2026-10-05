@@ -19,9 +19,22 @@ export const isOurStorage = (url) =>
 
 // `resize=contain` keeps the proportions: asking for a width alone leaves the
 // height at the original and paints the picture stretched.
-export function resized(url, width, { quality = 82, resize = 'contain' } = {}) {
+//
+// `format=webp` is asked for rather than left to the server. Storage will pick
+// WebP on its own from the browser's Accept header - but it answers the same
+// URL with WebP or JPEG depending on who asks, and sends no `Vary: Accept` with
+// a year-long cache header. Any shared cache in between - a school or office
+// proxy is the usual one - is then free to keep whichever variant it saw first
+// and hand it to everyone. Naming the format means one URL is one picture, for
+// every visitor and every cache.
+//
+// Quality 74 rather than 82: at the sizes a card actually paints, the two are
+// indistinguishable side by side, and the file is about a quarter smaller. On a
+// page carrying sixty-odd thumbnails that is most of a megabyte.
+export function resized(url, width, { quality = 74, resize = 'contain', format = 'webp' } = {}) {
   if (!isOurStorage(url)) return url;
-  return `${url.replace(STORAGE_OBJECT, STORAGE_RENDER)}?width=${width}&resize=${resize}&quality=${quality}`;
+  const base = `${url.replace(STORAGE_OBJECT, STORAGE_RENDER)}?width=${width}&resize=${resize}&quality=${quality}`;
+  return format ? `${base}&format=${format}` : base;
 }
 
 // A srcset for a picture that is painted at different sizes on different
