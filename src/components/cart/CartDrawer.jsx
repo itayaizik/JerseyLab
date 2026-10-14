@@ -92,9 +92,9 @@ function CouponBox({ coupon, pricing, onApply, onRemove }) {
           dir="ltr" maxLength={40} autoComplete="off" autoCapitalize="characters" autoFocus
           aria-invalid={!!error} aria-describedby={error ? 'cart-coupon-error' : undefined}
           className={`shop-field min-w-0 flex-1 text-start uppercase ${error ? 'border-red-300' : ''}`} />
-        <button type="submit" disabled={busy || !code.trim()} className="shop-btn-dark flex-shrink-0 px-4">
+        <LiquidButton variant="dark" type="submit" disabled={busy || !code.trim()} className="flex-shrink-0 px-4">
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : t('החלה', 'Apply')}
-        </button>
+        </LiquidButton>
       </div>
       {error && <p id="cart-coupon-error" role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
     </form>
@@ -420,7 +420,7 @@ export default function CartDrawer({ open, onClose, user }) {
         </div>
       </div>
     );
-    footer = <button type="button" onClick={onClose} className="shop-btn-dark w-full">{t('סגירה', 'Close')}</button>;
+    footer = <LiquidButton variant="dark" type="button" onClick={onClose} className="w-full">{t('סגירה', 'Close')}</LiquidButton>;
   } else if (count === 0) {
     title = t('הסל שלך', 'Your cart');
     body = (

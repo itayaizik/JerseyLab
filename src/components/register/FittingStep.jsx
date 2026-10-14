@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { ChevronRight, ChevronLeft, Ruler } from 'lucide-react';
 import { recommendSize } from '@/lib/sizeTables';
 import { t, isEn } from '@/lib/i18n';
@@ -120,12 +121,12 @@ export default function FittingStep({ data, onChange, onContinue, onBack }) {
       )}
 
       <div className="mt-6 flex gap-2">
-        <button type="button" onClick={onBack} className="shop-btn-secondary px-4">
+        <LiquidButton variant="secondary" type="button" onClick={onBack} className="px-4">
           <ChevronRight className="h-4 w-4" aria-hidden="true" /> {t('חזרה', 'Back')}
-        </button>
-        <button type="button" onClick={onContinue} disabled={!canContinue} className="shop-btn-dark flex-1">
+        </LiquidButton>
+        <LiquidButton variant="dark" type="button" onClick={onContinue} disabled={!canContinue} className="flex-1">
           {t('המשך', 'Continue')} <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-        </button>
+        </LiquidButton>
       </div>
     </div>
   );

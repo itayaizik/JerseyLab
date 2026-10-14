@@ -247,16 +247,16 @@ export default function QuickAddModal({ shirt, open, onClose }) {
 
         <div className="mt-5 flex gap-2">
           {step !== 'size' && !added && (
-            <button type="button" onClick={goBack} className="shop-btn-secondary px-4">
+            <LiquidButton variant="secondary" type="button" onClick={goBack} className="px-4">
               <ChevronRight className="h-4 w-4" aria-hidden="true" />
               {t('חזרה', 'Back')}
-            </button>
+            </LiquidButton>
           )}
           {!added && step !== 'summary' && (
-            <button type="button" onClick={goNext} disabled={!canProceed()} className="shop-btn-dark flex-1">
+            <LiquidButton variant="dark" type="button" onClick={goNext} disabled={!canProceed()} className="flex-1">
               {t('המשך', 'Continue')}
               <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-            </button>
+            </LiquidButton>
           )}
           {!added && step === 'summary' && (
             <LiquidButton type="button" onClick={handleAdd} className="flex-1">

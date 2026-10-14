@@ -48,9 +48,9 @@ export default function PreferencesStep({ data, onChange, onFinish, onSkip, onBa
       {error && <p role="alert" className="mt-4 text-center text-sm text-red-600">{error}</p>}
 
       <div className="mt-6 flex gap-2">
-        <button type="button" onClick={onBack} className="shop-btn-secondary px-4">
+        <LiquidButton variant="secondary" type="button" onClick={onBack} className="px-4">
           <ChevronRight className="h-4 w-4" aria-hidden="true" /> {t('חזרה', 'Back')}
-        </button>
+        </LiquidButton>
         <LiquidButton type="button" onClick={onFinish} disabled={loading} className="flex-1">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('סיום ההרשמה', 'Finish signing up')}
         </LiquidButton>

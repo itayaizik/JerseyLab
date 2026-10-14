@@ -622,10 +622,10 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                 <div className="space-y-5 bg-white px-4 pb-5 pt-2">
                   <MysteryBoxFields box={box} onChange={patch => update(box.id, patch)}
                     fid={name => fid(`${name}-${box.id}`)} missingSize={missing} freePatches={freePatches} />
-                  <button type="button" onClick={() => setOpenId(-1)} className="shop-btn-dark min-h-[2.75rem] w-full text-sm">
+                  <LiquidButton variant="dark" type="button" onClick={() => setOpenId(-1)} className="min-h-[2.75rem] w-full text-sm">
                     <Check className="h-4 w-4" aria-hidden="true" />
                     {t('הבוקס מוכן', 'Box done')}
-                  </button>
+                  </LiquidButton>
                 </div>
               )}
             </li>
@@ -701,9 +701,9 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
           {error && <p role="alert" className="mb-2 text-sm text-red-600">{error}</p>}
           <div className="flex gap-2">
             {step > 1 && (
-              <button type="button" onClick={() => setStep(step - 1)} className="shop-btn-secondary min-h-[3.25rem] flex-shrink-0 px-5 text-sm">
+              <LiquidButton variant="secondary" type="button" onClick={() => setStep(step - 1)} className="min-h-[3.25rem] flex-shrink-0 px-5 text-sm">
                 {t('חזרה', 'Back')}
-              </button>
+              </LiquidButton>
             )}
             <LiquidButton type="button" onClick={() => goToStep(step + 1)} className="min-h-[3.25rem] flex-1 text-[15px]">
               {step === 1 ? t('המשך להתאמה אישית', 'Continue to personalising') : t('המשך לסיכום', 'Continue to the summary')}
@@ -788,10 +788,10 @@ function GroupPanel({ group, closed, syncing, fid, onStart, onResume, onRefresh,
             {t('שולחים לחברים קישור, כל אחד ממלא את הבוקס שלו בדף משלו, והבוקסים מופיעים כאן אצלך.',
               'Send your friends a link; each fills in their own box on a page of their own, and the boxes show up here for you.')}
           </p>
-          <button type="button" onClick={() => setOpen(true)} className="shop-btn-secondary mt-3 min-h-[2.75rem] w-full text-sm">
+          <LiquidButton variant="secondary" type="button" onClick={() => setOpen(true)} className="mt-3 min-h-[2.75rem] w-full text-sm">
             <Users className="h-4 w-4" aria-hidden="true" />
             {t('יצירת קישור לחברים', 'Create a link for friends')}
-          </button>
+          </LiquidButton>
           <button type="button" onClick={() => setCodeOpen(true)} className="shop-link mt-3 w-full justify-center text-[13px]">
             {t('כבר יצרתם קבוצה? כניסה עם קוד', 'Already started a group? Enter your code')}
           </button>
@@ -828,10 +828,10 @@ function GroupPanel({ group, closed, syncing, fid, onStart, onResume, onRefresh,
         {/* Secondary, like its twin before a group exists: the orange button on
             this page is the one that carries the order forward, and two of them
             one above the other say neither. */}
-        <button type="button" onClick={() => setOpen(true)} className="shop-btn-secondary mt-3 min-h-[2.75rem] w-full text-sm">
+        <LiquidButton variant="secondary" type="button" onClick={() => setOpen(true)} className="mt-3 min-h-[2.75rem] w-full text-sm">
           <Share2 className="h-4 w-4" aria-hidden="true" />
           {t('הקישור והקוד', 'The link and the code')}
-        </button>
+        </LiquidButton>
         <button type="button" onClick={onRefresh} disabled={syncing} className="shop-link mt-3 w-full justify-center text-[13px]">
           <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} aria-hidden="true" />
           {t('בדיקת בוקסים חדשים', 'Check for new boxes')}
@@ -952,10 +952,10 @@ function GroupShare({ group, closed, filled, count, onEnd }) {
           <Share2 className="h-4 w-4" aria-hidden="true" />
           {t('שליחה בוואטסאפ', 'Send on WhatsApp')}
         </a>
-        <button type="button" onClick={copy} className="shop-btn-secondary min-h-[3rem] text-sm">
+        <LiquidButton variant="secondary" type="button" onClick={copy} className="min-h-[3rem] text-sm">
           {copied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
           {copied ? t('הקישור הועתק', 'Link copied') : t('העתקת קישור', 'Copy link')}
-        </button>
+        </LiquidButton>
       </div>
       <p className="sr-only" aria-live="polite">{copied ? t('הקישור הועתק', 'Link copied') : ''}</p>
 

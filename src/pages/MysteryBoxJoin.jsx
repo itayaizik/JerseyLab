@@ -193,10 +193,10 @@ export default function MysteryBoxJoin() {
                     </a>
                   )}
                   {!group.closed && (
-                    <button type="button" onClick={() => setMember(m => ({ ...m, editing: true }))} className="shop-btn-secondary min-h-[2.75rem] text-sm">
+                    <LiquidButton variant="secondary" type="button" onClick={() => setMember(m => ({ ...m, editing: true }))} className="min-h-[2.75rem] text-sm">
                       <Pencil className="h-4 w-4" aria-hidden="true" />
                       {t('שינוי הבוקס', 'Change my box')}
-                    </button>
+                    </LiquidButton>
                   )}
                 </div>
               </div>

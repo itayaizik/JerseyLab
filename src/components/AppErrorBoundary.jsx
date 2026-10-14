@@ -53,7 +53,7 @@ export default class AppErrorBoundary extends React.Component {
             <LiquidButton type="button" onClick={() => this.setState({ error: null, showDetails: false })} className="px-6">
               {tr('חזרה בלי רענון', 'Go back without refreshing')}
             </LiquidButton>
-            <button type="button" onClick={() => window.location.reload()} className="shop-btn-secondary px-6">{tr('רענון הדף', 'Refresh the page')}</button>
+            <LiquidButton variant="secondary" type="button" onClick={() => window.location.reload()} className="px-6">{tr('רענון הדף', 'Refresh the page')}</LiquidButton>
             <a href={onAdmin ? '/admin' : '/'} className="shop-btn-secondary px-6">{onAdmin ? 'לדשבורד' : t('לדף הבית', 'Home')}</a>
           </div>
           <button type="button" onClick={() => this.setState({ showDetails: !showDetails })}

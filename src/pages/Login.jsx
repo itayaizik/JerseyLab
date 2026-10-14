@@ -44,10 +44,10 @@ export default function Login() {
         </>
       }
     >
-      <button type="button" onClick={handleGoogle} className="shop-btn-secondary w-full">
+      <LiquidButton variant="secondary" type="button" onClick={handleGoogle} className="w-full">
         <GoogleIcon className="h-5 w-5" />
         {t("המשך עם Google", "Continue with Google")}
-      </button>
+      </LiquidButton>
 
       <div className="my-6 flex items-center gap-3" aria-hidden="true">
         <span className="h-px flex-1 bg-brand-line" />

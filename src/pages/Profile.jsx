@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { useNavigate, Link } from 'react-router-dom';
 import { Heart, MessageCircle, LogOut, Package, Check } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -129,10 +130,10 @@ export default function Profile() {
             <p dir="ltr" className="truncate text-start text-[15px] text-brand-navy/55">{user?.email}</p>
           </div>
         </div>
-        <button type="button" onClick={handleLogout} className="shop-btn-secondary">
+        <LiquidButton variant="secondary" type="button" onClick={handleLogout}>
           <LogOut className="h-4 w-4" aria-hidden="true" />
           {t('התנתקות', 'Log out')}
-        </button>
+        </LiquidButton>
       </div>
 
       <div className="mt-4 grid gap-3 md:grid-cols-3">

@@ -27,6 +27,17 @@ import { Link } from 'react-router-dom';
 // heavily blurred small circle never reaches it.
 const GOO_BLUR_RATIO = 0.15;
 
+// A drop has to be a colour the button is not, and it has to leave the label
+// readable - it passes straight under it. So each button style gets its own:
+// white through the orange, orange through the navy, and orange through the
+// white one, where a navy drop would have fought the navy text the same way a
+// white drop fights white text.
+const VARIANTS = {
+  primary: { base: 'shop-btn', color: '#ffffff', opacity: 0.38 },
+  secondary: { base: 'shop-btn-secondary', color: 'var(--brand-orange)', opacity: 0.3 },
+  dark: { base: 'shop-btn-dark', color: 'var(--brand-orange)', opacity: 0.5 },
+};
+
 // How hard the blob chases the cursor, and how much it stretches doing it.
 const FOLLOW_TAU = 0.075;
 const SQUASH_TAU = 0.09;
@@ -50,12 +61,12 @@ export default function LiquidButton({
   type = 'button',
   disabled = false,
   className = '',
-  blobColor = '#ffffff',
-  // The label is white too, so a solid white drop would swallow it. The opacity
-  // goes on the filtered group rather than on the circle: feColorMatrix drives
-  // alpha through 19x-9, so a see-through circle is pushed to nothing before it
-  // is ever drawn.
-  blobOpacity = 0.38,
+  variant = 'primary',
+  blobColor,
+  // The opacity goes on the filtered group rather than on the circle:
+  // feColorMatrix drives alpha through 19x-9, so a see-through circle is pushed
+  // to nothing before it is ever drawn.
+  blobOpacity,
   // Null means size it from the button: a fixed blob swamps a small one and
   // is lost in a wide one.
   blobSize = null,
@@ -170,6 +181,9 @@ export default function LiquidButton({
   // and is lost in a large one.
   const blobD = blobSize ?? Math.max(40, Math.min(96, box.h * 0.95));
   const blobR = blobD / 2;
+  const style = VARIANTS[variant] || VARIANTS.primary;
+  const dropColor = blobColor ?? style.color;
+  const dropOpacity = blobOpacity ?? style.opacity;
   const gooBlur = Math.max(2.5, blobD * GOO_BLUR_RATIO);
 
   const overlay = enabled && box.w > 0 && !disabled ? (
@@ -192,10 +206,10 @@ export default function LiquidButton({
         </clipPath>
       </defs>
       <g clipPath={`url(#${clipId})`}>
-        <g filter={`url(#${filterId})`} opacity={blobOpacity}>
+        <g filter={`url(#${filterId})`} opacity={dropOpacity}>
           <g ref={blobRef} style={{ transformBox: 'fill-box', transformOrigin: 'center', transform: 'scale(0)' }}>
             <g ref={squashRef} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
-              <circle cx="50%" cy="50%" r={blobR} fill={blobColor} />
+              <circle cx="50%" cy="50%" r={blobR} fill={dropColor} />
             </g>
           </g>
         </g>
@@ -216,7 +230,7 @@ export default function LiquidButton({
     onPointerEnter: onEnter,
     onPointerMove: onMove,
     onPointerLeave: onLeave,
-    className: `shop-btn relative overflow-hidden ${className}`,
+    className: `${style.base} relative overflow-hidden ${className}`,
     ...rest,
   };
 

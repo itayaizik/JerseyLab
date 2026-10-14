@@ -196,9 +196,9 @@ export default function Collection() {
           <div className="mt-6 rounded-3xl border border-brand-line bg-brand-mist p-8 text-center">
             <p className="text-[17px] font-semibold text-brand-navy">{t('אין חולצה שעונה על הסינון', 'No shirt matches these filters')}</p>
             <p className="mt-1.5 text-[15px] text-brand-navy/65">{t('נסו להוריד סינון אחד, או לנקות הכל.', 'Try removing one filter, or clearing them all.')}</p>
-            <button type="button" onClick={() => setFilters(EMPTY_FILTERS)} className="shop-btn-secondary mt-5">
+            <LiquidButton variant="secondary" type="button" onClick={() => setFilters(EMPTY_FILTERS)} className="mt-5">
               {t('ניקוי הסינון', 'Clear filters')}
-            </button>
+            </LiquidButton>
           </div>
         ) : (
           <div className="mt-6 flex flex-col items-start justify-between gap-5 rounded-3xl bg-brand-navy p-7 text-white sm:flex-row sm:items-center sm:p-9">

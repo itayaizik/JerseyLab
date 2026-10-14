@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { ChevronLeft } from 'lucide-react';
 import GoogleIcon from '@/components/GoogleIcon';
 import FormField, { fieldClass } from '@/components/shop/FormField';
@@ -34,9 +35,9 @@ export default function BasicInfoStep({ data, onChange, onContinue, onGoogle }) 
 
   return (
     <div>
-      <button type="button" onClick={onGoogle} className="shop-btn-secondary w-full">
+      <LiquidButton variant="secondary" type="button" onClick={onGoogle} className="w-full">
         <GoogleIcon className="h-5 w-5" /> {t('המשך עם Google', 'Continue with Google')}
-      </button>
+      </LiquidButton>
 
       <div className="my-6 flex items-center gap-3" aria-hidden="true">
         <span className="h-px flex-1 bg-brand-line" />
@@ -104,9 +105,9 @@ export default function BasicInfoStep({ data, onChange, onContinue, onGoogle }) 
         </FormField>
       </div>
 
-      <button type="button" onClick={onContinue} disabled={!isValid} className="shop-btn-dark mt-6 w-full">
+      <LiquidButton variant="dark" type="button" onClick={onContinue} disabled={!isValid} className="mt-6 w-full">
         {t('המשך', 'Continue')} <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-      </button>
+      </LiquidButton>
     </div>
   );
 }

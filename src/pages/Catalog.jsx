@@ -410,9 +410,9 @@ export default function Catalog() {
             {visibleCount < shirts.length && (
               <div className="mt-10 flex flex-col items-center gap-3">
                 <p className="text-sm text-brand-navy/55">{t(`מוצגות ${visibleCount} מתוך ${shirts.length} חולצות`, `Showing ${visibleCount} of ${shirts.length} shirts`)}</p>
-                <button type="button" onClick={() => setVisibleCount(shirts.length)} className="shop-btn-secondary rounded-full px-8">
+                <LiquidButton variant="secondary" type="button" onClick={() => setVisibleCount(shirts.length)} className="rounded-full px-8">
                   {t(`הצגת כל ${shirts.length} החולצות`, `Show all ${shirts.length} shirts`)}
-                </button>
+                </LiquidButton>
               </div>
             )}
           </>

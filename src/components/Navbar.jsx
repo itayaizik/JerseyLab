@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useId } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { shirtPath } from '@/lib/shirtSlug';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, Search, Heart, User, ShoppingBag, ChevronDown, ChevronLeft, LogOut, X, ArrowLeft, FileText, Shield, Moon, Sun, Languages } from 'lucide-react';
@@ -633,7 +634,7 @@ export default function Navbar() {
         footer={user ? (
           <div className="grid grid-cols-2 gap-2.5">
             <Link to="/profile" onClick={closeAll} className="shop-btn-secondary">{t('החשבון שלי', 'My account')}</Link>
-            <button type="button" onClick={handleLogout} className="shop-btn-secondary text-red-600">{t('התנתקות', 'Log out')}</button>
+            <LiquidButton variant="secondary" type="button" onClick={handleLogout} className="text-red-600">{t('התנתקות', 'Log out')}</LiquidButton>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2.5">
