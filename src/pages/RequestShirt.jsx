@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { Search, Upload, X, Check, Loader2, Image as ImageIcon } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import Seo from '@/components/Seo';
@@ -195,7 +195,7 @@ export default function RequestShirt() {
               ? t('נבדוק אם אפשר להשיג את החולצה ונחזור אליכם באינסטגרם עם תשובה ומחיר.', "We'll check whether we can get the shirt and get back to you on Instagram with an answer and a price.")
               : t('נבדוק אם אפשר להשיג את החולצה ונחזור אליכם בוואטסאפ עם תשובה ומחיר.', "We'll check whether we can get the shirt and get back to you on WhatsApp with an answer and a price.")}
           </p>
-          <Link to="/catalog" className="shop-btn mt-6">{t('בינתיים, לחולצות', 'Meanwhile, see the shirts')}</Link>
+          <LiquidButton to="/catalog" className="mt-6">{t('בינתיים, לחולצות', 'Meanwhile, see the shirts')}</LiquidButton>
         </div>
       </div>
     );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { MessageCircle, Check, Loader2, Mail, Instagram, Clock, ArrowLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { friendlyError } from '@/lib/errorMessages';
@@ -99,7 +99,7 @@ export default function Contact() {
           </div>
           <h1 className="mt-5 text-2xl font-semibold text-brand-navy">{t('ההודעה נשלחה', 'Message sent')}</h1>
           <p className="mt-2 text-[15px] text-brand-navy/60">{t('נחזור אליכם בהקדם האפשרי.', "We'll get back to you as soon as we can.")}</p>
-          <Link to="/catalog" className="shop-btn mt-6">{t('בינתיים, לחולצות', 'Meanwhile, see the shirts')}</Link>
+          <LiquidButton to="/catalog" className="mt-6">{t('בינתיים, לחולצות', 'Meanwhile, see the shirts')}</LiquidButton>
         </div>
       </div>
     );

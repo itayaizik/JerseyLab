@@ -1,4 +1,5 @@
 import React from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { Link } from 'react-router-dom';
 
 // The one empty state for the whole site.
@@ -52,7 +53,7 @@ export default function EmptyState({
       {(actionLabel || secondaryLabel) && (
         <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
           {actionLabel && actionTo && (
-            <Link to={actionTo} className="shop-btn">{actionLabel}</Link>
+            <LiquidButton to={actionTo}>{actionLabel}</LiquidButton>
           )}
           {actionLabel && onAction && !actionTo && (
             <button type="button" onClick={onAction} className="shop-btn">{actionLabel}</button>

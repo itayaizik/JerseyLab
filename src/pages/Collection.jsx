@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PackageSearch } from 'lucide-react';
 import { getAllShirts } from '@/api/shirts';
@@ -205,10 +206,10 @@ export default function Collection() {
               <p className="text-xl font-semibold">{t('אין כרגע מלאי בקטגוריה הזו', 'Nothing in stock in this category right now')}</p>
               <p className="mt-1.5 max-w-lg text-[15px] leading-relaxed text-white/70">{t('אבל אנחנו יכולים להשיג. שלחו לנו בקשה ונבדוק.', "But we can get it. Send us a request and we'll check.")}</p>
             </div>
-            <Link to="/request-shirt" className="shop-btn flex-shrink-0">
+            <LiquidButton to="/request-shirt" className="flex-shrink-0">
               <PackageSearch className="h-5 w-5" aria-hidden="true" />
               {t('בקשת חולצה', 'Request a shirt')}
-            </Link>
+            </LiquidButton>
           </div>
         )}
 

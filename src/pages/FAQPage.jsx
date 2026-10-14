@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { HelpCircle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import EmptyState from '@/components/ui/EmptyState';
@@ -101,7 +101,7 @@ export default function FAQPage() {
               <p className="text-xl font-semibold">{t('לא מצאתם תשובה?', "Didn't find an answer?")}</p>
               <p className="mt-1.5 text-[15px] leading-relaxed text-white/70">{t('כתבו לנו ונחזור אליכם מהר.', "Write to us and we'll get back to you fast.")}</p>
             </div>
-            <Link to="/contact" className="shop-btn flex-shrink-0">{t('צרו קשר', 'Contact us')}</Link>
+            <LiquidButton to="/contact" className="flex-shrink-0">{t('צרו קשר', 'Contact us')}</LiquidButton>
           </div>
         </div>
       </div>

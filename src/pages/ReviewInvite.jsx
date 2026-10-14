@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import LiquidButton from '@/components/shop/LiquidButton';
+import { useParams } from 'react-router-dom';
 import { Star, ImagePlus, X, Loader2, CheckCircle2, AlertCircle, Heart } from 'lucide-react';
 import Seo from '@/components/Seo';
 import ProductImage from '@/components/ui/ProductImage';
@@ -139,7 +140,7 @@ export default function ReviewInvite() {
                 : invite.used ? t('תודה! אם תרצו להוסיף משהו, שלחו לנו הודעה.', 'Thank you! If you want to add anything, send us a message.')
                   : t('בקשו מאיתנו קישור חדש ונשמח לשמוע מכם.', "Ask us for a new link - we'd love to hear from you.")}
             </p>
-            <Link to="/catalog" className="shop-btn mt-6">{t('לחולצות נוספות', 'More shirts')}</Link>
+            <LiquidButton to="/catalog" className="mt-6">{t('לחולצות נוספות', 'More shirts')}</LiquidButton>
           </div>
         )}
 

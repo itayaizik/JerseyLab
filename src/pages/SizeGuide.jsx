@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { Link } from 'react-router-dom';
 import Seo from '@/components/Seo';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
@@ -47,7 +48,7 @@ export default function SizeGuide() {
                 {t('כתבו לנו גובה, משקל ואיזו גזרה אתם אוהבים, ונמליץ על מידה.', "Send us your height, weight and the fit you like, and we'll recommend a size.")}
               </p>
             </div>
-            <Link to="/contact" className="shop-btn self-start">{t('צרו קשר', 'Contact us')}</Link>
+            <LiquidButton to="/contact" className="self-start">{t('צרו קשר', 'Contact us')}</LiquidButton>
           </div>
         </div>
       </div>

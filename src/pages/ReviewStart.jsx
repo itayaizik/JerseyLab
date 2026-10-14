@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { Loader2, AlertCircle, Star, ImagePlus, X, Heart, ChevronDown, Check } from 'lucide-react';
 import Seo from '@/components/Seo';
 import ProductImage from '@/components/ui/ProductImage';
@@ -179,7 +179,7 @@ export default function ReviewStart() {
             <p className="mt-2 text-[15px] leading-relaxed text-brand-navy/65">
               {t('הביקורת התקבלה ותופיע באתר אחרי שנעבור עליה.', "Your review is in, and it'll appear once we've looked it over.")}
             </p>
-            <Link to="/catalog" className="shop-btn mt-6">{t('לחולצות נוספות', 'More shirts')}</Link>
+            <LiquidButton to="/catalog" className="mt-6">{t('לחולצות נוספות', 'More shirts')}</LiquidButton>
           </div>
         ) : (
           <form onSubmit={submit} noValidate>

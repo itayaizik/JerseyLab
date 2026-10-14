@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShieldCheck, Camera, Ruler, Zap, Star, Sparkles, MessageCircle, Instagram, ArrowLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -389,10 +390,10 @@ export default function Home() {
                 {t('שאלות על מידות, זמינות או הזמנה מיוחדת. עונים מהר בוואטסאפ ובאינסטגרם.', 'Questions about sizes, availability or a special order? We answer fast on WhatsApp and Instagram.')}
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-3">
-                <a href={siteSettings.whatsapp_link || WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="shop-btn px-8">
+                <LiquidButton href={siteSettings.whatsapp_link || WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="px-8">
                   <MessageCircle className="h-5 w-5" aria-hidden="true" />
                   {t('וואטסאפ', 'WhatsApp')}
-                </a>
+                </LiquidButton>
                 <a href={siteSettings.instagram_link || INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="shop-btn-secondary px-8">
                   <Instagram className="h-5 w-5" aria-hidden="true" />
                   {t('אינסטגרם', 'Instagram')}

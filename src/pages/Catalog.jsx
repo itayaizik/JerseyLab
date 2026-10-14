@@ -1,4 +1,5 @@
 import { getAllShirts } from "@/api/shirts";
+import LiquidButton from '@/components/shop/LiquidButton';
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { Search, SlidersHorizontal, X, PackageSearch } from 'lucide-react';
@@ -434,10 +435,10 @@ export default function Catalog() {
                     "The catalog isn't everything. Send us a photo or a description of the shirt you were looking for, and we'll check whether we can bring it in.")}
                 </p>
               </div>
-              <Link to="/request-shirt" className="shop-btn flex-shrink-0">
+              <LiquidButton to="/request-shirt" className="flex-shrink-0">
                 <PackageSearch className="h-5 w-5" aria-hidden="true" />
                 {t('בקשת חולצה', 'Request a shirt')}
-              </Link>
+              </LiquidButton>
             </div>
           </div>
         )}

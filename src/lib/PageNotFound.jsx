@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import Seo from '@/components/Seo';
@@ -48,7 +49,7 @@ export default function PageNotFound() {
         )}
 
         <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link to="/" className="shop-btn">{t('לדף הבית', 'Home')}</Link>
+          <LiquidButton to="/">{t('לדף הבית', 'Home')}</LiquidButton>
           <Link to="/catalog" className="shop-btn-secondary">{t('לכל החולצות', 'All shirts')}</Link>
         </div>
       </div>

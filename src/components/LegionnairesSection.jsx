@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { PackageSearch } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import SectionHeader from '@/components/shop/SectionHeader';
@@ -143,10 +143,10 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
                 </p>
                 </div>
               </div>
-              <Link to="/request-shirt" className="shop-btn flex-shrink-0">
+              <LiquidButton to="/request-shirt" className="flex-shrink-0">
                 <PackageSearch className="h-5 w-5" aria-hidden="true" />
                 {t('בקשת חולצה', 'Request a shirt')}
-              </Link>
+              </LiquidButton>
             </div>
           )}
         </div>
