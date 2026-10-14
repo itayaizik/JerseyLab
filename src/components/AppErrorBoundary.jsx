@@ -1,4 +1,5 @@
 import React from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { isChunkLoadError, reloadForNewVersion } from '@/lib/chunkReload';
 import { recordCrash } from '@/lib/crashLog';
 import { t, isEn } from '@/lib/i18n';
@@ -49,9 +50,9 @@ export default class AppErrorBoundary extends React.Component {
               : t('אפשר לנסות לחזור לעמוד. אם זה חוזר, רענון יטען את הגרסה העדכנית של האתר.', 'You can try going back to the page. If it happens again, refreshing loads the latest version of the site.')}
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-2.5">
-            <button type="button" onClick={() => this.setState({ error: null, showDetails: false })} className="shop-btn px-6">
+            <LiquidButton type="button" onClick={() => this.setState({ error: null, showDetails: false })} className="px-6">
               {tr('חזרה בלי רענון', 'Go back without refreshing')}
-            </button>
+            </LiquidButton>
             <button type="button" onClick={() => window.location.reload()} className="shop-btn-secondary px-6">{tr('רענון הדף', 'Refresh the page')}</button>
             <a href={onAdmin ? '/admin' : '/'} className="shop-btn-secondary px-6">{onAdmin ? 'לדשבורד' : t('לדף הבית', 'Home')}</a>
           </div>

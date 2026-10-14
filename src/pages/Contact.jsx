@@ -191,10 +191,10 @@ export default function Contact() {
 
             <PrivacyConsent id="contact-privacy" checked={privacyOk} onChange={setPrivacyOk} error={errors.privacy} />
 
-            <button type="submit" disabled={submitting} className="shop-btn w-full">
+            <LiquidButton type="submit" disabled={submitting} className="w-full">
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
               {submitting ? t('שולח...', 'Sending...') : t('שליחת ההודעה', 'Send message')}
-            </button>
+            </LiquidButton>
           </form>
         </div>
       </div>

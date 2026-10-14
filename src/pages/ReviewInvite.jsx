@@ -218,10 +218,10 @@ export default function ReviewInvite() {
 
             {error && <p role="alert" className="mt-3 text-sm text-red-600">{error}</p>}
 
-            <button type="submit" disabled={busy} className="shop-btn mt-4 min-h-[3.25rem] w-full">
+            <LiquidButton type="submit" disabled={busy} className="mt-4 min-h-[3.25rem] w-full">
               {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <Star className="h-5 w-5" aria-hidden="true" />}
               {busy ? t('שולח...', 'Sending...') : t('שליחת הביקורת', 'Send review')}
-            </button>
+            </LiquidButton>
             <p className="mt-2 text-center text-xs text-brand-navy/50">{t('הביקורת תופיע באתר אחרי שנעבור עליה.', "Reviews appear on the site once we've looked them over.")}</p>
           </form>
         )}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { Check, Loader2, ShoppingBag, Trash2, MessageCircle, Instagram, Mail, ChevronRight, Ticket, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import SideDrawer from '@/components/shop/SideDrawer';
@@ -456,7 +457,7 @@ export default function CartDrawer({ open, onClose, user }) {
         </div>
         <div className="mt-4 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4">
           <button type="button" onClick={onClose} className="shop-link px-2 text-[15px]">{t('המשך בקניות', 'Keep shopping')}</button>
-          <button type="button" onClick={() => setView('details')} className="shop-btn w-full">{t('להמשך ההזמנה', 'Continue')}</button>
+          <LiquidButton type="button" onClick={() => setView('details')} className="w-full">{t('להמשך ההזמנה', 'Continue')}</LiquidButton>
         </div>
       </div>
     );
@@ -527,10 +528,10 @@ export default function CartDrawer({ open, onClose, user }) {
           <span className="text-lg font-semibold text-brand-navy">{t('סה״כ', 'Total')} ({itemCountLabel(count)})</span>
           <span className="text-lg font-bold tabular-nums text-brand-navy">₪{total}</span>
         </div>
-        <button type="submit" form="cart-details-form" disabled={submitting} className="shop-btn mt-3 w-full">
+        <LiquidButton type="submit" form="cart-details-form" disabled={submitting} className="mt-3 w-full">
           {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingBag className="h-4 w-4" />}
           {submitting ? t('שולח...', 'Sending...') : t('שליחת ההזמנה', 'Send order')}
-        </button>
+        </LiquidButton>
       </div>
     );
   }

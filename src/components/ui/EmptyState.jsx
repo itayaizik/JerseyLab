@@ -56,7 +56,7 @@ export default function EmptyState({
             <LiquidButton to={actionTo}>{actionLabel}</LiquidButton>
           )}
           {actionLabel && onAction && !actionTo && (
-            <button type="button" onClick={onAction} className="shop-btn">{actionLabel}</button>
+            <LiquidButton type="button" onClick={onAction}>{actionLabel}</LiquidButton>
           )}
           {secondaryLabel && secondaryTo && (
             <Link to={secondaryTo} className={dark ? 'shop-btn-secondary border-white/20 bg-transparent text-white hover:bg-white/10' : 'shop-btn-secondary'}>

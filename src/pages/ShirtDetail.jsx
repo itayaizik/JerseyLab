@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { shirtPath, shortIdFromKey } from '@/lib/shirtSlug';
 import { Heart, Share2, Shirt, ChevronLeft } from 'lucide-react';
@@ -428,9 +429,9 @@ export default function ShirtDetail() {
               <p className="truncate text-sm font-semibold text-brand-navy">{name}</p>
               <p className="text-sm font-semibold tabular-nums text-brand-navy/65">₪{shirtBasePrice(shirt)}</p>
             </div>
-            <button type="button" tabIndex={ctaPosition === 'below' ? 0 : -1} onClick={() => setAttention(a => a + 1)} className="shop-btn min-h-[3rem] px-6">
+            <LiquidButton type="button" tabIndex={ctaPosition === 'below' ? 0 : -1} onClick={() => setAttention(a => a + 1)} className="min-h-[3rem] px-6">
               {t('להזמנה', 'Order')}
-            </button>
+            </LiquidButton>
           </div>
         </div>
       )}

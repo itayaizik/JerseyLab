@@ -25,7 +25,7 @@ import { Link } from 'react-router-dom';
 // The goo blur has to scale with the drop. Fixed, it rounds a big blob nicely
 // and erases a small one: feColorMatrix only keeps alpha above about 0.47, and a
 // heavily blurred small circle never reaches it.
-const GOO_BLUR_RATIO = 0.22;
+const GOO_BLUR_RATIO = 0.15;
 
 // How hard the blob chases the cursor, and how much it stretches doing it.
 const FOLLOW_TAU = 0.075;
@@ -166,9 +166,9 @@ export default function LiquidButton({
     start();
   };
 
-  // A drop inside the button, not a second button. At around 60% of the height
-  // it still reads as liquid on a narrow button without swallowing it whole.
-  const blobD = blobSize ?? Math.max(24, Math.min(72, box.h * 0.6));
+  // Sized from the button rather than fixed: the same drop swamps a small one
+  // and is lost in a large one.
+  const blobD = blobSize ?? Math.max(40, Math.min(96, box.h * 0.95));
   const blobR = blobD / 2;
   const gooBlur = Math.max(2.5, blobD * GOO_BLUR_RATIO);
 

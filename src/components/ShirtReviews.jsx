@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { Link } from 'react-router-dom';
 import { Star, Loader2, Check, Lock, ImagePlus, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -200,10 +201,10 @@ export default function ShirtReviews({ shirtId, user, onSummary }) {
             <input type="checkbox" checked={form.anonymous} onChange={(e) => setForm(p => ({ ...p, anonymous: e.target.checked }))} className="h-4 w-4 accent-brand-orange" />
             {t('פרסום כאנונימי (השם שלי לא יוצג)', "Post anonymously (my name won't be shown)")}
           </label>
-          <button type="submit" disabled={submitting} className="shop-btn">
+          <LiquidButton type="submit" disabled={submitting}>
             {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
             {submitting ? t('שולח...', 'Sending...') : t('שליחת הביקורת', 'Send review')}
-          </button>
+          </LiquidButton>
           {errors.submit && <p className="text-xs text-red-600">{errors.submit}</p>}
         </form>
       )}

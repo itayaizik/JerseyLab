@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { useParams, Link } from 'react-router-dom';
 import { Gift, CheckCircle2, Loader2, Pencil, Users, MessageCircle, AlertCircle } from 'lucide-react';
 import Seo from '@/components/Seo';
@@ -164,10 +165,10 @@ export default function MysteryBoxJoin() {
                   <span className="text-2xl font-bold tabular-nums text-brand-navy">₪{boxPrice(box)}</span>
                 </div>
                 {error && <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
-                <button type="button" onClick={save} disabled={busy || group.closed} className="shop-btn mt-4 min-h-[3.25rem] w-full">
+                <LiquidButton type="button" onClick={save} disabled={busy || group.closed} className="mt-4 min-h-[3.25rem] w-full">
                   {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-5 w-5" aria-hidden="true" />}
                   {member.boxId ? t('שמירת השינויים', 'Save changes') : t(`שליחת הבוקס ל${owner}`, `Send my box to ${owner}`)}
-                </button>
+                </LiquidButton>
                 <p className="mt-2 text-center text-xs text-brand-navy/50">{t('מה שמילאתם נשמר בדפדפן גם אם תצאו מהדף.', 'What you fill in is kept in this browser even if you leave the page.')}</p>
               </div>
             ) : (

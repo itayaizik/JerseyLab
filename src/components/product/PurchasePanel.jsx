@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { shirtPath } from '@/lib/shirtSlug';
 import { Link } from 'react-router-dom';
 import { Check, Info, Pencil, ShoppingBag, Star } from 'lucide-react';
@@ -419,16 +420,16 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
         )}
 
         {available ? (
-          <button type="button" onClick={handleAdd} className="shop-btn min-h-[3.75rem] w-full text-base">
+          <LiquidButton type="button" onClick={handleAdd} className="min-h-[3.75rem] w-full text-base">
             {added
               ? <><Check className="h-5 w-5" aria-hidden="true" />{t('נוספה לסל', 'Added to cart')}</>
               : <><ShoppingBag className="h-5 w-5" aria-hidden="true" />{t('הוספה לסל', 'Add to cart')}</>}
-          </button>
+          </LiquidButton>
         ) : (
           <>
-            <button type="button" disabled className="shop-btn min-h-[3.75rem] w-full text-base">
+            <LiquidButton type="button" disabled className="min-h-[3.75rem] w-full text-base">
               {shirt.status === 'reserved' ? t('החולצה שמורה כרגע', 'This shirt is reserved right now') : t('החולצה לא זמינה כרגע', 'This shirt is not available right now')}
-            </button>
+            </LiquidButton>
             <Link to="/request-shirt" className="shop-btn-secondary mt-3 w-full">{t('בקשו חולצה דומה', 'Request a similar shirt')}</Link>
           </>
         )}

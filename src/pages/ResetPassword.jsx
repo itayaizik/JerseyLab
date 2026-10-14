@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import LiquidButton from '@/components/shop/LiquidButton';
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Lock, Loader2, AlertTriangle } from "lucide-react";
@@ -102,10 +103,10 @@ export default function ResetPassword() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <PasswordField id="reset-new" label={t("סיסמה חדשה", "New password")} value={newPassword} onChange={setNewPassword} autoFocus disabled={!ready} />
         <PasswordField id="reset-confirm" label={t("אימות סיסמה", "Confirm password")} value={confirmPassword} onChange={setConfirmPassword} disabled={!ready} />
-        <button type="submit" className="shop-btn w-full" disabled={loading || !ready}>
+        <LiquidButton type="submit" className="w-full" disabled={loading || !ready}>
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
           {loading ? t('מאפס...', 'Resetting...') : t('איפוס הסיסמה', 'Reset password')}
-        </button>
+        </LiquidButton>
       </form>
     </AuthLayout>
   );

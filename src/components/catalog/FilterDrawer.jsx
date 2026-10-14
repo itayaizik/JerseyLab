@@ -1,4 +1,5 @@
 import React from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import SideDrawer from '@/components/shop/SideDrawer';
 import Disclosure from '@/components/shop/Disclosure';
 import { t } from '@/lib/i18n';
@@ -60,9 +61,9 @@ export default function FilterDrawer({
       footer={(
         <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4">
           <button type="button" onClick={onClear} className="shop-link px-2 text-[15px]">{t('ניקוי הכל', 'Clear all')}</button>
-          <button type="button" onClick={() => onOpenChange(false)} className="shop-btn w-full">
+          <LiquidButton type="button" onClick={() => onOpenChange(false)} className="w-full">
             {resultCount === 0 ? t('אין חולצות מתאימות', 'No matching shirts') : t(`הצגת ${resultCount} חולצות`, `Show ${resultCount} shirts`)}
-          </button>
+          </LiquidButton>
         </div>
       )}
     >

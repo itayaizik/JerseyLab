@@ -1,4 +1,5 @@
 import React from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { ChevronRight, Loader2 } from 'lucide-react';
 import TeamPicker from './TeamPicker';
 import ChipsInput from './ChipsInput';
@@ -50,9 +51,9 @@ export default function PreferencesStep({ data, onChange, onFinish, onSkip, onBa
         <button type="button" onClick={onBack} className="shop-btn-secondary px-4">
           <ChevronRight className="h-4 w-4" aria-hidden="true" /> {t('חזרה', 'Back')}
         </button>
-        <button type="button" onClick={onFinish} disabled={loading} className="shop-btn flex-1">
+        <LiquidButton type="button" onClick={onFinish} disabled={loading} className="flex-1">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('סיום ההרשמה', 'Finish signing up')}
-        </button>
+        </LiquidButton>
       </div>
       <div className="mt-3 text-center">
         <button type="button" onClick={onSkip} className="shop-link text-sm">{t('דילוג', 'Skip')}</button>

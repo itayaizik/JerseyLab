@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import LiquidButton from '@/components/shop/LiquidButton';
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Mail, Check, Loader2 } from "lucide-react";
@@ -65,10 +66,10 @@ export default function ForgotPassword() {
               />
             </div>
           </div>
-          <button type="submit" className="shop-btn w-full" disabled={loading}>
+          <LiquidButton type="submit" className="w-full" disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
             {loading ? t('שולח...', 'Sending...') : t('שליחת קישור לאיפוס', 'Send reset link')}
-          </button>
+          </LiquidButton>
         </form>
       )}
     </AuthLayout>

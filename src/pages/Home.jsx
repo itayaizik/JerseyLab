@@ -191,7 +191,7 @@ export default function Home() {
           <div className="mx-auto max-w-lg rounded-3xl bg-brand-mist px-6 py-14 text-center">
             <p className="text-2xl font-semibold text-brand-navy">{t('לא הצלחנו לטעון את הדף', "We couldn't load the page")}</p>
             <p className="mt-2 text-[15px] text-brand-navy/60">{t('בדקו את החיבור לאינטרנט ונסו שוב.', 'Check your internet connection and try again.')}</p>
-            <button type="button" onClick={() => window.location.reload()} className="shop-btn mt-6">{t('לנסות שוב', 'Try again')}</button>
+            <LiquidButton type="button" onClick={() => window.location.reload()} className="mt-6">{t('לנסות שוב', 'Try again')}</LiquidButton>
           </div>
         </div>
       ) : (

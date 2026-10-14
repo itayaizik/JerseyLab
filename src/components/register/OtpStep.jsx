@@ -1,4 +1,5 @@
 import React from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { Loader2 } from 'lucide-react';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { t } from '@/lib/i18n';
@@ -28,9 +29,9 @@ export default function OtpStep({ email, otpCode, setOtpCode, onVerify, onResend
 
       {error && <p role="alert" className="mb-3 text-center text-sm text-red-600">{error}</p>}
 
-      <button type="button" onClick={onVerify} disabled={loading || otpCode.length < 6} className="shop-btn w-full">
+      <LiquidButton type="button" onClick={onVerify} disabled={loading || otpCode.length < 6} className="w-full">
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('אימות וסיום', 'Verify and finish')}
-      </button>
+      </LiquidButton>
 
       <p className="mt-4 text-center text-sm text-brand-navy/55">
         {t('לא קיבלתם קוד?', "Didn't get a code?")}{' '}

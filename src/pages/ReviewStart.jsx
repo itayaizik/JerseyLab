@@ -281,10 +281,10 @@ export default function ReviewStart() {
               </div>
             )}
 
-            <button type="submit" disabled={busy} className="shop-btn mt-5 min-h-[3.25rem] w-full" aria-busy={busy}>
+            <LiquidButton type="submit" disabled={busy} className="mt-5 min-h-[3.25rem] w-full" aria-busy={busy}>
               {busy ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" /> : <Star className="h-5 w-5" aria-hidden="true" />}
               {busy ? t('שולח...', 'Sending...') : t('שליחת הדירוג', 'Send review')}
-            </button>
+            </LiquidButton>
             <p className="mt-2 text-center text-xs text-brand-navy/50">
               {t('הביקורת תופיע באתר אחרי שנעבור עליה.', "Reviews appear once we've looked them over.")}
             </p>

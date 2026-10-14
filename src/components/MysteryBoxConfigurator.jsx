@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import {
   Gift, Check, ShoppingBag,
   Plus, Minus, Copy, Trash2, ChevronDown, CheckCircle2, Share2, Link2, Users, Loader2, RefreshCw, RotateCcw, X,
@@ -704,9 +705,9 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
                 {t('חזרה', 'Back')}
               </button>
             )}
-            <button type="button" onClick={() => goToStep(step + 1)} className="shop-btn min-h-[3.25rem] flex-1 text-[15px]">
+            <LiquidButton type="button" onClick={() => goToStep(step + 1)} className="min-h-[3.25rem] flex-1 text-[15px]">
               {step === 1 ? t('המשך להתאמה אישית', 'Continue to personalising') : t('המשך לסיכום', 'Continue to the summary')}
-            </button>
+            </LiquidButton>
           </div>
         </div>
       )}
@@ -754,9 +755,9 @@ function ReturnByCode({ fid, onFound }) {
         <input id={fid('group-code')} value={code} onChange={e => { setCode(e.target.value); setError(''); }}
           inputMode="numeric" maxLength={7} dir="ltr" placeholder="12345"
           className="shop-field flex-1 text-center text-lg tracking-[0.3em] tabular-nums" />
-        <button type="submit" disabled={busy} className="shop-btn min-h-[3.25rem] flex-shrink-0 px-5 text-sm">
+        <LiquidButton type="submit" disabled={busy} className="min-h-[3.25rem] flex-shrink-0 px-5 text-sm">
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : t('כניסה', 'Enter')}
-        </button>
+        </LiquidButton>
       </div>
       {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
     </form>
@@ -884,10 +885,10 @@ function StartGroupForm({ fid, onStart }) {
         <p className="mt-1 text-[12px] text-brand-navy/50">{t('כדי שחבר שסיים יוכל לעדכן אותך בוואטסאפ בלחיצה.', 'So a friend who is done can let you know on WhatsApp in one tap.')}</p>
       </div>
       {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
-      <button type="submit" disabled={busy} className="shop-btn min-h-[3rem] w-full text-sm">
+      <LiquidButton type="submit" disabled={busy} className="min-h-[3rem] w-full text-sm">
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" aria-hidden="true" />}
         {t('יצירת הקישור', 'Create the link')}
-      </button>
+      </LiquidButton>
     </form>
   );
 }

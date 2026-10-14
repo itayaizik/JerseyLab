@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import LiquidButton from '@/components/shop/LiquidButton';
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
@@ -99,10 +100,10 @@ export default function Login() {
             />
           </div>
         </div>
-        <button type="submit" className="shop-btn w-full" disabled={loading}>
+        <LiquidButton type="submit" className="w-full" disabled={loading}>
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
           {loading ? t('מתחבר...', 'Logging in...') : t('התחברות', 'Log in')}
-        </button>
+        </LiquidButton>
       </form>
     </AuthLayout>
   );

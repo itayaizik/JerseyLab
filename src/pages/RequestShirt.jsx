@@ -322,10 +322,10 @@ export default function RequestShirt() {
           {submitError && <p role="alert" className="rounded-2xl bg-red-50 p-3 text-sm text-red-700">{submitError}</p>}
 
           <div>
-            <button type="submit" disabled={submitting} className="shop-btn min-h-[3.75rem] w-full text-base">
+            <LiquidButton type="submit" disabled={submitting} className="min-h-[3.75rem] w-full text-base">
               {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
               {submitting ? t('שולח…', 'Sending…') : t('שליחת הבקשה', 'Send request')}
-            </button>
+            </LiquidButton>
             <p className="mt-2 text-center text-xs text-brand-navy/50">
               {t('בלי התחייבות ובלי תשלום, בקשה בלבד.', 'No commitment and no payment - just a request.')}
             </p>

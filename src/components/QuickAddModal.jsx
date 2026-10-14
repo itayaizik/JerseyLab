@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { ShoppingBag, Check, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
@@ -258,10 +259,10 @@ export default function QuickAddModal({ shirt, open, onClose }) {
             </button>
           )}
           {!added && step === 'summary' && (
-            <button type="button" onClick={handleAdd} className="shop-btn flex-1">
+            <LiquidButton type="button" onClick={handleAdd} className="flex-1">
               <ShoppingBag className="h-4 w-4" aria-hidden="true" />
               {t('הוספה לסל', 'Add to cart')}
-            </button>
+            </LiquidButton>
           )}
           {added && (
             <div role="status" className="flex min-h-[3.25rem] flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-600 text-[15px] font-semibold text-white">
