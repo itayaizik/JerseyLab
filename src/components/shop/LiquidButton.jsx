@@ -47,7 +47,12 @@ export default function LiquidButton({
   type = 'button',
   disabled = false,
   className = '',
-  blobColor = 'rgb(var(--c-navy-bg))',
+  blobColor = '#ffffff',
+  // The label is white too, so a solid white drop would swallow it. The opacity
+  // goes on the filtered group rather than on the circle: feColorMatrix drives
+  // alpha through 19x-9, so a see-through circle is pushed to nothing before it
+  // is ever drawn.
+  blobOpacity = 0.38,
   // Null means size it from the button: a fixed blob swamps a small one and
   // is lost in a wide one.
   blobSize = null,
@@ -171,7 +176,7 @@ export default function LiquidButton({
         </clipPath>
       </defs>
       <g clipPath={`url(#${clipId})`}>
-        <g filter={`url(#${filterId})`}>
+        <g filter={`url(#${filterId})`} opacity={blobOpacity}>
           <g ref={blobRef} style={{ transformBox: 'fill-box', transformOrigin: 'center', transform: 'scale(0)' }}>
             <g ref={squashRef} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
               <circle cx="50%" cy="50%" r={blobR} fill={blobColor} />
