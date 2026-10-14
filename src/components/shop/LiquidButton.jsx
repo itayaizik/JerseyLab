@@ -67,7 +67,7 @@ export default function LiquidButton({
   const frame = useRef(0);
   const state = useRef({ x: 0, y: 0, tx: 0, ty: 0, squash: 1, angle: 0, scale: 0, on: false });
   const [enabled, setEnabled] = useState(false);
-  const [box, setBox] = useState({ w: 0, h: 0 });
+  const [box, setBox] = useState({ w: 0, h: 0, radius: 0 });
 
   const uid = useId().replace(/:/g, '');
   const filterId = `liquid-goo-${uid}`;
@@ -80,11 +80,14 @@ export default function LiquidButton({
   useEffect(() => {
     const el = rootRef.current;
     if (!el || !enabled) return undefined;
-    const read = () => setBox(prev => (
-      prev.w === el.offsetWidth && prev.h === el.offsetHeight
-        ? prev
-        : { w: el.offsetWidth, h: el.offsetHeight }
-    ));
+    const read = () => {
+      const radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
+      setBox(prev => (
+        prev.w === el.offsetWidth && prev.h === el.offsetHeight && prev.radius === radius
+          ? prev
+          : { w: el.offsetWidth, h: el.offsetHeight, radius }
+      ));
+    };
     read();
     const ro = new ResizeObserver(read);
     ro.observe(el);
@@ -173,13 +176,19 @@ export default function LiquidButton({
     <svg aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full"
       style={{ borderRadius: 'inherit' }}>
       <defs>
-        <filter id={filterId}>
+        {/* The region matters. A filter with none gets the blob's own box plus
+            a tenth, and the blur spreads far past that - so its soft edge was
+            being sliced off square, which is what made the drop look cornered
+            rather than round. */}
+        <filter id={filterId} x="-100%" y="-100%" width="300%" height="300%">
           <feGaussianBlur in="SourceGraphic" stdDeviation={gooBlur} result="blur" />
           <feColorMatrix in="blur" mode="matrix"
             values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" />
         </filter>
+        {/* The button's own corner radius, read off the element. Assuming a
+            pill here cut the blob along a curve the button does not have. */}
         <clipPath id={clipId}>
-          <rect x="0" y="0" width={box.w} height={box.h} rx={box.h / 2} ry={box.h / 2} />
+          <rect x="0" y="0" width={box.w} height={box.h} rx={box.radius} ry={box.radius} />
         </clipPath>
       </defs>
       <g clipPath={`url(#${clipId})`}>
