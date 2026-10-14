@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { BOX_TYPES } from '@/lib/mysteryBox';
 import { MYSTERY_BOX_PANELS } from '@/components/MysteryBoxInfo';
 import Disclosure from '@/components/shop/Disclosure';
@@ -51,7 +51,7 @@ export default function MysteryBoxPromo() {
               </li>
             ))}
           </ul>
-          <Link to="/mystery-box" className="shop-btn mt-6 self-start px-8 sm:mt-8">{t('לבניית הבוקס', 'Build your box')}</Link>
+          <LiquidButton to="/mystery-box" className="mt-6 self-start px-8 sm:mt-8">{t('לבניית הבוקס', 'Build your box')}</LiquidButton>
         </div>
 
         {promoPanels.length > 0 && (

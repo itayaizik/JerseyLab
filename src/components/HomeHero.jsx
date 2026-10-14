@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { Link } from 'react-router-dom';
 import { t, isEn } from '@/lib/i18n';
 import { resized } from '@/lib/imageUrl';
@@ -103,7 +104,7 @@ export default function HomeHero({ settings = {}, ready = true }) {
               {subtitle && (
                 <p className="mt-2 text-sm leading-relaxed text-brand-navy/65 md:mt-4 md:text-base lg:text-lg">{subtitle}</p>
               )}
-              <Link to={link} className="shop-btn mt-4 px-6 md:mt-7 md:px-8">{button}</Link>
+              <LiquidButton to={link} className="mt-4 px-6 md:mt-7 md:px-8">{button}</LiquidButton>
             </div>
           </div>
         )}

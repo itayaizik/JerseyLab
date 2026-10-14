@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { t } from '@/lib/i18n';
 import { resized, srcSetFor } from '@/lib/imageUrl';
 
@@ -20,9 +20,9 @@ export default function PromoBanner({ title, subtitle, buttonText, buttonLink, i
             <p className="mt-3 text-[15px] leading-relaxed text-brand-navy/70 sm:text-lg">
               {subtitle || t('הנחות מיוחדות לזמן מוגבל.', 'Special prices for a limited time.')}
             </p>
-            <Link to={buttonLink || '/catalog?sale=true'} className="shop-btn mt-6">
+            <LiquidButton to={buttonLink || '/catalog?sale=true'} className="mt-6">
               {buttonText || t('לחולצות במבצע', 'Shop the sale')}
-            </Link>
+            </LiquidButton>
           </div>
         </div>
       </div>
