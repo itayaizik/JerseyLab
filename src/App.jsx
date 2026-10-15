@@ -11,6 +11,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 // Layouts
 import MainLayout from '@/components/MainLayout';
@@ -191,6 +192,7 @@ function App() {
           <AccessibilityMenu />
         </Router>
         <Toaster />
+        <SpeedInsights />
       </QueryClientProvider>
     </AuthProvider>
   )
