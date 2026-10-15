@@ -365,7 +365,7 @@ export default function Catalog() {
             <ul className="mt-3 flex flex-wrap gap-2">
               {pagesForQuery.map(page => (
                 <li key={page.href}>
-                  <Link to={page.href} className="shop-btn-secondary rounded-full">{page.label}</Link>
+                  <LiquidButton variant="secondary" to={page.href} className="rounded-full">{page.label}</LiquidButton>
                 </li>
               ))}
             </ul>

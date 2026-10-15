@@ -633,13 +633,13 @@ export default function Navbar() {
         bodyClassName="space-y-2.5"
         footer={user ? (
           <div className="grid grid-cols-2 gap-2.5">
-            <Link to="/profile" onClick={closeAll} className="shop-btn-secondary">{t('החשבון שלי', 'My account')}</Link>
+            <LiquidButton variant="secondary" to="/profile" onClick={closeAll}>{t('החשבון שלי', 'My account')}</LiquidButton>
             <LiquidButton variant="secondary" type="button" onClick={handleLogout} className="text-red-600">{t('התנתקות', 'Log out')}</LiquidButton>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2.5">
-            <Link to="/login" onClick={closeAll} className="shop-btn-dark">{t('התחברות', 'Log in')}</Link>
-            <Link to="/register" onClick={closeAll} className="shop-btn-secondary">{t('הרשמה', 'Sign up')}</Link>
+            <LiquidButton variant="dark" to="/login" onClick={closeAll}>{t('התחברות', 'Log in')}</LiquidButton>
+            <LiquidButton variant="secondary" to="/register" onClick={closeAll}>{t('הרשמה', 'Sign up')}</LiquidButton>
           </div>
         )}
       >

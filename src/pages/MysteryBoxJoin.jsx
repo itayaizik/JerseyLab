@@ -186,11 +186,11 @@ export default function MysteryBoxJoin() {
                 </p>
                 <div className="mt-4 grid grid-cols-1 gap-2 min-[440px]:grid-cols-2">
                   {phone && (
-                    <a href={`https://wa.me/${phone}?text=${encodeURIComponent(doneMessage)}`} target="_blank" rel="noopener noreferrer"
-                      className="shop-btn min-h-[2.75rem] text-sm">
+                    <LiquidButton href={`https://wa.me/${phone}?text=${encodeURIComponent(doneMessage)}`} target="_blank" rel="noopener noreferrer"
+                      className="min-h-[2.75rem] text-sm">
                       <MessageCircle className="h-4 w-4" aria-hidden="true" />
                       {t(`לעדכן את ${owner} בוואטסאפ`, `Tell ${owner} on WhatsApp`)}
-                    </a>
+                    </LiquidButton>
                   )}
                   {!group.closed && (
                     <LiquidButton variant="secondary" type="button" onClick={() => setMember(m => ({ ...m, editing: true }))} className="min-h-[2.75rem] text-sm">

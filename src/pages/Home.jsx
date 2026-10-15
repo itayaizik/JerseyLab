@@ -228,7 +228,7 @@ export default function Home() {
                     <>
                       <ProductRail shirts={activeTab.shirts} user={user} wishlistIds={wishlistIds} onToggleWishlist={toggleWishlist} label={activeTab.label} />
                       <div className="mt-2 text-center">
-                        <Link to={activeTab.href} className="shop-btn-secondary rounded-full px-8">{activeTab.more}</Link>
+                        <LiquidButton variant="secondary" to={activeTab.href} className="rounded-full px-8">{activeTab.more}</LiquidButton>
                       </div>
                     </>
                   )}
@@ -394,10 +394,10 @@ export default function Home() {
                   <MessageCircle className="h-5 w-5" aria-hidden="true" />
                   {t('וואטסאפ', 'WhatsApp')}
                 </LiquidButton>
-                <a href={siteSettings.instagram_link || INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="shop-btn-secondary px-8">
+                <LiquidButton variant="secondary" href={siteSettings.instagram_link || INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="px-8">
                   <Instagram className="h-5 w-5" aria-hidden="true" />
                   {t('אינסטגרם', 'Instagram')}
-                </a>
+                </LiquidButton>
               </div>
             </div>
           </section>

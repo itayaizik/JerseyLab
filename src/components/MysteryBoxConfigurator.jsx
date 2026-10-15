@@ -670,10 +670,10 @@ export default function MysteryBoxConfigurator({ idPrefix = 'mb', className = ''
 
         {error && <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
 
-        <button type="button" onClick={handleAdd} className={`shop-btn mt-4 w-full ${lg ? 'min-h-[3.75rem] text-base' : ''}`}>
+        <LiquidButton type="button" onClick={handleAdd} className={`mt-4 w-full ${lg ? 'min-h-[3.75rem] text-base' : ''}`}>
           <ShoppingBag className={lg ? 'h-5 w-5' : 'h-4 w-4'} aria-hidden="true" />
           {count === 1 ? t('הוספה לסל', 'Add to cart') : t(`הוספת ${count} בוקסים לסל`, `Add ${count} boxes to cart`)}
-        </button>
+        </LiquidButton>
         <p className="mt-2 text-center text-xs text-brand-navy/50">
           {t('בלי תשלום באתר, שליחת בקשה בלבד.', 'No payment on the site - you only send a request.')}
         </p>
@@ -947,11 +947,11 @@ function GroupShare({ group, closed, filled, count, onEnd }) {
       <p className="mt-4 mb-1.5 text-sm font-medium text-brand-navy/70">{t('הקישור לחברים', 'The link for your friends')}</p>
       <p dir="ltr" className="truncate rounded-xl border border-brand-line bg-brand-mist px-3 py-2.5 text-start text-[13px] text-brand-navy/70">{link}</p>
       <div className="mt-3 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">
-        <a href={`https://wa.me/?text=${encodeURIComponent(`${message}\n${link}`)}`} target="_blank" rel="noopener noreferrer"
-          className="shop-btn min-h-[3rem] text-sm">
+        <LiquidButton href={`https://wa.me/?text=${encodeURIComponent(`${message}\n${link}`)}`} target="_blank" rel="noopener noreferrer"
+          className="min-h-[3rem] text-sm">
           <Share2 className="h-4 w-4" aria-hidden="true" />
           {t('שליחה בוואטסאפ', 'Send on WhatsApp')}
-        </a>
+        </LiquidButton>
         <LiquidButton variant="secondary" type="button" onClick={copy} className="min-h-[3rem] text-sm">
           {copied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
           {copied ? t('הקישור הועתק', 'Link copied') : t('העתקת קישור', 'Copy link')}

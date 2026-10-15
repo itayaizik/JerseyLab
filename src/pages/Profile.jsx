@@ -279,10 +279,10 @@ export default function Profile() {
                           ? t('נחזור אליכם באינסטגרם.', "We'll get back to you on Instagram.")
                           : t('נחזור אליכם בוואטסאפ.', "We'll get back to you on WhatsApp.")}
                     </p>
-                    <a href={askUrl} target="_blank" rel="noopener noreferrer" className="shop-btn-dark min-h-[2.75rem] px-4 text-sm">
+                    <LiquidButton variant="dark" href={askUrl} target="_blank" rel="noopener noreferrer" className="min-h-[2.75rem] px-4 text-sm">
                       <MessageCircle className="h-4 w-4" aria-hidden="true" />
                       {t('שאלה על ההזמנה', 'Ask about this order')}
-                    </a>
+                    </LiquidButton>
                   </div>
                 </article>
               );

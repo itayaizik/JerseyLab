@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import LiquidButton from '@/components/shop/LiquidButton';
+import { useNavigate } from 'react-router-dom';
 import { Heart, Trash2, Info } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ShirtCard from '@/components/ShirtCard';
@@ -66,7 +67,7 @@ export default function WishlistPage() {
 
         {!loading && !error && shirts.length > 0 && (
           <div className="flex items-center gap-2">
-            <Link to="/catalog" className="shop-btn-secondary">{t('להמשיך לחפש', 'Keep browsing')}</Link>
+            <LiquidButton variant="secondary" to="/catalog">{t('להמשיך לחפש', 'Keep browsing')}</LiquidButton>
             <button type="button" onClick={clearAll} className="inline-flex min-h-[3.25rem] items-center gap-1.5 rounded-2xl px-4 text-[15px] font-medium text-brand-navy/60 transition hover:bg-red-50 hover:text-red-600">
               <Trash2 className="h-4 w-4" aria-hidden="true" />
               {t('ניקוי הכל', 'Clear all')}

@@ -1,4 +1,5 @@
 import React from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import LegalPage, { Section, Fact } from '@/components/LegalPage';
 import { BUSINESS, detail } from '@/lib/business';
 import { WHATSAPP_URL, INSTAGRAM_URL } from '@/lib/contact';
@@ -39,12 +40,12 @@ export default function BusinessDetails() {
           <Fact label="אינסטגרם" value={`@${BUSINESS.instagram}`} />
         </dl>
         <div className="mt-5 flex flex-wrap gap-2.5">
-          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="shop-btn-dark">
+          <LiquidButton variant="dark" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
             וואטסאפ
-          </a>
-          <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="shop-btn-secondary">
+          </LiquidButton>
+          <LiquidButton variant="secondary" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
             אינסטגרם
-          </a>
+          </LiquidButton>
         </div>
       </Section>
 

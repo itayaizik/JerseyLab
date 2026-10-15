@@ -430,7 +430,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
             <LiquidButton type="button" disabled className="min-h-[3.75rem] w-full text-base">
               {shirt.status === 'reserved' ? t('החולצה שמורה כרגע', 'This shirt is reserved right now') : t('החולצה לא זמינה כרגע', 'This shirt is not available right now')}
             </LiquidButton>
-            <Link to="/request-shirt" className="shop-btn-secondary mt-3 w-full">{t('בקשו חולצה דומה', 'Request a similar shirt')}</Link>
+            <LiquidButton variant="secondary" to="/request-shirt" className="mt-3 w-full">{t('בקשו חולצה דומה', 'Request a similar shirt')}</LiquidButton>
           </>
         )}
         <span className="sr-only" aria-live="polite">{added ? t('החולצה נוספה לסל', 'The shirt was added to your cart') : ''}</span>

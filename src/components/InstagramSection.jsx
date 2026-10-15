@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { Instagram, ExternalLink } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import SectionHeader from '@/components/shop/SectionHeader';
@@ -52,10 +53,10 @@ export default function InstagramSection({ title, instagramHandle = 'Jerseylabil
       </ul>
 
       <div className="mt-8 text-center">
-        <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="shop-btn-secondary rounded-full px-8">
+        <LiquidButton variant="secondary" href={profileUrl} target="_blank" rel="noopener noreferrer" className="rounded-full px-8">
           <Instagram className="h-5 w-5" aria-hidden="true" />
           {t('לעמוד שלנו באינסטגרם', 'See us on Instagram')}
-        </a>
+        </LiquidButton>
       </div>
     </section>
   );

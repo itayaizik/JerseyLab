@@ -1,4 +1,5 @@
 import React from 'react';
+import LiquidButton from '@/components/shop/LiquidButton';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import Seo from '@/components/Seo';
@@ -69,7 +70,7 @@ export default function Guide() {
 
           <nav aria-label={t('קישורים מהמדריך', 'Links from this guide')} className="mt-10 flex flex-wrap gap-2 border-t border-brand-line pt-6">
             {guide.links.map(link => (
-              <Link key={link.to} to={link.to} className="shop-btn-secondary rounded-full">{link.label}</Link>
+              <LiquidButton variant="secondary" key={link.to} to={link.to} className="rounded-full">{link.label}</LiquidButton>
             ))}
           </nav>
         </article>

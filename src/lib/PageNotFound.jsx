@@ -50,7 +50,7 @@ export default function PageNotFound() {
 
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <LiquidButton to="/">{t('לדף הבית', 'Home')}</LiquidButton>
-          <Link to="/catalog" className="shop-btn-secondary">{t('לכל החולצות', 'All shirts')}</Link>
+          <LiquidButton variant="secondary" to="/catalog">{t('לכל החולצות', 'All shirts')}</LiquidButton>
         </div>
       </div>
     </div>
