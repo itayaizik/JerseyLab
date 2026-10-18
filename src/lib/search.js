@@ -99,7 +99,14 @@ const ALIAS_GROUPS = {
   'ניוקאסל': ['newcastle', 'newcastle united', 'ניוקסל', 'magpies'],
   'אסטון וילה': ['aston villa', 'וילה', 'villa', 'avfc'],
   'לסטר סיטי': ['leicester', 'לסטר', 'leicester city', 'foxes'],
-  'סנט פאולי': ['st pauli'],
+  // Sankt Pauli has no settled Hebrew spelling - סנט, סט and סאוט are all in
+  // use, and people drop the first word entirely as often as not. normalize()
+  // already takes the full stop out of "st. pauli", so that spelling needs no
+  // entry of its own.
+  'סנט פאולי': [
+    'סט פאולי', 'סאנט פאולי', 'סאוט פאולי', 'סיינט פאולי', 'פאולי',
+    'st pauli', 'sankt pauli', 'stpauli', 'fc st pauli', 'st paoli', 'saint pauli',
+  ],
   'ראיו וייקאנו': ['ראיו', 'rayo vallecano', 'rayo'],
 
   // The clubs the Israelis abroad play for. Stocked because of the player, so
