@@ -614,8 +614,204 @@ export const GUIDES = [
       { to: '/catalog', label: 'לכל החולצות' },
     ],
   },
+  {
+    slug: 'football-shirt-patches',
+    en: {
+      title: 'Football Shirt Patches: What They Are and Which League Has Which | JerseyLab',
+      h1: 'Patches on a football shirt',
+      description: 'What the badges on a shirt sleeve mean, which patch belongs to which league and competition, and whether to add them. A straight explanation.',
+      intro: 'The small badges on the sleeve are not decoration. Each one says something about where and when the shirt was worn, and getting them wrong is the quickest way to make a good shirt look off.',
+      sections: [
+        {
+          h2: 'What a patch actually is',
+          paragraphs: ['A patch is the competition\'s own mark, worn on the sleeve for the matches of that competition only. A club playing in two competitions wears different sleeves on different nights, which is why the same shirt exists both with patches and without.'],
+        },
+        {
+          h2: 'Which patch belongs where',
+          paragraphs: ['Each league has one of its own, and they are not interchangeable:'],
+          list: [
+            'Premier League: the lion on a purple shield, on both sleeves.',
+            'La Liga: the league mark on one sleeve.',
+            'Serie A: the league badge, with a scudetto on the chest for the reigning champion.',
+            'Bundesliga: the league mark on the right sleeve.',
+            'Champions League: the starball on both sleeves, plus the respect mark - and the lettering on the back changes too.',
+            'World Cup and Euro: the tournament mark, and for the holders a star or a winners badge.',
+          ],
+        },
+        {
+          h2: 'Does a shirt need them?',
+          paragraphs: ['It depends what you want the shirt to be. Without patches it is the shirt as sold in a club shop, which is what most people picture. With them it is the shirt as worn on the pitch on a particular night, which is what collectors and anyone buying a specific season tend to want.'],
+        },
+        {
+          h2: 'The one that is easy to get wrong',
+          paragraphs: ['Champions League patches on a shirt from a season the club did not play in Europe, or league patches on a national team shirt, read as wrong to anyone who follows the game. If you are not sure which season had which, ask us before ordering rather than after.'],
+        },
+      ],
+      links: [
+        { to: '/catalog', label: 'All shirts' },
+        { to: '/collections/champions-league', label: 'Champions League shirts' },
+      ],
+    },
+    title: 'פאצ׳ים על חולצת כדורגל: מה הם ואיזה פאץ׳ שייך לאיזו ליגה | JerseyLab',
+    h1: 'פאצ׳ים על חולצת כדורגל',
+    description: 'מה המשמעות של הפאצ׳ים על השרוול, איזה פאץ׳ שייך לאיזו ליגה ומפעל, והאם כדאי להוסיף אותם. הסבר ישר בלי סיבוכים.',
+    intro: 'הסמלים הקטנים על השרוול הם לא קישוט. כל אחד מהם אומר משהו על איפה ומתי לבשו את החולצה, וטעות בהם היא הדרך המהירה ביותר לגרום לחולצה טובה להיראות לא נכון.',
+    sections: [
+      {
+        h2: 'מה זה בעצם פאץ׳',
+        paragraphs: ['פאץ׳ הוא הסמל של המפעל עצמו, שנלבש על השרוול רק במשחקים של אותו מפעל. קבוצה שמשחקת בשתי מסגרות לובשת שרוולים שונים בערבים שונים, ובדיוק בגלל זה אותה חולצה קיימת גם עם פאצ׳ים וגם בלעדיהם.'],
+      },
+      {
+        h2: 'איזה פאץ׳ שייך לאיפה',
+        paragraphs: ['לכל ליגה יש סמל משלה, והם לא מתחלפים זה בזה:'],
+        list: [
+          'פרמייר ליג: האריה על מגן סגול, על שני השרוולים.',
+          'לה ליגה: סמל הליגה על שרוול אחד.',
+          'סרייה א: סמל הליגה, ולאלופה המכהנת גם סקודטו על החזה.',
+          'בונדסליגה: סמל הליגה על השרוול הימני.',
+          'ליגת האלופות: כדור הכוכבים על שני השרוולים, יחד עם סמל ה-Respect, וגם הכיתוב על הגב משתנה.',
+          'מונדיאל ויורו: סמל הטורניר, ולאלופה כוכב או תג זוכה.',
+        ],
+      },
+      {
+        h2: 'האם חולצה צריכה אותם?',
+        paragraphs: ['תלוי מה אתם רוצים שהחולצה תהיה. בלי פאצ׳ים זו החולצה כמו שהיא נמכרת בחנות של המועדון, וזה מה שרוב האנשים מדמיינים. עם פאצ׳ים זו החולצה כמו שלבשו אותה על הדשא בערב מסוים, וזה מה שאספנים ומי שקונה עונה ספציפית בדרך כלל מחפשים.'],
+      },
+      {
+        h2: 'הטעות שהכי קל לעשות',
+        paragraphs: ['פאצ׳ים של ליגת האלופות על חולצה מעונה שבה הקבוצה לא שיחקה באירופה, או פאצ׳ים של ליגה על חולצת נבחרת, נראים לא נכון לכל מי שעוקב אחרי הכדורגל. אם אתם לא בטוחים איזו עונה קיבלה מה, שאלו אותנו לפני ההזמנה ולא אחריה.'],
+      },
+    ],
+    links: [
+      { to: '/catalog', label: 'לכל החולצות' },
+      { to: '/collections/champions-league', label: 'חולצות ליגת האלופות' },
+    ],
+  },
+  {
+    slug: 'name-and-number-printing',
+    en: {
+      title: 'Name and Number on a Football Shirt: What to Choose | JerseyLab',
+      h1: 'Printing a name and number',
+      description: 'How name and number printing works, whether to put a player on the back or your own name, and the mistakes that are impossible to undo.',
+      intro: 'The back of the shirt is the part people actually read. It is also the one decision on the order that cannot be changed afterwards, so it is worth a minute of thought.',
+      sections: [
+        {
+          h2: 'How it works',
+          paragraphs: ['You choose the name and the number, we print them in the lettering of that shirt\'s league and season. The letters are in English, because that is how they are printed on the real thing, and the number goes on the back - and on the front or the sleeve where that league does it that way.'],
+        },
+        {
+          h2: 'A player, or your own name?',
+          paragraphs: ['A player ties the shirt to a moment: the squad of that season, the man who wore that number. Your own name makes it yours and never goes out of date, which is why it is the safer choice for a shirt you plan to wear rather than keep.'],
+          list: [
+            'Buying a specific season: a player from that squad.',
+            'A gift for someone who plays: their own name and their own number.',
+            'A gift for a fan: their club\'s current star, or their own name if you are not sure.',
+          ],
+        },
+        {
+          h2: 'The mistakes that cannot be undone',
+          paragraphs: ['Printing is permanent. The two we see most often are a player who did not play for the club in that season, and a name spelled the way it sounds in Hebrew rather than the way it is printed on the shirt. Check the spelling against a photo of the real shirt before you order; we will do it too, and we will ask if something looks off.'],
+        },
+        {
+          h2: 'On a kids kit',
+          paragraphs: ['A name and number on the back is included in the price of a kids kit rather than charged as an extra, and for a child their own name on the back almost always beats a player\'s.'],
+        },
+      ],
+      links: [
+        { to: '/catalog', label: 'All shirts' },
+        { to: '/size-guide', label: 'Size guide' },
+      ],
+    },
+    title: 'הדפסת שם ומספר על חולצת כדורגל: מה כדאי לבחור | JerseyLab',
+    h1: 'הדפסת שם ומספר',
+    description: 'איך עובדת הדפסת שם ומספר, האם לשים שחקן על הגב או את השם שלכם, והטעויות שאי אפשר לתקן אחר כך.',
+    intro: 'הגב של החולצה הוא החלק שאנשים באמת קוראים. הוא גם ההחלטה היחידה בהזמנה שאי אפשר לשנות אחר כך, אז שווה להקדיש לה דקה.',
+    sections: [
+      {
+        h2: 'איך זה עובד',
+        paragraphs: ['בוחרים שם ומספר, ואנחנו מדפיסים אותם בגופן של אותה ליגה ואותה עונה. האותיות לועזיות, כי ככה מדפיסים אותן על החולצה האמיתית, והמספר הולך על הגב, ובליגות שעושות את זה גם על החזה או על השרוול.'],
+      },
+      {
+        h2: 'שחקן, או השם שלכם?',
+        paragraphs: ['שחקן קושר את החולצה לרגע מסוים: הסגל של אותה עונה, האיש שלבש את המספר הזה. השם שלכם הופך אותה לשלכם ולא מתיישן לעולם, ולכן הוא הבחירה הבטוחה יותר לחולצה שמתכוונים ללבוש ולא לשמור.'],
+        list: [
+          'קונים עונה ספציפית: שחקן מהסגל של אותה עונה.',
+          'מתנה למישהו שמשחק: השם שלו והמספר שלו.',
+          'מתנה לאוהד: הכוכב הנוכחי של הקבוצה שלו, או השם שלו אם אתם לא בטוחים.',
+        ],
+      },
+      {
+        h2: 'הטעויות שאי אפשר לתקן',
+        paragraphs: ['הדפסה היא לתמיד. השתיים שאנחנו רואים הכי הרבה הן שחקן שלא שיחק במועדון באותה עונה, ושם שנכתב כמו שהוא נשמע בעברית ולא כמו שהוא מודפס על החולצה. בדקו את האיות מול תמונה של החולצה האמיתית לפני ההזמנה; גם אנחנו נבדוק, ונשאל אתכם אם משהו נראה לא נכון.'],
+      },
+      {
+        h2: 'בסט ילדים',
+        paragraphs: ['שם ומספר על הגב כלולים במחיר של סט ילדים ולא נגבים כתוספת, ולילד השם שלו על הגב כמעט תמיד מנצח שם של שחקן.'],
+      },
+    ],
+    links: [
+      { to: '/catalog', label: 'לכל החולצות' },
+      { to: '/size-guide', label: 'מדריך מידות' },
+    ],
+  },
+  {
+    slug: 'world-cup-2026-shirts',
+    en: {
+      title: 'World Cup 2026 Shirts: Which to Buy and What Changed | JerseyLab',
+      h1: 'World Cup 2026 shirts',
+      description: 'The 2026 World Cup kits - which teams, what changed in this tournament, and how a World Cup shirt differs from an ordinary national team shirt.',
+      intro: 'A World Cup is the one tournament that makes people who do not follow club football buy a shirt. 2026 is the biggest there has been, and the kits are worth knowing about before you choose one.',
+      sections: [
+        {
+          h2: 'What is different about 2026',
+          paragraphs: ['Forty-eight teams instead of thirty-two, three host countries - the United States, Mexico and Canada - and more teams at a World Cup for the first time than at any before it. For shirts that means more debutants: Norway are there for the first time since 1998, and Italy are not there at all for a third tournament running.'],
+        },
+        {
+          h2: 'Is a World Cup shirt a different shirt?',
+          paragraphs: ['It is the same kit the team wears through the tournament year, including in the qualifiers and the friendlies around it. The only thing that separates a tournament shirt from an ordinary one is the competition patch, which is added separately.'],
+        },
+        {
+          h2: 'Home or away?',
+          paragraphs: ['For a national team the home shirt is almost always the one people mean - Brazil\'s yellow, the Netherlands\' orange, Argentina\'s stripes. The away shirt is where the designers take liberties, and it is the one you will see fewer of in the street.'],
+        },
+        {
+          h2: 'And the old ones',
+          paragraphs: ['Half the appeal of a World Cup is the shirts people remember. Brazil in 1998 and 2002, France in 1998, Argentina in 1986 and again in 2022, Italy in 2006, Germany in 1990 - those are retro shirts now, and they sell to people who were not born when they were worn.'],
+        },
+      ],
+      links: [
+        { to: '/collections/world-cup', label: 'World Cup shirts' },
+        { to: '/collections/national-teams', label: 'All national teams' },
+      ],
+    },
+    title: 'חולצות מונדיאל 2026: איזו לקנות ומה השתנה | JerseyLab',
+    h1: 'חולצות מונדיאל 2026',
+    description: 'חולצות המונדיאל של 2026 - אילו נבחרות, מה השתנה בטורניר הזה, ובמה חולצת מונדיאל שונה מחולצת נבחרת רגילה.',
+    intro: 'מונדיאל הוא הטורניר היחיד שגורם גם למי שלא עוקב אחרי כדורגל מועדונים לקנות חולצה. 2026 הוא הגדול שהיה אי פעם, וכדאי להכיר את החולצות לפני שבוחרים אחת.',
+    sections: [
+      {
+        h2: 'מה שונה ב-2026',
+        paragraphs: ['ארבעים ושמונה נבחרות במקום שלושים ושתיים, שלוש מדינות מארחות - ארצות הברית, מקסיקו וקנדה - ויותר נבחרות ממונדיאל כלשהו לפניו. מבחינת חולצות זה אומר יותר בכורות: נורווגיה שם בפעם הראשונה מאז 1998, ואיטליה לא שם בכלל בפעם השלישית ברציפות.'],
+      },
+      {
+        h2: 'חולצת מונדיאל היא חולצה אחרת?',
+        paragraphs: ['זו אותה חולצה שהנבחרת לובשת לאורך שנת הטורניר, כולל במוקדמות ובמשחקי הידידות סביבן. הדבר היחיד שמבדיל חולצת טורניר מחולצה רגילה הוא הפאץ׳ של המפעל, שמתווסף בנפרד.'],
+      },
+      {
+        h2: 'בית או חוץ?',
+        paragraphs: ['בנבחרת, חולצת הבית היא כמעט תמיד זו שאנשים מתכוונים אליה - הצהוב של ברזיל, הכתום של הולנד, הפסים של ארגנטינה. חולצת החוץ היא המקום שבו המעצבים לוקחים חופש, והיא זו שתראו ממנה פחות ברחוב.'],
+      },
+      {
+        h2: 'וגם הישנות',
+        paragraphs: ['חצי מהקסם של מונדיאל הוא החולצות שאנשים זוכרים. ברזיל של 1998 ו-2002, צרפת של 1998, ארגנטינה של 1986 ושוב של 2022, איטליה של 2006, גרמניה של 1990 - אלה חולצות רטרו היום, והן נמכרות למי שעוד לא נולד כשלבשו אותן.'],
+      },
+    ],
+    links: [
+      { to: '/collections/world-cup', label: 'חולצות מונדיאל' },
+      { to: '/collections/national-teams', label: 'כל הנבחרות' },
+    ],
+  },
 ];
-
 // The guide in the site's language. Every guide is written in both, so the
 // English site is a real translation rather than Hebrew under an English
 // address.

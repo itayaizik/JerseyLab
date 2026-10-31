@@ -271,6 +271,54 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/kids-football-shirt" />
   </url>
   <url>
+    <loc>https://www.jerseylab.co/guides/football-shirt-patches</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/football-shirt-patches" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/football-shirt-patches" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/football-shirt-patches" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/guides/football-shirt-patches</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/football-shirt-patches" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/football-shirt-patches" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/football-shirt-patches" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/guides/name-and-number-printing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/name-and-number-printing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/name-and-number-printing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/name-and-number-printing" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/guides/name-and-number-printing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/name-and-number-printing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/name-and-number-printing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/name-and-number-printing" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/guides/world-cup-2026-shirts</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/world-cup-2026-shirts" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/world-cup-2026-shirts" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/world-cup-2026-shirts" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/guides/world-cup-2026-shirts</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/guides/world-cup-2026-shirts" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/guides/world-cup-2026-shirts" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/guides/world-cup-2026-shirts" />
+  </url>
+  <url>
     <loc>https://www.jerseylab.co/collections/retro</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
