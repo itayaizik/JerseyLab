@@ -287,6 +287,25 @@ html[dir="ltr"] svg:is(.lucide-chevron-left, .lucide-chevron-right, .lucide-arro
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 .jl-pop-in { animation: jl-pop-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* The promo strip, when the shop asks it to move. The duration comes from the
+   element's own style, so the speed is a setting rather than a rebuild. */
+@keyframes jl-marquee-rtl { from { transform: translateX(0); }      to { transform: translateX(-50%); } }
+@keyframes jl-marquee-ltr { from { transform: translateX(-50%); }   to { transform: translateX(0); } }
+.jl-marquee-track {
+  display: flex;
+  width: max-content;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.jl-marquee-rtl { animation-name: jl-marquee-rtl; }
+.jl-marquee-ltr { animation-name: jl-marquee-ltr; }
+/* Stops while it is being read, which is the moment someone actually wants it
+   to hold still. */
+.jl-marquee:hover .jl-marquee-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .jl-marquee-track { animation: none; }
+}
 @media (prefers-reduced-motion: reduce) {
   .jl-pop-in { animation: none; }
 }

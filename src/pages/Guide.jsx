@@ -56,12 +56,9 @@ export default function Guide() {
                 <p key={p} className="mt-3 text-[16px] leading-relaxed text-brand-navy/75">{p}</p>
               ))}
               {section.list && (
-                <ul className="mt-3 space-y-2">
+                <ul className="mt-3 list-disc space-y-2 ps-5 marker:text-brand-navy/25">
                   {section.list.map(item => (
-                    <li key={item} className="flex gap-3 text-[16px] leading-relaxed text-brand-navy/75">
-                      <span className="mt-2.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-brand-orange" aria-hidden="true" />
-                      <span>{item}</span>
-                    </li>
+                    <li key={item} className="text-[16px] leading-relaxed text-brand-navy/75">{item}</li>
                   ))}
                 </ul>
               )}

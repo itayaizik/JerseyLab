@@ -77,7 +77,7 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
             The padding gives it room and the negative margin takes the space
             back, leaving the row where it was. */}
         <div role="tablist" aria-label={t('בחירת שחקן', 'Choose a player')}
-          className="scrollbar-hide -mx-4 -my-1.5 mt-8 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 py-1.5 sm:mx-0 sm:my-0 sm:flex-wrap sm:justify-center sm:gap-4 sm:overflow-x-visible sm:px-0 sm:py-0">
+          className="scrollbar-hide -mx-4 -my-1.5 mt-11 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 py-1.5 sm:mx-0 sm:my-0 sm:flex-wrap sm:justify-center sm:gap-4 sm:overflow-x-visible sm:px-0 sm:py-0">
           {players.map(player => {
             const count = (byPlayer.get(player.name) || []).length;
             const selected = active?.id === player.id;
@@ -85,7 +85,7 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
               <button key={player.id} type="button" role="tab"
                 id={`legionnaire-tab-${player.id}`} aria-selected={selected} aria-controls="legionnaire-panel"
                 onClick={() => setActiveName(player.name)}
-                className="group flex w-[6.5rem] flex-shrink-0 snap-start flex-col items-center gap-2.5 sm:w-[7.25rem] sm:gap-4">
+                className="group flex w-[6.5rem] flex-shrink-0 snap-start flex-col items-center gap-3.5 sm:w-[7.25rem] sm:gap-4">
                 {/* `object-top`, because these are head-and-shoulders portraits
                     with the head in the upper third: a square crop taken from
                     the middle of one cuts the face off at the eyebrows. */}

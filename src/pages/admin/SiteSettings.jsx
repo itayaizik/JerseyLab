@@ -29,7 +29,17 @@ const settingFields = [
   { key: 'topbar_text', label: 'פס הודעה - טקסט', type: 'text', placeholder: 'משלוח חינם בהזמנה מעל ₪200',
     help: 'משפט אחד קצר. מבקר יכול לסגור אותו, והוא יחזור רק אם תשנה את הטקסט.' },
   { key: 'topbar_link_text', label: 'פס הודעה - טקסט הקישור', type: 'text', placeholder: 'לפרטים' },
-  { key: 'topbar_link_href', label: 'פס הודעה - כתובת הקישור', type: 'text', placeholder: '/catalog?sale=true' },
+  { key: 'topbar_link_href', label: 'פס הודעה - כתובת הקישור', type: 'text', placeholder: '/catalog?sale=true',
+    help: 'אם יש כתובת, אפשר ללחוץ על כל רוחב הפס ולא רק על המילים בסוף.' },
+  { key: 'topbar_scroll', label: 'פס הודעה - האם זז?', type: 'select',
+    options: [{ value: '', label: 'לא - טקסט קבוע באמצע' }, { value: 'yes', label: 'כן - טקסט נע' }],
+    help: 'תנועה בקצה העין עולה בתשומת לב, אז כברירת מחדל הפס עומד במקום.' },
+  { key: 'topbar_direction', label: 'פס הודעה - כיוון התנועה', type: 'select',
+    options: [{ value: 'rtl', label: 'מימין לשמאל (ככיוון הקריאה)' }, { value: 'ltr', label: 'משמאל לימין' }] },
+  { key: 'topbar_speed', label: 'פס הודעה - מהירות (שניות לסיבוב)', type: 'text', placeholder: '24',
+    help: 'מספר גבוה = איטי יותר. בין 4 ל-300; ריק = 24.' },
+  { key: 'topbar_bg', label: 'פס הודעה - צבע רקע', type: 'color', placeholder: '#D0551F' },
+  { key: 'topbar_fg', label: 'פס הודעה - צבע טקסט', type: 'color', placeholder: '#FFFFFF' },
   { key: 'chat_proofs_title', label: 'כותרת קטע "לקוחות מספרים"', type: 'text', placeholder: 'לקוחות מספרים',
     help: 'הקטע מופיע אם יש לפחות צילום שיחה אחד, או ביקורת עם תמונה שסימנת להצגה.' },
   { key: 'whatsapp_link', label: 'קישור WhatsApp', type: 'text', placeholder: 'https://wa.me/972...' },
@@ -157,6 +167,23 @@ export default function SiteSettings() {
         <textarea id={`setting-${f.key}`} value={settings[f.key] || ''} rows={4}
           onChange={e => setSettings(p => ({ ...p, [f.key]: e.target.value }))}
           className={`${inputClass} resize-none`} />
+      ) : f.type === 'select' ? (
+        <select id={`setting-${f.key}`} value={settings[f.key] || ''}
+          onChange={e => setSettings(p => ({ ...p, [f.key]: e.target.value }))}
+          className={inputClass}>
+          {f.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+      ) : f.type === 'color' ? (
+        // The swatch and the hex side by side: one to pick with, one to paste
+        // a brand colour into.
+        <div className="flex items-center gap-2">
+          <input type="color" aria-label={f.label} value={settings[f.key] || f.placeholder || '#000000'}
+            onChange={e => setSettings(p => ({ ...p, [f.key]: e.target.value }))}
+            className="h-10 w-12 cursor-pointer rounded border border-brand-line bg-white p-1" />
+          <input id={`setting-${f.key}`} value={settings[f.key] || ''} placeholder={f.placeholder || ''}
+            onChange={e => setSettings(p => ({ ...p, [f.key]: e.target.value }))}
+            dir="ltr" className={inputClass} />
+        </div>
       ) : (
         <input id={`setting-${f.key}`} value={settings[f.key] || ''} placeholder={f.placeholder || ''}
           onChange={e => setSettings(p => ({ ...p, [f.key]: e.target.value }))}
