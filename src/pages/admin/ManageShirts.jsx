@@ -11,6 +11,7 @@ import { dateSortValue } from '@/lib/dates';
 import { stockItems, stockPayload } from '@/lib/localStock';
 import { buildSearchQuery } from '@/lib/supplierText';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { shirtPath } from '@/lib/shirtSlug';
 
 // Quick filters: the questions the owner actually asks of the catalogue, one
 // tap each. They combine - מלאי בארץ + רטרו is every retro shirt in stock - and
@@ -457,7 +458,7 @@ export default function ManageShirts() {
                       <button onClick={() => handleDuplicate(s)} className="p-1.5 hover:text-turf transition-colors" title="שכפל">
                         <Copy className="w-3.5 h-3.5" />
                       </button>
-                      <a href={`/shirt/${s.id}`} target="_blank" rel="noopener noreferrer" className="p-1.5 hover:text-turf transition-colors" title="צפה">
+                      <a href={shirtPath(s)} target="_blank" rel="noopener noreferrer" className="p-1.5 hover:text-turf transition-colors" title="צפה">
                         <Eye className="w-3.5 h-3.5" />
                       </a>
                       <AlertDialog>

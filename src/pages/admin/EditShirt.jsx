@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Upload, Loader2, Plus, ArrowRight } from 'lucide-react';
+import { Upload, Loader2, Plus, ArrowRight, Eye } from 'lucide-react';
+import { shirtPath } from '@/lib/shirtSlug';
 import { base44 } from '@/api/base44Client';
 import { trimShirtText } from '@/lib/shirtText';
 import LocalStockEditor from '@/components/admin/LocalStockEditor';
@@ -185,9 +186,19 @@ export default function EditShirt() {
 
   return (
     <div>
-      <button onClick={() => navigate('/admin/shirts')} className="flex items-center gap-1 text-sm text-varnish hover:text-turf mb-4">
-        <ArrowRight className="w-4 h-4" /> חזרה לרשימה
-      </button>
+      <div className="mb-4 flex flex-wrap items-center gap-4">
+        <button onClick={() => navigate('/admin/shirts')} className="flex items-center gap-1 text-sm text-varnish hover:text-turf">
+          <ArrowRight className="w-4 h-4" /> חזרה לרשימה
+        </button>
+        {/* Opens in its own tab so the edit in progress is not lost. Only once
+            the shirt has loaded, because the link is built from its id. */}
+        {form.id && (
+          <a href={shirtPath(form)} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-1 text-sm text-varnish hover:text-turf">
+            <Eye className="w-4 h-4" /> צפייה בדף החולצה
+          </a>
+        )}
+      </div>
       <h1 className="font-heading font-black text-2xl mb-6 text-turf">עריכת חולצה</h1>
       {restorable && (
         <div className="rounded-lg max-w-3xl mb-4 flex flex-wrap items-center justify-between gap-2 border border-amber-400/40 bg-amber-500/10 p-3 text-sm">
