@@ -10,9 +10,7 @@ import ShirtCardSkeleton from '@/components/ui/ShirtCardSkeleton';
 import PopularClubsSection from '@/components/PopularClubsSection';
 import LeaguesSection from '@/components/LeaguesSection';
 import LegionnairesSection from '@/components/LegionnairesSection';
-import CategoryCardsSection from '@/components/CategoryCardsSection';
 import PromoBanner from '@/components/PromoBanner';
-import InstagramSection from '@/components/InstagramSection';
 import ChatProofsSection from '@/components/ChatProofsSection';
 import OrderedRow, { reviewItems } from '@/components/shop/OrderedRow';
 import useShirtsById from '@/hooks/useShirtsById';
@@ -251,7 +249,6 @@ export default function Home() {
 
           <LeaguesSection title={sectionTitle('leagues_title')} />
 
-          <CategoryCardsSection title={sectionTitle('category_cards_title')} />
 
           <PromoBanner
             active={promoActive}
@@ -380,7 +377,6 @@ export default function Home() {
             </section>
           )}
 
-          <InstagramSection title={sectionTitle('instagram_section_title')} instagramHandle={siteSettings.instagram_handle || 'Jerseylabil'} />
 
           {/* ===== CONTACT ===== */}
           <section className="shop-container mt-16 sm:mt-24" aria-labelledby="contact-heading">

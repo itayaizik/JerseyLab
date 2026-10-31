@@ -62,7 +62,6 @@ const EditShirt = lazy(() => import('@/pages/admin/EditShirt'));
 const ManageRequests = lazy(() => import('@/pages/admin/ManageRequests'));
 const ManageShirtRequests = lazy(() => import('@/pages/admin/ManageShirtRequests'));
 const ManageContactMessages = lazy(() => import('@/pages/admin/ManageContactMessages'));
-const ManageCategories = lazy(() => import('@/pages/admin/ManageCategories'));
 const ManageLegionnaires = lazy(() => import('@/pages/admin/ManageLegionnaires'));
 const ManageMysteryBox = lazy(() => import('@/pages/admin/ManageMysteryBox'));
 const ManageReviews = lazy(() => import('@/pages/admin/ManageReviews'));
@@ -72,7 +71,7 @@ const SiteSettings = lazy(() => import('@/pages/admin/SiteSettings'));
 const SearchAnalytics = lazy(() => import('@/pages/admin/SearchAnalytics'));
 const SalesReport = lazy(() => import('@/pages/admin/SalesReport'));
 const ManageHomeSections = lazy(() => import('@/pages/admin/ManageHomeSections'));
-const ManageInstagram = lazy(() => import('@/pages/admin/ManageInstagram'));
+const ManageBanners = lazy(() => import('@/pages/admin/ManageBanners'));
 const RecoverUploads = lazy(() => import('@/pages/admin/RecoverUploads'));
 
 function Spinner() {
@@ -159,17 +158,16 @@ const AuthenticatedApp = () => {
               working. */}
           <Route path="/admin/chat-proofs" element={<Navigate to="/admin/reviews?tab=proofs" replace />} />
           <Route path="/admin/contact-messages" element={<ManageContactMessages />} />
-          <Route path="/admin/categories" element={<ManageCategories />} />
           <Route path="/admin/legionnaires" element={<ManageLegionnaires />} />
           <Route path="/admin/mystery-box" element={<ManageMysteryBox />} />
           <Route path="/admin/reviews" element={<ManageReviews />} />
           <Route path="/admin/coupons" element={<ManageCoupons />} />
           <Route path="/admin/faq" element={<ManageFAQ />} />
+          <Route path="/admin/banners" element={<ManageBanners />} />
           <Route path="/admin/settings" element={<SiteSettings />} />
           <Route path="/admin/search-analytics" element={<SearchAnalytics />} />
           <Route path="/admin/sales" element={<SalesReport />} />
           <Route path="/admin/home-sections" element={<ManageHomeSections />} />
-          <Route path="/admin/instagram" element={<ManageInstagram />} />
           <Route path="/admin/recover-uploads" element={<RecoverUploads />} />
         </Route>
       </Route>

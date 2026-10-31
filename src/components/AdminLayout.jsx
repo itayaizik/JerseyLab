@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Gift, Plane, LayoutDashboard, PlusCircle, Shirt, Users, FolderOpen, Star, HelpCircle, Settings, ArrowRight, BarChart2, TrendingUp, Layout, Upload, Mail, Instagram, History, Ticket } from 'lucide-react';
+import { Gift, Plane, LayoutDashboard, PlusCircle, Shirt, Users, Star, HelpCircle, Settings, ArrowRight, BarChart2, TrendingUp, Layout, Upload, Mail, Megaphone, History, Ticket } from 'lucide-react';
 
 const adminLinks = [
   { to: '/admin', label: 'דשבורד', icon: LayoutDashboard },
@@ -11,14 +11,13 @@ const adminLinks = [
   { to: '/admin/recover-uploads', label: 'שחזור תמונות', icon: History },
   { to: '/admin/requests', label: 'הזמנות', icon: Users },
   { to: '/admin/contact-messages', label: 'פניות צור קשר', icon: Mail },
-  { to: '/admin/categories', label: 'קטגוריות', icon: FolderOpen },
   { to: '/admin/legionnaires', label: 'לגיונרים', icon: Plane },
   { to: '/admin/mystery-box', label: 'מיסטרי בוקס', icon: Gift },
   { to: '/admin/reviews', label: 'ביקורות וצילומים', icon: Star },
   { to: '/admin/coupons', label: 'קופונים', icon: Ticket },
   { to: '/admin/faq', label: 'שאלות ותשובות', icon: HelpCircle },
   { to: '/admin/home-sections', label: 'עריכת דף הבית', icon: Layout },
-  { to: '/admin/instagram', label: 'אינסטגרם', icon: Instagram },
+  { to: '/admin/banners', label: 'באנרים והודעות', icon: Megaphone },
   { to: '/admin/search-analytics', label: 'אנליטיקת חיפוש', icon: BarChart2 },
   { to: '/admin/settings', label: 'הגדרות', icon: Settings },
 ];

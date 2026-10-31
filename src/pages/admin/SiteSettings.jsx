@@ -3,6 +3,7 @@ import { Save, Loader2, Check, Upload, RotateCcw, ImageIcon } from 'lucide-react
 import { base44 } from '@/api/base44Client';
 import { uploadErrorMessage } from '@/lib/supabaseStorage';
 import { HERO_DEFAULTS } from '@/components/HomeHero';
+import { SettingField } from '@/components/admin/SettingsForm';
 
 // The home page banner has its own block at the top, because its photo is the
 // thing most often changed: pick a file and it is live, no save button needed.
@@ -21,58 +22,32 @@ const heroFields = [
   { key: 'homepage_hero_link', label: 'לאן הלחיצה מובילה', type: 'text', placeholder: HERO_DEFAULTS.link },
 ];
 
-const settingFields = [
+// What is left once the strip, the banner and the popup have their own page
+// (pages/admin/ManageBanners): the words on the home page, and how to reach
+// the shop.
+const HOME_FIELDS = [
   { key: 'about_us_text', label: 'טקסט "מי אנחנו"', type: 'textarea',
     help: 'מופיע בדף הבית, וגוגל לוקח ממנו לעיתים את התיאור בתוצאות החיפוש. שורה ריקה יוצרת פסקה חדשה.' },
-  { key: 'topbar_active', label: 'פס הודעה עליון - פעיל? (כתוב "yes" להצגה)', type: 'text', placeholder: 'yes',
-    help: 'הפס הכתום מעל התפריט. ריק או לא "yes" = לא מוצג כלל.' },
-  { key: 'topbar_text', label: 'פס הודעה - טקסט', type: 'text', placeholder: 'משלוח חינם בהזמנה מעל ₪200',
-    help: 'משפט אחד קצר. מבקר יכול לסגור אותו, והוא יחזור רק אם תשנה את הטקסט.' },
-  { key: 'topbar_link_text', label: 'פס הודעה - טקסט הקישור', type: 'text', placeholder: 'לפרטים' },
-  { key: 'topbar_link_href', label: 'פס הודעה - כתובת הקישור', type: 'text', placeholder: '/catalog?sale=true',
-    help: 'אם יש כתובת, אפשר ללחוץ על כל רוחב הפס ולא רק על המילים בסוף.' },
-  { key: 'topbar_scroll', label: 'פס הודעה - האם זז?', type: 'select',
-    options: [{ value: '', label: 'לא - טקסט קבוע באמצע' }, { value: 'yes', label: 'כן - טקסט נע' }],
-    help: 'תנועה בקצה העין עולה בתשומת לב, אז כברירת מחדל הפס עומד במקום.' },
-  { key: 'topbar_direction', label: 'פס הודעה - כיוון התנועה', type: 'select',
-    options: [{ value: 'rtl', label: 'מימין לשמאל (ככיוון הקריאה)' }, { value: 'ltr', label: 'משמאל לימין' }] },
-  { key: 'topbar_speed', label: 'פס הודעה - מהירות (שניות לסיבוב)', type: 'text', placeholder: '24',
-    help: 'מספר גבוה = איטי יותר. בין 4 ל-300; ריק = 24.' },
-  { key: 'topbar_bg', label: 'פס הודעה - צבע רקע', type: 'color', placeholder: '#D0551F' },
-  { key: 'topbar_fg', label: 'פס הודעה - צבע טקסט', type: 'color', placeholder: '#FFFFFF' },
-  { key: 'chat_proofs_title', label: 'כותרת קטע "לקוחות מספרים"', type: 'text', placeholder: 'לקוחות מספרים',
+  { key: 'chat_proofs_title', label: 'כותרת "לקוחות מספרים"', type: 'text', placeholder: 'לקוחות מספרים',
     help: 'הקטע מופיע אם יש לפחות צילום שיחה אחד, או ביקורת עם תמונה שסימנת להצגה.' },
+  { key: 'legionnaires_title', label: 'כותרת "הלגיונרים"', type: 'text', placeholder: 'הלגיונרים',
+    help: 'השחקנים עצמם נערכים בניהול > לגיונרים.' },
+  { key: 'popular_clubs_title', label: 'כותרת "קבוצות פופולריות"', type: 'text', placeholder: 'קבוצות פופולריות' },
+];
+
+const CONTACT_FIELDS = [
   { key: 'whatsapp_link', label: 'קישור WhatsApp', type: 'text', placeholder: 'https://wa.me/972...' },
   { key: 'instagram_link', label: 'קישור Instagram', type: 'text', placeholder: 'https://instagram.com/...' },
   { key: 'email', label: 'אימייל', type: 'text' },
-  { key: 'contact_message', label: 'הודעת צור קשר', type: 'textarea' },
-  { key: 'legionnaires_title', label: 'כותרת קטע "הלגיונרים"', type: 'text', placeholder: 'הלגיונרים',
-    help: 'השחקנים עצמם נערכים בניהול > לגיונרים. הקטע מופיע כל עוד יש שם שחקן אחד מוצג.' },
-  { key: 'popular_clubs_title', label: 'כותרת "קבוצות פופולריות"', type: 'text', placeholder: 'קבוצות פופולריות' },
-  { key: 'category_cards_title', label: 'כותרת "קנה לפי קטגוריה"', type: 'text', placeholder: 'קנה לפי קטגוריה' },
-  { key: 'promo_banner_active', label: 'באנר מבצע - פעיל? (כתוב "yes" להצגה)', type: 'text', placeholder: 'yes' },
-  { key: 'promo_banner_title', label: 'באנר - כותרת ראשית', type: 'text', placeholder: 'מבצע ענק על חולצות סייל' },
-  { key: 'promo_banner_subtitle', label: 'באנר - תת כותרת', type: 'text', placeholder: 'הנחות מיוחדות לזמן מוגבל' },
-  { key: 'promo_banner_button_text', label: 'באנר - טקסט כפתור', type: 'text', placeholder: 'לחולצות הסייל ←' },
-  { key: 'promo_banner_button_link', label: 'באנר - קישור כפתור', type: 'text', placeholder: '/catalog?sale=true' },
-  { key: 'promo_banner_image', label: 'באנר - תמונת רקע (URL)', type: 'text', placeholder: 'https://...' },
-  { key: 'discount_popup_active', label: 'פופ-אפ הנחה - פעיל? (כתוב "yes" להצגה)', type: 'text', placeholder: 'yes',
-    help: 'נפתח מעצמו אחרי חצי דקה מהכניסה לאתר, פעם אחת לכל מבצע. מי שסגר אותו לא יראה אותו שוב עד שתשנו את הטקסט.' },
-  { key: 'discount_popup_title', label: 'פופ-אפ - כותרת', type: 'text', placeholder: '10% על ההזמנה הראשונה' },
-  { key: 'discount_popup_text', label: 'פופ-אפ - טקסט', type: 'textarea', placeholder: 'מצטרפים עם הקוד הזה ומקבלים הנחה על כל ההזמנה.',
-    help: 'בלי טקסט הפופ-אפ לא נפתח, גם אם הוא פעיל.' },
-  { key: 'discount_popup_code', label: 'פופ-אפ - קוד קופון', type: 'text', placeholder: 'JL10',
-    help: 'הקוד עצמו נוצר ב"ניהול קופונים". כאן רק כותבים אותו כדי להציג ולהעתיק.' },
-  { key: 'discount_popup_button_text', label: 'פופ-אפ - טקסט הכפתור', type: 'text', placeholder: 'לקולקציה' },
-  { key: 'discount_popup_link', label: 'פופ-אפ - קישור הכפתור', type: 'text', placeholder: '/catalog' },
-  { key: 'discount_popup_delay', label: 'פופ-אפ - אחרי כמה שניות להיפתח', type: 'text', placeholder: '30' },
+  { key: 'contact_message', label: 'הודעת צור קשר', type: 'textarea',
+    help: 'המשפט שמופיע מעל טופס יצירת הקשר.' },
 ];
+
+const settingFields = [...HOME_FIELDS, ...CONTACT_FIELDS];
 
 // Everything the save button writes. The hero photos and the card switch save
 // themselves the moment they change.
 const SAVED_WITH_BUTTON = [...heroFields, ...settingFields];
-
-const inputClass = 'rounded-lg w-full bg-white border border-brand-line px-3 py-2.5 text-sm text-chalk focus:border-turf focus:outline-none';
 
 export default function SiteSettings() {
   const [settings, setSettings] = useState({});
@@ -161,46 +136,18 @@ export default function SiteSettings() {
   if (loading) return <div className="flex items-center justify-center min-h-[50vh]"><div className="w-8 h-8 border-4 border-varnish border-t-turf rounded-full animate-spin" /></div>;
 
   const renderField = (f) => (
-    <div key={f.key}>
-      <label htmlFor={`setting-${f.key}`} className="text-sm text-varnish block mb-1">{f.label}</label>
-      {f.type === 'textarea' ? (
-        <textarea id={`setting-${f.key}`} value={settings[f.key] || ''} rows={4}
-          onChange={e => setSettings(p => ({ ...p, [f.key]: e.target.value }))}
-          className={`${inputClass} resize-none`} />
-      ) : f.type === 'select' ? (
-        <select id={`setting-${f.key}`} value={settings[f.key] || ''}
-          onChange={e => setSettings(p => ({ ...p, [f.key]: e.target.value }))}
-          className={inputClass}>
-          {f.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
-      ) : f.type === 'color' ? (
-        // The swatch and the hex side by side: one to pick with, one to paste
-        // a brand colour into.
-        <div className="flex items-center gap-2">
-          <input type="color" aria-label={f.label} value={settings[f.key] || f.placeholder || '#000000'}
-            onChange={e => setSettings(p => ({ ...p, [f.key]: e.target.value }))}
-            className="h-10 w-12 cursor-pointer rounded border border-brand-line bg-white p-1" />
-          <input id={`setting-${f.key}`} value={settings[f.key] || ''} placeholder={f.placeholder || ''}
-            onChange={e => setSettings(p => ({ ...p, [f.key]: e.target.value }))}
-            dir="ltr" className={inputClass} />
-        </div>
-      ) : (
-        <input id={`setting-${f.key}`} value={settings[f.key] || ''} placeholder={f.placeholder || ''}
-          onChange={e => setSettings(p => ({ ...p, [f.key]: e.target.value }))}
-          dir={f.key.includes('link') || f.key.includes('href') || f.key === 'email' ? 'ltr' : 'rtl'}
-          className={inputClass} />
-      )}
-      {/* Says where the value shows up, so a field can be changed with some
-          idea of what it will do. */}
-      {f.help && <p className="text-xs text-brand-navy/60 font-body mt-1 leading-relaxed">{f.help}</p>}
-    </div>
+    <SettingField key={f.key} field={f} value={settings[f.key] || ''}
+      onChange={value => setSettings(p => ({ ...p, [f.key]: value }))} />
   );
 
   const showCard = settings.homepage_hero_card !== 'no';
 
   return (
     <div>
-      <h1 className="font-heading font-black text-2xl mb-6 text-turf">הגדרות אתר</h1>
+      <h1 className="font-heading font-black text-2xl text-turf">הגדרות אתר</h1>
+      <p className="text-sm text-brand-navy/60 mt-1 mb-6">
+        פס ההודעה, באנר המבצע והפופ-אפ עברו לניהול &gt; באנרים והודעות.
+      </p>
 
       {/* ===== Home banner ===== */}
       <section className="rounded-2xl max-w-3xl border border-brand-line bg-white p-5 mb-8">
@@ -261,9 +208,19 @@ export default function SiteSettings() {
         </div>
       </section>
 
-      {/* ===== Everything else ===== */}
-      <div className="max-w-2xl space-y-4">
-        {settingFields.map(renderField)}
+      {/* ===== The rest, in groups ===== */}
+      <div className="max-w-2xl space-y-6">
+        <section className="rounded-2xl border border-brand-line bg-white p-5">
+          <h2 className="font-heading font-bold text-base text-chalk">טקסטים בדף הבית</h2>
+          <div className="mt-4 space-y-4">{HOME_FIELDS.map(renderField)}</div>
+        </section>
+
+        <section className="rounded-2xl border border-brand-line bg-white p-5">
+          <h2 className="font-heading font-bold text-base text-chalk">פרטי קשר</h2>
+          <p className="text-xs text-brand-navy/55 mt-1">מופיעים בתחתית האתר, בדף צור קשר ובכפתורי הפנייה.</p>
+          <div className="mt-4 space-y-4">{CONTACT_FIELDS.map(renderField)}</div>
+        </section>
+
         {error && <p className="text-redcard text-sm">{error}</p>}
         <button onClick={handleSave} disabled={saving || !!uploadingKey}
           className="rounded-2xl bg-turf text-pitch px-6 py-3 font-heading font-bold text-sm hover:bg-turf/90 disabled:opacity-50 flex items-center gap-2">
