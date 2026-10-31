@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -64,9 +64,16 @@ function wasDismissed(promo) {
   }
 }
 
+// A half is built from this many copies of the message until it has been
+// measured; the first paint is then corrected to whatever the window needs.
+const MIN_COPIES = 3;
+
 export default function PromoBar() {
   const [promo, setPromo] = useState(null);
   const [dismissed, setDismissed] = useState(false);
+  const [copies, setCopies] = useState(MIN_COPIES);
+  const windowRef = useRef(null);
+  const halfRef = useRef(null);
   // For whoever is checking whether it is on: show it regardless of a
   // dismissal. A customer never types this.
   const preview = typeof window !== 'undefined'
@@ -80,7 +87,9 @@ export default function PromoBar() {
         if (cancelled) return;
         const map = {};
         rows.forEach(r => { map[r.key] = r.value; });
-        if (map[SETTING_KEYS.active] !== 'yes') return;
+        // Preview shows it before it is switched on, so the shop can look at
+        // what it wrote without putting it in front of customers first.
+        if (!preview && map[SETTING_KEYS.active] !== 'yes') return;
         // The English site shows the strip only if it was also written in
         // English (the same settings with _en).
         const key = (name) => (isEn ? `${SETTING_KEYS[name]}_en` : SETTING_KEYS[name]);
@@ -109,6 +118,33 @@ export default function PromoBar() {
     return () => { cancelled = true; };
   }, []);
 
+  // One half has to overrun the window, or the half-way restart leaves the
+  // rest of the window empty. Measured from what a copy actually comes out at,
+  // because that depends on the words, the font and the screen.
+  useLayoutEffect(() => {
+    const win = windowRef.current;
+    const half = halfRef.current;
+    if (!win || !half) return undefined;
+
+    const fit = () => {
+      const windowWidth = win.getBoundingClientRect().width;
+      const halfWidth = half.getBoundingClientRect().width;
+      if (!windowWidth || !halfWidth) return;
+      const perCopy = halfWidth / copies;
+      if (perCopy < 1) return;
+      const needed = Math.max(MIN_COPIES, Math.ceil((windowWidth + perCopy) / perCopy));
+      // Only ever grows. Extra copies sit off screen and cost nothing, while
+      // a count that moves both ways can chase its own measurement when the
+      // window lands near a boundary.
+      if (needed > copies) setCopies(needed);
+    };
+
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(win);
+    return () => observer.disconnect();
+  }, [promo, copies]);
+
   if (!promo || dismissed) return null;
 
   const close = () => {
@@ -134,9 +170,10 @@ export default function PromoBar() {
 
   const content = promo.scroll ? (
     // Two identical halves, animated by exactly half the track: when the first
-    // reaches where the second began the loop restarts invisibly. The hidden
-    // copies are what make it seamless rather than a message that jumps.
-    <div dir="ltr" className="jl-marquee flex-1 overflow-hidden">
+    // reaches where the second began the loop restarts invisibly. Each half is
+    // wide enough to fill the window on its own - without that the restart
+    // leaves the far side of the strip blank.
+    <div ref={windowRef} dir="ltr" className="jl-marquee flex-1 overflow-hidden">
       {/* Laid out left to right whatever the page direction. In an RTL
           container a max-content flex track starts at the right edge and runs
           leftwards, which put the left-to-right keyframe's starting offset
@@ -152,8 +189,9 @@ export default function PromoBar() {
         style={{ animationDuration: `${promo.speed}s`, animationDelay: `-${(promo.speed / 3).toFixed(2)}s` }}
       >
         {[0, 1].map(half => (
-          <div key={half} className="flex shrink-0 items-center gap-16 pr-16" aria-hidden={half === 1 ? 'true' : undefined}>
-            {[0, 1, 2].map(i => <Message key={i} aria={half === 0 && i === 0} />)}
+          <div key={half} ref={half === 0 ? halfRef : undefined}
+            className="flex shrink-0 items-center gap-16 pr-16" aria-hidden={half === 1 ? 'true' : undefined}>
+            {Array.from({ length: copies }, (_, i) => <Message key={i} aria={half === 0 && i === 0} />)}
           </div>
         ))}
       </div>
