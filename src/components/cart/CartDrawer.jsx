@@ -15,7 +15,7 @@ import { SHOP_PHONE, WHATSAPP_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib
 import { getCart, setCart, cartItemTotal, cartTotal, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL,
   DELIVERY_PRICE, DELIVERY_LABEL, PICKUP_LABEL, FREE_DELIVERY_ABOVE, deliveryFeeFor } from '@/lib/cart';
 import { MYSTERY_BOX_ID } from '@/lib/mysteryBox';
-import { checkCoupon, redeemCoupon, applyCoupon, normalizeCode } from '@/lib/coupons';
+import { checkCoupon, redeemCoupon, applyCoupon, normalizeCode, normalizePhone } from '@/lib/coupons';
 import { t } from '@/lib/i18n';
 
 // The cart, as a drawer from the side of the screen: the bag, then the contact
@@ -306,7 +306,7 @@ export default function CartDrawer({ open, onClose, user }) {
     const channel = contactForm.contact_channel;
     // Stored without the leading @ so the admin panel can link straight to it.
     const igHandle = contactForm.instagram_handle.trim().replace(/^@/, '');
-    const phone = contactForm.phone.trim();
+    const phone = normalizePhone(contactForm.phone);
 
     // The code is checked again with the customer's details: it may have run
     // out since it was applied, or be limited to one use per customer.
@@ -430,7 +430,7 @@ export default function CartDrawer({ open, onClose, user }) {
         {/* Repeated here on purpose: this is the screen a customer is most
             likely to mistake for a completed purchase. */}
         <div className="mt-6 space-y-3">
-          <HowItWorksNotice />
+        <HowItWorksNotice />
           <FastHandlingNote />
         </div>
       </div>
@@ -517,6 +517,27 @@ export default function CartDrawer({ open, onClose, user }) {
           </Field>
         )}
 
+        <fieldset>
+          <legend className="mb-1.5 text-sm font-medium text-brand-navy/70">{t('איך לקבל את ההזמנה', 'How to get your order')}</legend>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              {
+                id: 'delivery',
+                label: t(DELIVERY_LABEL, 'Delivered'),
+                price: itemsTotal >= FREE_DELIVERY_ABOVE ? t('חינם', 'Free') : `₪${DELIVERY_PRICE}`,
+              },
+              { id: 'pickup', label: t(PICKUP_LABEL, 'Pick up in Kiryat Ono'), price: t('חינם', 'Free') },
+            ].map(opt => (
+              <button key={opt.id} type="button" aria-pressed={fulfilment === opt.id}
+                onClick={() => setFulfilment(opt.id)}
+                className={`shop-chip h-auto min-h-[4.25rem] flex-col items-center justify-center gap-1 px-3 py-3 text-center ${fulfilment === opt.id ? 'shop-chip-active' : ''}`}>
+                <span className="text-[13px] font-medium leading-snug">{opt.label}</span>
+                <span className="text-[13px] font-semibold tabular-nums opacity-80">{opt.price}</span>
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
         <HowItWorksNotice />
         <FastHandlingNote />
 
@@ -541,26 +562,6 @@ export default function CartDrawer({ open, onClose, user }) {
     );
     footer = (
       <div>
-        <fieldset className="mt-4">
-          <legend className="text-[13px] font-semibold text-brand-navy">{t('איך לקבל את ההזמנה', 'How to get your order')}</legend>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            {[
-              {
-                id: 'delivery',
-                label: t(DELIVERY_LABEL, 'Delivered'),
-                price: itemsTotal >= FREE_DELIVERY_ABOVE ? t('חינם', 'Free') : `₪${DELIVERY_PRICE}`,
-              },
-              { id: 'pickup', label: t(PICKUP_LABEL, 'Pick up in Kiryat Ono'), price: t('חינם', 'Free') },
-            ].map(opt => (
-              <button key={opt.id} type="button" aria-pressed={fulfilment === opt.id}
-                onClick={() => setFulfilment(opt.id)}
-                className={`shop-chip flex-col items-start gap-0.5 px-3 py-2.5 text-start ${fulfilment === opt.id ? 'shop-chip-active' : ''}`}>
-                <span className="text-[13px] leading-snug">{opt.label}</span>
-                <span className="text-[13px] font-semibold tabular-nums">{opt.price}</span>
-              </button>
-            ))}
-          </div>
-        </fieldset>
         <div className="mt-3 border-t border-brand-line pt-3">
           <DiscountLines subtotal={subtotal} pricing={pricing} />
           <div className="flex items-baseline justify-between text-[13px] text-brand-navy/70">

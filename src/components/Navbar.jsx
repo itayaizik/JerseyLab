@@ -493,13 +493,14 @@ export default function Navbar() {
         className="fixed z-50 transition-[top,left,right] duration-300 ease-out"
         style={{ top: floating ? 12 : 0, left: floating ? 12 : 0, right: floating ? 12 : 0 }}
       >
-        {/* Hidden rather than unmounted while floating, so it does not fetch its
-            settings again every time the page returns to the top. */}
-        <div className={floating ? 'hidden' : ''}>
+        {/* The strip and the bar are one card. The strip used to be hidden the
+            moment the page scrolled, which left it visible only in the top 24
+            pixels - a message nobody saw. It is dismissible, so a visitor who
+            does not want it closes it once rather than scrolling past it. */}
+        <div className={`transition-[border-radius,box-shadow] duration-300 ${floating ? 'overflow-hidden rounded-[1.375rem] shadow-float' : ''}`}>
           <PromoBar />
-        </div>
 
-        <header className={`relative bg-white transition-[border-radius,box-shadow] duration-300 ${floating ? 'rounded-[1.375rem] shadow-float' : 'border-b border-brand-line'}`}>
+          <header className={`relative bg-white ${floating ? '' : 'border-b border-brand-line'}`}>
           <div className="shop-container">
             <div className="flex h-16 items-center justify-between gap-3 lg:grid lg:h-[5.25rem] lg:grid-cols-[minmax(0,1fr)_minmax(0,36rem)_minmax(0,1fr)] lg:gap-8">
               <div className="flex items-center gap-1">
@@ -623,6 +624,7 @@ export default function Navbar() {
             </div>
           )}
         </header>
+        </div>
       </div>
 
       <SideDrawer

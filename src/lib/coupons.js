@@ -16,6 +16,23 @@ import { t } from '@/lib/i18n';
 
 export const normalizeCode = (code) => String(code ?? '').trim().toUpperCase().replace(/\s+/g, '');
 
+// One spelling of a phone number.
+//
+// People type 054-123-4567, 054 123 4567, +972 54 123 4567 and 0541234567,
+// and all four are the same person - but the phone is the key a coupon limited
+// to one use per customer is checked against, so without this the same person
+// gets the same single-use coupon again by typing dashes the second time.
+//
+// Israeli numbers given in international form come back to the local 0 prefix,
+// because that is the shape the rest of them are stored in.
+export function normalizePhone(phone) {
+  const digits = String(phone ?? '').replace(/\D/g, '');
+  if (!digits) return '';
+  if (digits.startsWith('972')) return `0${digits.slice(3)}`;
+  if (digits.startsWith('00972')) return `0${digits.slice(5)}`;
+  return digits;
+}
+
 // A code printed as FRIENDS25, typed without switching the keyboard out of
 // Hebrew, arrives as ןרןקמגד25. The keys are the same ones, so the letters are
 // mapped back before the code is given up on: a customer should not have to
