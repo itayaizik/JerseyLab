@@ -58,6 +58,9 @@ export default function DiscountPopup() {
   const timer = useRef(null);
   const closeRef = useRef(null);
   const location = useLocation();
+  // For whoever is writing the offer: open it now, and do not hold a previous
+  // dismissal against them. A customer never types this.
+  const preview = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === 'popup';
 
   // Read the settings once per visit. The timer is started here too, so it
   // measures time on the site rather than time on the current page.
@@ -78,11 +81,11 @@ export default function DiscountPopup() {
         if (!text) return;
 
         try {
-          if (localStorage.getItem(dismissKey(text))) return;
+          if (!preview && localStorage.getItem(dismissKey(text))) return;
         } catch { /* private mode: show it, dismissing just will not stick */ }
 
         const seconds = Number(map[KEYS.delay]);
-        const delay = Number.isFinite(seconds) && seconds >= 0 ? seconds : DEFAULT_DELAY_SECONDS;
+        const delay = preview ? 0 : (Number.isFinite(seconds) && seconds >= 0 ? seconds : DEFAULT_DELAY_SECONDS);
 
         const show = () => {
           if (SOMETHING_ELSE_IS_OPEN()) {
