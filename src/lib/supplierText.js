@@ -81,6 +81,35 @@ const TEAM_NAMES_EN = {
   'שחטאר דונייצק': 'Shakhtar Donetsk',
 };
 
+// Patches belong to a competition, and the supplier needs to know which one.
+// A national team shirt outside a tournament has none to name, so it falls
+// back to the plain word.
+const LEAGUE_NAMES_EN = {
+  'פרמייר ליג': 'Premier League',
+  'צמפיונשיפ': 'Championship',
+  'לה ליגה': 'La Liga',
+  'סגונדה': 'Segunda',
+  'סרייה א': 'Serie A',
+  'בונדסליגה': 'Bundesliga',
+  'בונדסליגה 2': '2. Bundesliga',
+  'ליגה צרפתית': 'Ligue 1',
+  'ליגה הולנדית': 'Eredivisie',
+  'ליגה פורטוגלית': 'Primeira Liga',
+  'ליגה ארגנטינאית': 'Liga Argentina',
+  'ליגה ברזילאית': 'Brasileirao',
+  'ליגת העל': 'Israeli Premier League',
+  'ליגת האלופות': 'Champions League',
+  'מונדיאל': 'World Cup',
+  'יורו': 'Euro',
+  'MLS': 'MLS',
+};
+
+function patchesLabel(shirt) {
+  const league = String(shirt?.league || '').trim();
+  const en = LEAGUE_NAMES_EN[league];
+  return en ? `With ${en} Patches` : 'With Patches';
+}
+
 function translateTeamName(name) {
   if (!name) return '';
   const trimmed = name.trim();
@@ -132,23 +161,23 @@ export function buildSearchQuery(shirt) {
   return [team, season, kit, shirt?.is_retro ? 'Retro' : '', 'Jersey'].filter(Boolean).join(' ');
 }
 
-// Builds one line of supplier-facing order text, fully in English:
-// "Real Madrid - Home - 2025/26 - Player Version - Ronaldo 7 - Size L"
-// Regular version / no custom name are simply omitted, not written out.
+// Builds one shirt's supplier-facing order text, fully in English:
+// "Size L - Player Version - With La Liga Patches - Ronaldo 7"
+//
+// What the shirt IS - club, kit, season - is deliberately absent: the photo
+// is pasted into the same message and says all of it better than a line of
+// text can. This carries only what a photo cannot, and anything not asked for
+// is left out rather than written as "no".
 export function buildSupplierLine(request, shirt) {
-  const teamHe = (shirt?.club || shirt?.national_team || '').trim();
-  const team = teamHe ? translateTeamName(teamHe) : (request.shirt_name || '');
-  const kit = detectKitType(shirt?.name || request.shirt_name || '');
   const { playerVersion, customText, patches, longSleeve, shorts } = parseCustomization(request.message || '');
 
-  const parts = [team];
-  if (kit) parts.push(kit);
-  if (shirt?.season) parts.push(shirt.season);
-  if (playerVersion) parts.push('Player Version');
-  if (customText) parts.push(customText);
-  if (longSleeve) parts.push('Long Sleeve');
-  if (patches) parts.push('With Patches');
-  if (shorts) parts.push('With Shorts');
+  const parts = [];
   if (request.wanted_size) parts.push(`Size ${request.wanted_size}`);
-  return parts.filter(Boolean).join(' - ');
+  if (playerVersion) parts.push('Player Version');
+  if (longSleeve) parts.push('Long Sleeve');
+  if (shorts) parts.push('With Shorts');
+  if (patches) parts.push(patchesLabel(shirt));
+  if (customText) parts.push(`Print: ${customText}`);
+  // An order with none of the above still needs to say something.
+  return parts.length ? parts.join(' - ') : 'Standard, no extras';
 }

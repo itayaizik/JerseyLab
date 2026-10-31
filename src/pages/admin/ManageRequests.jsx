@@ -53,6 +53,15 @@ function OrderSummary({ items }) {
   );
 }
 
+// How the order is being collected, read back out of the first row's message
+// where the cart put it.
+const fulfilmentOf = (request) => {
+  const message = String(request?.message || '');
+  if (message.includes('איסוף עצמי')) return 'איסוף עצמי';
+  if (message.includes('משלוח עד הבית')) return 'משלוח עד הבית';
+  return '';
+};
+
 export default function ManageRequests() {
   const [requests, setRequests] = useState([]);
   const [shirts, setShirts] = useState([]);
@@ -120,14 +129,13 @@ export default function ManageRequests() {
     setRequests(p => p.filter(r => !ids.includes(r.id)));
   };
 
-  // Numbered when the order has more than one shirt, and each shirt below
-  // carries the same number, so the supplier can match a photo to its line.
-  const handleCopySupplierText = async (groupKey, groupItems) => {
-    const lines = groupItems.map(r => buildSupplierLine(r, shirts.find(s => s.id === r.shirt_id)));
-    const text = lines.length > 1 ? lines.map((line, i) => `${i + 1}. ${line}`).join('\n') : lines.join('\n');
-    await navigator.clipboard.writeText(text);
-    setCopiedId(groupKey);
-    setTimeout(() => setCopiedId(k => (k === groupKey ? null : k)), 1500);
+  // One shirt's line, copied from beside that shirt's own photo button. The
+  // two go into the supplier chat as one message, so they belong together.
+  const handleCopySupplierText = async (request) => {
+    const line = buildSupplierLine(request, shirts.find(s => s.id === request.shirt_id));
+    await navigator.clipboard.writeText(line);
+    setCopiedId(request.id);
+    setTimeout(() => setCopiedId(k => (k === request.id ? null : k)), 1500);
   };
 
   // Copies one shirt's photo, to paste into the chat with the supplier after
@@ -234,6 +242,11 @@ export default function ManageRequests() {
                     {items.length > 1 && (
                       <span className="rounded-lg text-xs px-2 py-0.5 bg-turf/10 text-turf font-bold">{items.length} פריטים בהזמנה</span>
                     )}
+                    {/* Delivery or collection rides on the first row's message,
+                        because it belongs to the order and not to a shirt. */}
+                    {fulfilmentOf(first) && (
+                      <span className="rounded-lg text-xs px-2 py-0.5 bg-blue-500/15 text-blue-600 font-bold">{fulfilmentOf(first)}</span>
+                    )}
                     {history.length > 0 && (
                       <span className="rounded-lg text-xs px-2 py-0.5 bg-amber-500/15 text-amber-600 font-bold">נערכה</span>
                     )}
@@ -261,6 +274,14 @@ export default function ManageRequests() {
                                 {copiedImageId === r.id ? 'התמונה הועתקה!' : 'העתקת תמונה'}
                               </button>
                             )}
+                            <button
+                              onClick={() => handleCopySupplierText(r)}
+                              title="מידה, פאצ׳ים והדפסה - מה שהתמונה לא מראה"
+                              className="rounded-lg flex items-center gap-1 text-xs text-turf hover:text-chalk border border-turf/40 hover:border-turf px-2 py-1 transition-colors"
+                            >
+                              {copiedId === r.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                              {copiedId === r.id ? 'הועתק!' : 'טקסט לספקית'}
+                            </button>
                           </div>
                           {reqShirt && reqShirt.status === 'available' && (
                             <button
@@ -349,13 +370,6 @@ export default function ManageRequests() {
                   >
                     <Pencil className="w-3 h-3" />
                     עריכת הזמנה
-                  </button>
-                  <button
-                    onClick={() => handleCopySupplierText(groupKey, items)}
-                    className="rounded-lg flex items-center gap-1 text-xs text-turf hover:text-chalk border border-turf/40 hover:border-turf px-2 py-1.5 transition-colors"
-                  >
-                    {copiedId === groupKey ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                    {copiedId === groupKey ? 'הועתק!' : 'טקסט לספקית'}
                   </button>
                   <button
                     onClick={() => handleRequestReview(groupKey, first)}

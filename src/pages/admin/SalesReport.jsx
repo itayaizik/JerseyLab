@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { parseDate } from '@/lib/dates';
 import { TrendingUp, ShoppingBag, DollarSign, BarChart2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { countOrders } from '@/lib/orderItems';
 
 // When a row was last touched. Nothing wrote `updated_date` until recently,
 // so historical rows have none - and `new Date(null)` is the epoch, which sits
@@ -143,8 +144,8 @@ export default function SalesReport() {
           <p className="text-xs text-varnish mt-1">{reservedShirts.length} שמורות</p>
         </div>
         <div className="rounded-2xl bg-white border border-brand-line p-4">
-          <p className="text-xs text-varnish mb-1 uppercase font-heading">בקשות סגורות</p>
-          <p className="font-mono font-bold text-3xl text-chalk">{closedRequests.length}</p>
+          <p className="text-xs text-varnish mb-1 uppercase font-heading">הזמנות סגורות</p>
+          <p className="font-mono font-bold text-3xl text-chalk">{countOrders(closedRequests)}</p>
           <p className="text-xs text-varnish mt-1">בתקופה זו</p>
         </div>
       </div>

@@ -37,6 +37,21 @@ export function openCart() {
 // What the configurator charges for each extra.
 export const EXTRA_PRICES = { name: 10, player: 20, patches: 5, longSleeve: 20, shorts: 40 };
 
+// Getting it to you: delivered for a flat fee, or collected for nothing.
+// business.js prints the same number on the shipping policy - change both.
+export const DELIVERY_PRICE = 20;
+// The order value that earns free delivery. business.js prints it on the
+// product pages and the shipping policy; this is the one that decides.
+export const FREE_DELIVERY_ABOVE = 250;
+
+// What delivery costs for a basket of this value. Pickup is always nothing,
+// which is the point of offering it.
+export const deliveryFeeFor = (subtotal, method) =>
+  (method === 'pickup' || subtotal >= FREE_DELIVERY_ABOVE ? 0 : DELIVERY_PRICE);
+export const PICKUP_LOCATION = 'קריית אונו';
+export const DELIVERY_LABEL = 'משלוח עד הבית';
+export const PICKUP_LABEL = `איסוף עצמי מ${PICKUP_LOCATION}`;
+
 // One spelling of the word, with a plain apostrophe: order messages are parsed
 // back by the admin (supplier text, order editing), so it must not drift into
 // the Hebrew geresh in one place and the apostrophe in another.

@@ -12,7 +12,8 @@ import { friendlyError } from '@/lib/errorMessages';
 import { sendOrderConfirmation } from '@/lib/orderEmail';
 import { notifyNewOrder } from '@/lib/adminNotify';
 import { SHOP_PHONE, WHATSAPP_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/contact';
-import { getCart, setCart, cartItemTotal, cartTotal, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
+import { getCart, setCart, cartItemTotal, cartTotal, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL,
+  DELIVERY_PRICE, DELIVERY_LABEL, PICKUP_LABEL, FREE_DELIVERY_ABOVE, deliveryFeeFor } from '@/lib/cart';
 import { MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 import { checkCoupon, redeemCoupon, applyCoupon, normalizeCode } from '@/lib/coupons';
 import { t } from '@/lib/i18n';
@@ -222,6 +223,7 @@ export default function CartDrawer({ open, onClose, user }) {
   // is no payment on the site, every order should re-confirm that the customer
   // knows a request is not a purchase.
   const [acknowledged, setAcknowledged] = useState(false);
+  const [fulfilment, setFulfilment] = useState('delivery'); // 'delivery' | 'pickup'
 
   useEffect(() => {
     const handler = () => setCartState(getCart());
@@ -268,7 +270,12 @@ export default function CartDrawer({ open, onClose, user }) {
 
   const subtotal = cartTotal(cart);
   const pricing = applyCoupon(cart, coupon);
-  const total = cartTotal(pricing.items);
+  // After the coupon: a discount comes off the shirts, not off the courier.
+  // The threshold reads the discounted total, because that is what the
+  // customer is actually paying.
+  const itemsTotal = cartTotal(pricing.items);
+  const deliveryFee = deliveryFeeFor(itemsTotal, fulfilment);
+  const total = itemsTotal + deliveryFee;
   const count = cart.length;
 
   // The cart is emptied on success but contactForm isn't, so the confirmation
@@ -314,13 +321,19 @@ export default function CartDrawer({ open, onClose, user }) {
       }
       order = applyCoupon(cart, recheck.coupon);
     }
-    const orderTotal = cartTotal(order.items);
+    const orderItemsTotal = cartTotal(order.items);
+    const orderDelivery = deliveryFeeFor(orderItemsTotal, fulfilment);
+    const fulfilmentLabel = fulfilment === 'pickup'
+      ? PICKUP_LABEL
+      : `${DELIVERY_LABEL} (${orderDelivery ? `+₪${orderDelivery}` : 'חינם'})`;
+    const orderTotal = orderItemsTotal + orderDelivery;
 
     try {
       // Every item from this checkout shares one order_id so the admin
       // panel can show them as a single grouped order instead of N
       // disconnected rows, even though each item is still its own row.
       const orderId = crypto.randomUUID();
+      let firstRow = true;
       for (const item of order.items) {
         const extras = (item.extras || []).map(x => `${x.label} (+₪${x.price})`);
         if (item.playerVersion) extras.push(`גרסת שחקן (+₪${EXTRA_PRICES.player})`);
@@ -340,9 +353,11 @@ export default function CartDrawer({ open, onClose, user }) {
           contact_channel: channel,
           instagram_handle: channel === 'instagram' ? igHandle : '',
           wanted_size: item.size,
-          message: `סל קניות${extras.length ? ' | ' + extras.join(' | ') : ''} | מחיר סופי: ₪${itemTotal}`,
+          message: `סל קניות${extras.length ? ' | ' + extras.join(' | ') : ''} | מחיר סופי: ₪${itemTotal}`
+            + (firstRow ? ` | ${fulfilmentLabel}` : ''),
           status: 'new', user_id: user?.id || '', order_id: orderId,
         });
+        firstRow = false;
       }
 
       // What they bought decides what "מומלצות" shows them next time.
@@ -447,9 +462,33 @@ export default function CartDrawer({ open, onClose, user }) {
     footer = (
       <div>
         <CouponBox coupon={coupon} pricing={pricing} onApply={setCoupon} onRemove={() => setCoupon(null)} />
-        <p className="mt-3 text-[13px] text-brand-navy/55">{t('המשלוח והתשלום מתואמים איתכם אחרי ההזמנה. באתר לא מתבצע תשלום.', 'Shipping and payment are arranged with you after you order. Nothing is charged on the site.')}</p>
+        <fieldset className="mt-4">
+          <legend className="text-[13px] font-semibold text-brand-navy">{t('איך לקבל את ההזמנה', 'How to get your order')}</legend>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            {[
+              {
+                id: 'delivery',
+                label: t(DELIVERY_LABEL, 'Delivered'),
+                price: itemsTotal >= FREE_DELIVERY_ABOVE ? t('חינם', 'Free') : `₪${DELIVERY_PRICE}`,
+              },
+              { id: 'pickup', label: t(PICKUP_LABEL, 'Pick up in Kiryat Ono'), price: t('חינם', 'Free') },
+            ].map(opt => (
+              <button key={opt.id} type="button" aria-pressed={fulfilment === opt.id}
+                onClick={() => setFulfilment(opt.id)}
+                className={`shop-chip flex-col items-start gap-0.5 px-3 py-2.5 text-start ${fulfilment === opt.id ? 'shop-chip-active' : ''}`}>
+                <span className="text-[13px] leading-snug">{opt.label}</span>
+                <span className="text-[13px] font-semibold tabular-nums">{opt.price}</span>
+              </button>
+            ))}
+          </div>
+        </fieldset>
+        <p className="mt-3 text-[13px] text-brand-navy/55">{t('התשלום מתואם איתכם אחרי ההזמנה. באתר לא מתבצע תשלום.', 'Payment is arranged with you after you order. Nothing is charged on the site.')}</p>
         <div className="mt-3 border-t border-brand-line pt-3">
           <DiscountLines subtotal={subtotal} pricing={pricing} />
+          <div className="flex items-baseline justify-between text-[13px] text-brand-navy/70">
+            <span>{fulfilment === 'pickup' ? t(PICKUP_LABEL, 'Pick up in Kiryat Ono') : t(DELIVERY_LABEL, 'Delivered')}</span>
+            <span className="tabular-nums">{deliveryFee ? `₪${deliveryFee}` : t('חינם', 'Free')}</span>
+          </div>
         </div>
         <div className="mt-1 flex items-baseline justify-between">
           <span className="text-xl font-bold text-brand-navy">{t('סה״כ', 'Total')}</span>

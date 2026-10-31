@@ -4,6 +4,7 @@ import { Eye, MessageCircle, AlertTriangle, TrendingUp, Clock } from 'lucide-rea
 import { base44 } from '@/api/base44Client';
 import { StatusPieChart, TopViewedBarChart } from '@/components/admin/DashboardCharts';
 import { formatDate } from '@/lib/dates';
+import { countOrders } from '@/lib/orderItems';
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -17,7 +18,7 @@ export default function Dashboard() {
     async function load() {
       const [shirts, requests, logs, searches, pendingReviews] = await Promise.all([
         base44.entities.Shirt.list('-created_date', 500),
-        base44.entities.InterestRequest.filter({ status: 'new' }, '-created_date', 10),
+        base44.entities.InterestRequest.filter({ status: 'new' }, '-created_date', 200),
         base44.entities.AdminLog.list('-created_date', 10),
         base44.entities.SearchLog.list('-created_date', 100),
         base44.entities.Review.filter({ approved: false }, '-created_date', 10),
@@ -67,7 +68,7 @@ export default function Dashboard() {
     { label: 'שמורות', value: stats.reserved, color: 'border-amber-400' },
     { label: 'נמכרו', value: stats.sold, color: 'border-redcard' },
     { label: 'מוסתרות', value: stats.hidden, color: 'border-varnish' },
-    { label: 'בקשות חדשות', value: newRequests.length, color: 'border-turf' },
+    { label: 'הזמנות חדשות', value: countOrders(newRequests), color: 'border-turf' },
     { label: 'ביקורות ממתינות', value: stats.pendingReviews, color: 'border-amber-400' },
   ];
 

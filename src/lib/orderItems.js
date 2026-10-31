@@ -166,3 +166,14 @@ export const emailItem = (draft) => ({
   // A mystery box keeps who it is for, its add-ons and its note here.
   notes: (draft.other || []).join(" | "),
 });
+
+// What makes rows one order: every shirt from a single cart checkout carries
+// the same `order_id`. A row without one - an older request, or a single
+// "אני מעוניין" from before carts existed - is an order of its own.
+export const orderKey = (request) => request?.order_id || request?.id;
+
+// How many orders a list of request rows represents, which is not how many
+// rows it has: three shirts bought together are one order, and counting the
+// rows was turning one customer into three.
+export const countOrders = (requests) =>
+  new Set((requests || []).map(orderKey).filter(Boolean)).size;

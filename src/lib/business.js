@@ -78,7 +78,7 @@ export const BUSINESS = {
 
     // The delivery fee, e.g. '25 ₪'. Free delivery for everyone is a value
     // here too: 'ללא עלות'.
-    price: '25 ₪',
+    price: '20 ₪',
 
     // Order value above which delivery is free, e.g. '300 ₪'. null if there is
     // no such tier.
