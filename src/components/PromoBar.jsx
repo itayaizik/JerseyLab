@@ -39,9 +39,12 @@ const DEFAULT_SPEED = 24;
 const MIN_SPEED = 4;
 const MAX_SPEED = 300;
 
-// Dismissal is remembered per message, so changing the text shows it again to
-// everyone who dismissed the previous one.
-const dismissKey = (text) => `jerseylab_topbar_${text.slice(0, 40)}`;
+// Dismissal is remembered per notice, not per shop: the words, the link text
+// and where the link goes. Edit any of them and it is a different notice,
+// which everyone who dismissed the old one sees again - and which is how the
+// shop gets its own strip back after closing it, without a console.
+const dismissKey = (promo) =>
+  `jerseylab_topbar_${[promo.text, promo.linkText, promo.linkHref].join('|').slice(0, 60)}`;
 
 // And it wears off. Stored with no expiry, one tap on the X hid the strip in
 // that browser for good - including the shop's own, which is how a working
@@ -49,9 +52,9 @@ const dismissKey = (text) => `jerseylab_topbar_${text.slice(0, 40)}`;
 // and short enough that a notice still reaches people.
 const DISMISS_DAYS = 7;
 
-function wasDismissed(text) {
+function wasDismissed(promo) {
   try {
-    const at = Number(localStorage.getItem(dismissKey(text)));
+    const at = Number(localStorage.getItem(dismissKey(promo)));
     if (!at) return false;
     // Values written before this had an expiry were '1', which is not a date.
     if (at < 1e12) return false;
@@ -85,7 +88,7 @@ export default function PromoBar() {
         if (!text) return;
 
         const seconds = Number(map[SETTING_KEYS.speed]);
-        setPromo({
+        const next = {
           text,
           linkText: (map[key('linkText')] || '').trim(),
           linkHref: (map[SETTING_KEYS.linkHref] || '').trim(),
@@ -98,8 +101,9 @@ export default function PromoBar() {
             : DEFAULT_SPEED,
           background: (map[SETTING_KEYS.background] || '').trim() || DEFAULT_BG,
           foreground: (map[SETTING_KEYS.foreground] || '').trim() || DEFAULT_FG,
-        });
-        if (!preview && wasDismissed(text)) setDismissed(true);
+        };
+        setPromo(next);
+        if (!preview && wasDismissed(next)) setDismissed(true);
       } catch { /* the bar simply stays hidden */ }
     })();
     return () => { cancelled = true; };
@@ -109,7 +113,7 @@ export default function PromoBar() {
 
   const close = () => {
     setDismissed(true);
-    try { localStorage.setItem(dismissKey(promo.text), String(Date.now())); } catch { /* private mode */ }
+    try { localStorage.setItem(dismissKey(promo), String(Date.now())); } catch { /* private mode */ }
   };
 
   const hasLink = !!promo.linkHref;

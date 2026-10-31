@@ -1,6 +1,54 @@
 import React from 'react';
 import SettingsForm from '@/components/admin/SettingsForm';
 
+// Relative luminance, for telling the shop when its strip has disappeared into
+// the page. The site behind it is white, so that is what the background is
+// compared against.
+function luminance(hex) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || '').trim());
+  if (!m) return null;
+  const [r, g, b] = [0, 2, 4].map(i => parseInt(m[1].slice(i, i + 2), 16) / 255);
+  const lin = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+}
+
+const contrast = (a, b) => {
+  const [x, y] = [luminance(a), luminance(b)];
+  if (x === null || y === null) return null;
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+};
+
+function TopbarPreview(settings) {
+  const bg = (settings.topbar_bg || '').trim() || '#D0551F';
+  const fg = (settings.topbar_fg || '').trim() || '#FFFFFF';
+  const text = (settings.topbar_text || '').trim() || 'כאן יופיע הטקסט של הפס';
+  const linkText = (settings.topbar_link_text || '').trim();
+
+  // Against the page, which is white, and against its own text.
+  const againstPage = contrast(bg, '#ffffff');
+  const againstText = contrast(bg, fg);
+  const warnings = [];
+  if (againstPage !== null && againstPage < 1.3) warnings.push('הרקע כמעט זהה לצבע של האתר, אז הפס כמעט בלתי נראה. בחר רקע כהה או צבעוני.');
+  if (againstText !== null && againstText < 3) warnings.push('הטקסט לא בולט מספיק על הרקע שבחרת.');
+
+  return (
+    <div>
+      <p className="text-xs text-varnish mb-2">כך הפס ייראה:</p>
+      <div className="rounded-xl overflow-hidden border border-brand-line">
+        <div style={{ backgroundColor: bg, color: fg }} className="px-4 py-2 text-center text-[13px] font-medium">
+          {text}{linkText ? <span className="font-semibold underline underline-offset-2"> {linkText}</span> : null}
+        </div>
+        {/* A strip of the page under it, so a background that matches the site
+            is obvious rather than theoretical. */}
+        <div className="bg-white px-4 py-2 text-center text-[11px] text-brand-navy/35">האתר מתחיל כאן</div>
+      </div>
+      {warnings.map(w => (
+        <p key={w} className="mt-2 text-xs font-semibold text-redcard leading-relaxed">{w}</p>
+      ))}
+    </div>
+  );
+}
+
 // The three things that interrupt a visitor, on one page.
 //
 // They were scattered through ניהול > הגדרות אתר, between the WhatsApp link
@@ -13,7 +61,8 @@ import SettingsForm from '@/components/admin/SettingsForm';
 const GROUPS = [
   {
     title: 'פס הודעה עליון',
-    help: 'הפס שמעל התפריט. ריק או כבוי = לא מוצג כלל. מבקר יכול לסגור אותו, והוא יחזור רק אם תשנה את הטקסט.',
+    preview: TopbarPreview,
+    help: 'הפס שמעל התפריט. ריק או כבוי = לא מוצג כלל. מי שסוגר אותו לא רואה אותו שבוע, וזה כולל אותך - שינוי של הטקסט או של הקישור מחזיר אותו לכולם מיד. לראות אותו בלי לשנות כלום: פתח את האתר עם ?preview=topbar בסוף הכתובת.',
     fields: [
       { key: 'topbar_active', label: 'פעיל?', type: 'select',
         options: [{ value: '', label: 'לא' }, { value: 'yes', label: 'כן' }] },

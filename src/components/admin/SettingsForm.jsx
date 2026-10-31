@@ -121,6 +121,9 @@ export default function SettingsForm({ title, intro, groups }) {
           <section key={group.title} className="rounded-2xl border border-brand-line bg-white p-5">
             <h2 className="font-heading font-bold text-base text-chalk">{group.title}</h2>
             {group.help && <p className="text-xs text-brand-navy/55 mt-1 leading-relaxed">{group.help}</p>}
+            {/* Some groups can show what they are about to make. A colour is
+                hard to judge from a hex and easy to judge from the thing. */}
+            {group.preview && <div className="mt-4">{group.preview(settings)}</div>}
             <div className="mt-4 space-y-4">
               {group.fields.map(field => (
                 <SettingField key={field.key} field={field} value={settings[field.key] || ''}
