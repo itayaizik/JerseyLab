@@ -113,6 +113,8 @@ const TERMS = {
   'ליגה ברזילאית': 'Brasileirão',
   'ליגה גרמנית': 'German League',
   'צמפיונשיפ': 'Championship',
+  'בונדסליגה 2': '2. Bundesliga',
+  'סגונדה': 'Segunda División',
   'ליגה אוסטרית': 'Austrian Bundesliga',
   'MLS': 'MLS',
   'ליגה סרבית': 'Serbian SuperLiga',

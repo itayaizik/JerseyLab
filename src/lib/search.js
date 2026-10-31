@@ -160,6 +160,8 @@ const ALIAS_GROUPS = {
   'ליגת האלופות': ['אלופות', 'צמפיונס', 'צאמפיונס', 'קאמפיונס', 'champions league', 'ucl', 'ליגת אלופות'],
   'ליגה צרפתית': ['ligue 1', 'ליג 1', 'ליגה 1'],
   'צמפיונשיפ': ['championship', 'efl championship', 'ליגה אנגלית שנייה'],
+  'בונדסליגה 2': ['bundesliga 2', '2 bundesliga', 'zweite bundesliga', 'בונדסליגה שנייה', 'ליגה גרמנית שנייה'],
+  'סגונדה': ['segunda', 'segunda division', 'laliga 2', 'la liga 2', 'ליגה ספרדית שנייה'],
   'ליגה סרבית': ['serbian superliga', 'סרביה'],
   'ליגה אוקראינית': ['אוקראינה', 'ukrainian premier league'],
   'ליגה אוסטרית': ['אוסטריה', 'austrian bundesliga'],

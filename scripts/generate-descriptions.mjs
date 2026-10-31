@@ -63,7 +63,9 @@ function openingSentence(shirt) {
 
   const isNational = !!shirt.national_team && !shirt.club;
   const subject = isNational ? `נבחרת ${team}` : team;
-  const kitWord = kit ? `חולצת ה${kit}` : 'החולצה';
+  // 'שלישית' is an adjective: 'חולצת השלישית' is not Hebrew, 'החולצה
+  // השלישית' is. 'בית' and 'חוץ' are nouns and take the other shape.
+  const kitWord = kit === 'שלישית' ? 'החולצה השלישית' : kit ? `חולצת ה${kit}` : 'החולצה';
   const when = season ? (isNational ? ` ${season}` : ` לעונת ${season}`) : '';
 
   // No "official" wording: the shop does not claim its shirts are licensed.
@@ -96,6 +98,10 @@ function leagueSentence(shirt, lead) {
     return `דגם ${league}, החולצה שהנבחרת לבשה בטורניר.`;
   }
   if (league === 'נבחרות') return null;
+  // A retro shirt's league belongs to its season. Saying a club "plays in"
+  // the division it played in decades ago is wrong about the present and
+  // misleading about the past - Rayo are not a second division side now.
+  if (shirt.is_retro) return `באותה עונה הקבוצה שיחקה ב${league}.`;
   return `הקבוצה משחקת ב${league}.`;
 }
 
@@ -155,6 +161,7 @@ const GENERATED_MARKERS = [
   'אפשר להוסיף הדפסת',
   'ניתן להזמין עם הדפסת',
   'הקבוצה משחקת ב',
+  'באותה עונה הקבוצה שיחקה ב',
   'מהדורה שיצאה מהייצור',
   'דגם רטרו',
   'זו חולצת רטרו',
@@ -170,13 +177,33 @@ const GENERATED_MARKERS = [
   'חולצה משומשת במצב טוב',
 ];
 
-function stripGenerated(text) {
+function stripGenerated(text, shirt) {
+  // One generated sentence starts with the team's name rather than with a
+  // fixed phrase, so the list of markers depends on the shirt.
+  const team = shirt && (shirt.club || shirt.national_team);
+  const markers = team
+    ? [`${team} כפי שנראתה`, ...GENERATED_MARKERS]
+    : GENERATED_MARKERS;
+
   let cut = text.length;
-  for (const marker of GENERATED_MARKERS) {
+  for (const marker of markers) {
     const at = text.indexOf(marker);
     if (at !== -1 && at < cut) cut = at;
   }
   return text.slice(0, cut).replace(/[\s.,–-]+$/, '').trim();
+}
+
+// Every opening this script has ever produced for a given shirt, including
+// the shapes it has since stopped using. A stored lead that matches one of
+// these word for word came from here, not from the owner, so it is rebuilt
+// rather than preserved.
+function isOwnOpening(shirt, text) {
+  const current = openingSentence(shirt);
+  if (!current) return false;
+  const kit = kitType(shirt);
+  const legacy = kit === 'שלישית' ? current.replace('החולצה השלישית', 'חולצת השלישית') : null;
+  const same = (a) => a && a.replace(/\.$/, '') === text.replace(/\.$/, '');
+  return same(current) || same(legacy);
 }
 
 function buildDescription(shirt) {
@@ -185,7 +212,8 @@ function buildDescription(shirt) {
   // The owner's line leads when there is one; the opening is only generated
   // to replace an empty field. Anything this script wrote previously is cut
   // away first, so re-running rebuilds rather than accumulates.
-  const existing = stripGenerated(stored);
+  const stripped = stripGenerated(stored, shirt);
+  const existing = isOwnOpening(shirt, stripped) ? '' : stripped;
   const lead = existing || openingSentence(shirt);
   if (!lead) return null;
 
