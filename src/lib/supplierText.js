@@ -135,7 +135,9 @@ function detectKitType(shirtName) {
 function parseCustomization(message) {
   if (!message) return { playerVersion: false, customText: '', patches: false, longSleeve: false, shorts: false };
   const playerVersion = message.includes('גרסת שחקן');
-  const match = message.match(/הדפסת שם:\s*([^(|]+)/);
+  // Either shape of print: one the customer paid for, or a legionnaire's own,
+  // which is in the shirt's price and reaches the order as a detail line.
+  const match = message.match(/הדפסת שם:\s*([^(|]+)/) || message.match(/הדפסה כלולה:\s*([^(|]+)/);
   const customText = match ? match[1].trim() : '';
   // "פאצ'ים (+₪5)" from a shirt or from a mystery box; either
   // apostrophe, in case one was typed by hand.

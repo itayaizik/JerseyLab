@@ -16,6 +16,7 @@ import { showsLocalStock, showsLocalStockForSize } from '@/components/ShippingBa
 import { itemsForSize, stockPrint } from '@/lib/localStock';
 import { addToCart, shirtBasePrice, EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { allowsPlayerVersion, allowsPatches, allowsLongSleeve, allowsShorts, allowsKids } from '@/lib/shirtOptions';
+import { hasPlayerPrint, PLAYER_PRINT_LABEL } from '@/lib/cart';
 import { KIDS_PRICE, KIDS_KIT_LABEL, KIDS_KIT_VALUE, KIDS_PRINT_LABEL, kidsSizeHint } from '@/lib/kidsKit';
 import { BUSINESS, isPlaceholder } from '@/lib/business';
 import { t } from '@/lib/i18n';
@@ -126,11 +127,15 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
   const wantsLongSleeve = longSleeveAllowed && !buyingExact && longSleeve;
   const wantsShorts = shortsAllowed && !buyingExact && shorts;
 
+  // The player's own print is already in the price (lib/cart), so it is shown
+  // as what the shirt comes with rather than offered again as an extra.
+  const playerPrint = !kids && !buyingExact && hasPlayerPrint(shirt) ? shirt.player_name.trim() : '';
+
   // Nothing on a kids kit costs extra, printing included, so there is no
   // "total with extras" line to draw for one.
   const extras = kids ? 0 : buyingExact
     ? (stockItem?.player_version ? EXTRA_PRICES.player : 0) + (stockPrint(stockItem) ? EXTRA_PRICES.name : 0) + (wantsPatches ? EXTRA_PRICES.patches : 0)
-    : (wantsPlayer ? EXTRA_PRICES.player : 0) + (printing ? EXTRA_PRICES.name : 0) + (wantsPatches ? EXTRA_PRICES.patches : 0)
+    : (wantsPlayer ? EXTRA_PRICES.player : 0) + (printing && !playerPrint ? EXTRA_PRICES.name : 0) + (wantsPatches ? EXTRA_PRICES.patches : 0)
       + (wantsLongSleeve ? EXTRA_PRICES.longSleeve : 0) + (wantsShorts ? EXTRA_PRICES.shorts : 0);
   const total = basePrice + extras;
 
@@ -185,6 +190,9 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
       // Which physical shirt, so the order says which of two size S shirts
       // with different prints the customer chose.
       stockItemId: buyingExact ? stockItem?.id || '' : '',
+      // A legionnaire's print is in the price, so it travels as a detail
+      // rather than as a charged extra - but it still has to reach the order.
+      ...(playerPrint ? { details: [{ label: PLAYER_PRINT_LABEL, value: playerPrint }] } : {}),
       // Last, so it overrides every option above rather than being overridden.
       ...(kids ? {
         kids: true,
@@ -313,6 +321,18 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
           </Section>
           )}
 
+          {playerPrint ? (
+          <Section id="print-heading" title={t('שם ומספר', 'Name and number')} sectionRef={printRef}>
+            <p className="flex items-center gap-2 text-[15px] font-medium text-brand-navy">
+              <Check className="h-4 w-4 flex-shrink-0 text-brand-orange-ink" aria-hidden="true" />
+              {t(`${playerPrint} - כלול במחיר`, `${playerPrint} - included`)}
+            </p>
+            <p className="mt-2 text-[13px] text-brand-navy/55">
+              {t('זו החולצה שלו: השם והמספר שלו מודפסים על הגב, ואין צורך להוסיף הדפסה.',
+                 'This is his shirt: his name and number are printed on the back, so there is no printing to add.')}
+            </p>
+          </Section>
+          ) : (
           <Section id="print-heading" title={t('שם ומספר', 'Name and number')} sectionRef={printRef}>
             <div role="group" aria-labelledby="print-heading" className="flex flex-wrap gap-2">
               <button type="button" aria-pressed={!printing} onClick={() => { setPrinting(false); clearError('print'); }}
@@ -341,6 +361,7 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
               </div>
             )}
           </Section>
+          )}
 
           {(longSleeveAllowed || shortsAllowed) && (
           <Section id="extras-heading" title={t('שרוול ומכנס', 'Sleeves and shorts')}>

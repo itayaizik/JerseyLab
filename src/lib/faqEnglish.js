@@ -34,7 +34,7 @@ export const FAQ_EN = [
   {
     id: 'en-reply',
     question: 'How quickly do you reply?',
-    answer: 'We try to reply within a few hours on working days. At weekends it can take a little longer.',
+    answer: 'Usually within a couple of hours on working days, and often much sooner. At weekends it can take a little longer.',
   },
   {
     id: 'en-returns',
@@ -49,7 +49,7 @@ export const FAQ_EN = [
   {
     id: 'en-shipping',
     question: 'What does shipping cost and how long does it take?',
-    answer: 'Shipping with Israel Post is 25 ₪, and free on orders over 250 ₪. A shirt held in Israel arrives within 7 working days; a made-to-order shirt within 3 weeks. You can also collect from Kiryat Ono at no shipping cost.',
+    answer: 'Delivery is 20 ₪, and free on orders over 250 ₪. You choose in the cart between delivery and collecting from Kiryat Ono, which is free, and the total updates as you choose. A shirt held in Israel arrives within 7 working days; a made-to-order shirt within 3 weeks.',
   },
   {
     id: 'en-fan-player',
@@ -82,7 +82,17 @@ export const FAQ_EN = [
     answer: 'Send us a request through "Request a shirt" on the site with the club, the season and the size. We will check whether we can get it and let you know. No commitment and no payment - just a request.',
   },
   {
-    id: 'en-which-size',
+    id: 'en-patches',
+    question: 'What are the patches on the sleeve?',
+    answer: "They are the competition's own badges, worn for that competition's matches - the Premier League lion, the Champions League starball, and so on. You can add the ones that match your shirt for 5 ₪. Our guide explains which badge belongs to which league.",
+  },
+  {
+    id: 'en-retro-extras',
+    question: 'Why can I not add long sleeves to a retro shirt?',
+    answer: 'A retro shirt reproduces a shirt that was actually worn, in the cut it was worn in, so there is no long-sleeved version of it to make and no matching shorts that went with it. Both are available on current-season shirts.',
+  },
+  {
+    id: 'en-size-guide',
     question: 'How do I know which size to order?',
     answer: 'The size guide has a calculator that recommends a size from your height, weight, build and whether you like a shirt close to the body or loose. There are full charts for the fan version, the player version, women and kids. If you are still unsure, write to us.',
   },

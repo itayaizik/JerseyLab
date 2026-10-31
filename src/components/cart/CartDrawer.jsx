@@ -462,38 +462,17 @@ export default function CartDrawer({ open, onClose, user }) {
     footer = (
       <div>
         <CouponBox coupon={coupon} pricing={pricing} onApply={setCoupon} onRemove={() => setCoupon(null)} />
-        <fieldset className="mt-4">
-          <legend className="text-[13px] font-semibold text-brand-navy">{t('איך לקבל את ההזמנה', 'How to get your order')}</legend>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            {[
-              {
-                id: 'delivery',
-                label: t(DELIVERY_LABEL, 'Delivered'),
-                price: itemsTotal >= FREE_DELIVERY_ABOVE ? t('חינם', 'Free') : `₪${DELIVERY_PRICE}`,
-              },
-              { id: 'pickup', label: t(PICKUP_LABEL, 'Pick up in Kiryat Ono'), price: t('חינם', 'Free') },
-            ].map(opt => (
-              <button key={opt.id} type="button" aria-pressed={fulfilment === opt.id}
-                onClick={() => setFulfilment(opt.id)}
-                className={`shop-chip flex-col items-start gap-0.5 px-3 py-2.5 text-start ${fulfilment === opt.id ? 'shop-chip-active' : ''}`}>
-                <span className="text-[13px] leading-snug">{opt.label}</span>
-                <span className="text-[13px] font-semibold tabular-nums">{opt.price}</span>
-              </button>
-            ))}
-          </div>
-        </fieldset>
         <p className="mt-3 text-[13px] text-brand-navy/55">{t('התשלום מתואם איתכם אחרי ההזמנה. באתר לא מתבצע תשלום.', 'Payment is arranged with you after you order. Nothing is charged on the site.')}</p>
         <div className="mt-3 border-t border-brand-line pt-3">
           <DiscountLines subtotal={subtotal} pricing={pricing} />
-          <div className="flex items-baseline justify-between text-[13px] text-brand-navy/70">
-            <span>{fulfilment === 'pickup' ? t(PICKUP_LABEL, 'Pick up in Kiryat Ono') : t(DELIVERY_LABEL, 'Delivered')}</span>
-            <span className="tabular-nums">{deliveryFee ? `₪${deliveryFee}` : t('חינם', 'Free')}</span>
-          </div>
         </div>
         <div className="mt-1 flex items-baseline justify-between">
           <span className="text-xl font-bold text-brand-navy">{t('סה״כ', 'Total')}</span>
-          <span className="text-xl font-bold tabular-nums text-brand-navy">₪{total}</span>
+          <span className="text-xl font-bold tabular-nums text-brand-navy">₪{itemsTotal}</span>
         </div>
+        <p className="mt-1 text-[13px] text-brand-navy/55">
+          {t('משלוח או איסוף נבחרים בשלב הבא.', 'Delivery or collection is chosen on the next step.')}
+        </p>
         <div className="mt-4 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4">
           <button type="button" onClick={onClose} className="shop-link px-2 text-[15px]">{t('המשך בקניות', 'Keep shopping')}</button>
           <LiquidButton type="button" onClick={() => setView('details')} className="w-full">{t('להמשך ההזמנה', 'Continue')}</LiquidButton>
@@ -562,7 +541,33 @@ export default function CartDrawer({ open, onClose, user }) {
     );
     footer = (
       <div>
-        <DiscountLines subtotal={subtotal} pricing={pricing} />
+        <fieldset className="mt-4">
+          <legend className="text-[13px] font-semibold text-brand-navy">{t('איך לקבל את ההזמנה', 'How to get your order')}</legend>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            {[
+              {
+                id: 'delivery',
+                label: t(DELIVERY_LABEL, 'Delivered'),
+                price: itemsTotal >= FREE_DELIVERY_ABOVE ? t('חינם', 'Free') : `₪${DELIVERY_PRICE}`,
+              },
+              { id: 'pickup', label: t(PICKUP_LABEL, 'Pick up in Kiryat Ono'), price: t('חינם', 'Free') },
+            ].map(opt => (
+              <button key={opt.id} type="button" aria-pressed={fulfilment === opt.id}
+                onClick={() => setFulfilment(opt.id)}
+                className={`shop-chip flex-col items-start gap-0.5 px-3 py-2.5 text-start ${fulfilment === opt.id ? 'shop-chip-active' : ''}`}>
+                <span className="text-[13px] leading-snug">{opt.label}</span>
+                <span className="text-[13px] font-semibold tabular-nums">{opt.price}</span>
+              </button>
+            ))}
+          </div>
+        </fieldset>
+        <div className="mt-3 border-t border-brand-line pt-3">
+          <DiscountLines subtotal={subtotal} pricing={pricing} />
+          <div className="flex items-baseline justify-between text-[13px] text-brand-navy/70">
+            <span>{fulfilment === 'pickup' ? t(PICKUP_LABEL, 'Pick up in Kiryat Ono') : t(DELIVERY_LABEL, 'Delivered')}</span>
+            <span className="tabular-nums">{deliveryFee ? `₪${deliveryFee}` : t('חינם', 'Free')}</span>
+          </div>
+        </div>
         <div className="mt-1 flex items-baseline justify-between">
           <span className="text-lg font-semibold text-brand-navy">{t('סה״כ', 'Total')} ({itemCountLabel(count)})</span>
           <span className="text-lg font-bold tabular-nums text-brand-navy">₪{total}</span>

@@ -75,9 +75,15 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
             `overflow-x-auto` clips vertically too, and the ring on a chosen
             player sits 4px outside its circle, so its top was being cut off.
             The padding gives it room and the negative margin takes the space
-            back, leaving the row where it was. */}
+            back, leaving the row where it was.
+
+            That same `sm:my-0` is why the space above this row lives on the
+            wrapper: a media-query margin beats a plain one, so anything set
+            here would be zeroed from the sm breakpoint up - exactly where a
+            row of portraits needs the air most. */}
+        <div className="mt-12 sm:mt-16">
         <div role="tablist" aria-label={t('בחירת שחקן', 'Choose a player')}
-          className="scrollbar-hide -mx-4 -my-1.5 mt-11 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 py-1.5 sm:mx-0 sm:my-0 sm:flex-wrap sm:justify-center sm:gap-4 sm:overflow-x-visible sm:px-0 sm:py-0">
+          className="scrollbar-hide -mx-4 -my-1.5 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 py-1.5 sm:mx-0 sm:my-0 sm:flex-wrap sm:justify-center sm:gap-4 sm:overflow-x-visible sm:px-0 sm:py-0">
           {players.map(player => {
             const count = (byPlayer.get(player.name) || []).length;
             const selected = active?.id === player.id;
@@ -115,6 +121,7 @@ export default function LegionnairesSection({ title, shirts = [], user, wishlist
               </button>
             );
           })}
+        </div>
         </div>
 
         <div id="legionnaire-panel" role="tabpanel"

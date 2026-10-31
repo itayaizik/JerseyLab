@@ -70,10 +70,19 @@ export const SHORTS_LABEL = 'מכנס קצר';
 export function shirtBasePrice(shirt) {
   if (!shirt) return 0;
   const price = Number(shirt.sale_price) || Number(shirt.price) || 0;
-  if (shirt.is_retro) return Math.max(price, 80);
-  if (shirt.is_new || shirt.condition === 'new') return Math.max(price, 70);
-  return price;
+  const floor = shirt.is_retro ? 80 : (shirt.is_new || shirt.condition === 'new') ? 70 : 0;
+  // A shirt listed under a player comes with his name and number on the back.
+  // That is the whole reason it is listed separately from the plain shirt, so
+  // the printing is in the price rather than an extra to remember.
+  return Math.max(price, floor) + (hasPlayerPrint(shirt) ? EXTRA_PRICES.name : 0);
 }
+
+// Shirts filed under a player - the legionnaires - rather than a club's plain
+// kit. Their `player_name` is who is printed on the back.
+export const hasPlayerPrint = (shirt) => !!String(shirt?.player_name || '').trim();
+
+// How that print is named in the order and to the supplier.
+export const PLAYER_PRINT_LABEL = 'הדפסה כלולה';
 
 // Items built by the shirt configurator price their extras with the fixed
 // prices above. Anything that prices itself differently - the mystery box,
