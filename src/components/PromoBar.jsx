@@ -142,10 +142,14 @@ export default function PromoBar() {
           leftwards, which put the left-to-right keyframe's starting offset
           entirely off screen - the strip rendered and could not be seen. The
           text keeps its own direction, so Hebrew still reads correctly. */}
+      {/* The negative delay starts the loop a third of the way in. Without
+          it every page load began with the first word flush against the
+          edge and clear space behind it, which reads as a thing starting
+          rather than a thing that has been running. */}
       <div
         dir="ltr"
         className={`jl-marquee-track ${promo.direction === 'ltr' ? 'jl-marquee-ltr' : 'jl-marquee-rtl'}`}
-        style={{ animationDuration: `${promo.speed}s` }}
+        style={{ animationDuration: `${promo.speed}s`, animationDelay: `-${(promo.speed / 3).toFixed(2)}s` }}
       >
         {[0, 1].map(half => (
           <div key={half} className="flex shrink-0 items-center gap-16 pr-16" aria-hidden={half === 1 ? 'true' : undefined}>

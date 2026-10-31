@@ -18,7 +18,18 @@ const contrast = (a, b) => {
   return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
 };
 
-function TopbarPreview(settings) {
+// What a strip on this site should ever be. Named background first, then the
+// text on it. The two with a white background are included because they were
+// asked for, and they are the ones the preview warns about: white is the
+// colour of the page behind the strip, so only the text gives it an edge.
+const COLOUR_PAIRS = [
+  { label: 'לבן, טקסט שחור', bg: '#FFFFFF', fg: '#1B2A4A' },
+  { label: 'שחור, טקסט לבן', bg: '#1B2A4A', fg: '#FFFFFF' },
+  { label: 'כתום, טקסט לבן', bg: '#D0551F', fg: '#FFFFFF' },
+  { label: 'לבן, טקסט כתום', bg: '#FFFFFF', fg: '#D0551F' },
+];
+
+function TopbarPreview(settings, setSettings) {
   const bg = (settings.topbar_bg || '').trim() || '#D0551F';
   const fg = (settings.topbar_fg || '').trim() || '#FFFFFF';
   const text = (settings.topbar_text || '').trim() || 'כאן יופיע הטקסט של הפס';
@@ -45,6 +56,27 @@ function TopbarPreview(settings) {
       {warnings.map(w => (
         <p key={w} className="mt-2 text-xs font-semibold text-redcard leading-relaxed">{w}</p>
       ))}
+
+      <p className="text-xs text-varnish mt-4 mb-2">או בחר צמד מוכן:</p>
+      <div className="flex flex-wrap gap-2">
+        {COLOUR_PAIRS.map(pair => {
+          const chosen = bg.toLowerCase() === pair.bg.toLowerCase() && fg.toLowerCase() === pair.fg.toLowerCase();
+          return (
+            <button
+              key={pair.label}
+              type="button"
+              onClick={() => setSettings({ topbar_bg: pair.bg, topbar_fg: pair.fg })}
+              aria-pressed={chosen}
+              className={`rounded-xl flex items-center gap-2 border px-3 py-2 text-xs transition ${chosen ? 'border-turf bg-turf/10 font-bold text-turf' : 'border-brand-line text-varnish hover:border-turf hover:text-chalk'}`}
+            >
+              <span className="rounded-md flex h-5 w-8 items-center justify-center border border-brand-line text-[10px] font-bold"
+                style={{ backgroundColor: pair.bg, color: pair.fg }}>א</span>
+              {pair.label}
+            </button>
+          );
+        })}
+      </div>
+      <p className="text-xs text-brand-navy/50 mt-2">הבחירה נשמרת רק אחרי לחיצה על "שמור".</p>
     </div>
   );
 }
