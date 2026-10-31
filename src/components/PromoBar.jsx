@@ -97,7 +97,7 @@ export default function PromoBar() {
   // The words, with the optional call to action after them. Drawn more than
   // once when the strip moves, so only the first copy is read aloud.
   const Message = ({ aria = true }) => (
-    <span {...(aria ? {} : { 'aria-hidden': 'true' })}>
+    <span dir="auto" className="whitespace-nowrap" {...(aria ? {} : { 'aria-hidden': 'true' })}>
       {promo.text}
       {promo.linkText && (
         <>
@@ -113,12 +113,18 @@ export default function PromoBar() {
     // reaches where the second began the loop restarts invisibly. The hidden
     // copies are what make it seamless rather than a message that jumps.
     <div className="jl-marquee flex-1 overflow-hidden">
+      {/* Laid out left to right whatever the page direction. In an RTL
+          container a max-content flex track starts at the right edge and runs
+          leftwards, which put the left-to-right keyframe's starting offset
+          entirely off screen - the strip rendered and could not be seen. The
+          text keeps its own direction, so Hebrew still reads correctly. */}
       <div
+        dir="ltr"
         className={`jl-marquee-track ${promo.direction === 'ltr' ? 'jl-marquee-ltr' : 'jl-marquee-rtl'}`}
         style={{ animationDuration: `${promo.speed}s` }}
       >
         {[0, 1].map(half => (
-          <div key={half} className="flex shrink-0 items-center gap-16 pe-16" aria-hidden={half === 1 ? 'true' : undefined}>
+          <div key={half} className="flex shrink-0 items-center gap-16 pr-16" aria-hidden={half === 1 ? 'true' : undefined}>
             {[0, 1, 2].map(i => <Message key={i} aria={half === 0 && i === 0} />)}
           </div>
         ))}
