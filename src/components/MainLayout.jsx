@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import DiscountPopup from '@/components/DiscountPopup';
 import { t } from '@/lib/i18n';
 
 export default function MainLayout() {
@@ -15,6 +16,7 @@ export default function MainLayout() {
         <Outlet />
       </main>
       <Footer />
+      <DiscountPopup />
     </div>
   );
 }

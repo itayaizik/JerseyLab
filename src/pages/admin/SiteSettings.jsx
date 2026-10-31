@@ -46,6 +46,16 @@ const settingFields = [
   { key: 'promo_banner_button_text', label: 'באנר - טקסט כפתור', type: 'text', placeholder: 'לחולצות הסייל ←' },
   { key: 'promo_banner_button_link', label: 'באנר - קישור כפתור', type: 'text', placeholder: '/catalog?sale=true' },
   { key: 'promo_banner_image', label: 'באנר - תמונת רקע (URL)', type: 'text', placeholder: 'https://...' },
+  { key: 'discount_popup_active', label: 'פופ-אפ הנחה - פעיל? (כתוב "yes" להצגה)', type: 'text', placeholder: 'yes',
+    help: 'נפתח מעצמו אחרי חצי דקה מהכניסה לאתר, פעם אחת לכל מבצע. מי שסגר אותו לא יראה אותו שוב עד שתשנו את הטקסט.' },
+  { key: 'discount_popup_title', label: 'פופ-אפ - כותרת', type: 'text', placeholder: '10% על ההזמנה הראשונה' },
+  { key: 'discount_popup_text', label: 'פופ-אפ - טקסט', type: 'textarea', placeholder: 'מצטרפים עם הקוד הזה ומקבלים הנחה על כל ההזמנה.',
+    help: 'בלי טקסט הפופ-אפ לא נפתח, גם אם הוא פעיל.' },
+  { key: 'discount_popup_code', label: 'פופ-אפ - קוד קופון', type: 'text', placeholder: 'JL10',
+    help: 'הקוד עצמו נוצר ב"ניהול קופונים". כאן רק כותבים אותו כדי להציג ולהעתיק.' },
+  { key: 'discount_popup_button_text', label: 'פופ-אפ - טקסט הכפתור', type: 'text', placeholder: 'לקולקציה' },
+  { key: 'discount_popup_link', label: 'פופ-אפ - קישור הכפתור', type: 'text', placeholder: '/catalog' },
+  { key: 'discount_popup_delay', label: 'פופ-אפ - אחרי כמה שניות להיפתח', type: 'text', placeholder: '30' },
 ];
 
 // Everything the save button writes. The hero photos and the card switch save
