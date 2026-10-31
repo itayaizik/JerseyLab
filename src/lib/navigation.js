@@ -95,7 +95,12 @@ const NATIONAL_TEAMS = [
 
 export const NATIONAL_MENU = {
   card: { label: t('כל הנבחרות', 'All national teams'), href: collectionHref('national-teams'), image: 'collection:national-teams' },
-  links: NATIONAL_TEAMS.map(name => ({ label: term(name), href: searchHref(name) })),
+  // The World Cup leads the list rather than sitting in team order: it is what
+  // people are searching for this year, and it is a page rather than a search.
+  links: [
+    { label: t('חולצות מונדיאל', 'World Cup shirts'), href: collectionHref('world-cup') },
+    ...NATIONAL_TEAMS.map(name => ({ label: term(name), href: searchHref(name) })),
+  ],
 };
 
 export const SHIRTS_MENU = {

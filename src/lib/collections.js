@@ -594,6 +594,36 @@ export const COLLECTIONS = [
     },
     match: byLeague('ליגת האלופות'),
   },
+  {
+    slug: 'world-cup',
+    name: 'מונדיאל',
+    title: 'חולצות מונדיאל 2026 - כל הנבחרות | JerseyLab',
+    h1: 'חולצות מונדיאל',
+    description: 'חולצות המונדיאל של 2026 - ארגנטינה, ברזיל, אנגליה, צרפת, גרמניה, פורטוגל, ספרד ועוד, בית וחוץ. וגם דגמי רטרו מהמונדיאלים הגדולים.',
+    intro: 'החולצות של המונדיאל, מ-2026 ואחורה. כל הנבחרות שבטורניר, בית וחוץ, לצד הקלאסיקות: ברזיל 1998 ו-2002, צרפת 1998, ארגנטינה 1986 ו-2022, איטליה 2006 וגרמניה 1990.',
+    faq: [
+      {
+        q: 'אלו נבחרות יש מהמונדיאל של 2026?',
+        a: 'הנבחרות המבוקשות ביותר, בית וחוץ: ארגנטינה, ברזיל, אנגליה, צרפת, ספרד, פורטוגל, גרמניה, הולנד, בלגיה, קרואטיה, מרוקו, אורוגוואי, קולומביה, מקסיקו, ארצות הברית, קנדה, יפן, דרום קוריאה ונורווגיה. אם חסרה נבחרת שאתם מחפשים אפשר לשלוח בקשה ונבדוק.',
+      },
+      {
+        q: 'אפשר להדפיס שם ומספר של שחקן?',
+        a: 'כן. בכל חולצה אפשר לבחור הדפסת שם ומספר על הגב בתוספת תשלום, באותיות לועזיות כמו שיודפס.',
+      },
+      {
+        q: 'מה ההבדל בין חולצת מונדיאל לחולצת נבחרת רגילה?',
+        a: 'זו אותה חולצה: הדגם שהנבחרת לובשת בתקופת הטורניר. ההבדל היחיד הוא הפאצ׳ים של הטורניר, שאפשר להוסיף בנפרד.',
+      },
+    ],
+    en: {
+      name: 'World Cup',
+      title: 'World Cup 2026 Shirts - Every Team | JerseyLab',
+      h1: 'World Cup Shirts',
+      description: 'World Cup 2026 shirts - Argentina, Brazil, England, France, Germany, Portugal, Spain and more, home and away. Plus retro shirts from the great World Cups.',
+      intro: 'World Cup shirts, from 2026 backwards. Every team at the tournament, home and away, alongside the classics: Brazil 1998 and 2002, France 1998, Argentina 1986 and 2022, Italy 2006 and Germany 1990.',
+    },
+    match: byLeague('מונדיאל'),
+  },
 ];
 
 // A collection with its copy in the site's language. The Hebrew fields stay

@@ -783,6 +783,22 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/champions-league" />
   </url>
   <url>
+    <loc>https://www.jerseylab.co/collections/world-cup</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/world-cup" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/world-cup" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/world-cup" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/collections/world-cup</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/collections/world-cup" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/collections/world-cup" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/collections/world-cup" />
+  </url>
+  <url>
     <loc>https://www.jerseylab.co/shirt/חולצת-טוטנהאם-בית-2023-24-סולומון-0c1495ff</loc>
     <lastmod>2026-09-30</lastmod>
     <changefreq>weekly</changefreq>
@@ -2979,42 +2995,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-דורטמונד-בית-2026-27-e422a951" />
   </url>
   <url>
-    <loc>https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea</loc>
-    <lastmod>2026-10-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea" />
-  </url>
-  <url>
-    <loc>https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea</loc>
-    <lastmod>2026-10-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea" />
-  </url>
-  <url>
-    <loc>https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a</loc>
-    <lastmod>2026-10-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a" />
-  </url>
-  <url>
-    <loc>https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a</loc>
-    <lastmod>2026-10-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a" />
-  </url>
-  <url>
     <loc>https://www.jerseylab.co/shirt/חולצת-נבחרת-הולנד-בית-2024-bd304077</loc>
     <lastmod>2026-09-30</lastmod>
     <changefreq>weekly</changefreq>
@@ -3051,40 +3031,22 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-מנצסטר-יונייטד-בית-רטרו-2003-04-c7ecd7be" />
   </url>
   <url>
-    <loc>https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634</loc>
-    <lastmod>2026-10-18</lastmod>
+    <loc>https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea</loc>
+    <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634" />
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea" />
   </url>
   <url>
-    <loc>https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634</loc>
-    <lastmod>2026-10-18</lastmod>
+    <loc>https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea</loc>
+    <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634" />
-  </url>
-  <url>
-    <loc>https://www.jerseylab.co/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c</loc>
-    <lastmod>2026-09-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c" />
-  </url>
-  <url>
-    <loc>https://www.jerseylab.co/en/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c</loc>
-    <lastmod>2026-09-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c" />
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-2013-14-a54658ea" />
   </url>
   <url>
     <loc>https://www.jerseylab.co/shirt/חולצת-נבחרת-ספרד-חוץ-2024-d971ac17</loc>
@@ -3175,6 +3137,24 @@
     <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-נבחרת-ספרד-בית-2026-bce211ee" />
     <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-נבחרת-ספרד-בית-2026-bce211ee" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-נבחרת-ספרד-בית-2026-bce211ee" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ראיו-וייקאנו-בית-רטרו-1994-95-b1f1707c" />
   </url>
   <url>
     <loc>https://www.jerseylab.co/shirt/חולצת-נבחרת-ארגנטינה-חוץ-2026-ed68459d</loc>
@@ -4023,6 +4003,24 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-באיירן-מינכן-רטרו-2001-c1328276" />
   </url>
   <url>
+    <loc>https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-בית-2026-27-77763634" />
+  </url>
+  <url>
     <loc>https://www.jerseylab.co/shirt/חולצת-יובנטוס-בית-רטרו-2018-19-f444ceac</loc>
     <lastmod>2026-09-30</lastmod>
     <changefreq>weekly</changefreq>
@@ -4851,6 +4849,24 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-נבחרת-ברזיל-חוץ-רטרו-מונדיאל-2002-8c622ac3" />
   </url>
   <url>
+    <loc>https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-חוץ-רטרו-1994-20cd561a" />
+  </url>
+  <url>
     <loc>https://www.jerseylab.co/shirt/חולצת-באיירן-מינכן-בית-2025-26-2c93c6c9</loc>
     <lastmod>2026-09-16</lastmod>
     <changefreq>weekly</changefreq>
@@ -5086,7 +5102,7 @@
   </url>
   <url>
     <loc>https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-בית-רטרו-2000-01-63d0a361</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-בית-רטרו-2000-01-63d0a361" />
@@ -5095,7 +5111,7 @@
   </url>
   <url>
     <loc>https://www.jerseylab.co/en/shirt/חולצת-סנט-פאולי-בית-רטרו-2000-01-63d0a361</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-סנט-פאולי-בית-רטרו-2000-01-63d0a361" />
@@ -5139,24 +5155,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ווסטהאם-שלישית-2026-27-סולומון-0510329f" />
   </url>
   <url>
-    <loc>https://www.jerseylab.co/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c</loc>
-    <lastmod>2026-10-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c" />
-  </url>
-  <url>
-    <loc>https://www.jerseylab.co/en/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c</loc>
-    <lastmod>2026-10-31</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c" />
-  </url>
-  <url>
     <loc>https://www.jerseylab.co/shirt/חולצת-הפועל-תל-אביב-ליגת-האלופות-רטרו-2010-11-92b62368</loc>
     <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
@@ -5175,22 +5173,22 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-הפועל-תל-אביב-ליגת-האלופות-רטרו-2010-11-92b62368" />
   </url>
   <url>
-    <loc>https://www.jerseylab.co/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0</loc>
-    <lastmod>2026-09-30</lastmod>
+    <loc>https://www.jerseylab.co/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c</loc>
+    <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0" />
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c" />
   </url>
   <url>
-    <loc>https://www.jerseylab.co/en/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0</loc>
-    <lastmod>2026-09-30</lastmod>
+    <loc>https://www.jerseylab.co/en/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c</loc>
+    <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0" />
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ווסטהאם-בית-2026-27-סולומון-1edd874c" />
   </url>
   <url>
     <loc>https://www.jerseylab.co/shirt/חולצת-נבחרת-ארגנטינה-בית-2026-dc39e0ab</loc>
@@ -5211,22 +5209,22 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-נבחרת-ארגנטינה-בית-2026-dc39e0ab" />
   </url>
   <url>
-    <loc>https://www.jerseylab.co/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c</loc>
-    <lastmod>2026-09-14</lastmod>
+    <loc>https://www.jerseylab.co/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0</loc>
+    <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c" />
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0" />
   </url>
   <url>
-    <loc>https://www.jerseylab.co/en/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c</loc>
-    <lastmod>2026-09-14</lastmod>
+    <loc>https://www.jerseylab.co/en/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0</loc>
+    <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c" />
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ארסנל-בית-2026-27-0ecff2b0" />
   </url>
   <url>
     <loc>https://www.jerseylab.co/shirt/חולצת-מכבי-חיפה-בית-2026-27-6c59eb2e</loc>
@@ -5263,6 +5261,24 @@
     <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-ברצלונה-חוץ-2026-27-97549ce0" />
     <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-ברצלונה-חוץ-2026-27-97549ce0" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-ברצלונה-חוץ-2026-27-97549ce0" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c" />
+  </url>
+  <url>
+    <loc>https://www.jerseylab.co/en/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="he-IL" href="https://www.jerseylab.co/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jerseylab.co/en/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jerseylab.co/shirt/חולצת-מילאן-בית-רטרו-1996-97-3f19fe4c" />
   </url>
   <url>
     <loc>https://www.jerseylab.co/shirt/חולצת-פריז-סן-זרמן-רביעית-רטרו-2018-19-dbf958d8</loc>

@@ -41,6 +41,7 @@
   "collection:premier-league": 56,
   "collection:israeli-league": 28,
   "collection:champions-league": 14,
+  "collection:world-cup": 58,
   "_images": {
     "all": "https://cnskcshxvdymabvlghqc.supabase.co/storage/v1/object/public/shirt-images/fbab17dc-722c-406e-b90f-9b3022401230.webp",
     "gender=men": "https://cnskcshxvdymabvlghqc.supabase.co/storage/v1/object/public/shirt-images/fbab17dc-722c-406e-b90f-9b3022401230.webp",
@@ -80,6 +81,7 @@
     "collection:serie-a": "https://cnskcshxvdymabvlghqc.supabase.co/storage/v1/object/public/shirt-images/catalog/b87bd80314d4efc86335ab74.png",
     "collection:premier-league": "https://cnskcshxvdymabvlghqc.supabase.co/storage/v1/object/public/shirt-images/catalog/6d27269f4850697fa9bb91db.png",
     "collection:israeli-league": "https://cnskcshxvdymabvlghqc.supabase.co/storage/v1/object/public/shirt-images/catalog/056edf4911e059cfcc6bd338.png",
-    "collection:champions-league": "https://cnskcshxvdymabvlghqc.supabase.co/storage/v1/object/public/shirt-images/catalog/c7d02fd4e5541915fce155e4.jpg"
+    "collection:champions-league": "https://cnskcshxvdymabvlghqc.supabase.co/storage/v1/object/public/shirt-images/catalog/c7d02fd4e5541915fce155e4.jpg",
+    "collection:world-cup": "https://cnskcshxvdymabvlghqc.supabase.co/storage/v1/object/public/shirt-images/catalog/eee6740f592bb8583b2e2825.jpg"
   }
 }
