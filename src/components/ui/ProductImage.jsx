@@ -6,7 +6,7 @@ import { isOurStorage, resized } from '@/lib/imageUrl';
 // request - to a third-party host, on a connection that had just proven itself
 // unreliable, and one more domain for a school or office filter to block. An
 // inline SVG cannot fail.
-const FALLBACK = `data:image/svg+xml,${encodeURIComponent(
+export const FALLBACK = `data:image/svg+xml,${encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">'
   + '<rect width="80" height="80" fill="%23F3F5F8"/>'
   + '<path d="M28 27l6-3a7 7 0 0 0 12 0l6 3 4 9-6 3v16H30V39l-6-3z" fill="none" stroke="%231B2A4A" stroke-opacity=".22" stroke-width="2.5" stroke-linejoin="round"/>'
@@ -15,11 +15,13 @@ const FALLBACK = `data:image/svg+xml,${encodeURIComponent(
 
 // A dropped request is not a missing picture. Mobile networks drop them all the
 // time - a tab waking up, a lift, school wifi - and the browser does not try
-// again on its own: the <img> stays blank until the page is reloaded. So a
-// failure is retried a couple of times, a moment apart, before the fallback is
-// accepted as the answer.
-const MAX_RETRIES = 2;
-const RETRY_DELAY_MS = 900;
+// again on its own: the <img> stays blank until the page is reloaded.
+//
+// So a failure is retried, and the waits get longer: a connection that is
+// coming back needs a few seconds to do it, and three tries 900ms apart - all
+// of them inside two seconds - were really one attempt in a costume. Four
+// tries spread over seven seconds ride out the usual stumble.
+const RETRY_DELAYS = [700, 1800, 4500];
 
 // Product images used to live on nine third-party hosts, none of which could
 // resize on request, so a 1000px file was downloaded to paint a 150px card.
@@ -94,9 +96,9 @@ export default function ProductImage({
 }) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
-  // Bumped on a failed load to make the browser ask again; it will not refetch
-  // a URL it has already given up on.
-  const [retry, setRetry] = useState(0);
+  // Bumped on every fresh go at the picture, failed or recovered, to make the
+  // browser ask again; it will not refetch a URL it has already given up on.
+  const [attempt, setAttempt] = useState(0);
   const timer = useRef(null);
 
   // A new picture starts its own attempts, and a pending retry for the old one
@@ -104,26 +106,53 @@ export default function ProductImage({
   useEffect(() => {
     setLoaded(false);
     setErrored(false);
-    setRetry(0);
+    setAttempt(0);
     return () => clearTimeout(timer.current);
   }, [src]);
 
   useEffect(() => () => clearTimeout(timer.current), []);
 
+  // Falling back is not meant to be permanent. The usual reason a picture
+  // fails is a connection that was down for a moment, and the browser never
+  // reaches for one again by itself - so a grey placeholder used to sit there
+  // for the rest of the visit, on a shirt whose photo was never missing.
+  //
+  // When the connection comes back, or the visitor returns to the tab, an
+  // image that gave up starts over. `online` is the signal that matters on a
+  // phone; the visibility one catches a tab that was backgrounded through the
+  // outage and so never heard the event.
+  useEffect(() => {
+    if (!errored) return undefined;
+    const again = () => {
+      if (navigator.onLine === false) return;
+      setErrored(false);
+      setLoaded(false);
+      setAttempt(n => n + 1);
+    };
+    const onVisible = () => { if (document.visibilityState === 'visible') again(); };
+    window.addEventListener('online', again);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.removeEventListener('online', again);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [errored]);
+
   const handleError = () => {
-    if (retry < MAX_RETRIES) {
-      clearTimeout(timer.current);
-      timer.current = setTimeout(() => setRetry(n => n + 1), RETRY_DELAY_MS);
+    const wait = RETRY_DELAYS[attempt];
+    if (wait === undefined) {
+      setErrored(true);
+      setLoaded(true);
       return;
     }
-    setErrored(true);
-    setLoaded(true);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setAttempt(n => n + 1), wait);
   };
 
   const resolved = errored || !src ? fallback : src;
   const resizable = !errored && isOurStorage(resolved);
   // Only from the first retry on, so the ordinary path keeps a cacheable URL.
-  const bust = retry > 0 && !errored ? `&r=${retry}` : '';
+  const bust = attempt > 0 && !errored ? `&r=${attempt}` : '';
 
   const srcSet = resizable
     ? WIDTHS.map(w => `${atWidth(resolved, w)}${bust} ${w}w`).join(', ')

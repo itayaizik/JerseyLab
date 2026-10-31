@@ -6,6 +6,7 @@ import { trimShirtText } from '@/lib/shirtText';
 import LocalStockEditor from '@/components/admin/LocalStockEditor';
 import { stockItems, stockPayload } from '@/lib/localStock';
 import { uploadErrorMessage } from '@/lib/supabaseStorage';
+import { FALLBACK as IMAGE_FALLBACK } from '@/components/ui/ProductImage';
 
 const sizeOptions = ['S', 'M', 'L', 'XL', 'XXL', '3XL'];
 // Canonical spellings - see lib/sizes. Reads tolerate the legacy 'XXL' key,
@@ -259,7 +260,7 @@ export default function EditShirt() {
           <div>
             <label className="text-xs text-varnish">ראשית</label>
             {mainImageUrl ? (
-              <div className="relative w-32 h-32 mt-1"><img src={mainImageUrl} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.src = 'https://placehold.co/128x128'; }} /><button type="button" onClick={() => setMainImageUrl('')} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button></div>
+              <div className="relative w-32 h-32 mt-1"><img src={mainImageUrl} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.onerror = null; e.target.src = IMAGE_FALLBACK; }} /><button type="button" onClick={() => setMainImageUrl('')} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button></div>
             ) : useUrlMode ? (
               <div className="flex gap-2 mt-1"><input value={mainImageUrlInput} onChange={e => setMainImageUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={handleMainImageUrl} className="rounded-lg px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
             ) : (
@@ -270,7 +271,7 @@ export default function EditShirt() {
             <label className="text-xs text-varnish">נוספות</label>
             <div className="flex gap-2 flex-wrap mt-1">
               {extraImageUrls.map((url, i) => (
-                <div key={i} className="relative w-20 h-20"><img src={url} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.src = 'https://placehold.co/80x80'; }} /><button type="button" onClick={() => setExtraImageUrls(p => p.filter((_, idx) => idx !== i))} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button></div>
+                <div key={i} className="relative w-20 h-20"><img src={url} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.onerror = null; e.target.src = IMAGE_FALLBACK; }} /><button type="button" onClick={() => setExtraImageUrls(p => p.filter((_, idx) => idx !== i))} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button></div>
               ))}
             </div>
             {useUrlMode ? (

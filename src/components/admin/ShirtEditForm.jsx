@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { uploadErrorMessage } from '@/lib/supabaseStorage';
 import { sizeAliases, normalizeSize } from '@/lib/sizes';
 import LocalStockEditor from '@/components/admin/LocalStockEditor';
+import { FALLBACK as IMAGE_FALLBACK } from '@/components/ui/ProductImage';
 
 // '2XL', not 'XXL': the canonical spelling, so the label the owner sees matches
 // the key that gets written. The legacy 'XXL' is still read, via sizeAliases.
@@ -203,7 +204,7 @@ export default function ShirtEditForm({ draft, onChange, onImageSaved }) {
         <div>
           <label className="text-xs text-varnish">ראשית</label>
           {draft.mainImageUrl ? (
-            <div className="relative w-32 h-32 mt-1"><img src={draft.mainImageUrl} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.src = 'https://placehold.co/128x128'; }} /><button type="button" onClick={() => setMain('')} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button></div>
+            <div className="relative w-32 h-32 mt-1"><img src={draft.mainImageUrl} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.onerror = null; e.target.src = IMAGE_FALLBACK; }} /><button type="button" onClick={() => setMain('')} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button></div>
           ) : useUrlMode ? (
             <div className="flex gap-2 mt-1"><input value={mainUrlInput} onChange={e => setMainUrlInput(e.target.value)} placeholder="https://..." dir="ltr" className="rounded-xl flex-1 bg-white border border-brand-line px-3 py-2 text-sm text-chalk focus:border-turf focus:outline-none" /><button type="button" onClick={() => { if (mainUrlInput.trim()) { addMainUrl(mainUrlInput.trim()); setMainUrlInput(''); } }} className="rounded-lg px-3 py-2 bg-turf/10 text-turf text-sm font-bold">הוסף</button></div>
           ) : (
@@ -214,7 +215,7 @@ export default function ShirtEditForm({ draft, onChange, onImageSaved }) {
           <label className="text-xs text-varnish">נוספות</label>
           <div className="flex gap-2 flex-wrap mt-1">
             {draft.extraImageUrls.map((url, i) => (
-              <div key={i} className="relative w-20 h-20"><img src={url} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.src = 'https://placehold.co/80x80'; }} /><button type="button" onClick={() => removeExtra(i)} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button></div>
+              <div key={i} className="relative w-20 h-20"><img src={url} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.onerror = null; e.target.src = IMAGE_FALLBACK; }} /><button type="button" onClick={() => removeExtra(i)} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button></div>
             ))}
           </div>
           {useUrlMode ? (

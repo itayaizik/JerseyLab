@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { trimShirtText } from '@/lib/shirtText';
 import LocalStockEditor from '@/components/admin/LocalStockEditor';
 import { stockPayload } from '@/lib/localStock';
+import { FALLBACK as IMAGE_FALLBACK } from '@/components/ui/ProductImage';
 
 // No XS: the shop does not sell it.
 const sizeOptions = ['S', 'M', 'L', 'XL', 'XXL', '3XL'];
@@ -255,7 +256,7 @@ export default function AddShirt() {
             <label className="text-sm text-varnish block mb-2">תמונה ראשית</label>
             {mainImageUrl ? (
               <div className="relative w-32 h-32">
-                <img src={mainImageUrl} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.src = 'https://placehold.co/128x128'; }} />
+                <img src={mainImageUrl} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.onerror = null; e.target.src = IMAGE_FALLBACK; }} />
                 <button type="button" onClick={() => setMainImageUrl('')} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button>
               </div>
             ) : useUrlMode ? (
@@ -278,7 +279,7 @@ export default function AddShirt() {
             <div className="flex gap-2 flex-wrap mb-3">
               {extraImageUrls.map((url, i) => (
                 <div key={i} className="relative w-20 h-20">
-                  <img src={url} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.src = 'https://placehold.co/80x80'; }} />
+                  <img src={url} className="rounded-2xl w-full h-full object-cover border border-brand-line" onError={e => { e.target.onerror = null; e.target.src = IMAGE_FALLBACK; }} />
                   <button type="button" onClick={() => removeExtraImage(i)} className="absolute -top-2 -right-2 w-5 h-5 bg-redcard text-white flex items-center justify-center text-xs">×</button>
                 </div>
               ))}
