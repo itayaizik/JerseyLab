@@ -43,9 +43,31 @@ const MAX_SPEED = 300;
 // everyone who dismissed the previous one.
 const dismissKey = (text) => `jerseylab_topbar_${text.slice(0, 40)}`;
 
+// And it wears off. Stored with no expiry, one tap on the X hid the strip in
+// that browser for good - including the shop's own, which is how a working
+// strip comes to look like a broken switch. A week is long enough not to nag
+// and short enough that a notice still reaches people.
+const DISMISS_DAYS = 7;
+
+function wasDismissed(text) {
+  try {
+    const at = Number(localStorage.getItem(dismissKey(text)));
+    if (!at) return false;
+    // Values written before this had an expiry were '1', which is not a date.
+    if (at < 1e12) return false;
+    return Date.now() - at < DISMISS_DAYS * 24 * 60 * 60 * 1000;
+  } catch {
+    return false; // private mode: show it, dismissing just will not stick
+  }
+}
+
 export default function PromoBar() {
   const [promo, setPromo] = useState(null);
   const [dismissed, setDismissed] = useState(false);
+  // For whoever is checking whether it is on: show it regardless of a
+  // dismissal. A customer never types this.
+  const preview = typeof window !== 'undefined'
+    && new URLSearchParams(window.location.search).get('preview') === 'topbar';
 
   useEffect(() => {
     let cancelled = false;
@@ -77,9 +99,7 @@ export default function PromoBar() {
           background: (map[SETTING_KEYS.background] || '').trim() || DEFAULT_BG,
           foreground: (map[SETTING_KEYS.foreground] || '').trim() || DEFAULT_FG,
         });
-        try {
-          if (localStorage.getItem(dismissKey(text))) setDismissed(true);
-        } catch { /* private mode */ }
+        if (!preview && wasDismissed(text)) setDismissed(true);
       } catch { /* the bar simply stays hidden */ }
     })();
     return () => { cancelled = true; };
@@ -89,7 +109,7 @@ export default function PromoBar() {
 
   const close = () => {
     setDismissed(true);
-    try { localStorage.setItem(dismissKey(promo.text), '1'); } catch { /* private mode */ }
+    try { localStorage.setItem(dismissKey(promo.text), String(Date.now())); } catch { /* private mode */ }
   };
 
   const hasLink = !!promo.linkHref;
