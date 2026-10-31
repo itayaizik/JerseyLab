@@ -112,7 +112,7 @@ export default function PromoBar() {
     // Two identical halves, animated by exactly half the track: when the first
     // reaches where the second began the loop restarts invisibly. The hidden
     // copies are what make it seamless rather than a message that jumps.
-    <div className="jl-marquee flex-1 overflow-hidden">
+    <div dir="ltr" className="jl-marquee flex-1 overflow-hidden">
       {/* Laid out left to right whatever the page direction. In an RTL
           container a max-content flex track starts at the right edge and runs
           leftwards, which put the left-to-right keyframe's starting offset
