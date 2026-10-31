@@ -9,20 +9,39 @@ import { reviewPhoto } from '@/lib/reviewDisplay';
 
 function StarRating({ rating, onSelect, interactive = false }) {
   const [hovered, setHovered] = useState(0);
+
+  const star = (s) => (
+    <Star className={`h-[1.1rem] w-[1.1rem] ${(hovered || rating) >= s ? 'fill-brand-orange text-brand-orange' : 'text-brand-line'}`} />
+  );
+
+  // A rating being shown is a picture of a rating. It used to be five buttons
+  // with their pointer events turned off, which a screen reader read out as
+  // five buttons that do nothing, once per review on the page.
+  if (!interactive) {
+    return (
+      <div className="flex gap-0.5" role="img" aria-label={t(`${rating} מתוך 5`, `${rating} out of 5`)}>
+        {[1, 2, 3, 4, 5].map(s => <span key={s} aria-hidden="true">{star(s)}</span>)}
+      </div>
+    );
+  }
+
+  // Choosing one is a different thing: the star stays the size it looks, and
+  // what you tap is padded out to something a finger can hit. Five 17.6px
+  // targets in a row is a rating given by accident.
   return (
-    <div className="flex gap-0.5" aria-label={interactive ? t('דירוג', 'Rating') : t(`${rating} מתוך 5`, `${rating} out of 5`)}>
+    <div className="-m-1.5 flex" aria-label={t('דירוג', 'Rating')}>
       {[1, 2, 3, 4, 5].map((s) => (
         <button
           key={s}
           type="button"
-          tabIndex={interactive ? 0 : -1}
-          aria-label={interactive ? t(`${s} כוכבים`, `${s} stars`) : undefined}
-          onClick={() => interactive && onSelect && onSelect(s)}
-          onMouseEnter={() => interactive && setHovered(s)}
-          onMouseLeave={() => interactive && setHovered(0)}
-          className={interactive ? 'cursor-pointer' : 'cursor-default pointer-events-none'}
+          aria-label={t(`${s} כוכבים`, `${s} stars`)}
+          aria-pressed={rating === s}
+          onClick={() => onSelect && onSelect(s)}
+          onMouseEnter={() => setHovered(s)}
+          onMouseLeave={() => setHovered(0)}
+          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full transition hover:bg-brand-mist"
         >
-          <Star className={`h-[1.1rem] w-[1.1rem] ${(hovered || rating) >= s ? 'fill-brand-orange text-brand-orange' : 'text-brand-line'}`} />
+          {star(s)}
         </button>
       ))}
     </div>

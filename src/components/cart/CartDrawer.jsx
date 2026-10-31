@@ -488,6 +488,12 @@ export default function CartDrawer({ open, onClose, user }) {
           {t('חזרה לסל', 'Back to cart')}
         </button>
 
+        {/* How much is left. People push harder the closer the end looks, and
+            the only sign you had moved off the cart was the heading. */}
+        <p className="-mt-1 text-[13px] font-medium text-brand-navy/45">
+          {t('שלב אחרון מתוך שניים - הפרטים ושולחים.', 'Last step of two - your details, then send.')}
+        </p>
+
         <Field id="cart-name" label={t('שם מלא', 'Full name')} error={errors.full_name}>
           <input id="cart-name" value={contactForm.full_name} onChange={e => setField('full_name', e.target.value)} maxLength={100} autoComplete="name"
             aria-invalid={!!errors.full_name} className={inputClass('full_name')} />
