@@ -27,7 +27,7 @@ export const MYSTERY_BOX_PANELS = [
       t('חולצה אחת, במידה שבחרת, מהסגנון שבחרת.', 'One shirt, in the size and style you chose.'),
       t('מזמינים עם חברים? לכל בוקס סגנון, מידה, תוספות ושם משלו, וכולם נכנסים לסל בלחיצה אחת.', 'Ordering with friends? Every box gets its own style, size, extras and name, and they all go into the cart in one tap.'),
       t('הקבוצה, העונה והדגם יוצאים אקראית - זה מה שהופך את זה למיסטרי.', 'The team, season and design come out at random - that is what makes it a mystery.'),
-      t('אפשר להוסיף שרוול ארוך או מכנס קצר תואם, כמו בכל חולצה.', 'You can add long sleeves or matching shorts, as with any shirt.'),
+      t('אפשר להוסיף שרוול ארוך או מכנס קצר תואם - בכל בוקס חוץ מרטרו, שבא בגזרה שבה שיחקו בו.', 'You can add long sleeves or matching shorts - on every box but retro, which comes in the cut it was played in.'),
       t('בוקס ילדים הוא סט: חולצה, מכנס קצר ושם ומספר מאחורה - הכול במחיר אחד.', 'A kids box is a kit: shirt, shorts and a name and number on the back - all for one price.'),
       t('הוספת שם ומספר? גם הם הפתעה - נדפיס את השחקן שמתאים לחולצה שתצא.', 'Added a name and number? Those are a surprise too - we print a player who fits the shirt that comes out.'),
       t('מה יצא? את זה מגלים רק כשפותחים את הבוקס.', "What's inside? You only find out when you open the box."),

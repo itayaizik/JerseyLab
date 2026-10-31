@@ -33,10 +33,12 @@ export const sizesFor = (box) => (isKidsType(box.type) ? KIDS_SIZES : SIZES);
 // and the extras a grown-up ticks are shown as already included instead.
 export const kidsBox = (box) => isKidsType(box.type);
 
-// Same rule as a catalogue shirt: retro comes without shorts. Kids shorts are
-// in the price rather than an extra, so there is nothing to tick.
+// Same rule as a catalogue shirt (lib/shirtOptions): retro comes as the shirt
+// that was worn, in the cut it was worn in, so neither long sleeves nor
+// matching shorts are on offer for it. Kids shorts are in the price rather
+// than an extra, so there is nothing to tick there either.
 export const shortsAllowed = (box) => box.type !== 'retro' && !kidsBox(box);
-export const longSleeveAllowed = (box) => !kidsBox(box);
+export const longSleeveAllowed = (box) => box.type !== 'retro' && !kidsBox(box);
 export const wantsShorts = (box) => (kidsBox(box) ? true : box.shorts && shortsAllowed(box));
 export const wantsName = (box) => kidsBox(box) || box.addName;
 export const wantsLongSleeve = (box) => box.longSleeve && longSleeveAllowed(box);

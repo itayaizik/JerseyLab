@@ -65,8 +65,8 @@ export default function QuickAddModal({ shirt, open, onClose }) {
   const patchesAllowed = allowsPatches(shirt);
   const wantsPlayer = playerAllowed && shirtType === 'player';
   const wantsPatches = patchesAllowed && patches;
-  // Long sleeves: not on Israeli league shirts. Shorts: not on Israeli league
-  // shirts or retro. Both made to order only, never on a shirt from stock.
+  // Long sleeves and shorts: neither on Israeli league shirts, and neither on
+  // retro. Both made to order only, never on a shirt from stock.
   const longSleeveAllowed = allowsLongSleeve(shirt) && !buyingExact;
   const shortsAllowed = allowsShorts(shirt) && !buyingExact;
   const wantsLongSleeve = longSleeveAllowed && longSleeve;

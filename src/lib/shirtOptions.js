@@ -20,9 +20,11 @@ export const allowsPlayerVersion = (shirt) => !shirt?.is_retro && !isIsraeliLeag
 
 export const allowsPatches = (shirt) => !isIsraeliLeagueShirt(shirt);
 
-// Long sleeves: every shirt but Israeli league ones. Matching shorts: not for
-// Israeli league shirts, and not for retro, which comes as the shirt alone.
-export const allowsLongSleeve = (shirt) => !isIsraeliLeagueShirt(shirt);
+// Long sleeves and matching shorts: neither for Israeli league shirts, and
+// neither for retro. A retro shirt reproduces a shirt that was worn, in the
+// cut it was worn in, so there is no long-sleeved version of it to order and
+// no matching shorts made to go with it.
+export const allowsLongSleeve = (shirt) => !shirt?.is_retro && !isIsraeliLeagueShirt(shirt);
 export const allowsShorts = (shirt) => !shirt?.is_retro && !isIsraeliLeagueShirt(shirt);
 
 // A kids kit (src/lib/kidsKit.js) is made to order as a shirt-and-shorts set,

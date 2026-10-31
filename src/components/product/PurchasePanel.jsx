@@ -118,9 +118,9 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
   const wantsPlayer = playerAllowed && shirtType === 'player';
   const wantsPatches = patchesAllowed && patches;
 
-  // Long sleeves: not on Israeli league shirts. Matching shorts: not on Israeli
-  // league shirts or retro. Both are made to order, so neither applies to a
-  // shirt bought as it is from stock.
+  // Long sleeves and matching shorts: neither on Israeli league shirts, and
+  // neither on retro, which is reproduced in the cut it was worn in. Both are
+  // made to order, so neither applies to a shirt bought as it is from stock.
   const longSleeveAllowed = !kids && allowsLongSleeve(shirt);
   const shortsAllowed = !kids && allowsShorts(shirt);
   const wantsLongSleeve = longSleeveAllowed && !buyingExact && longSleeve;
