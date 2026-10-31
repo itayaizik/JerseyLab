@@ -100,8 +100,10 @@ function ShippingDetails() {
 export default function ShirtDetail() {
   // Either shape of URL lands here: the readable slug, or the bare id from a
   // link sent before slugs existed or a search result not yet recrawled.
+  // Only ever used to work out which shirt is being asked for. Anything
+  // stored against the shirt - a review, a wishlist row - keys off shirt.id,
+  // which is not what is in the URL any more.
   const { id: routeKey } = useParams();
-  const id = routeKey;
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [shirt, setShirt] = useState(null);
@@ -117,10 +119,20 @@ export default function ShirtDetail() {
   const [ctaPosition, setCtaPosition] = useState('below');
   const ctaRef = useRef(null);
 
+  useEffect(() => { loadShirt(); }, [routeKey]);
+  useEffect(() => { loadUser(); }, []);
+
+  // Whether this shirt is already in the wishlist can only be asked once both
+  // the visitor and the shirt are known, and they arrive separately.
   useEffect(() => {
-    loadShirt();
-    loadUser();
-  }, [id]);
+    if (!user?.id || !shirt?.id) { setIsWishlisted(false); return undefined; }
+    let cancelled = false;
+    base44.entities.Wishlist
+      .filter({ user_id: user.id, shirt_id: shirt.id })
+      .then(wl => { if (!cancelled) setIsWishlisted(wl.length > 0); })
+      .catch(() => { /* a wishlist state we cannot read is not an error worth showing */ });
+    return () => { cancelled = true; };
+  }, [user?.id, shirt?.id]);
 
   async function loadShirt() {
     setLoading(true);
@@ -132,10 +144,10 @@ export default function ShirtDetail() {
       // Direct single-shirt fetch - never loads the whole catalog. A slug is
       // resolved by the eight characters on its end rather than by its words,
       // so a renamed shirt still answers at the URL already out in the world.
-      const tail = shortIdFromKey(id);
+      const tail = shortIdFromKey(routeKey);
       const s = tail
         ? (await base44.entities.Shirt.filter({ short_id: tail }, null, 1))[0]
-        : await base44.entities.Shirt.get(id);
+        : await base44.entities.Shirt.get(routeKey);
       if (!s) throw new Error('not found');
       setShirt(s);
       setLoading(false);
@@ -143,7 +155,7 @@ export default function ShirtDetail() {
       // Send the visitor on to the spelling this shirt should be at, so the
       // old id URLs do not sit alongside the new ones as duplicates.
       const canonical = shirtPath(s);
-      if (canonical !== `/shirt/${id}`) {
+      if (canonical !== `/shirt/${routeKey}`) {
         navigate(canonical + window.location.search, { replace: true });
       }
 
@@ -184,10 +196,7 @@ export default function ShirtDetail() {
 
   async function loadUser() {
     try {
-      const me = await base44.auth.me();
-      setUser(me);
-      const wl = await base44.entities.Wishlist.filter({ user_id: me.id, shirt_id: id });
-      setIsWishlisted(wl.length > 0);
+      setUser(await base44.auth.me());
     } catch { /* not logged in */ }
   }
 
@@ -214,12 +223,12 @@ export default function ShirtDetail() {
   const toggleWishlist = async () => {
     if (!user) { navigate('/login'); return; }
     if (isWishlisted) {
-      const items = await base44.entities.Wishlist.filter({ user_id: user.id, shirt_id: id });
+      const items = await base44.entities.Wishlist.filter({ user_id: user.id, shirt_id: shirt.id });
       if (items[0]) await base44.entities.Wishlist.delete(items[0].id);
       setIsWishlisted(false);
       toast({ title: t('הוסרה מהמועדפים', 'Removed from your wishlist') });
     } else {
-      await base44.entities.Wishlist.create({ user_id: user.id, shirt_id: id });
+      await base44.entities.Wishlist.create({ user_id: user.id, shirt_id: shirt.id });
       setIsWishlisted(true);
       toast({ title: t('נוספה למועדפים', 'Added to your wishlist') });
     }
@@ -257,7 +266,7 @@ export default function ShirtDetail() {
           "@type": "Product",
           name: shirt.name,
           description: desc,
-          url: origin + "/shirt/" + shirt.id,
+          url: origin + shirtPath(shirt),
           ...(shirt.main_image ? { image: [shirt.main_image] } : {}),
           sku: shirt.id,
           brand: { "@type": "Brand", name: shirt.club || shirt.national_team || "JerseyLab" },
@@ -392,7 +401,7 @@ export default function ShirtDetail() {
                 <ShippingDetails />
               </Disclosure>
               <Disclosure title={t('ביקורות', 'Reviews')} meta={reviewsMeta}>
-                <ShirtReviews shirtId={id} user={user} onSummary={setReviewSummary} />
+                <ShirtReviews shirtId={shirt.id} user={user} onSummary={setReviewSummary} />
               </Disclosure>
             </div>
           </div>

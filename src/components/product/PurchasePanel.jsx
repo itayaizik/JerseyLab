@@ -230,27 +230,6 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
         <p className="mt-1 text-sm font-medium text-brand-orange-ink">{t(`משלוח חינם בהזמנה מעל ${freeAbove}`, `Free shipping on orders over ${freeAbove}`)}</p>
       )}
 
-      {siblings.length > 0 && team && (
-        <Section id="siblings-heading" title={t(`עוד חולצות של ${team}`, `More ${team} shirts`)}>
-          <ul className="flex flex-wrap gap-2.5">
-            <li>
-              <span aria-current="true" title={name}
-                className="relative block h-16 w-16 overflow-hidden rounded-xl bg-brand-mist ring-2 ring-brand-orange ring-offset-2">
-                <ProductImage src={shirt.main_image} alt={name} sizes="64px" className="h-full w-full object-cover" />
-              </span>
-            </li>
-            {siblings.slice(0, 5).map(s => (
-              <li key={s.id}>
-                <Link to={shirtPath(s)} title={shirtName(s)}
-                  className="relative block h-16 w-16 overflow-hidden rounded-xl bg-brand-mist ring-1 ring-brand-line transition hover:ring-2 hover:ring-brand-navy/40">
-                  <ProductImage src={s.main_image} alt={shirtName(s)} sizes="64px" className="h-full w-full object-cover" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Section>
-      )}
-
       {/* Who it is for, before the size, because it decides what the sizes
           even are. Men by default: it is what nearly every order is, and a
           shopper who is not buying for a child should not have to answer a
@@ -445,6 +424,30 @@ export default function PurchasePanel({ shirt, siblings = [], attention = 0, onO
         </p>
 
         <TrustBar className="mt-5" />
+
+        {siblings.length > 0 && team && (
+          <div className="mt-7 border-t border-brand-line pt-6">
+            <h2 id="siblings-heading" className="text-[15px] font-semibold text-brand-navy">
+              {t(`עוד חולצות של ${team}`, `More ${team} shirts`)}
+            </h2>
+            <ul aria-labelledby="siblings-heading" className="mt-3 flex flex-wrap gap-2.5">
+              <li>
+                <span aria-current="true" title={name}
+                  className="relative block h-16 w-16 overflow-hidden rounded-xl bg-brand-mist ring-2 ring-brand-orange ring-offset-2">
+                  <ProductImage src={shirt.main_image} alt={name} sizes="64px" className="h-full w-full object-cover" />
+                </span>
+              </li>
+              {siblings.slice(0, 5).map(s => (
+                <li key={s.id}>
+                  <Link to={shirtPath(s)} title={shirtName(s)}
+                    className="relative block h-16 w-16 overflow-hidden rounded-xl bg-brand-mist ring-1 ring-brand-line transition hover:ring-2 hover:ring-brand-navy/40">
+                    <ProductImage src={s.main_image} alt={shirtName(s)} sizes="64px" className="h-full w-full object-cover" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
