@@ -38,8 +38,16 @@ const KEYS = {
 
 const DEFAULT_DELAY_SECONDS = 30;
 
-// Where a popup would be an interruption rather than an offer.
-const QUIET_PATHS = [/^\/admin/, /^\/cart/, /^\/checkout/, /^\/login/, /^\/register/, /^\/reset-password/, /^\/forgot-password/];
+// Where a popup would be an interruption rather than an offer: signing in,
+// and writing a review of something already bought.
+const QUIET_PATHS = [/^\/admin/, /^\/login/, /^\/register/, /^\/reset-password/, /^\/forgot-password/, /^\/review/];
+
+// The cart is a drawer rather than a route, so there is no path to match on.
+// Anything already holding the screen - the cart, the quick-add window, the
+// size guide - is a conversation in progress, and the offer waits for it.
+const SOMETHING_ELSE_IS_OPEN = () =>
+  !!document.querySelector('[role="dialog"], [aria-modal="true"], [data-state="open"][role="dialog"]');
+const RETRY_MS = 8000;
 
 const dismissKey = (text) => `jerseylab_discount_${String(text).slice(0, 40)}`;
 
@@ -76,6 +84,14 @@ export default function DiscountPopup() {
         const seconds = Number(map[KEYS.delay]);
         const delay = Number.isFinite(seconds) && seconds >= 0 ? seconds : DEFAULT_DELAY_SECONDS;
 
+        const show = () => {
+          if (SOMETHING_ELSE_IS_OPEN()) {
+            timer.current = setTimeout(show, RETRY_MS);
+            return;
+          }
+          setOpen(true);
+        };
+
         const next = {
           title: field('title').trim(),
           text,
@@ -84,7 +100,7 @@ export default function DiscountPopup() {
           link: (map[KEYS.link] || '').trim(),
         };
         setOffer(next);
-        timer.current = setTimeout(() => setOpen(true), delay * 1000);
+        timer.current = setTimeout(show, delay * 1000);
       } catch { /* the popup simply never opens */ }
     })();
     return () => { cancelled = true; clearTimeout(timer.current); };

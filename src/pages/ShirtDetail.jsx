@@ -148,7 +148,7 @@ export default function ShirtDetail() {
       const s = tail
         ? (await base44.entities.Shirt.filter({ short_id: tail }, null, 1))[0]
         : await base44.entities.Shirt.get(routeKey);
-      if (!s) throw new Error('not found');
+      if (!s) { setShirt(null); setLoading(false); return; }
       setShirt(s);
       setLoading(false);
 
@@ -330,12 +330,22 @@ export default function ShirtDetail() {
   if (!shirt) {
     return (
       <div className="shop-container py-10">
+        {/* A sold or deleted shirt should not sit in the index as a live
+            product page, but the links pointing at it are still worth
+            following into the catalogue. */}
+        <Seo
+          title={t('החולצה לא נמצאה - JerseyLab', 'Shirt not found - JerseyLab')}
+          description={t('החולצה הזו כבר לא באתר. אפשר לחפש אותה בקטלוג או לבקש שנשיג אותה.', 'This shirt is no longer on the site. Search the catalog or ask us to source it.')}
+          noindex
+        />
         <EmptyState
           icon={Shirt}
           title={t('החולצה לא נמצאה', 'Shirt not found')}
-          description={t('ייתכן שהחולצה כבר לא זמינה או שהקישור אינו תקין.', 'The shirt may no longer be available, or the link may be broken.')}
+          description={t('ייתכן שהיא כבר נמכרה, או שהקישור לא תקין. אפשר לחפש אותה בקטלוג, ואם היא לא שם נשמח לנסות להשיג אותה.', 'It may have sold, or the link may be broken. Try the catalog - and if it is not there, we will try to source it.')}
           actionLabel={t('לקטלוג', 'To the catalog')}
           actionTo="/catalog"
+          secondaryLabel={t('בקשו חולצה', 'Request a shirt')}
+          secondaryTo="/request-shirt"
         />
       </div>
     );

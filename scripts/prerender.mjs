@@ -48,13 +48,13 @@ const STATIC_PAGES = [
   {
     path: '/',
     en: {
-      title: 'JerseyLab',
+      title: "Football Shirts - Clubs, National Teams and Retro | JerseyLab",
       shareTitle: "JerseyLab - Football Shirts for Collectors and Fans",
       description: "Football shirts for collectors and fans: club and national team kits, current seasons and retro, with name and number printing. Delivery across Israel.",
       h1: "Football shirts, rare ones included, at fair prices",
       body: "<p>JerseyLab sells football shirts - club kits, national teams, retro and player versions - and can source shirts that are not in the catalog.</p>",
     },
-    title: 'JerseyLab',
+    title: "חולצות כדורגל - מועדונים, נבחרות ורטרו | JerseyLab",
     shareTitle: 'JerseyLab - חולצות כדורגל נדירות לאספנים ואוהדים',
     description: 'חולצות כדורגל איכותיות ונדירות לאספנים ואוהדים. מצא חולצות של קבוצות, נבחרות ושחקנים אהובים - חדשות, רטרו ומהדורות מיוחדות במחירים טובים.',
     h1: 'חולצות כדורגל איכותיות, נדירות ובמחירים טובים',
