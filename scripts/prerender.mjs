@@ -26,7 +26,8 @@ import { resized } from '../src/lib/imageUrl.js';
 
 const DIST = resolve(ROOT, 'dist');
 const TEMPLATE_PATH = resolve(DIST, 'index.html');
-const DEFAULT_IMAGE = 'https://www.jerseylab.co/og-image.jpg';
+// Versioned, because link previews are cached by whoever drew them first.
+const DEFAULT_IMAGE = 'https://www.jerseylab.co/og-image.jpg?v=2';
 
 if (!existsSync(TEMPLATE_PATH)) {
   console.error('[prerender] dist/index.html not found - run `vite build` first.');

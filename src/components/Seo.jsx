@@ -3,7 +3,10 @@ import { siteUrl } from '@/lib/siteUrl';
 import { isEn, pathInLang } from '@/lib/i18n';
 
 const SITE_NAME = 'JerseyLab';
-const DEFAULT_IMAGE = 'https://www.jerseylab.co/og-image.jpg';
+// The version is part of the URL on purpose: the places that draw link
+// previews cache what they fetched the first time, so a new picture at the
+// old address is a picture nobody goes back for.
+const DEFAULT_IMAGE = 'https://www.jerseylab.co/og-image.jpg?v=2';
 
 function upsertMeta(selector, attrKey, attrValue, content) {
   if (content === undefined || content === null || content === '') return;
