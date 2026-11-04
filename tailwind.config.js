@@ -1,6 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
+    // On a touch screen a tap leaves :hover stuck on the element, so every
+    // hover:/group-hover: style (the card's scale and shadow) fired on touch and
+    // stayed. With this, hover styles apply only where a real hover exists.
+    future: { hoverOnlyWhenSupported: true },
     content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
   	extend: {
