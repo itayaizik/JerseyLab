@@ -1,6 +1,7 @@
 import React from 'react';
 import ShirtCard from '@/components/ShirtCard';
 import ScrollRow from '@/components/shop/ScrollRow';
+import { IMAGE_SIZES } from '@/components/ui/ProductImage';
 
 // A sideways row of product cards: "אולי יעניין אתכם גם" on the product page,
 // the picks on the home page.
@@ -13,6 +14,7 @@ export default function ProductRail({ shirts, user, wishlistIds = [], onToggleWi
           shirt={shirt}
           user={user}
           eager={i < 2}
+          sizes={IMAGE_SIZES.rail}
           isWishlisted={wishlistIds.includes(shirt.id)}
           onToggleWishlist={onToggleWishlist}
         />

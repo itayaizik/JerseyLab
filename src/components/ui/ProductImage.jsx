@@ -60,7 +60,14 @@ const WIDTHS = [160, 320, 480, 640, 900, 1280, 1600];
 // compression. Thumbnails had the opposite problem, fetching a card-sized file
 // to paint 64 pixels.
 export const IMAGE_SIZES = {
-  card: '(min-width: 1280px) 360px, (min-width: 768px) 32vw, 50vw',
+  // The picture inside a catalogue card, not the card: container padding, grid
+  // gap and the card's own padding are taken off, so a 393px phone is told 155px
+  // (what it paints) rather than 196px (50vw). At 3x density that is a 480w file
+  // instead of a 640w one. Grid: 2 columns, 3 from 768, 4 from 1280.
+  card: '(min-width: 1280px) calc(min(100vw, 1560px) / 4 - 62px), (min-width: 1024px) calc((100vw - 200px) / 3), (min-width: 768px) calc((100vw - 160px) / 3), (min-width: 640px) calc(50vw - 58px), calc(50vw - 42px)',
+  // The sideways rail of cards (ProductRail), whose items are a share of the row
+  // and so much wider on a phone than a grid cell: 72% of it.
+  rail: '(min-width: 1280px) calc(min(100vw, 1560px) * 0.19 - 39px), (min-width: 1024px) calc(23.5vw - 43px), (min-width: 768px) calc(31vw - 39px), (min-width: 640px) calc(42vw - 44px), calc(72vw - 43px)',
   // The first card of a collection, which spans two columns and two rows.
   featured: '(min-width: 1280px) 740px, (min-width: 768px) 64vw, 100vw',
   // Deliberately generous: the hero can be zoomed, and the browser will not

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import LiquidButton from '@/components/shop/LiquidButton';
+import { resized } from '@/lib/imageUrl';
 import { ShoppingBag, Check, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
@@ -167,7 +168,7 @@ export default function QuickAddModal({ shirt, open, onClose }) {
         <DialogTitle className="sr-only">{t('הוספה לסל', 'Add to cart')} - {name}</DialogTitle>
 
         <div className="mb-1 flex items-center gap-3 pe-10">
-          {shirt.main_image && <img src={shirt.main_image} alt="" className="h-14 w-14 flex-shrink-0 rounded-xl object-cover" />}
+          {shirt.main_image && <img src={resized(shirt.main_image, 168)} alt="" width="56" height="56" className="h-14 w-14 flex-shrink-0 rounded-xl object-cover" />}
           <div className="min-w-0 flex-1">
             <p className="truncate text-[15px] font-semibold leading-tight text-brand-navy">{name}</p>
             <p className="mt-0.5 text-[15px] font-semibold tabular-nums text-brand-navy/70">₪{basePrice}</p>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import LiquidButton from '@/components/shop/LiquidButton';
 import { Link } from 'react-router-dom';
 import { t, isEn } from '@/lib/i18n';
-import { resized } from '@/lib/imageUrl';
+import { resized, srcSetFor } from '@/lib/imageUrl';
 
 // The first thing on the home page: one photograph in a rounded banner with a
 // narrow white card over it on the left. Everything is
@@ -81,9 +81,11 @@ export default function HomeHero({ settings = {}, ready = true }) {
         {hasSource && (
         <picture>
           <source media="(min-width: 768px)" srcSet={resized(desktop, 1600)} />
+          {/* The phone photo fills the screen width, so a 3x phone (1179px) was
+              being handed a 900px file; now it picks 640 / 900 / 1200 by density. */}
           {/* React 18 only passes the lowercase attribute through. */}
           {/* eslint-disable-next-line react/no-unknown-property */}
-          <img src={resized(mobile, 900)} alt="" fetchpriority="high" width="900" height="1125" className="absolute inset-0 h-full w-full object-cover" />
+          <img src={resized(mobile, 900)} srcSet={srcSetFor(mobile, [640, 900, 1200])} sizes="100vw" alt="" fetchpriority="high" width="900" height="1125" className="absolute inset-0 h-full w-full object-cover" />
         </picture>
         )}
 
