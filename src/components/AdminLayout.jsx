@@ -42,7 +42,10 @@ export default function AdminLayout() {
         </div>
       </div>
 
-      <div className="flex flex-1">
+      {/* A column on a phone, so the link strip sits above the page instead of
+          beside it (in a row it took its full width and squeezed the content to
+          nothing); a row from lg up, where the sidebar sits beside the page. */}
+      <div className="flex flex-1 flex-col lg:flex-row">
         {/* Sidebar - Desktop */}
         <aside className="hidden lg:block w-56 bg-white border-l border-brand-line p-3 space-y-1 sticky top-[57px] h-[calc(100vh-57px)] overflow-y-auto">
           {adminLinks.map(link => {
