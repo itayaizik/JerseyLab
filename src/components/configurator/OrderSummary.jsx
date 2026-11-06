@@ -1,6 +1,7 @@
 import React from 'react';
 import { EXTRA_PRICES, PATCHES_LABEL, LONG_SLEEVE_LABEL, SHORTS_LABEL } from '@/lib/cart';
 import { t } from '@/lib/i18n';
+import { resized } from '@/lib/imageUrl';
 import { term, shirtName } from '@/lib/english';
 
 function Row({ label, value, ltr = false }) {
@@ -30,7 +31,7 @@ export default function OrderSummary({
     <div className="rounded-2xl bg-brand-mist p-4">
       <div className="flex items-center gap-3">
         {shirt.main_image && (
-          <img src={shirt.main_image} alt="" className="h-14 w-14 flex-shrink-0 rounded-xl object-cover" />
+          <img src={resized(shirt.main_image, 168)} alt="" width="56" height="56" className="h-14 w-14 flex-shrink-0 rounded-xl object-cover" />
         )}
         <div className="min-w-0 flex-1">
           <p className="truncate text-[15px] font-semibold text-brand-navy">{shirtName(shirt)}</p>

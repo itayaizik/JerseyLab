@@ -6,6 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { friendlyError } from '@/lib/errorMessages';
 import { t } from '@/lib/i18n';
 import { reviewPhoto } from '@/lib/reviewDisplay';
+import { resized } from '@/lib/imageUrl';
 
 function StarRating({ rating, onSelect, interactive = false }) {
   const [hovered, setHovered] = useState(0);
@@ -163,7 +164,7 @@ export default function ShirtReviews({ shirtId, user, onSummary }) {
                 <p dir="auto" className="mt-2 text-start text-[15px] leading-relaxed text-brand-navy/75">{r.comment}</p>
                 {reviewPhoto(r) && (
                   <button type="button" onClick={() => setLightboxImage(reviewPhoto(r))} className="mt-3 block" aria-label={t('הגדלת התמונה', 'Enlarge the photo')}>
-                    <img src={reviewPhoto(r)} alt="" className="h-28 w-28 cursor-zoom-in rounded-xl object-cover transition hover:opacity-90" />
+                    <img src={resized(reviewPhoto(r), 336)} alt="" loading="lazy" width="112" height="112" className="h-28 w-28 cursor-zoom-in rounded-xl object-cover transition hover:opacity-90" />
                   </button>
                 )}
               </li>
@@ -237,7 +238,7 @@ export default function ShirtReviews({ shirtId, user, onSummary }) {
           onKeyDown={(e) => { if (e.key === 'Escape' || e.key === 'Enter') setLightboxImage(''); }}
           className="fixed inset-0 z-[80] flex cursor-zoom-out items-center justify-center bg-brand-navy-dark/85 p-6"
         >
-          <img src={lightboxImage} alt="" className="max-h-full max-w-full rounded-2xl object-contain" />
+          <img src={resized(lightboxImage, 1280)} alt="" className="max-h-full max-w-full rounded-2xl object-contain" />
         </div>
       )}
     </div>

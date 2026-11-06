@@ -35,7 +35,7 @@ function sizeRange(shirt) {
 // The whole card is one link, stretched from the title over the card, so the
 // wishlist and quick-add buttons can sit on top of it without nesting a button
 // inside a link - which is invalid markup and unpredictable to press.
-function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false, featured = false }) {
+function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false, featured = false, sizes }) {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
 
   const badge = cardBadge(shirt);
@@ -54,7 +54,7 @@ function ShirtCard({ shirt, isWishlisted, onToggleWishlist, user, eager = false,
           // in Google Images, where a lot of shirt searches start.
           alt={name}
           eager={eager}
-          sizes={featured ? IMAGE_SIZES.featured : IMAGE_SIZES.card}
+          sizes={sizes || (featured ? IMAGE_SIZES.featured : IMAGE_SIZES.card)}
           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
         />
 
