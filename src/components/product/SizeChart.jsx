@@ -100,7 +100,7 @@ function MeasureTable({ rows, sizes }) {
     <table className="w-full min-w-[32rem] text-sm">
       <thead>
         <tr className="bg-brand-navy text-white">
-          <th scope="col" className="px-4 py-3.5 text-start font-semibold">{t('מידה', 'Size')}</th>
+          <th scope="col" className="sticky start-0 z-10 bg-brand-navy px-4 py-3.5 text-start font-semibold">{t('מידה', 'Size')}</th>
           {sizes.map(size => (
             <th key={size} scope="col" dir="ltr" className="px-3 py-3.5 text-center font-semibold">{size}</th>
           ))}
@@ -109,7 +109,9 @@ function MeasureTable({ rows, sizes }) {
       <tbody>
         {rows.map((row, i) => (
           <tr key={row.measure} className={i % 2 ? 'bg-brand-mist' : 'bg-white'}>
-            <th scope="row" className="whitespace-nowrap px-4 py-3.5 text-start font-medium text-brand-navy/70">{row.measure}</th>
+            {/* Its own background, not the row's: a sticky cell slides over the
+                others, and without one the numbers show through it. */}
+            <th scope="row" className={`sticky start-0 z-10 whitespace-nowrap px-4 py-3.5 text-start font-medium text-brand-navy/70 ${i % 2 ? 'bg-brand-mist' : 'bg-white'}`}>{row.measure}</th>
             {sizes.map(size => (
               <td key={size} dir="ltr" className="px-3 py-3.5 text-center tabular-nums text-brand-navy">{row[size]}</td>
             ))}
@@ -125,8 +127,9 @@ function KidsTable() {
     <table className="w-full min-w-[32rem] text-sm">
       <thead>
         <tr className="bg-brand-navy text-white">
-          {KIDS_COLUMNS.map(col => (
-            <th key={col.key} scope="col" className="px-3 py-3.5 text-center font-semibold">{col.label}</th>
+          {KIDS_COLUMNS.map((col, ci) => (
+            <th key={col.key} scope="col"
+              className={`px-3 py-3.5 text-center font-semibold ${ci === 0 ? 'sticky start-0 z-10 bg-brand-navy' : ''}`}>{col.label}</th>
           ))}
         </tr>
       </thead>
@@ -135,7 +138,9 @@ function KidsTable() {
           <tr key={row.size} className={i % 2 ? 'bg-brand-mist' : 'bg-white'}>
             {KIDS_COLUMNS.map((col, ci) => (
               <td key={col.key} dir="ltr"
-                className={`px-3 py-3.5 text-center tabular-nums ${ci === 0 ? 'font-semibold text-brand-navy' : 'text-brand-navy/80'}`}>
+                className={`px-3 py-3.5 text-center tabular-nums ${ci === 0
+                  ? `sticky start-0 z-10 font-semibold text-brand-navy ${i % 2 ? 'bg-brand-mist' : 'bg-white'}`
+                  : 'text-brand-navy/80'}`}>
                 {row[col.key]}
               </td>
             ))}
@@ -148,11 +153,14 @@ function KidsTable() {
 
 export function SizeChartTable({ tab }) {
   return (
-    <div className="overflow-x-auto rounded-2xl ring-1 ring-brand-line">
+    <div>
+      <p className="mb-2 text-xs text-brand-navy/55 sm:hidden">{t('אפשר להחליק את הטבלה הצידה לשאר המידות', 'Swipe the table sideways for the other sizes')}</p>
+      <div className="overflow-x-auto rounded-2xl ring-1 ring-brand-line">
       {tab === 'fan' && <MeasureTable rows={FAN_ROWS} sizes={ADULT_SIZES} />}
       {tab === 'player' && <MeasureTable rows={PLAYER_ROWS} sizes={ADULT_SIZES} />}
       {tab === 'women' && <MeasureTable rows={WOMEN_ROWS} sizes={WOMEN_SIZES} />}
       {tab === 'kids' && <KidsTable />}
+      </div>
     </div>
   );
 }

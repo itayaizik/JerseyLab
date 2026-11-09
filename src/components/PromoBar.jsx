@@ -214,8 +214,11 @@ export default function PromoBar() {
       <div className="shop-container flex min-h-[2.25rem] items-center gap-2 py-1.5 text-[13px] font-medium">
         <span className="w-8 flex-shrink-0" aria-hidden="true" />
         {body}
+        {/* The circle stays 32px, because the bar is only 36px tall - but a
+            thumb needs more than that, so an invisible ring around it takes the
+            taps the circle would miss. */}
         <button type="button" onClick={close} aria-label={t('סגירת ההודעה', 'Close this notice')}
-          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition hover:bg-black/15">
+          className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition before:absolute before:-inset-1.5 before:content-[''] hover:bg-black/15">
           <X className="h-3.5 w-3.5" />
         </button>
       </div>
