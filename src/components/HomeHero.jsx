@@ -10,8 +10,8 @@ import { resized, srcSetFor } from '@/lib/imageUrl';
 // no card at all.
 
 export const HERO_DEFAULTS = {
-  desktop: '/hero-desktop.jpg',
-  mobile: '/hero-mobile.jpg',
+  desktop: '/hero-desktop.webp',
+  mobile: '/hero-mobile.webp',
   title: 'עונת 26/27|כבר כאן',
   subtitle: 'הגיע הזמן להתחדש. קנה חולצה חדשה לפני שייגמר.',
   button: 'לקטלוג',

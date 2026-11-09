@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import LiquidButton from '@/components/shop/LiquidButton';
-import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/lib/AuthContext';
 import Seo from '@/components/Seo';
 import { t } from '@/lib/i18n';
 
@@ -9,17 +8,12 @@ export default function PageNotFound() {
   const location = useLocation();
   const pageName = location.pathname;
 
-  const { data: authData, isFetched } = useQuery({
-    queryKey: ['user'],
-    queryFn: async () => {
-      try {
-        const user = await base44.auth.me();
-        return { user, isAuthenticated: true };
-      } catch {
-        return { user: null, isAuthenticated: false };
-      }
-    }
-  });
+  // Who the visitor is, from the context the whole app already has. This was
+  // a @tanstack/react-query call - the only one in the codebase, which meant
+  // the library, its provider and its client were downloaded by every visitor
+  // on every page so that one note could appear on the 404 page for the one
+  // person who owns the shop.
+  const { user, isAuthenticated, authChecked } = useAuth();
 
   return (
     <div className="shop-container flex min-h-[65vh] items-center justify-center py-16">
@@ -41,7 +35,7 @@ export default function PageNotFound() {
           {t('לא קיים באתר. אולי הקישור שגוי, או שהחולצה כבר לא זמינה.', "doesn't exist. The link may be wrong, or the shirt may no longer be available.")}
         </p>
 
-        {isFetched && authData?.isAuthenticated && authData.user?.role === 'admin' && (
+        {authChecked && isAuthenticated && user?.role === 'admin' && (
           <div className="mt-6 rounded-2xl bg-white p-4 text-start">
             <p className="text-sm font-semibold text-brand-navy">הערה למנהל</p>
             <p className="mt-1 text-sm leading-relaxed text-brand-navy/60">ייתכן שהדף עדיין לא מומש.</p>

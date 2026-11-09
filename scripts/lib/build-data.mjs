@@ -75,7 +75,7 @@ export async function fetchShirts({ label = 'build' } = {}) {
 export async function fetchHeroImages({ label = 'build' } = {}) {
   const url = env('VITE_SUPABASE_URL');
   const key = env('VITE_SUPABASE_ANON_KEY');
-  const fallback = { desktop: '/hero-desktop.jpg', mobile: '/hero-mobile.jpg' };
+  const fallback = { desktop: '/hero-desktop.webp', mobile: '/hero-mobile.webp' };
   if (!url || !key) return fallback;
   try {
     const endpoint = `${url}/rest/v1/site_settings_raw?select=key,value&key=in.(homepage_hero_image,homepage_hero_image_mobile)`;

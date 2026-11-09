@@ -1,13 +1,10 @@
 import { Suspense } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { Toaster } from "@/components/ui/toaster"
-import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { lazyPage as lazy } from '@/lib/chunkReload';
 import AppErrorBoundary from '@/components/AppErrorBoundary';
 import AccessibilityMenu from '@/components/AccessibilityMenu';
-import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
@@ -18,11 +15,13 @@ import MainLayout from '@/components/MainLayout';
 import AdminLayout from '@/components/AdminLayout';
 import AdminRoute from '@/components/AdminRoute';
 
-// Auth Pages
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
-import ForgotPassword from '@/pages/ForgotPassword';
-import ResetPassword from '@/pages/ResetPassword';
+// Auth Pages. Lazy like the rest: signing in is not part of a first visit,
+// and Register pulls the one-time-code field in behind it.
+const Login = lazy(() => import('@/pages/Login'));
+const Register = lazy(() => import('@/pages/Register'));
+const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
+const PageNotFound = lazy(() => import('@/lib/PageNotFound'));
 import { isEn, EN_PREFIX } from '@/lib/i18n';
 
 // Public Pages (Home/Catalog/ShirtDetail stay eager for the critical path)
@@ -185,7 +184,6 @@ const AuthenticatedApp = () => {
 function App() {
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
         {/* The English site lives under /en, so every Link and every route
             below is written once and resolves to the right side (lib/i18n). */}
         <Router basename={isEn ? EN_PREFIX : undefined}>
@@ -197,8 +195,7 @@ function App() {
               which is why it sits inside the Router. */}
           <Analytics />
         </Router>
-        <Toaster />
-      </QueryClientProvider>
+      <Toaster />
     </AuthProvider>
   )
 }
