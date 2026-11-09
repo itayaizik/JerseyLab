@@ -190,8 +190,13 @@ export default function Catalog() {
     // Logged here rather than when a search form is submitted: this is the one
     // place that knows how many shirts the search found, and it means a search
     // counts once whether it started in the header, on the home page or here.
+    //
+    // Except when the q came from a link. Every club and league in the menus
+    // navigates here with the club's name as the query, and counting those as
+    // searches buried what people actually typed under what they tapped.
+    const fromNav = searchParams.get('from') === 'nav';
     if (!q) loggedQueryRef.current = null;
-    else if (allShirtsRaw.length && loggedQueryRef.current !== q) {
+    else if (!fromNav && allShirtsRaw.length && loggedQueryRef.current !== q) {
       loggedQueryRef.current = q;
       base44.entities.SearchLog.create({ search_term: q.trim(), results_count: searchResult.results.length }).catch(() => {});
     }

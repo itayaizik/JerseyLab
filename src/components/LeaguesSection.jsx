@@ -50,7 +50,7 @@ export default function LeaguesSection({ title }) {
         {leagues.map(league => (
           <li key={league.id || league.name} className="w-[8.5rem] flex-shrink-0 snap-start sm:w-auto">
             <Link
-              to={league.href || `/catalog?q=${encodeURIComponent(league.name)}`}
+              to={league.href || `/catalog?q=${encodeURIComponent(league.name)}&from=nav`}
               className="group flex h-full flex-col items-center gap-3 rounded-3xl bg-brand-mist px-3 py-5 text-center transition hover:bg-brand-mist-dark sm:gap-4 sm:px-4 sm:py-7"
             >
               {/* Dark mode: a light plate, since most league logos are dark

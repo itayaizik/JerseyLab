@@ -42,7 +42,7 @@ export default function PopularClubsSection({ title }) {
             {clubs.map(club => (
               <Link
                 key={club.id || club.name}
-                to={club.href || `/catalog?q=${encodeURIComponent(club.name)}`}
+                to={club.href || `/catalog?q=${encodeURIComponent(club.name)}&from=nav`}
                 className="group flex h-full flex-col rounded-3xl bg-white p-2.5 shadow-card transition-shadow hover:shadow-lift sm:p-3"
               >
                 {/* Light in dark mode too: crests like Juventus's are black. */}

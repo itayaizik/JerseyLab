@@ -14,7 +14,9 @@ import { t } from '@/lib/i18n';
 import { term } from '@/lib/english';
 
 const collectionHref = (slug) => `/collections/${slug}`;
-const searchHref = (query) => `/catalog?q=${encodeURIComponent(query)}`;
+// `from=nav` marks this as a link someone followed rather than words they
+// typed, so it does not get filed as a search (pages/Catalog).
+const searchHref = (query) => `/catalog?q=${encodeURIComponent(query)}&from=nav`;
 
 // `query` is the spelling stored on the shirts, which is what search matches,
 // when it differs from the label a customer reads ("צ׳לסי" is stored "צלסי").
