@@ -16,13 +16,15 @@
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import {
-  ROOT, SITE_ORIGIN, escapeHtml, fetchShirts, fetchFaqs, fetchHeroImages, shirtPrice, shirtDescription,
+  ROOT, SITE_ORIGIN, escapeHtml, fetchShirts, fetchFaqs, fetchHeroImages, fetchReviewsByShirt,
+  shirtPrice, shirtDescription,
 } from './lib/build-data.mjs';
 import { COLLECTIONS, collectionShirts } from '../src/lib/collections.js';
 import { shirtNameEn, shirtDescriptionIn, termIn } from '../src/lib/english.js';
 import { GUIDES } from '../src/lib/guides.js';
 import { shirtPath } from '../src/lib/shirtSlug.js';
 import { resized } from '../src/lib/imageUrl.js';
+import { ORGANISATION, productSchema } from '../src/lib/productSchema.js';
 
 const DIST = resolve(ROOT, 'dist');
 const TEMPLATE_PATH = resolve(DIST, 'index.html');
@@ -57,9 +59,10 @@ const STATIC_PAGES = [
     },
     title: "חולצות כדורגל - מועדונים, נבחרות ורטרו | JerseyLab",
     shareTitle: 'JerseyLab - חולצות כדורגל נדירות לאספנים ואוהדים',
-    description: 'חולצות כדורגל איכותיות ונדירות לאספנים ואוהדים. מצא חולצות של קבוצות, נבחרות ושחקנים אהובים - חדשות, רטרו ומהדורות מיוחדות במחירים טובים.',
+    description: 'חולצות כדורגל לאספנים ולאוהדים: מועדונים, נבחרות, רטרו וגרסאות שחקן, עם הדפסת שם ומספר. משלוח לכל הארץ או איסוף מקריית אונו.',
     h1: 'חולצות כדורגל איכותיות, נדירות ובמחירים טובים',
-    body: `<p>JerseyLab מוכר חולצות כדורגל - חולצות מועדון, נבחרות, רטרו וגרסאות שחקן, ואפשר להזמין גם חולצות שלא נמצאות בקטלוג.</p>`,
+    body: `<p>JerseyLab מוכר חולצות כדורגל - חולצות מועדון, נבחרות, רטרו וגרסאות שחקן, ואפשר להזמין גם חולצות שלא נמצאות בקטלוג.</p>` +
+      `<p>משלוח לכל הארץ ב-20 ₪, או איסוף עצמי מקריית אונו ללא עלות.</p>`,
   },
   {
     path: '/catalog',
@@ -303,55 +306,7 @@ function writePage(path, html) {
 
 // --- pages ----------------------------------------------------------------
 
-const organisation = {
-  '@type': 'OnlineStore',
-  '@id': `${SITE_ORIGIN}/#shop`,
-  name: 'JerseyLab',
-  url: SITE_ORIGIN,
-  logo: DEFAULT_IMAGE,
-  image: DEFAULT_IMAGE,
-  description: 'חנות חולצות כדורגל לאספנים ולאוהדים: חולצות מועדונים ונבחרות, חדשות ורטרו, עם הדפסת שם ומספר.',
-  currenciesAccepted: 'ILS',
-  areaServed: { '@type': 'Country', name: 'Israel' },
-  sameAs: ['https://instagram.com/Jerseylabil'],
-  contactPoint: {
-    '@type': 'ContactPoint',
-    contactType: 'customer service',
-    telephone: '+972505586255',
-    availableLanguage: ['he', 'en'],
-    url: `${SITE_ORIGIN}/contact`,
-  },
-};
-
-// Google wants to know what an order costs to ship and how it can be sent
-// back before it will show a price and availability in the results. The
-// numbers are the ones on the shipping policy (lib/business), and the 14-day
-// right to cancel is the one the Consumer Protection Law gives.
-const SHIPPING_DETAILS = {
-  '@type': 'OfferShippingDetails',
-  shippingRate: { '@type': 'MonetaryAmount', value: 25, currency: 'ILS' },
-  shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'IL' },
-  deliveryTime: {
-    '@type': 'ShippingDeliveryTime',
-    handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
-    transitTime: { '@type': 'QuantitativeValue', minValue: 5, maxValue: 21, unitCode: 'DAY' },
-  },
-};
-
-const RETURN_POLICY = {
-  '@type': 'MerchantReturnPolicy',
-  applicableCountry: 'IL',
-  returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-  merchantReturnDays: 14,
-  returnMethod: 'https://schema.org/ReturnByMail',
-  returnFees: 'https://schema.org/ReturnShippingFees',
-  returnShippingFeesAmount: { '@type': 'MonetaryAmount', value: 25, currency: 'ILS' },
-  merchantReturnLink: `${SITE_ORIGIN}/legal/shipping`,
-};
-
-// A year out: the tag only has to say the price is not stale, and the build
-// runs often enough to keep pushing it forward.
-const priceValidUntil = () => new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+const organisation = ORGANISATION;
 
 const faqs = await fetchFaqs({ label: 'prerender' });
 
@@ -415,6 +370,8 @@ for (const page of STATIC_PAGES) {
 }
 
 const shirts = await fetchShirts({ label: 'prerender' });
+// Stars in a search result, where a shirt has reviews to average.
+const reviewsByShirt = await fetchReviewsByShirt({ label: 'prerender' });
 
 for (const shirt of shirts) {
   const path = shirtPath(shirt);
@@ -439,30 +396,15 @@ for (const shirt of shirts) {
     '@context': 'https://schema.org',
     '@graph': [
       {
-        '@type': 'Product',
-        name,
-        description,
-        url,
-        ...(shirt.main_image ? { image: [shirt.main_image] } : {}),
-        sku: shirt.id,
-        brand: { '@type': 'Brand', name: 'JerseyLab' },
+        ...productSchema({
+          name, description, url,
+          image: shirt.main_image,
+          shirt, price,
+          reviews: reviewsByShirt[shirt.id],
+        }),
         ...(shirt.club || shirt.national_team
           ? { audience: { '@type': 'Audience', name: en ? `${termIn(shirt.club || shirt.national_team, true)} fans` : `אוהדי ${shirt.club || shirt.national_team}` } }
           : {}),
-        offers: {
-          '@type': 'Offer',
-          url,
-          price,
-          priceCurrency: 'ILS',
-          priceValidUntil: priceValidUntil(),
-          availability: shirt.status === 'available' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-          itemCondition: shirt.condition && shirt.condition !== 'new'
-            ? 'https://schema.org/UsedCondition'
-            : 'https://schema.org/NewCondition',
-          seller: { '@id': `${SITE_ORIGIN}/#shop` },
-          shippingDetails: SHIPPING_DETAILS,
-          hasMerchantReturnPolicy: RETURN_POLICY,
-        },
       },
       {
         '@type': 'BreadcrumbList',

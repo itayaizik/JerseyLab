@@ -88,8 +88,18 @@ export default function Seo({ title, shareTitle, description, image, type = 'web
     }
 
     // Structured data (JSON-LD)
+    //
+    // The build writes a block of its own into the served HTML, which is the
+    // one a crawler reads on the first pass. Leaving it in place once this one
+    // is added left a rendered page declaring the same Product twice, with two
+    // different offer URLs, for Google to choose between. This one replaces it
+    // rather than joining it - but only where there is one to put in its place.
+    // A page that passes no structured data of its own leaves the build's
+    // alone: the choice there is between the build's block and nothing at all.
     let script = document.head.querySelector('script[data-seo-jsonld]');
     if (jsonLdStr) {
+      document.head.querySelectorAll('script[type="application/ld+json"]:not([data-seo-jsonld])')
+        .forEach(el => el.remove());
       if (!script) {
         script = document.createElement('script');
         script.type = 'application/ld+json';

@@ -22,6 +22,7 @@ import Seo from '@/components/Seo';
 import HomeHero from '@/components/HomeHero';
 import { toast } from '@/components/ui/use-toast';
 import { SITE_ORIGIN } from '@/lib/siteUrl';
+import { ORGANISATION } from '@/lib/productSchema';
 import { WHATSAPP_URL, INSTAGRAM_URL } from '@/lib/contact';
 import { t, isEn, tSetting } from '@/lib/i18n';
 import { FAQ_EN } from '@/lib/faqEnglish';
@@ -154,21 +155,14 @@ export default function Home() {
         title={t("חולצות כדורגל - מועדונים, נבחרות ורטרו | JerseyLab", "Football Shirts - Clubs, National Teams and Retro | JerseyLab")}
         shareTitle={t('JerseyLab - חולצות כדורגל נדירות לאספנים ואוהדים', 'JerseyLab - Football shirts for fans and collectors')}
         description={t(
-          'חולצות כדורגל איכותיות ונדירות לאספנים ואוהדים. מצא חולצות של קבוצות, נבחרות ושחקנים אהובים - חדשות, רטרו ומהדורות מיוחדות במחירים טובים.',
-          'Football shirts for fans and collectors. Clubs, national teams and favourite players - new, retro and special editions.',
+          'חולצות כדורגל לאספנים ולאוהדים: מועדונים, נבחרות, רטרו וגרסאות שחקן, עם הדפסת שם ומספר. משלוח לכל הארץ או איסוף מקריית אונו.',
+          'Football shirts for fans and collectors. Clubs, national teams and favourite players - new, retro and special editions. Delivery across Israel.',
         )}
         canonicalPath="/"
         jsonLd={{
           "@context": "https://schema.org",
           "@graph": [
-            {
-              "@type": "Organization",
-              name: "JerseyLab",
-              url: SITE_ORIGIN,
-              logo: { "@type": "ImageObject", url: "https://www.jerseylab.co/icon-512.png", width: 512, height: 512 },
-              description: "ארכיון בלעדי של חולצות כדורגל נדירות לאספנים ואוהדים.",
-              sameAs: ["https://instagram.com/Jerseylabil"]
-            },
+            ORGANISATION,
             {
               "@type": "WebSite",
               name: "JerseyLab",

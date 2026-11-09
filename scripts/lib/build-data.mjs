@@ -137,3 +137,33 @@ export function shirtDescription(shirt) {
   const price = shirtPrice(shirt);
   return `${parts.join(' · ')}${price ? ` - ₪${price}` : ''}. חולצת כדורגל מ-JerseyLab, משלוח לכל הארץ.`;
 }
+
+// Approved reviews, keyed by the shirt they were written about.
+//
+// A star rating in a search result comes from aggregateRating, and that has to
+// be in the HTML a crawler is served - which is this build, not the app. Only
+// approved ones: an unapproved review is not published anywhere else on the
+// site and must not be averaged into a number Google prints.
+export async function fetchReviewsByShirt({ label = 'build' } = {}) {
+  const url = env('VITE_SUPABASE_URL');
+  const key = env('VITE_SUPABASE_ANON_KEY');
+  if (!url || !key) return {};
+
+  const endpoint = `${url}/rest/v1/reviews_raw?select=shirt_id,rating&approved=eq.true&limit=5000`;
+  try {
+    const res = await fetch(endpoint, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
+    if (!res.ok) {
+      console.warn(`[${label}] review fetch returned ${res.status} - product pages ship without ratings.`);
+      return {};
+    }
+    const byShirt = {};
+    for (const row of await res.json()) {
+      if (!row.shirt_id || !(Number(row.rating) > 0)) continue;
+      (byShirt[row.shirt_id] ||= []).push({ rating: Number(row.rating) });
+    }
+    return byShirt;
+  } catch (err) {
+    console.warn(`[${label}] review fetch failed (${err.message}) - product pages ship without ratings.`);
+    return {};
+  }
+}

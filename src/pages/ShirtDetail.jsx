@@ -10,6 +10,7 @@ import SizeGuideDrawer from '@/components/product/SizeGuideDrawer';
 import ProductRail from '@/components/shop/ProductRail';
 import Disclosure from '@/components/shop/Disclosure';
 import ShirtReviews from '@/components/ShirtReviews';
+import { productSchema } from '@/lib/productSchema';
 import Seo from '@/components/Seo';
 import EmptyState from '@/components/ui/EmptyState';
 import { toast } from '@/components/ui/use-toast';
@@ -253,43 +254,39 @@ export default function ShirtDetail() {
     [shirt]
   );
 
+  // The same Product node the build writes into the served HTML, from the same
+  // module - see lib/productSchema. Two descriptions of one shirt is one too
+  // many, and the build's was the better of the two.
   const productJsonLd = useMemo(() => {
     if (!shirt) return null;
     const origin = SITE_ORIGIN;
+    const url = origin + shirtPath(shirt);
     const desc = shirt.description
       ? shirt.description.slice(0, 155)
       : `${shirt.name} - ${shirt.club || shirt.national_team || ''} ${shirt.season || ''} ${shirt.player_name || ''}`.trim();
     return {
       "@context": "https://schema.org",
       "@graph": [
-        {
-          "@type": "Product",
+        productSchema({
           name: shirt.name,
           description: desc,
-          url: origin + shirtPath(shirt),
-          ...(shirt.main_image ? { image: [shirt.main_image] } : {}),
-          sku: shirt.id,
-          brand: { "@type": "Brand", name: shirt.club || shirt.national_team || "JerseyLab" },
-          offers: {
-            "@type": "Offer",
-            url: origin + "/shirt/" + shirt.id,
-            price: shirtBasePrice(shirt),
-            priceCurrency: "ILS",
-            availability: shirt.status === "available" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-            ...(shirt.condition && shirt.condition !== "new" ? { itemCondition: "https://schema.org/UsedCondition" } : {}),
-          },
-        },
+          url,
+          image: shirt.main_image,
+          shirt,
+          price: shirtBasePrice(shirt),
+          reviews: reviewSummary,
+        }),
         {
           "@type": "BreadcrumbList",
           itemListElement: [
             { "@type": "ListItem", position: 1, name: "דף הבית", item: origin + "/" },
             { "@type": "ListItem", position: 2, name: "קטלוג", item: origin + "/catalog" },
-            { "@type": "ListItem", position: 3, name: shirt.name, item: origin + "/shirt/" + shirt.id },
+            { "@type": "ListItem", position: 3, name: shirt.name, item: url },
           ],
         },
       ],
     };
-  }, [shirt]);
+  }, [shirt, reviewSummary]);
 
   if (loading) {
     return (
