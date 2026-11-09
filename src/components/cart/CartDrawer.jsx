@@ -16,6 +16,7 @@ import { getCart, setCart, cartItemTotal, cartTotal, EXTRA_PRICES, PATCHES_LABEL
   DELIVERY_PRICE, DELIVERY_LABEL, PICKUP_LABEL, FREE_DELIVERY_ABOVE, deliveryFeeFor } from '@/lib/cart';
 import { MYSTERY_BOX_ID } from '@/lib/mysteryBox';
 import { checkCoupon, redeemCoupon, applyCoupon, normalizeCode, normalizePhone } from '@/lib/coupons';
+import { recordCart, recordReachedCheckout, recordStoppedAt, recordOrdered } from '@/lib/cartSession';
 import { t } from '@/lib/i18n';
 
 // The cart, as a drawer from the side of the screen: the bag, then the contact
@@ -255,9 +256,25 @@ export default function CartDrawer({ open, onClose, user }) {
     }));
   }, [open, user]);
 
+  // What is in the basket, for the abandoned-basket count. No personal data
+  // goes with it - see lib/cartSession.
+  useEffect(() => {
+    if (!open || cart.length === 0) return;
+    recordCart(cart);
+  }, [open, cart]);
+
+  // Opening the details step is the line between an abandoned basket and an
+  // abandoned checkout.
+  useEffect(() => {
+    if (open && view === 'details') recordReachedCheckout();
+  }, [open, view]);
+
   const setField = (field, value) => {
     setContactForm(p => ({ ...p, [field]: value }));
     setErrors(p => ({ ...p, [field]: undefined }));
+    // The name of the field, so the shop can see where the form loses people.
+    // Never what was typed into it.
+    recordStoppedAt(field);
   };
 
   const removeItem = (idx) => {
@@ -392,6 +409,7 @@ export default function CartDrawer({ open, onClose, user }) {
         items: order.items, total: orderTotal,
       });
 
+      recordOrdered(orderId);
       setCart([]);
       setCartState([]);
       setCoupon(null);

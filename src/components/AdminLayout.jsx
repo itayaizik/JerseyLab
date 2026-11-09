@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Gift, Plane, LayoutDashboard, PlusCircle, Shirt, Users, Star, HelpCircle, Settings, ArrowRight, BarChart2, TrendingUp, Layout, Upload, Mail, Megaphone, History, Ticket } from 'lucide-react';
+import { Gift, Plane, LayoutDashboard, PlusCircle, Shirt, Users, Star, HelpCircle, Settings, ArrowRight, BarChart2, TrendingUp, Layout, Upload, Mail, Megaphone, History, Ticket, ShoppingCart, Zap } from 'lucide-react';
 
 const adminLinks = [
   { to: '/admin', label: 'דשבורד', icon: LayoutDashboard },
@@ -19,6 +19,8 @@ const adminLinks = [
   { to: '/admin/home-sections', label: 'עריכת דף הבית', icon: Layout },
   { to: '/admin/banners', label: 'באנרים והודעות', icon: Megaphone },
   { to: '/admin/search-analytics', label: 'אנליטיקת חיפוש', icon: BarChart2 },
+  { to: '/admin/abandoned-carts', label: 'סלים שננטשו', icon: ShoppingCart },
+  { to: '/admin/automations', label: 'אוטומציות', icon: Zap },
   { to: '/admin/settings', label: 'הגדרות', icon: Settings },
 ];
 

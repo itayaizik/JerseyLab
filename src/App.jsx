@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
@@ -69,6 +70,8 @@ const ManageCoupons = lazy(() => import('@/pages/admin/ManageCoupons'));
 const ManageFAQ = lazy(() => import('@/pages/admin/ManageFAQ'));
 const SiteSettings = lazy(() => import('@/pages/admin/SiteSettings'));
 const SearchAnalytics = lazy(() => import('@/pages/admin/SearchAnalytics'));
+const AbandonedCarts = lazy(() => import('@/pages/admin/AbandonedCarts'));
+const Automations = lazy(() => import('@/pages/admin/Automations'));
 const SalesReport = lazy(() => import('@/pages/admin/SalesReport'));
 const ManageHomeSections = lazy(() => import('@/pages/admin/ManageHomeSections'));
 const ManageBanners = lazy(() => import('@/pages/admin/ManageBanners'));
@@ -166,6 +169,8 @@ const AuthenticatedApp = () => {
           <Route path="/admin/banners" element={<ManageBanners />} />
           <Route path="/admin/settings" element={<SiteSettings />} />
           <Route path="/admin/search-analytics" element={<SearchAnalytics />} />
+          <Route path="/admin/abandoned-carts" element={<AbandonedCarts />} />
+          <Route path="/admin/automations" element={<Automations />} />
           <Route path="/admin/sales" element={<SalesReport />} />
           <Route path="/admin/home-sections" element={<ManageHomeSections />} />
           <Route path="/admin/recover-uploads" element={<RecoverUploads />} />
@@ -187,6 +192,10 @@ function App() {
           <ScrollToTop />
           <AuthenticatedApp />
           <AccessibilityMenu />
+          {/* Counts visits and page views. No cookies and no personal data, so
+              there is nothing to ask consent for; it reads route changes,
+              which is why it sits inside the Router. */}
+          <Analytics />
         </Router>
         <Toaster />
       </QueryClientProvider>
